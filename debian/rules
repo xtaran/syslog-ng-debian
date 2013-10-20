@@ -228,11 +228,11 @@ endif
 # Oh, and for compatibility with Ubuntu (Lucid), don't use -Zxz at
 # all.
 override_dh_builddeb:
-	dh_builddeb -i
+	dh_builddeb -i -- -Zgzip
 ifneq (Ubuntu,$(shell lsb_release -is))
 	dh_builddeb -a -- -Zxz
 else
-	dh_builddeb -a
+	dh_builddeb -a -- -Zgzip
 endif
 
 # Since syslog-ng depends on all the modules, and syslog-ng-core
