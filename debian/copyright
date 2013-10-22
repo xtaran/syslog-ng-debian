@@ -82,9 +82,20 @@ Files: modules/afmongodb/libmongo-client/*
 Copyright: Copyright (C) Gergely Nagy <algernon@balabit.hu>
 License: Apache-2.0
 
-Files: modules/afsocket/sd-daemon.*
-Copyright: Copyright 2010 Lennart Poettering
-License: Expat
+Files: modules/afstomp/*
+Copyright: Copyright (C) Nagy, Attila <bra@fsn.hu>
+ Copyright (C) BalaBit IT Ltd.
+ Copyright (C) Viktor Tusa <tusa@balabit.hu>
+License: GPL-2+ with OpenSSL exception
+
+Files: modules/afstomp/stomp.*
+Copyright: Copyright (C) Viktor Tusa <tusa@balabit.hu>
+License: GPL-2+ with OpenSSL exception
+
+Files: modules/redis/*
+Copyright: Copyright (C) Tihamer Petrovics <tihameri@gmail.com>
+ Copyright (C) BalaBit IT Ltd.
+License: GPL-2+ with OpenSSL exception
 
 Files: modules/cryptofuncs/*
 Copyright: Copyright (c) BalaBit IT Ltd.
@@ -111,10 +122,18 @@ Files: scl/*
 Copyright: Copyright (C) BalaBit IT Security Ltd.
 License: GPL-2+ with OpenSSL exception
 
+Files: scl/syslogconf/convert-syslogconf.awk
+Copyright: Jonathan W. Marks <j-marks@uiuc.edu>
+License: GPL-2+ with OpenSSL exception
+
+Files: scl/rewrite/cc-mask.conf
+Copyright: Copyright (C) Márton Illés <marci@balabit.com>
+License: GPL-2+ with OpenSSL exception
+
 Files: debian/*
-Copyright: Copyright (C) 2011-2012 Gergely Nagy <algernon@madhouse-project.org>,
+Copyright: Copyright (C) 2011-2013 Gergely Nagy <algernon@madhouse-project.org>,
  Copyright (C) 2010-2012 Laszlo Boszormenyi (GCS) <gcs@debian.hu>
-License: GPL-3+
+License: GPL-2+
 
 License: GPL-2+ with OpenSSL exception
  This program is free software; you can redistribute it and/or modify it
@@ -136,23 +155,6 @@ License: GPL-2+ with OpenSSL exception
  .
  On Debian systems, the complete text of the GNU General Public
  License can be found in the file `/usr/share/common-licenses/GPL-2'.
-
-License: GPL-3+
- This program is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
- .
- This program is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
- .
- You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
- .
- On Debian systems, the complete text of the GNU General Public
- License can be found in the file `/usr/share/common-licenses/GPL-3'.
 
 License: LGPL-2.1+
  This library is free software; you can redistribute it and/or
