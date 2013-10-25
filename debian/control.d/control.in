@@ -1,7 +1,10 @@
 Source: syslog-ng
 Section: admin
 Priority: extra
-Maintainer: Gergely Nagy <algernon@madhouse-project.org>
+Maintainer: syslog-ng maintainers <syslog-ng-maintainers@lists.alioth.debian.org>
+Uploaders: Gergely Nagy <algernon@madhouse-project.org>,
+           Laszlo Boszormenyi (GCS) <gcs@debian.hu>,
+           SZALAY Attila <sasa@debian.org>
 Build-Depends: debhelper (>= 9~),
 	       dh-autoreconf,
                automake (>= 1:1.11.1),
@@ -28,8 +31,6 @@ Standards-Version: 3.9.4
 Homepage: http://www.balabit.com/network-security/syslog-ng/opensource-logging-system
 Vcs-Git: git://git.madhouse-project.org/debian/syslog-ng.git
 Vcs-Browser: http://git.madhouse-project.org/debian/syslog-ng/log/?h=packaging/debian/3.5
-Origin: MadHouse
-Bugs: mailto:syslog-ng@lists.balabit.hu
 
 Package: syslog-ng
 Architecture: all
