@@ -4,6 +4,9 @@ syslog-ng (3.5.0~rc1-1) unstable; urgency=low
   * New upstream release.
     + Support auto-loading modules (Closes: #650814)
     + The SMTP module is available in syslog-ng-mod-smtp (Closes: #722746)
+  * Ship /var/lib/syslog-ng in the syslog-ng-core package, instead of
+    creating it in the init script. Thanks Michael Biebl
+    <biebl@debian.org> for the report & assistance. (Closes: #699942, #719910)
   * Use dh-systemd for proper systemd-related maintainer scripts. Based on
     a patch by Michael Biebl <biebl@debian.org>. (Closes: #713982,
     #690067)
@@ -11,7 +14,7 @@ syslog-ng (3.5.0~rc1-1) unstable; urgency=low
     This also fixes installing via debootstrap and a fake
     start-stop-daemon. (Closes: #714254)
 
- -- Gergely Nagy <algernon@madhouse-project.org>  Fri, 25 Oct 2013 13:52:38 +0200
+ -- Gergely Nagy <algernon@madhouse-project.org>  Fri, 25 Oct 2013 13:57:27 +0200
 
 syslog-ng (3.3.9-1) unstable; urgency=low
 
