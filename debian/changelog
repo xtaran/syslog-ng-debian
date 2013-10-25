@@ -1,141 +1,39 @@
-syslog-ng (3.5.0~rc1-1~mhp1) unstable; urgency=low
-
-  [ Gergely Nagy <algernon@madhouse-project.org> ]
-  * New upstrem release candidate.
-
- -- Gergely Nagy <algernon@madhouse-project.org>  Thu, 24 Oct 2013 11:45:36 +0200
-
-syslog-ng (3.4.4-1~mhp1) unstable; urgency=low
+syslog-ng (3.5.0~rc1-1) unstable; urgency=low
 
   [ Gergely Nagy <algernon@madhouse-project.org> ]
   * New upstream release.
-
- -- Gergely Nagy <algernon@madhouse-project.org>  Thu, 17 Oct 2013 14:00:15 +0200
-
-syslog-ng (3.4.2-1~mhp2) unstable; urgency=low
-
-  [ Gergely Nagy <algernon@madhouse-project.org> ]
-  * Ship /var/lib/syslog-ng in the syslog-ng-core package, instead of
-    creating it in the init script. Thanks Michael Biebl
-    <biebl@debian.org> for the report & assistance. (Closes: #699942)
-  * Do not wait for syslog-ng to settle down during installation / update.
-    This also fixes installing via debootstrap and a fake
-    start-stop-daemon. (Closes: #714254)
+    + Support auto-loading modules (Closes: #650814)
+    + The SMTP module is available in syslog-ng-mod-smtp (Closes: #722746)
   * Use dh-systemd for proper systemd-related maintainer scripts. Based on
     a patch by Michael Biebl <biebl@debian.org>. (Closes: #713982,
     #690067)
-  * Bumped Standards-Version to 3.9.4, no changes necessary.
+  * Do not wait for syslog-ng to settle down during installation / update.
+    This also fixes installing via debootstrap and a fake
+    start-stop-daemon. (Closes: #714254)
 
- -- Gergely Nagy <algernon@madhouse-project.org>  Wed, 03 Jul 2013 11:11:21 +0200
+ -- Gergely Nagy <algernon@madhouse-project.org>  Fri, 25 Oct 2013 13:52:38 +0200
 
-syslog-ng (3.4.2-1~mhp1) unstable; urgency=low
+syslog-ng (3.3.9-1) unstable; urgency=low
 
-  [ Gergely Nagy <algernon@madhouse-project.org> ]
   * New upstream release.
+  * Include missed ivykis header (closes: #708793).
 
- -- Gergely Nagy <algernon@madhouse-project.org>  Tue, 04 Jun 2013 16:05:09 +0200
+ -- Laszlo Boszormenyi (GCS) <gcs@debian.org>  Sun, 26 May 2013 09:06:21 +0200
 
-syslog-ng (3.4.1-1~mhp2) unstable; urgency=low
-
-  [ Gergely Nagy <algernon@madhouse-project.org> ]
-  * Fix the systemd unit file handling, many thanks to Dominic Hargreaves
-    <dom@earth.li> and Michael Biebl <biebl@debian.org> for the
-    assistance.
-
- -- Gergely Nagy <algernon@madhouse-project.org>  Sun, 14 Apr 2013 12:14:55 +0200
-
-syslog-ng (3.4.1-1~mhp1) unstable; urgency=low
+syslog-ng (3.3.6-2) unstable; urgency=low
 
   [ Gergely Nagy <algernon@madhouse-project.org> ]
-  * New upstream stable release.
-
- -- Gergely Nagy <algernon@madhouse-project.org>  Thu, 31 Jan 2013 10:45:10 +0100
-
-syslog-ng (3.4.0~rc2-1~mhp1) unstable; urgency=low
-
-  [ Gergely Nagy <algernon@madhouse-project.org> ]
-  * New upstream release candidate.
-
- -- Gergely Nagy <algernon@madhouse-project.org>  Mon, 21 Jan 2013 13:13:29 +0100
-
-syslog-ng (3.4.0~rc1-1~mhp2) unstable; urgency=low
-
-  [ Gergely Nagy <algernon@madhouse-project.org> ]
-  * New upstream release candidate.
   * Use /dev/ttyva on kFreeBSD as the target of the d_console_all
-    destination. (Closes: #697042)
-
- -- Gergely Nagy <algernon@madhouse-project.org>  Mon, 07 Jan 2013 11:20:11 +0100
-
-syslog-ng (3.4.0~alpha3+sandbox+20121116-1~mhp1) unstable; urgency=low
-
-  [ Gergely Nagy <algernon@madhouse-project.org> ]
-  * New upstream snapshot from my sandbox/3.4 branch, git commit 0c2acbb.
+    destination (closes: #697042).
   * Use the standard /var/log/mail.{info,err,warn} location for the
-    various mail-related logs. (Closes: #692056)
+    various mail-related logs (closes: #692056).
+  * Don't mark systemd symlinks in /etc as conffiles.
+  * Instead of installing systemd service file symlinks, install a
+    conffile, that includes the real service file (closes: #690067).
   * Do not forcibly remove the systemd service files, that code is not
     needed anymore.
-  * Bring debian/copyright up to date.
 
- -- Gergely Nagy <algernon@madhouse-project.org>  Fri, 16 Nov 2012 12:33:34 +0100
-
-syslog-ng (3.4.0~alpha3+sandbox+20121027-1~mhp1) unstable; urgency=low
-
-  [ Gergely Nagy <algernon@madhouse-project.org> ]
-  * New upstream snapshot from my sandbox/3.4 branch, git commit 32bc3bd.
-  * The shlibs file belongs to -core.
-  * Add the syslog-ng-mod-geoip module.
-  * Update build-depends: added automake (>= 1.11.1) and python.
-  * Tighten the dependency of the modules on syslog-ng-core.
-  * Instead of installing systemd service file symlinks, install a
-    conffile, that includes the real service file. (Closes: #690067)
-
- -- Gergely Nagy <algernon@madhouse-project.org>  Sun, 28 Oct 2012 15:49:00 +0100
-
-syslog-ng (3.4.0~alpha3+sandbox+133-1~mhp1) unstable; urgency=low
-
-  [ Gergely Nagy <algernon@madhouse-project.org> ]
-  * New upstream snapshot release from my sandbox/3.4 branch, git commit
-    9e7b3425df928c29b9bd2d03bb3099056baf2194.
-  * Drop the libsyslog-ng package, fold it into syslog-ng-core, and rename
-    libsyslog-ng-dev to syslog-ng-dev.
-    + libsyslog-ng.so is installed into a private directory.
-
- -- Gergely Nagy <algernon@madhouse-project.org>  Mon, 15 Oct 2012 23:45:39 +0200
-
-syslog-ng (3.3.7+snapshot20130103+gdf6d07e-1~mhp1) unstable; urgency=low
-
-  [ Gergely Nagy <algernon@madhouse-project.org> ]
-  * New snapshot, based on git commit df6d07e
-  * Use the standard /var/log/mail.{info,err,warn} location for the
-    various mail-related logs. (Closes: #692056)
-  * Do not forcibly remove the systemd service files, that code is not
-    needed anymore.
-  * Use /dev/ttyva on kFreeBSD as the target of the d_console_all
-    destination. (Closes: #697042)
-
- -- Gergely Nagy <algernon@madhouse-project.org>  Thu, 03 Jan 2013 17:55:32 +0100
-
-syslog-ng (3.3.7-1~mhp1) unstable; urgency=low
-
-  [ Gergely Nagy <algernon@madhouse-project.org> ]
-  * New upstream release.
-  * Instead of installing systemd service file symlinks, install a
-    conffile, that includes the real service file. (Closes: #690067)
-  * Add Origin and Bugs fields to the control file.
-
- -- Gergely Nagy <algernon@madhouse-project.org>  Wed, 31 Oct 2012 07:57:37 +0100
-
-syslog-ng (3.3.6.91-1~mhp1) unstable; urgency=low
-
-  [ Gergely Nagy <algernon@madhouse-project.org> ]
-  * Packaging synced with GCS.
-  * New upstream release candidate + patches
-    (based on git commit 768073c667a04f64fdc75ec17aed62f60c12da75)
-  * Don't mark systemd symlinks in /etc as conffiles
-    (Closes: #690067)
-
- -- Gergely Nagy <algernon@madhouse-project.org>  Sun, 14 Oct 2012 13:14:53 +0200
+ -- Laszlo Boszormenyi (GCS) <gcs@debian.hu>  Sat, 02 Mar 2013 16:03:18 +0100
 
 syslog-ng (3.3.6-1) unstable; urgency=low
 
