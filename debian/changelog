@@ -1,9 +1,14 @@
-syslog-ng (3.5.0~rc1-1) unstable; urgency=low
+syslog-ng (3.5.1-1) unstable; urgency=low
 
   [ Gergely Nagy <algernon@madhouse-project.org> ]
   * New upstream release.
     + Support auto-loading modules (Closes: #650814)
     + The SMTP module is available in syslog-ng-mod-smtp (Closes: #722746)
+    + New modules: amqp, geoip, stomp, redis and smtp.
+    + Multi-line input support (indented multiline and regexp-based)
+    + Template type hinting for the MongoDB destination and $(format-json)
+    + Support for unit suffixes in the configuration file
+    + New filters, template functions and other miscellaneous changes
   * New (team) maintainer, Laszlo Boszormenyi, Attila Szalay and myself
     added to Uploaders.
   * Ship /var/lib/syslog-ng in the syslog-ng-core package, instead of
@@ -16,7 +21,7 @@ syslog-ng (3.5.0~rc1-1) unstable; urgency=low
     This also fixes installing via debootstrap and a fake
     start-stop-daemon. (Closes: #714254)
 
- -- Gergely Nagy <algernon@madhouse-project.org>  Fri, 25 Oct 2013 13:59:17 +0200
+ -- Gergely Nagy <algernon@madhouse-project.org>  Mon, 04 Nov 2013 15:27:37 +0100
 
 syslog-ng (3.3.9-1) unstable; urgency=low
 
