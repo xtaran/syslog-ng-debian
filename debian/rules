@@ -1,8 +1,9 @@
 #! /usr/bin/make -f
 ## debian/rules file for syslog-ng 3.3+
+## (C) 2010-2012 Laszlo Boszormenyi (GCS) <gcs@debian.hu>
 ## (C) 2011-2013 Gergely Nagy <algernon@madhouse-project.org>
 ##
-## Released under the GPLv3+, see /usr/share/common-licenses/GPL-3 on
+## Released under the GPLv2+, see /usr/share/common-licenses/GPL-2 on
 ## Debian systems.
 
 # For my own sanity, when debian/rules is ran without any argument,
