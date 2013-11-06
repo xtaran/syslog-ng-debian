@@ -61,7 +61,7 @@ Copyright: Copyright (C) VMWare, Inc. and Tony Garnock-Jones
 License: Expat
 
 Files: modules/afamqp/rabbitmq-c/codegen/*
-Copyright: Copyright (C) VMWare, Inc. 
+Copyright: Copyright (C) VMWare, Inc.
 License: MPL
 
 Files: modules/afamqp/rabbitmq-c/librabbitmq/win32/msinttypes/stdint.h
