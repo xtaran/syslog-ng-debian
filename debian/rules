@@ -121,7 +121,7 @@ override_dh_auto_build:
 # we override libdir above to place everything useful there. We want
 # the .pc file elsewhere, though, so do that here at install time.
 override_dh_auto_install:
-	dh_auto_install -- pkgconfdir=/usr/lib/pkgconfig
+	dh_auto_install -- pkgconfigdir=/usr/lib/pkgconfig
 
 # Tests. While tests are good, they're quite costy, and I'm not
 # convinced they'd run on the buildds at all. Therefore, they're
