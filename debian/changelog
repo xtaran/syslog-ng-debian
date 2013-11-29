@@ -1,11 +1,17 @@
-syslog-ng (3.5.2-1) unstable; urgency=low
+syslog-ng (3.5.2-1) unstable; urgency=high
 
   [ Gergely Nagy <algernon@madhouse-project.org> ]
   * New upstream release.
     + Fix the system() source on older Linux kernels (Closes: #729991)
     + Fix kernel timestamp computation on 32-bit systems (Closes: #729575)
+  * Added a missing GPL-2+ license block to debian/copyright.
+  * Correctly install the pkg-config file to /usr/lib/pkgconfig.
+  * Updated the Vcs-* fields to point to debian.org resources.
+  * Updated the package descriptions to be more similar to the upstream
+    one.
+  * Urgency set to high, due to the RC bugfix on 32-bit architectures.
 
- -- Gergely Nagy <algernon@madhouse-project.org>  Fri, 29 Nov 2013 17:44:35 +0100
+ -- Gergely Nagy <algernon@madhouse-project.org>  Fri, 29 Nov 2013 17:50:56 +0100
 
 syslog-ng (3.5.1-1) unstable; urgency=low
 
