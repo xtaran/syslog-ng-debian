@@ -1,3 +1,12 @@
+syslog-ng (3.5.2-1) unstable; urgency=low
+
+  [ Gergely Nagy <algernon@madhouse-project.org> ]
+  * New upstream release.
+    + Fix the system() source on older Linux kernels (Closes: #729991)
+    + Fix kernel timestamp computation on 32-bit systems (Closes: #729575)
+
+ -- Gergely Nagy <algernon@madhouse-project.org>  Fri, 29 Nov 2013 17:44:35 +0100
+
 syslog-ng (3.5.1-1) unstable; urgency=low
 
   [ Gergely Nagy <algernon@madhouse-project.org> ]
