@@ -2,8 +2,9 @@ syslog-ng (3.5.3-1) unstable; urgency=medium
 
   [ Gergely Nagy <algernon@madhouse-project.org> ]
   * New upstream release.
+    + Based on 3.5/master, which includes a couple of bison3 fixes.
 
- -- Gergely Nagy <algernon@madhouse-project.org>  Wed, 25 Dec 2013 10:53:05 +0100
+ -- Gergely Nagy <algernon@madhouse-project.org>  Wed, 25 Dec 2013 15:29:45 +0100
 
 syslog-ng (3.5.2-1) unstable; urgency=high
 
