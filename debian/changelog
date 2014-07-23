@@ -3,8 +3,9 @@ syslog-ng (3.5.5-1) unstable; urgency=high
   [ Gergely Nagy <algernon@madhouse-project.org> ]
   * New upstream release, fixing major leaks (hence the urgency)
   * Build-Depend on libjson-c-dev | libjson0-dev. (Closes: #745014)
+  * Add /var/log/error to the logrotate file. (Closes: #747020)
 
- -- Gergely Nagy <algernon@madhouse-project.org>  Wed, 23 Jul 2014 12:56:01 +0200
+ -- Gergely Nagy <algernon@madhouse-project.org>  Wed, 23 Jul 2014 13:01:46 +0200
 
 syslog-ng (3.5.4.1-1) unstable; urgency=medium
 
