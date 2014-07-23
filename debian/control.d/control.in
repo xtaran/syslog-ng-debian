@@ -287,7 +287,6 @@ Package: syslog-ng-mod-redis
 Architecture: any
 Multi-Arch: foreign
 Depends: syslog-ng-core (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
-Recommends: geoip-database
 Description: Enhanced system logging daemon (Redis plugin)
  syslog-ng is an enhanced log daemon, supporting a wide range of input
  and output methods: syslog, unstructured text, message queues,
