@@ -1,3 +1,11 @@
+syslog-ng (3.5.5-2) unstable; urgency=high
+
+  [ Gergely Nagy <algernon@madhouse-project.org> ]
+  * Explicitly disable linux capability support on non-linux platforms,
+    instead of relying on auto-detection (which doesn't always work).
+
+ -- Gergely Nagy <algernon@madhouse-project.org>  Sat, 26 Jul 2014 13:53:39 +0200
+
 syslog-ng (3.5.5-1) unstable; urgency=high
 
   [ Gergely Nagy <algernon@madhouse-project.org> ]

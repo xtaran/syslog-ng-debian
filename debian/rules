@@ -54,6 +54,12 @@ else
 SYSTEMD_SUPPORT	?= --enable-systemd
 endif
 
+ifeq ($(shell dpkg-architecture -qDEB_HOST_ARCH_OS),linux)
+LINUX_CAP_SUPPORT ?= --enable-linux-caps
+else
+LINUX_CAP_SUPPORT ?= --disable-linux-caps
+endif
+
 ##
 #* Overrides for dh_auto*
 ##
@@ -95,6 +101,7 @@ override_dh_auto_configure:
 		--enable-mongodb \
 		--enable-json \
 		${SYSTEMD_SUPPORT} \
+		${LINUX_CAP_SUPPORT} \
 		\
 		--with-libmongo-client=system \
 		--with-ivykis=system \
