@@ -203,7 +203,7 @@ endif
 # Rationale: the ChangeLog file is an old artifact from the Arch
 # times. It is not updated, and is obsolete.
 override_dh_installchangelogs:
-	dh_installchangelogs ${SRCDIR}/NEWS
+	dh_installchangelogs ${SRCDIR}/NEWS.md
 
 # Init files and whatnot were moved to syslog-ng-core, but we want to
 # retain the old filenames. Furthermore, the init script is now
