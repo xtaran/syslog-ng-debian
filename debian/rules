@@ -55,7 +55,7 @@ SYSTEMD_SUPPORT	?= --enable-systemd
 endif
 
 ifeq ($(shell dpkg-architecture -qDEB_HOST_ARCH_OS),linux)
-LINUX_CAP_SUPPORT ?= --enable-linux-caps
+LINUX_CAP_SUPPORT ?= --enable-linux-caps=auto
 else
 LINUX_CAP_SUPPORT ?= --disable-linux-caps
 endif
