@@ -1,3 +1,10 @@
+syslog-ng (3.6.0~alpha1-1) experimental; urgency=medium
+
+  [ Gergely Nagy <algernon@madhouse-project.org> ]
+  * New upstream alpha release.
+
+ -- Gergely Nagy <algernon@madhouse-project.org>  Thu, 31 Jul 2014 12:30:12 +0200
+
 syslog-ng (3.5.5-2) unstable; urgency=high
 
   [ Gergely Nagy <algernon@madhouse-project.org> ]
