@@ -47,7 +47,7 @@ CFLAGS		?= $(shell dpkg-buildflags --get CFLAGS)
 LDFLAGS		?= $(shell dpkg-buildflags --get LDFLAGS)
 
 # If debian/control does not have a build-dependency on
-# libsystemd-daemon, enable systemd support, otherwise not.
+# libsystemd-daemon, disable systemd support, otherwise enable it.
 ifeq ($(shell grep -q libsystemd-daemon-dev debian/control || echo disabled),disabled)
 SYSTEMD_SUPPORT	?= --disable-systemd
 else
