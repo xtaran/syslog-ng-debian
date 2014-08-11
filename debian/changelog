@@ -1,3 +1,14 @@
+syslog-ng (3.5.6-1) unstable; urgency=high
+
+  [ Gergely Nagy <algernon@madhouse-project.org> ]
+  * New upstream release, fixing a major memory leak (thus the urgency)
+  * Loosen the shlibs dependency on syslog-ng-core, so that
+    syslog-ng-incubator need not be rebuilt for every single syslog-ng
+    upload.
+  * Fixed a typo in debian/rules.
+
+ -- Gergely Nagy <algernon@madhouse-project.org>  Mon, 11 Aug 2014 11:07:34 +0200
+
 syslog-ng (3.5.5-2) unstable; urgency=high
 
   [ Gergely Nagy <algernon@madhouse-project.org> ]
