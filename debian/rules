@@ -226,21 +226,6 @@ else
 	dh_makeshlibs -n -Xusr/lib/syslog-ng/$(shell cat ${SRCDIR}/VERSION)
 endif
 
-# Compress the .debs with xz, it reduces the size of syslog-ng-core by
-# about 40%. Except, we don't compress the arch: all packages with it,
-# because I want to reuse those even on systems that do not support
-# data.tar.xz (lucid, I'm looking at you).
-#
-# Oh, and for compatibility with Ubuntu (Lucid), don't use -Zxz at
-# all.
-override_dh_builddeb:
-	dh_builddeb -i -- -Zgzip
-ifneq (Ubuntu,$(shell lsb_release -is))
-	dh_builddeb -a -- -Zxz
-else
-	dh_builddeb -a -- -Zgzip
-endif
-
 # Since syslog-ng depends on all the modules, and syslog-ng-core
 # suggests the same set, and modules can come and go as new versions
 # of syslog-ng come out, lets make our life easy, and provide a custom
