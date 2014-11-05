@@ -23,8 +23,10 @@ Build-Depends: debhelper (>= 9~),
                libpcre3-dev,
                libcap-dev [linux-any],
                libsystemd-daemon-dev [linux-any], dh-systemd (>= 1.3),
+               libsystemd-journal-dev (>= 195) [linux-any],
                libgeoip-dev,
                libhiredis-dev,
+               libriemann-client-dev,
                python
 Build-Conflicts: autoconf2.13
 Standards-Version: 3.9.6
@@ -329,3 +331,51 @@ Description: Enhanced system logging daemon (STOMP plugin)
  .
  This package provides the STOMP destination plugin, which allows one
  to publish log messages through the STOMP protocol.
+
+Package: syslog-ng-mod-riemann
+Architecture: any
+Multi-Arch: foreign
+Depends: syslog-ng-core (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
+Description: Enhanced system logging daemon (Riemann destination)
+ syslog-ng is an enhanced log daemon, supporting a wide range of input
+ and output methods: syslog, unstructured text, message queues,
+ databases (SQL and NoSQL alike) and more.
+ .
+ Key features:
+ .
+  * receive and send RFC3164 and RFC5424 style syslog messages
+  * work with any kind of unstructured data
+  * receive and send JSON formatted messages
+  * classify and structure logs with builtin parsers (csv-parser(),
+    db-parser(), etc.)
+  * normalize, crunch and process logs as they flow through the system
+  * hand on messages for further processing using message queues (like
+    AMQP), files or databases (like PostgreSQL or MongoDB).
+ .
+ This package provides the Riemann destination, allowing one to push
+ events to a Riemann server from within syslog-ng.
+
+Package: syslog-ng-mod-graphite
+Architecture: any
+Multi-Arch: foreign
+Depends: syslog-ng-core (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
+Suggests: graphite-web
+Description: Enhanced system logging daemon (graphite plugin)
+ syslog-ng is an enhanced log daemon, supporting a wide range of input
+ and output methods: syslog, unstructured text, message queues,
+ databases (SQL and NoSQL alike) and more.
+ .
+ Key features:
+ .
+  * receive and send RFC3164 and RFC5424 style syslog messages
+  * work with any kind of unstructured data
+  * receive and send JSON formatted messages
+  * classify and structure logs with builtin parsers (csv-parser(),
+    db-parser(), etc.)
+  * normalize, crunch and process logs as they flow through the system
+  * hand on messages for further processing using message queues (like
+    AMQP), files or databases (like PostgreSQL or MongoDB).
+ .
+ This package provides the graphite plugin, that adds a new template
+ function, $(graphite-output), which makes it possible to easily send
+ metrics to Graphite from within syslog-ng.
