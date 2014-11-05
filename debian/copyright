@@ -141,9 +141,14 @@ License: BSD-3-clause
 
 Files: modules/afmongodb/*
        modules/afsmtp/*
-       modules/json/*
-       modules/linux-kmsg-format/
-       modules/system-source/
+       modules/afsocket/unix-credentials.*
+       modules/json/json-parser.*
+       modules/json/json-parser-parser.*
+       modules/json/json-plugin.*
+       modules/json/tests/test_format_json.c
+       modules/linux-kmsg-format/*
+       modules/riemann/*
+       modules/system-source/*
 Copyright: Copyright (c) BalaBit IT Ltd.
            Copyright (C) Gergely Nagy
 License: GPL-2+ with OpenSSL exception
@@ -151,6 +156,19 @@ License: GPL-2+ with OpenSSL exception
 Files: modules/afmongodb/libmongo-client/*
 Copyright: Copyright (C) Gergely Nagy
 License: Apache-2.0
+
+Files: modules/afsocket/systemd-syslog-source.*
+Copyright: Copyright (C) BalaBit IT Ltd.
+           Copyright (C) Tibor Benke
+           Copyright (C) Balázs Scheidler
+License: GPL-2+ with OpenSSL exception
+
+Files: modules/afsocket/transport-unix-socket.c
+       modules/basicfuncs/cond-funcs.c
+Copyright: Copyright (C) BalaBit IT Ltd.
+           Copyright (C) Gergely Nagy
+           Copyright (C) Balázs Scheidler
+License: GPL-2+ with OpenSSL exception
 
 Files: modules/afstomp/*
 Copyright: Copyright (C) Nagy, Attila <bra@fsn.hu>
@@ -160,6 +178,12 @@ License: GPL-2+ with OpenSSL exception
 
 Files: modules/afstomp/stomp.*
 Copyright: Copyright (C) Viktor Tusa
+License: GPL-2+ with OpenSSL exception
+
+Files: modules/basicfuncs/str-funcs.c
+Copyright: Copyright (C) BalaBit IT Ltd.
+           Copyright (C) Viktor Tusa
+           Copyright (C) Balázs Scheidler
 License: GPL-2+ with OpenSSL exception
 
 Files: modules/redis/*
@@ -178,17 +202,24 @@ Copyright: Copyright (C) Péter Gyöngyösi
            Copyright (C) BalaBit IT Security Ltd.
 License: GPL-2+ with OpenSSL exception
 
+Files: modules/graphite/*
+Copyright: Copyright (C) BalaBit IT Ltd.
+           Copyright (C) Viktor Tusa
+License: GPL-2+ with OpenSSL exception
+
 Files: modules/json/format-json.c
 Copyright: Copyright (c) BalaBit IT Ltd.
            Copyright (C) Balint Kovacs
            Copyright (C) Gergely Nagy
 License: GPL-2+ with OpenSSL exception
 
-Files: modules/tfgeoip/*
+Files: modules/systemd-journal/*
 Copyright: Copyright (C) BalaBit IT Security Ltd.
+           Viktor Juhasz
 License: GPL-2+ with OpenSSL exception
 
-Files: scl/*
+Files: modules/tfgeoip/*
+       scl/*
 Copyright: Copyright (C) BalaBit IT Security Ltd.
 License: GPL-2+ with OpenSSL exception
 
