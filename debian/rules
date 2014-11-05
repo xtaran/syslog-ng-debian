@@ -92,6 +92,7 @@ override_dh_auto_configure:
 		--enable-mongodb \
 		--enable-json \
 		--enable-systemd \
+		--enable-riemann \
 		\
 		--with-libmongo-client=system \
 		--with-ivykis=system \
