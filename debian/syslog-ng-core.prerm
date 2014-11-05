@@ -7,10 +7,6 @@ if [ -x "/usr/bin/deb-systemd-invoke" ] && [ "$1" = remove ]; then
 	deb-systemd-invoke stop syslog.socket || true
 fi
 
-if [ -x "/etc/init.d/syslog-ng" ] && [ "$1" = remove ]; then
-	invoke-rc.d syslog-ng stop || exit $?
-fi
-
 #DEBHELPER#
 
 exit 0

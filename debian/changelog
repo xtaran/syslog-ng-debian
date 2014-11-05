@@ -5,6 +5,26 @@ syslog-ng (3.6.0~alpha1-1) experimental; urgency=medium
 
  -- Gergely Nagy <algernon@madhouse-project.org>  Thu, 31 Jul 2014 12:30:12 +0200
 
+syslog-ng (3.5.6-2) unstable; urgency=high
+
+  [ Gergely Nagy <algernon@madhouse-project.org> ]
+  * Use dh_installinit --restart-after-upgrade instead of hand-coding
+    essentially the same thing, badly.
+  * Urgency high, as this moderates the effect of #757903.
+
+ -- Gergely Nagy <algernon@madhouse-project.org>  Wed, 13 Aug 2014 13:57:15 +0200
+
+syslog-ng (3.5.6-1) unstable; urgency=high
+
+  [ Gergely Nagy <algernon@madhouse-project.org> ]
+  * New upstream release, fixing a major memory leak (thus the urgency)
+  * Loosen the shlibs dependency on syslog-ng-core, so that
+    syslog-ng-incubator need not be rebuilt for every single syslog-ng
+    upload.
+  * Fixed a typo in debian/rules.
+
+ -- Gergely Nagy <algernon@madhouse-project.org>  Mon, 11 Aug 2014 11:07:34 +0200
+
 syslog-ng (3.5.5-2) unstable; urgency=high
 
   [ Gergely Nagy <algernon@madhouse-project.org> ]

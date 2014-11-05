@@ -1,7 +1,7 @@
 #! /usr/bin/make -f
 ## debian/rules file for syslog-ng 3.3+
 ## (C) 2010-2012 Laszlo Boszormenyi (GCS) <gcs@debian.hu>
-## (C) 2011-2013 Gergely Nagy <algernon@madhouse-project.org>
+## (C) 2011-2014 Gergely Nagy <algernon@madhouse-project.org>
 ##
 ## Released under the GPLv2+, see /usr/share/common-licenses/GPL-2 on
 ## Debian systems.
@@ -41,13 +41,20 @@ UMAJOR		   = $(shell dpkg-parsechangelog | sed -n '/^Version:/s/^Version: //p' |
 # case, use the current directory as the source dir.
 SRCDIR	   	   = $(shell test -d syslog-ng-${UMAJOR} && echo syslog-ng-${UMAJOR} || echo .)
 
+# To better support the Incubator, and have looser dependencies, we
+# track the ABI version here. The aim is to produce a dependency of
+# syslog-ng (>= 3.5.5~), syslog-ng (<< 3.5.6~). We can't get looser
+# than that, because the module directory *will* change.
+ABI_VERSION_LOW	   = $(shell dpkg-parsechangelog | sed -n '/^Version:/s/^Version: //p' | cut -d- -f1)
+ABI_VERSION_HIGH   = $(shell echo $$(echo ${ABI_VERSION_LOW} | rev | cut -d. -f2- | rev).$$(expr $$(echo ${ABI_VERSION_LOW} | rev | cut -d. -f1) + 1))
+
 export DH_OPTIONS += -O-Bdebian/build-tree --dbg-package=syslog-ng-dbg -O-D${SRCDIR}
 
 CFLAGS		?= $(shell dpkg-buildflags --get CFLAGS)
 LDFLAGS		?= $(shell dpkg-buildflags --get LDFLAGS)
 
 # If debian/control does not have a build-dependency on
-# libsystemd-daemon, enable systemd support, otherwise not.
+# libsystemd-daemon, disable systemd support, otherwise enable it.
 ifeq ($(shell grep -q libsystemd-daemon-dev debian/control || echo disabled),disabled)
 SYSTEMD_SUPPORT	?= --disable-systemd
 else
@@ -210,7 +217,7 @@ override_dh_installchangelogs:
 # triggered by dpkg triggers, so the maintainer scripts should not
 # stop, start or reload syslog-ng anymore.
 override_dh_installinit:
-	dh_installinit --no-start --name syslog-ng -- defaults 10 90
+	dh_installinit --name syslog-ng --restart-after-upgrade
 
 # Logrotate and Logcheck files were moved from syslog-ng to
 # syslog-ng-core too, and like in init's case, we want to keep the old
@@ -227,9 +234,13 @@ override_dh_installlogcheck:
 # directory. On the other hand, we do want correct dependencies on
 # anything that build-depends on syslog-ng-dev, so lets make a correct
 # shlibs file for that, shall we?
+#
+# See the comment at the top of this file about ABI_VERSION, which
+# explains how the dependency is calculated.
 override_dh_makeshlibs:
 ifneq (,$(filter syslog-ng-core,$(shell dh_listpackages)))
-	dh_makeshlibs -V "syslog-ng-core (= $(shell dpkg-parsechangelog | grep '^Version:' | cut -d: -f2))" -n -Xusr/lib/syslog-ng/$(shell cat ${SRCDIR}/VERSION)
+	dh_makeshlibs -V "syslog-ng-core (>= ${ABI_VERSION_LOW}~), syslog-ng-core (<< ${ABI_VERSION_HIGH}~)" \
+		      -n -Xusr/lib/syslog-ng/$(shell cat ${SRCDIR}/VERSION)
 else
 	dh_makeshlibs -n -Xusr/lib/syslog-ng/$(shell cat ${SRCDIR}/VERSION)
 endif
