@@ -4,8 +4,9 @@ syslog-ng (3.6.1-1) experimental; urgency=low
   * New upstream stable release.
   * Standards-Version bumped to 3.9.6 (no changes necessary).
   * Homepage changed to www.syslog-ng.org.
+  * Updated copyrights in debian/copyright.
 
- -- Gergely Nagy <algernon@madhouse-project.org>  Wed, 05 Nov 2014 08:46:11 +0100
+ -- Gergely Nagy <algernon@madhouse-project.org>  Wed, 05 Nov 2014 09:20:50 +0100
 
 syslog-ng (3.6.0~alpha1-1) experimental; urgency=medium
 
