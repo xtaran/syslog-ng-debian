@@ -1,7 +1,6 @@
 *~
 /debian/autoreconf.*
 /debian/build-tree/
-/debian/control
 /debian/files
 /debian/*debhelper*
 /debian/*substvars
