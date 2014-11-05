@@ -74,9 +74,7 @@ override_dh_autoreconf:
 override_dh_auto_configure:
 	install -d debian/build-tree
 	SOURCE_REVISION="$(shell dpkg-parsechangelog | \
-			  sed -n "/^Version:/s/^Version: //p" | \
-			  sed -e "s,$$,$(shell cat debian/source_revision 2>/dev/null || true)," | \
-			  sed -e "s,$$, ($(shell lsb_release -is)/$(shell lsb_release -rs)),")"; \
+			  sed -n '/^Version:/s/^Version: //p')"; \
 	dh_auto_configure -- \
 		--build=$(dpkg-architecture -qDEB_BUILD_GNU_TYPE) \
 		--prefix=/usr \
@@ -246,27 +244,6 @@ override_dh_gencontrol:
 # twice. It would also fail if no build-deps were installed (since the
 # package has no build-dep-indeps, rightly so).
 build-indep: ;
-
-# We get the original source by calling an external tool, that will do
-# the heavy lifting for us.
-get-orig-source:
-	debian/tools/get-orig-source.sh
-
-# Provide a short interface to export-source.sh
-export-source:
-	debian/tools/export-source.sh
-
-# Without control, we are useless, politely tell the user to be our
-# good master.
-debian/control:
-	@echo "===============================================================" >&2
-	@echo "There is no debian/control, so this is probably a git checkout." >&2
-	@echo "Please run debian/tools/bootstrap.sh!" >&2
-	@echo "===============================================================" >&2
-	@exit 1
-
-binary binary-arch binary-indep build build-arch build-indep clean \
-install install-arch install-indep: debian/control
 
 # And for the rest, there is debhelper!
 %:
