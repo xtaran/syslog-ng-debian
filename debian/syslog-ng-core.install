@@ -23,4 +23,4 @@ usr/share/syslog-ng/xsd/*
 
 debian/syslog-ng.conf                   /etc/syslog-ng/
 
-contrib/systemd/syslog-ng.service       /lib/systemd/system/
+syslog-ng-3.6/contrib/systemd/syslog-ng.service       /lib/systemd/system/
