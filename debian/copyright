@@ -3,11 +3,11 @@ Upstream-Name: syslog-ng
 Upstream-Contact: Syslog-ng users' and developers' mailing list <syslog-ng@lists.balabit.hu>
 Source: git://github.com/balabit/syslog-ng.git
 Copyright: Copyright (C) Balázs Scheidler
- Copyright (C) BalaBit IT Security Ltd.
+           Copyright (C) BalaBit IT Security Ltd.
 
 Files: *
 Copyright: Copyright (C) Balázs Scheidler
- Copyright (C) BalaBit IT Security Ltd.
+           Copyright (C) BalaBit IT Security Ltd.
 License: GPL-2+ with OpenSSL exception
 
 Files: lib/*
@@ -15,7 +15,7 @@ Files: lib/*
        syslog-ng/*
        syslog-ng-ctl/*
 Copyright: Copyright (C) Balázs Scheidler
- Copyright (C) BalaBit IT Security Ltd.
+           Copyright (C) BalaBit IT Security Ltd.
 License: LGPL-2.1+ with OpenSSL exception
 
 Files: lib/ack-tracker.h
@@ -24,7 +24,7 @@ Files: lib/ack-tracker.h
        lib/late_ack_tracker.c
        lib/ringbuffer.*
 Copyright: Copyright (C) BalaBit IT Ltd.
- Copyright (C) Laszlo Budai
+           Copyright (C) Laszlo Budai
 License: LGPL-2.1+ with OpenSSL exception
 
 Files: lib/filter/filter-in-list.*
@@ -37,7 +37,7 @@ Files: lib/filter/filter-in-list.*
        lib/vptransform.*
        scl/graphite/*
 Copyright: Copyright (C) BalaBit IT Security Ltd.
- Copyright (C) Gergely Nagy
+           Copyright (C) Gergely Nagy
 License: LGPL-2.1+ with OpenSSL exception
 
 Files: lib/pathutils.*
@@ -50,27 +50,27 @@ Files: lib/pathutils.*
        lib/tests/test_runid.c
        libtest/config_parse_lib.*
 Copyright: Copyright (C) BalaBit IT Security Ltd.
- Copyright (C) Viktor Tusa
- Copyright (C) Viktor Juhasz
+           Copyright (C) Viktor Tusa
+           Copyright (C) Viktor Juhasz
 License: LGPL-2.1+ with OpenSSL exception
 
 Files: lib/persistable-state-header.h
 Copyright: Copyright (C) BalaBit IT Security Ltd.
- Copyright (C) Viktor Tusa
- Copyright (C) Viktor Juhasz
- Copyright (C) Balázs Scheidler
+           Copyright (C) Viktor Tusa
+           Copyright (C) Viktor Juhasz
+           Copyright (C) Balázs Scheidler
 License: LGPL-2.1+ with OpenSSL exception
 
 Files: lib/rewrite/rewrite-groupset.h
        libtest/persist_lib.*
 Copyright: Copyright (C) BalaBit IT Security Ltd.
- Copyright (C) Viktor Tusa
+           Copyright (C) Viktor Tusa
 License: LGPL-2.1+ with OpenSSL exception
 
 Files: lib/uuid.*
 Copyright: Copyright (C) BalaBit IT Security Ltd.
- Copyright (C) Balázs Scheidler
- Copyright (C) Gergely Nagy
+           Copyright (C) Balázs Scheidler
+           Copyright (C) Gergely Nagy
 License: LGPL-2.1+ with OpenSSL exception
 
 Files: lib/cache.*
@@ -117,13 +117,13 @@ License: ivykis-man
 
 Files: modules/*
 Copyright: Copyright (C) Balázs Scheidler
- Copyright (C) BalaBit IT Security Ltd.
+           Copyright (C) BalaBit IT Security Ltd.
 License: GPL-2+ with OpenSSL exception
 
 Files: modules/afamqp/*
 Copyright: Copyright (C) BalaBit IT Security Ltd.
- Copyright (C) Nagy, Attila <bra@fsn.hu>
- Copyright (C) Gergely Nagy
+           Copyright (C) Nagy, Attila <bra@fsn.hu>
+           Copyright (C) Gergely Nagy
 License: GPL-2+ with OpenSSL exception
 
 Files: modules/afamqp/rabbitmq-c/*
@@ -135,17 +135,17 @@ Copyright: Copyright (C) VMWare, Inc.
 License: MPL
 
 Files: modules/afamqp/rabbitmq-c/librabbitmq/win32/msinttypes/stdint.h
- modules/afamqp/rabbitmq-c/tests/win32/msinttypes/inttypes.h
+       modules/afamqp/rabbitmq-c/tests/win32/msinttypes/inttypes.h
 Copyright: Copyright (C) Alexander Chemeris
 License: BSD-3-clause
 
 Files: modules/afmongodb/*
- modules/afsmtp/*
- modules/json/*
- modules/linux-kmsg-format/
- modules/system-source/
+       modules/afsmtp/*
+       modules/json/*
+       modules/linux-kmsg-format/
+       modules/system-source/
 Copyright: Copyright (c) BalaBit IT Ltd.
- Copyright (C) Gergely Nagy
+           Copyright (C) Gergely Nagy
 License: GPL-2+ with OpenSSL exception
 
 Files: modules/afmongodb/libmongo-client/*
@@ -154,8 +154,8 @@ License: Apache-2.0
 
 Files: modules/afstomp/*
 Copyright: Copyright (C) Nagy, Attila <bra@fsn.hu>
- Copyright (C) BalaBit IT Ltd.
- Copyright (C) Viktor Tusa
+           Copyright (C) BalaBit IT Ltd.
+           Copyright (C) Viktor Tusa
 License: GPL-2+ with OpenSSL exception
 
 Files: modules/afstomp/stomp.*
@@ -164,24 +164,24 @@ License: GPL-2+ with OpenSSL exception
 
 Files: modules/redis/*
 Copyright: Copyright (C) Tihamer Petrovics <tihameri@gmail.com>
- Copyright (C) BalaBit IT Ltd.
+           Copyright (C) BalaBit IT Ltd.
 License: GPL-2+ with OpenSSL exception
 
 Files: modules/cryptofuncs/*
 Copyright: Copyright (c) BalaBit IT Ltd.
- Copyright (C) Gergely Nagy
- Copyright (C) Peter Gyongyosi
+           Copyright (C) Gergely Nagy
+           Copyright (C) Peter Gyongyosi
 License: GPL-2+ with OpenSSL exception
 
 Files: modules/dbparser/patternize.*
 Copyright: Copyright (C) Péter Gyöngyösi
- Copyright (C) BalaBit IT Security Ltd.
+           Copyright (C) BalaBit IT Security Ltd.
 License: GPL-2+ with OpenSSL exception
 
 Files: modules/json/format-json.c
 Copyright: Copyright (c) BalaBit IT Ltd.
- Copyright (C) Balint Kovacs
- Copyright (C) Gergely Nagy
+           Copyright (C) Balint Kovacs
+           Copyright (C) Gergely Nagy
 License: GPL-2+ with OpenSSL exception
 
 Files: modules/tfgeoip/*
@@ -202,7 +202,7 @@ License: GPL-2+ with OpenSSL exception
 
 Files: debian/*
 Copyright: Copyright (C) 2011-2014 Gergely Nagy <algernon@madhouse-project.org>,
- Copyright (C) 2010-2012 Laszlo Boszormenyi (GCS) <gcs@debian.hu>
+           Copyright (C) 2010-2012 Laszlo Boszormenyi (GCS) <gcs@debian.hu>
 License: GPL-2+
 
 License: GPL-2+
