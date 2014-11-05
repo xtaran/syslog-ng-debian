@@ -57,13 +57,9 @@ LDFLAGS		?= $(shell dpkg-buildflags --get LDFLAGS)
 #* Overrides for dh_auto*
 ##
 
-# Autoreconf needs a few things:
-# - m4 directories for the submodules, because otherwise it can
-#   randomly fail.
-# - We need to call autogen.sh instead of autoreconf.
+# We need to call autogen.sh instead of autoreconf.
 override_dh_autoreconf:
-	install -d ${SRCDIR}/lib/ivykis/m4 ${SRCDIR}/modules/afmongodb/libmongo-client/m4 \
-		debian/build-tree/modules/afamqp/rabbitmq-c/librabbitmq
+	[ -e "${SRCDIR}/autogen.sh" ] || git submodule update --init --recursive
 	dh_autoreconf -- sh -c "cd ${SRCDIR} && ./autogen.sh"
 
 # Oh, the joys of configure!
@@ -104,8 +100,11 @@ override_dh_auto_configure:
 		${EXTRA_CONFIGURE_OPTS}
 
 # Building is fine, but the manpages need some sed work, to replace
-# /opt/syslog-ng with something sensible.
+# /opt/syslog-ng with something sensible. And unfortunately,
+# rabbitmq-c is a bit broken, so we need to create a directory for it
+# too.
 override_dh_auto_build:
+	install -d debian/build-tree/modules/afamqp/rabbitmq-c/librabbitmq
 	dh_auto_build -- V=1
 	for f in debian/build-tree/doc/man/*; do \
 		sed -e "s#/opt/syslog\\\-ng/etc#/etc/syslog-ng#g" \
