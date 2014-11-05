@@ -240,11 +240,6 @@ override_dh_gencontrol:
 #* Other, non-override targets
 ##
 
-# Dummy build thingy, to work around upstream build/ dir.
-build: build-stamp
-build-stamp:
-.PHONY: build-stamp
-
 # By default, the arch:all syslog-ng package does not need anything
 # built, so build-indep shall be empty. This avoids triggering another
 # build attempt, which would fail due to autoreconf being run
