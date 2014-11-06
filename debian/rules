@@ -64,9 +64,7 @@ override_dh_autoreconf:
 
 # Oh, the joys of configure!
 # We pass down all appropriate options, along with EXTRA_CONFIGURE_OPTS.
-# This also sets SOURCE_REVISION to the debian package version, plus
-# some other stuff that we keep in debian/source_revision (generated
-# by debian/tools/bootstrap.sh).
+# This also sets SOURCE_REVISION to the debian package version.
 override_dh_auto_configure:
 	install -d debian/build-tree
 	SOURCE_REVISION="$(shell dpkg-parsechangelog | \
