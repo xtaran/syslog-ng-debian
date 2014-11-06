@@ -125,25 +125,6 @@ override_dh_auto_install:
 # disabled.
 override_dh_auto_test:
 
-# Cleaning is another fun thing: make distclean will not remove
-# everything we want to remove (ie, everything generated, no
-# exceptions). So we do a bit of finding and remove a few things it
-# missed. We also remove the m4 directories we created for autoreconf
-# earlier.
-override_dh_auto_clean:
-	dh_auto_clean
-	find . \( -name 'Makefile.in' -or \
-		  -name 'aclocal.m4' -or \
-		  -name 'configure' -or \
-		  -name 'depcomp' -or -name 'missing' -or \
-		  -name 'install-sh' -or -name 'ltmain.sh' -or \
-		  -name 'ylwrap' -or \
-		  -regex '.*/config\.\(sub\|guess\|h\.in\)' \) \
-	     -exec rm '{}' \;
-	rm -f ${SRCDIR}/m4/lt*.m4 ${SRCDIR}/m4/libtool.m4 ${SRCDIR}/m4/pkg.m4
-	rm -rf ${SRCDIR}/lib/ivykis/m4 ${SRCDIR}/modules/afmongodb/libmongo-client/m4
-	rm -rf debian/build-tree/
-
 ##
 #* Overrides for other debhelper commands
 #
