@@ -117,7 +117,8 @@ Multi-Arch: foreign
 Depends: ${shlibs:Depends}, ${misc:Depends}, util-linux (>= 2.12-10)
 Recommends: logrotate
 Suggests: ${sng:CoreModules}, ${sng:Modules}
-Provides: system-log-daemon, linux-kernel-log-daemon, libsyslog-ng-dev
+Provides: system-log-daemon, linux-kernel-log-daemon, libsyslog-ng-dev,
+ syslog-ng-abi-${sng:ABI}
 Conflicts: system-log-daemon, linux-kernel-log-daemon
 Replaces: syslog-ng (<< 3.3.0~), libsyslog-ng-dev
 Breaks: syslog-ng (<< 3.3.0~), libsyslog-ng-dev

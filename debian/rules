@@ -42,11 +42,9 @@ UMAJOR		   = $(shell dpkg-parsechangelog | sed -n '/^Version:/s/^Version: //p' |
 SRCDIR	   	   = $(shell test -d syslog-ng-${UMAJOR} && echo syslog-ng-${UMAJOR} || echo .)
 
 # To better support the Incubator, and have looser dependencies, we
-# track the ABI version here. The aim is to produce a dependency of
-# syslog-ng (>= 3.5.5~), syslog-ng (<< 3.5.6~). We can't get looser
-# than that, because the module directory *will* change.
-ABI_VERSION_LOW	   = $(shell dpkg-parsechangelog | sed -n '/^Version:/s/^Version: //p' | cut -d- -f1)
-ABI_VERSION_HIGH   = $(shell echo $$(echo ${ABI_VERSION_LOW} | rev | cut -d. -f2- | rev).$$(expr $$(echo ${ABI_VERSION_LOW} | rev | cut -d. -f1) + 1))
+# track the ABI version here. Whenever the soname of libsyslog-ng
+# changes, up this one too!
+ABI_VERSION	   = 3.6-0
 
 export DH_OPTIONS += -O-Bdebian/build-tree --dbg-package=syslog-ng-dbg -O-D${SRCDIR}
 
@@ -91,7 +89,7 @@ override_dh_auto_configure:
 		--with-libmongo-client=system \
 		--with-ivykis=system \
 		\
-		--with-module-dir='$${exec_prefix}/lib/syslog-ng/$${VERSION}' \
+		--with-module-dir='$${exec_prefix}/lib/syslog-ng/${UMAJOR}' \
 		--with-systemdsystemunitdir="/lib/systemd/system" \
 		\
 		SOURCE_REVISION="$${SOURCE_REVISION}" \
@@ -195,10 +193,10 @@ override_dh_installlogcheck:
 # explains how the dependency is calculated.
 override_dh_makeshlibs:
 ifneq (,$(filter syslog-ng-core,$(shell dh_listpackages)))
-	dh_makeshlibs -V "syslog-ng-core (>= ${ABI_VERSION_LOW}~), syslog-ng-core (<< ${ABI_VERSION_HIGH}~)" \
-		      -n -Xusr/lib/syslog-ng/$(shell cat ${SRCDIR}/VERSION)
+	dh_makeshlibs -V "syslog-ng-abi-${ABI_VERSION}" \
+		      -n -Xusr/lib/syslog-ng/${UMAJOR}
 else
-	dh_makeshlibs -n -Xusr/lib/syslog-ng/$(shell cat ${SRCDIR}/VERSION)
+	dh_makeshlibs -n -Xusr/lib/syslog-ng/${UMAJOR}
 endif
 
 # Since syslog-ng depends on all the modules, and syslog-ng-core
@@ -209,7 +207,8 @@ endif
 # part of syslog-ng (or it depended on them) previously, in 3.3.
 override_dh_gencontrol:
 	dh_gencontrol -- -Vsng:Modules=$(shell debian/tools/list-modules.sh optional) \
-			 -Vsng:CoreModules=$(shell debian/tools/list-modules.sh core)
+			 -Vsng:CoreModules=$(shell debian/tools/list-modules.sh core) \
+			 -Vsng:ABI=${ABI_VERSION}
 
 ##
 #* Other, non-override targets
