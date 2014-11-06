@@ -116,11 +116,6 @@ override_dh_auto_build:
 override_dh_auto_install:
 	dh_auto_install -- pkgconfigdir=/usr/lib/pkgconfig
 
-# Tests. While tests are good, they're quite costy, and I'm not
-# convinced they'd run on the buildds at all. Therefore, they're
-# disabled.
-override_dh_auto_test:
-
 ##
 #* Overrides for other debhelper commands
 #
