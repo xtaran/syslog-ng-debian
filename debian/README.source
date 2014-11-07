@@ -21,21 +21,20 @@ up, namely:
    derived distributions, provided they have recent enough
    build-dependencies.
 
- * Running a `debian/rules build` from a freshly checked out git
-   repository should produce binary packages, provided
-   build-dependencies are met.
-
  * We want a branch for each Debian (or Ubuntu) release, where the
    package is actively maintained. This includes Debian *unstable* and
    *experimental* too.
 
+ * Running `git-buildpackage` from a freshly checked out git
+   repository should produce source and binary packages suitable for
+   the main archive.
+
 For these reasons, this repository contains the `debian/` directory
-only, and the appropriate syslog-ng release as a submodule (for the
-sake of convenience, and to be able to tag a debian version). The
-branches are all prefixed with the vendor (`debian/` or `ubuntu/`),
-followed by the release (`unstable`, `experimental`, `jessie`, and so
-on). Any other branch that may be present is likely a temporary
-branch.
+only, which will be laid over the upstream sources using
+`git-buildpackage`. The branches are all prefixed with the vendor
+(`debian/` or `ubuntu/`), followed by the release (`unstable`,
+`experimental`, `jessie`, and so on). Any other branch that may be
+present is likely a temporary branch.
 
 Packaging quirks
 ----------------
@@ -43,22 +42,6 @@ Packaging quirks
 Most of the quirks we do happen in `debian/rules`, and they're also
 documented there. If there is conflict between this document and
 `debian/rules`, the latter is to be trusted.
-
-### Source layout magic
-
-There are two ways the packaging can be laid out on top of upstream
-sources: either directly on top of it (in which case the upstream
-sources are in the same directory as `debian/`), or with the upstream
-sources in a `syslog-ng-3.6/` subdirectory.
-
-To support both, `debian/rules` sets the **SRCDIR** make variable to
-the appropriate value, depending on whether the syslog-ng subdirectory
-exists. This is then used in every place where we work with the source
-directory. Most often, this happens through debhelper, therefore we
-add a `-D${SRCDIR}` option to **DH_OPTIONS**.
-
-We are also building in a separate build directory, and that is set in
-the same variable too.
 
 ### Maintainer scripts
 
@@ -149,41 +132,17 @@ the ABI with a `Provides` field. Whenever the version of
 Building the package
 --------------------
 
-There are multiple, valid ways to build binaries from these sources,
-but not all of them produce acceptable source packages.
+The easiest way is to use `debian/rules get-orig-source` followed by
+`git-buildpackage`. That will fetch the latest upstream sources, and
+then build both binary and source packages.
 
-For local testing and work, the easiest is to just build from a git
-checkout as it is. Running `dpkg-buildpackage -b`, or `fakeroot
-debian/rules binary` will yield perfectly valid binaries. But building
-a source package from this setup is **NOT** supported, because the
-source layout is different, so diffing against upstream will fail.
+If one wants to work with an unreleased version of syslog-ng, then
+copying the `debian/` directory over, replacing the original will
+allow one to use `dpkg-buildpackage -b` or `fakeroot debian/rules
+binary` to produce binary packages. Building source packages from this
+setup is not recommended.
 
-Another way - which is recommended for those who want to distribute
-the resulting binaries and want to build a source package too - is to
-take an upstream tarball (use `debian/rules get-orig-source` to do
-this automatically), and replace its `debian/` directory with the one
-from this repository. Running `dpkg-buildpackage` from there will not
-only produce binaries, but a source package suitable for Debian's main
-archive, too!
-
-A third way, most suitable for upstream work, is to use an upstream
-syslog-ng checkout, and copy the `debian/` directory from here over
-there. That will also produce both source and binary packages, but one
-will need to set up `git-buildpackage` properly too:
-
-```
-[DEFAULT]
-upstream-branch = master
-upstream-tag = syslog-ng-%(version)s
-upstream-tree = tag
-
-debian-branch = debian/experimental
-debian-tag debian/syslog-ng-%(version)s
-
-submodules = True
-```
-
- -- Gergely Nagy <algernon@madhouse-project.org>  Thu, 06 Nov 2014 09:13:03 +0100
+ -- Gergely Nagy <algernon@madhouse-project.org>  Fri, 07 Nov 2014 08:44:36 +0100
 
 <!--
 Local Variables:
