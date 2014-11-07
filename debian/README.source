@@ -149,7 +149,39 @@ the ABI with a `Provides` field. Whenever the version of
 Building the package
 --------------------
 
-<!-- TODO -->
+There are multiple, valid ways to build binaries from these sources,
+but not all of them produce acceptable source packages.
+
+For local testing and work, the easiest is to just build from a git
+checkout as it is. Running `dpkg-buildpackage -b`, or `fakeroot
+debian/rules binary` will yield perfectly valid binaries. But building
+a source package from this setup is **NOT** supported, because the
+source layout is different, so diffing against upstream will fail.
+
+Another way - which is recommended for those who want to distribute
+the resulting binaries and want to build a source package too - is to
+take an upstream tarball (use `debian/rules get-orig-source` to do
+this automatically), and replace its `debian/` directory with the one
+from this repository. Running `dpkg-buildpackage` from there will not
+only produce binaries, but a source package suitable for Debian's main
+archive, too!
+
+A third way, most suitable for upstream work, is to use an upstream
+syslog-ng checkout, and copy the `debian/` directory from here over
+there. That will also produce both source and binary packages, but one
+will need to set up `git-buildpackage` properly too:
+
+```
+[DEFAULT]
+upstream-branch = master
+upstream-tag = syslog-ng-%(version)s
+upstream-tree = tag
+
+debian-branch = debian/experimental
+debian-tag debian/syslog-ng-%(version)s
+
+submodules = True
+```
 
  -- Gergely Nagy <algernon@madhouse-project.org>  Thu, 06 Nov 2014 09:13:03 +0100
 
