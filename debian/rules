@@ -109,7 +109,7 @@ override_dh_auto_configure:
 override_dh_auto_build:
 	install -d debian/build-tree/modules/afamqp/rabbitmq-c/librabbitmq
 	dh_auto_build -- V=1
-	for f in debian/build-tree/doc/man/*; do \
+	-for f in debian/build-tree/doc/man/*; do \
 		sed -e "s#/opt/syslog\\\-ng/etc#/etc/syslog-ng#g" \
 		    -e "s#/opt/syslog\\\-ng##g" \
 		    -e "/affile/{s#,#, #g}" \
