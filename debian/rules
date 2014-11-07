@@ -225,4 +225,4 @@ build-indep: ;
 
 # And for the rest, there is debhelper!
 %:
-	dh $@ --with autoreconf,systemd
+	dh $@ --with autoreconf,systemd --parallel
