@@ -81,6 +81,7 @@ override_dh_auto_configure:
 		--localstatedir=/var/lib/syslog-ng \
 		--datadir=/usr/share/syslog-ng \
 		--libdir=/usr/lib/syslog-ng \
+		--disable-silent-rules \
 		\
 		--enable-dynamic-linking \
 		--enable-ssl \
