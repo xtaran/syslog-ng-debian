@@ -154,6 +154,11 @@ endif
 # We also want to install the tty10.conf file into syslog-ng-core.
 # Since that depends on the architecture, we're installing it from
 # here.
+#
+# Also, we want to install the systemd service file here. We do that
+# here and not in syslog-ng-core.install because it is not installed
+# by make install, and its location may vary depending on whether
+# we're building with submodule or in-tree sources.
 override_dh_install:
 	dh_install
 ifneq (,$(filter syslog-ng-dev,$(shell dh_listpackages)))
@@ -162,6 +167,8 @@ endif
 ifneq (,$(filter syslog-ng-core,$(shell dh_listpackages)))
 	install -m 0644 debian/${TTY10_CONF} \
 			debian/syslog-ng-core/usr/share/syslog-ng/include/scl/system/tty10.conf
+	install -m 0644 ${SRCDIR}/contrib/systemd/syslog-ng.service \
+			debian/syslog-ng-core/lib/systemd/system
 endif
 
 # Install the NEWS file as upstream changelog.
