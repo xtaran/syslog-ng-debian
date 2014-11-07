@@ -55,9 +55,15 @@ LDFLAGS		?= $(shell dpkg-buildflags --get LDFLAGS)
 #* Overrides for dh_auto*
 ##
 
+# We want to enforce submodules being present, for when we're building
+# from a git checkout. For dpkg-buildpackage -S to work, this needs to
+# be done at clean time.
+override_dh_auto_clean:
+	[ -e "${SRCDIR}/autogen.sh" ] || git submodule update --init --recursive
+	dh_auto_clean
+
 # We need to call autogen.sh instead of autoreconf.
 override_dh_autoreconf:
-	[ -e "${SRCDIR}/autogen.sh" ] || git submodule update --init --recursive
 	dh_autoreconf -- sh -c "cd ${SRCDIR} && ./autogen.sh"
 
 # Oh, the joys of configure!
