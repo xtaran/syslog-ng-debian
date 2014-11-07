@@ -64,7 +64,7 @@ override_dh_auto_clean:
 
 # We need to call autogen.sh instead of autoreconf.
 override_dh_autoreconf:
-	dh_autoreconf -- sh -c "cd ${SRCDIR} && ./autogen.sh"
+	[ -e "${SRCDIR}/configure" ] || dh_autoreconf -- sh -c "cd ${SRCDIR} && ./autogen.sh"
 
 # Oh, the joys of configure!
 # We pass down all appropriate options, along with EXTRA_CONFIGURE_OPTS.
