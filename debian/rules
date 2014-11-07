@@ -35,18 +35,13 @@ endif
 # update the rules for every major version if it can be helped, figure
 # it out from the changelog instead.
 UMAJOR		   = $(shell dpkg-parsechangelog | sed -n '/^Version:/s/^Version: //p' | cut -d. -f1,2)
-# Furthermore, if the directory does not exist, lets suppose we're not
-# building from a git checkout, but some kind of tarball-thing, where
-# debian/ was laid out on top of the upstream sources. So in this
-# case, use the current directory as the source dir.
-SRCDIR	   	   = $(shell test -d syslog-ng-${UMAJOR} && echo syslog-ng-${UMAJOR} || echo .)
 
 # To better support the Incubator, and have looser dependencies, we
 # track the ABI version here. Whenever the soname of libsyslog-ng
 # changes, up this one too!
 ABI_VERSION	   = 3.6-0
 
-export DH_OPTIONS += -O-Bdebian/build-tree --dbg-package=syslog-ng-dbg -O-D${SRCDIR}
+export DH_OPTIONS += -O-Bdebian/build-tree --dbg-package=syslog-ng-dbg
 
 CFLAGS		?= $(shell dpkg-buildflags --get CFLAGS)
 LDFLAGS		?= $(shell dpkg-buildflags --get LDFLAGS)
@@ -55,16 +50,9 @@ LDFLAGS		?= $(shell dpkg-buildflags --get LDFLAGS)
 #* Overrides for dh_auto*
 ##
 
-# We want to enforce submodules being present, for when we're building
-# from a git checkout. For dpkg-buildpackage -S to work, this needs to
-# be done at clean time.
-override_dh_auto_clean:
-	[ -e "${SRCDIR}/autogen.sh" ] || git submodule update --init --recursive
-	dh_auto_clean
-
 # We need to call autogen.sh instead of autoreconf.
 override_dh_autoreconf:
-	[ -e "${SRCDIR}/configure" ] || dh_autoreconf -- sh -c "cd ${SRCDIR} && ./autogen.sh"
+	[ -e "configure" ] || dh_autoreconf -- sh -c "./autogen.sh"
 
 # Oh, the joys of configure!
 # We pass down all appropriate options, along with EXTRA_CONFIGURE_OPTS.
@@ -154,11 +142,6 @@ endif
 # We also want to install the tty10.conf file into syslog-ng-core.
 # Since that depends on the architecture, we're installing it from
 # here.
-#
-# Also, we want to install the systemd service file here. We do that
-# here and not in syslog-ng-core.install because it is not installed
-# by make install, and its location may vary depending on whether
-# we're building with submodule or in-tree sources.
 override_dh_install:
 	dh_install
 ifneq (,$(filter syslog-ng-dev,$(shell dh_listpackages)))
@@ -167,15 +150,13 @@ endif
 ifneq (,$(filter syslog-ng-core,$(shell dh_listpackages)))
 	install -m 0644 debian/${TTY10_CONF} \
 			debian/syslog-ng-core/usr/share/syslog-ng/include/scl/system/tty10.conf
-	install -m 0644 ${SRCDIR}/contrib/systemd/syslog-ng.service \
-			debian/syslog-ng-core/lib/systemd/system
 endif
 
 # Install the NEWS file as upstream changelog.
 # Rationale: the ChangeLog file is an old artifact from the Arch
 # times. It is not updated, and is obsolete.
 override_dh_installchangelogs:
-	dh_installchangelogs ${SRCDIR}/NEWS.md
+	dh_installchangelogs NEWS.md
 
 # Init files and whatnot were moved to syslog-ng-core, but we want to
 # retain the old filenames.
