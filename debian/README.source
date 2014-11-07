@@ -101,7 +101,22 @@ to maintain the whole.
 
 ### Shared library ABI versions
 
-<!-- TODO -->
+Upstream builds a `libsyslog-ng-$MAJOR.so.$N` shared library, which we
+ship in `syslog-ng-core`, because it is not a general purpose library.
+We also want third party modules (like the ones in the Incubator) to
+not have overly strict dependencies on the syslog-ng version they were
+compiled against. Having to rebuild the Incubator on every syslog-ng
+upload would be a disaster.
+
+For this reason, `syslog-ng-core` provides
+`syslog-ng-abi-$MAJOR-$ABI`, where **$MAJOR** is the major version,
+and **$ABI** is the ABI version: the **$N** part of
+`libsyslog-ng-$MAJOR.so.$N`. Whenever upstream bumps the version, the
+**$ABI** variable in `debian/rules` needs to be bumped too.
+
+If upstream forgets to bump the version, but introduces an
+ABI-incompatible change, it should be bumped anyway, and dependent
+modules will need to be rebuilt.
 
 ### Control variables
 
