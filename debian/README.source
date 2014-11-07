@@ -146,11 +146,6 @@ not have to get recompiled for every single syslog-ng update, we track
 the ABI with a `Provides` field. Whenever the version of
 `libsyslog-ng.so` changes, the ABI version should be updated too.
 
-Development workflow
---------------------
-
-<!-- TODO -->
-
 Building the package
 --------------------
 
