@@ -17,4 +17,5 @@ rm -f \
    syslog-ng.postrm \
    syslog-ng.preinst
 
-touch Makefile.am
+touch -r ../Makefile.am Makefile.am
+touch -r ../Makefile.in Makefile.in
