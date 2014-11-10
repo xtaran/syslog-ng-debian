@@ -6,6 +6,7 @@ syslog-ng (3.6.1-1) experimental; urgency=low
   * Standards-Version bumped to 3.9.6 (no changes necessary).
   * Homepage changed to www.syslog-ng.org.
   * Updated copyrights in debian/copyright.
+  * Dropped the Lintian overrides, they're not needed anymore.
   * Major packaging cleanup:
     + Dropped all triggers, because they're not used anymore (since
       3.5.6-2).
@@ -16,7 +17,7 @@ syslog-ng (3.6.1-1) experimental; urgency=low
     + Use a virtual package for ABI tracking.
     + Switched the packaging to a git-buildpackage compatible workflow.
 
- -- Gergely Nagy <algernon@madhouse-project.org>  Mon, 10 Nov 2014 09:16:23 +0100
+ -- Gergely Nagy <algernon@madhouse-project.org>  Mon, 10 Nov 2014 09:27:55 +0100
 
 syslog-ng (3.6.0~alpha1-1) experimental; urgency=medium
 
