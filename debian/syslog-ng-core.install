@@ -24,5 +24,6 @@ usr/share/syslog-ng/include/scl/rewrite/*
 usr/share/syslog-ng/xsd/*
 
 debian/syslog-ng.conf                   /etc/syslog-ng/
+debian/scl.conf                         /etc/syslog-ng/
 
 contrib/systemd/syslog-ng.service       /lib/systemd/system/
