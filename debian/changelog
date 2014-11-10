@@ -2,13 +2,21 @@ syslog-ng (3.6.1-1) experimental; urgency=low
 
   [ Gergely Nagy <algernon@madhouse-project.org> ]
   * New upstream stable release.
+    + Uploading to experimental, due to the Jessie freeze.
   * Standards-Version bumped to 3.9.6 (no changes necessary).
   * Homepage changed to www.syslog-ng.org.
   * Updated copyrights in debian/copyright.
-  * Dropped all triggers, because they're not used anymore (since
-    3.5.6-2).
+  * Major packaging cleanup:
+    + Dropped all triggers, because they're not used anymore (since
+      3.5.6-2).
+    + Allow parallel building.
+    + Enabled the test suite.
+    + Greatly simplified the packaging, dropping support for ancient
+      distributions like Ubuntu Lucid.
+    + Use a virtual package for ABI tracking.
+    + Switched the packaging to a git-buildpackage compatible workflow.
 
- -- Gergely Nagy <algernon@madhouse-project.org>  Thu, 06 Nov 2014 08:54:21 +0100
+ -- Gergely Nagy <algernon@madhouse-project.org>  Mon, 10 Nov 2014 09:16:23 +0100
 
 syslog-ng (3.6.0~alpha1-1) experimental; urgency=medium
 
