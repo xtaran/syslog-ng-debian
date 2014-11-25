@@ -1,6 +1,8 @@
 #! /bin/sh
 set -e
 
+rm -f README.markdown
+
 cd debian
 
 rm -f \
