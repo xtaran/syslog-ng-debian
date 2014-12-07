@@ -8,8 +8,10 @@ syslog-ng (3.6.1+git20141206-g4d90138) experimental; urgency=low
   * Use an updated systemd service file, that does not pull in
     syslog.socket (we're reading directly from the Journal, and do not
     need the forwarding socket).
+  * Update the Vcs-* fields in debian/control, packaging was moved to a
+    separate repository.
 
- -- Gergely Nagy <algernon@madhouse-project.org>  Sun, 07 Dec 2014 12:17:15 +0100
+ -- Gergely Nagy <algernon@madhouse-project.org>  Sun, 07 Dec 2014 12:27:51 +0100
 
 syslog-ng (3.6.1-1) experimental; urgency=low
 
