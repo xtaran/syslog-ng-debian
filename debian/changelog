@@ -1,4 +1,4 @@
-syslog-ng (3.6.1+git20141206-g4d90138) experimental; urgency=low
+syslog-ng (3.6.1+git20141206-g4d90138-1) experimental; urgency=low
 
   [ Gergely Nagy <algernon@madhouse-project.org> ]
   * New snapshot release, based on upstream git commit 4d90138.
