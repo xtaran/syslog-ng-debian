@@ -1,3 +1,11 @@
+syslog-ng (3.6.1+git20141206-g4d90138-2) experimental; urgency=low
+
+  [ Gergely Nagy <algernon@madhouse-project.org> ]
+  * Only force systemd on Linux, disable it everywhere else. This should
+    allow syslog-ng to build again on non-linux architectures.
+
+ -- Gergely Nagy <algernon@madhouse-project.org>  Sun, 07 Dec 2014 15:39:57 +0100
+
 syslog-ng (3.6.1+git20141206-g4d90138-1) experimental; urgency=low
 
   [ Gergely Nagy <algernon@madhouse-project.org> ]

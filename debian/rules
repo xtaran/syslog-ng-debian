@@ -46,6 +46,15 @@ export DH_OPTIONS += -O-Bdebian/build-tree --dbg-package=syslog-ng-dbg
 CFLAGS		?= $(shell dpkg-buildflags --get CFLAGS)
 LDFLAGS		?= $(shell dpkg-buildflags --get LDFLAGS)
 
+
+# We want to enforce systemd support on Linux, but disable it
+# everywhere else.
+ifeq ($(shell dpkg-architecture -qDEB_HOST_ARCH_OS),linux)
+SYSTEMD_CONFIGURE_OPTS = --enable-systemd --with-systemd-journal=system
+else
+SYSTEMD_CONFIGURE_OPTS = --disable-systemd
+endif
+
 ##
 #* Overrides for dh_auto*
 ##
@@ -78,7 +87,6 @@ override_dh_auto_configure:
 		--enable-sql \
 		--enable-mongodb \
 		--enable-json \
-		--enable-systemd \
 		--enable-riemann \
 		\
 		--with-libmongo-client=system \
@@ -86,9 +94,9 @@ override_dh_auto_configure:
 		\
 		--with-module-dir='$${exec_prefix}/lib/syslog-ng/${UMAJOR}' \
 		--with-systemdsystemunitdir="/lib/systemd/system" \
-		--with-systemd-journal=system \
 		\
 		SOURCE_REVISION="$${SOURCE_REVISION}" \
+		${SYSTEMD_CONFIGURE_OPTS} \
 		${EXTRA_CONFIGURE_OPTS}
 
 # Building is fine, but the manpages need some sed work, to replace
