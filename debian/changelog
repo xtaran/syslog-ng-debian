@@ -1,3 +1,12 @@
+syslog-ng (3.6.1+git20141206-g4d90138-3) experimental; urgency=low
+
+  [ Gergely Nagy <algernon@madhouse-project.org> ]
+  * Move the systemd-journal() source to a separate package, which is
+    depended on by syslog-ng-core on linux-any. This allows building the
+    binaries without gross hacks on all architectures.
+
+ -- Gergely Nagy <algernon@madhouse-project.org>  Sun, 07 Dec 2014 22:26:10 +0100
+
 syslog-ng (3.6.1+git20141206-g4d90138-2) experimental; urgency=low
 
   [ Gergely Nagy <algernon@madhouse-project.org> ]
