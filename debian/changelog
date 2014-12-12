@@ -1,3 +1,10 @@
+syslog-ng (3.6.1+git20141206-g4d90138-4) experimental; urgency=medium
+
+  [ Gergely Nagy <algernon@madhouse-project.org> ]
+  * Run the test suite with VERBOSE=1, so we see the actual test results.
+
+ -- Gergely Nagy <algernon@madhouse-project.org>  Fri, 12 Dec 2014 16:05:59 +0100
+
 syslog-ng (3.6.1+git20141206-g4d90138-3) experimental; urgency=low
 
   [ Gergely Nagy <algernon@madhouse-project.org> ]
