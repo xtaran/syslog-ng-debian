@@ -233,7 +233,7 @@ License: GPL-2+ with OpenSSL exception
 
 Files: debian/*
 Copyright: Copyright (C) 2011-2014 Gergely Nagy <algernon@madhouse-project.org>,
-           Copyright (C) 2010-2012 Laszlo Boszormenyi (GCS) <gcs@debian.hu>
+           Copyright (C) 2010-2012 Laszlo Boszormenyi (GCS) <gcs@debian.org>
 License: GPL-2+
 
 License: GPL-2+
