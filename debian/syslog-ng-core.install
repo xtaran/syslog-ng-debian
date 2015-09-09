@@ -6,8 +6,6 @@ usr/sbin/*
 usr/lib/syslog-ng/libsyslog-ng-*.so.*
 usr/lib/syslog-ng/*/libaffile.so
 usr/lib/syslog-ng/*/libafprog.so
-usr/lib/syslog-ng/*/libafsocket-tls.so
-usr/lib/syslog-ng/*/libafsocket-notls.so
 usr/lib/syslog-ng/*/libafsocket.so
 usr/lib/syslog-ng/*/libafuser.so
 usr/lib/syslog-ng/*/libbasicfuncs.so
