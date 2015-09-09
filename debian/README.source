@@ -25,13 +25,13 @@ up, namely:
    package is actively maintained. This includes Debian *unstable* and
    *experimental* too.
 
- * Running `git-buildpackage` from a freshly checked out git
+ * Running `gbp buildpackage` from a freshly checked out git
    repository should produce source and binary packages suitable for
    the main archive.
 
 For these reasons, this repository contains the `debian/` directory
 only, which will be laid over the upstream sources using
-`git-buildpackage`. The branches are all prefixed with the vendor
+`gbp buildpackage`. The branches are all prefixed with the vendor
 (`debian/` or `ubuntu/`), followed by the release (`unstable`,
 `experimental`, `jessie`, and so on). Any other branch that may be
 present is likely a temporary branch.
@@ -133,7 +133,7 @@ Building the package
 --------------------
 
 The easiest way is to use `debian/rules get-orig-source` followed by
-`git-buildpackage`. That will fetch the latest upstream sources, and
+`gbp buildpackage`. That will fetch the latest upstream sources, and
 then build both binary and source packages.
 
 If one wants to work with an unreleased version of syslog-ng, then
