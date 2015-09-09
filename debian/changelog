@@ -10,8 +10,9 @@ syslog-ng (3.7.1-1) experimental; urgency=medium
   * Explicitly disable Java for now.
   * debian/watch updated to pull releases from GitHub.
   * Updated the syslog-ng-core contents, to include new core modules.
+  * Updated the syslog-ng-mod-geoip contents, the module has been renamed.
 
- -- Gergely Nagy <algernon@madhouse-project.org>  Wed, 09 Sep 2015 15:47:34 +0200
+ -- Gergely Nagy <algernon@madhouse-project.org>  Wed, 09 Sep 2015 15:50:14 +0200
 
 syslog-ng (3.6.1+git20141206-g4d90138-4) experimental; urgency=medium
 
