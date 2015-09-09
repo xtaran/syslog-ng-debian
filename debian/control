@@ -404,3 +404,26 @@ Description: Enhanced system logging daemon (graphite plugin)
  This package provides the graphite plugin, that adds a new template
  function, $(graphite-output), which makes it possible to easily send
  metrics to Graphite from within syslog-ng.
+
+Package: syslog-ng-mod-python
+Architecture: any
+Multi-Arch: foreign
+Depends: ${shlibs:Depends}, ${misc:Depends}, python-minimal
+Description: Enhanced system logging daemon (python plugin)
+ syslog-ng is an enhanced log daemon, supporting a wide range of input
+ and output methods: syslog, unstructured text, message queues,
+ databases (SQL and NoSQL alike) and more.
+ .
+ Key features:
+ .
+  * receive and send RFC3164 and RFC5424 style syslog messages
+  * work with any kind of unstructured data
+  * receive and send JSON formatted messages
+  * classify and structure logs with builtin parsers (csv-parser(),
+    db-parser(), etc.)
+  * normalize, crunch and process logs as they flow through the system
+  * hand on messages for further processing using message queues (like
+    AMQP), files or databases (like PostgreSQL or MongoDB).
+ .
+ This package provides the python plugin, that allows one to write
+ syslog-ng plugins in Python.
