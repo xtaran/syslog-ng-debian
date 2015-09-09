@@ -9,8 +9,9 @@ syslog-ng (3.7.1-1) experimental; urgency=medium
     the python module.
   * Explicitly disable Java for now.
   * debian/watch updated to pull releases from GitHub.
+  * Updated the syslog-ng-core contents, to include new core modules.
 
- -- Gergely Nagy <algernon@madhouse-project.org>  Wed, 09 Sep 2015 15:34:49 +0200
+ -- Gergely Nagy <algernon@madhouse-project.org>  Wed, 09 Sep 2015 15:47:34 +0200
 
 syslog-ng (3.6.1+git20141206-g4d90138-4) experimental; urgency=medium
 
