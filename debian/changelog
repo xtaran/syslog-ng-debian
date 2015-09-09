@@ -1,3 +1,17 @@
+syslog-ng (3.7.1-1) experimental; urgency=medium
+
+  [ Gergely Nagy <algernon@madhouse-project.org> ]
+  * New upstream release.
+  * Transition to libsystemd-dev (Closes: #779765).
+  * Add a libriemann-client-dev (>= 1.6.0~) build-dependency (instead of
+    an unversioned one), because upstream needs the new version.
+  * Add python-dev, pep8 and pylint to build-depends, to be able to build
+    the python module.
+  * Explicitly disable Java for now.
+  * debian/watch updated to pull releases from GitHub.
+
+ -- Gergely Nagy <algernon@madhouse-project.org>  Wed, 09 Sep 2015 15:34:49 +0200
+
 syslog-ng (3.6.1+git20141206-g4d90138-4) experimental; urgency=medium
 
   [ Gergely Nagy <algernon@madhouse-project.org> ]
