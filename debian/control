@@ -26,7 +26,7 @@ Build-Depends: debhelper (>= 9~),
                libgeoip-dev,
                libhiredis-dev,
                libriemann-client-dev (>= 1.6.0~),
-               python, python-dev, pep8, pylint,
+               python, python-dev, pep8, pylint, dh-python,
                dh-exec (>= 0.13~)
 Build-Conflicts: autoconf2.13
 Standards-Version: 3.9.6
@@ -409,7 +409,7 @@ Description: Enhanced system logging daemon (graphite plugin)
 Package: syslog-ng-mod-python
 Architecture: any
 Multi-Arch: foreign
-Depends: ${shlibs:Depends}, ${misc:Depends}, python-minimal
+Depends: ${shlibs:Depends}, ${misc:Depends}, ${python:Depends}
 Description: Enhanced system logging daemon (python plugin)
  syslog-ng is an enhanced log daemon, supporting a wide range of input
  and output methods: syslog, unstructured text, message queues,

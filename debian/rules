@@ -119,8 +119,12 @@ override_dh_auto_build:
 # The pkg-config .pc file is installed into ${libdir}/pkgconfig, but
 # we override libdir above to place everything useful there. We want
 # the .pc file elsewhere, though, so do that here at install time.
+#
+# Similarly, we want to install python modules to their proper place,
+# and this is a great time to tell the build system where that is.
 override_dh_auto_install:
-	dh_auto_install -- pkgconfigdir=/usr/lib/pkgconfig
+	dh_auto_install -- pkgconfigdir=/usr/lib/pkgconfig \
+			   PYSETUP_OPTIONS=--install-layout=deb
 
 # To get better test results, and actually see failing tests, we need
 # to pass VERBOSE=1 to make when running the tests. Do that here.
@@ -192,6 +196,11 @@ override_dh_gencontrol:
 			 -Vsng:CoreModules=$(shell debian/tools/list-modules.sh core) \
 			 -Vsng:ABI=${ABI_VERSION}
 
+# Sadly, dh_python2 barfs on --dbg-package=, so we work it around by
+# clearing DH_OPTIONS here.
+override_dh_python2:
+	DH_OPTIONS="" dh_python2
+
 ##
 #* Other, non-override targets
 ##
@@ -210,4 +219,4 @@ get-orig-source:
 
 # And for the rest, there is debhelper!
 %:
-	dh $@ --with autoreconf,systemd --parallel
+	dh $@ --with autoreconf,systemd,python2 --parallel
