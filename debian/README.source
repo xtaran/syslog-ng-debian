@@ -76,7 +76,7 @@ configuration snippet, that declares a syslog-ng variable with the
 appropriate value.
 
 On kFreeBSD, we install one version, on Linux, another. This is done
-from debian/rules.
+from debian/syslog-ng-core.install, via `dh-exec`.
 
 This way, the main configuration file remains the same on all
 architectures, only this little snippet changes, which makes it easier
