@@ -21,13 +21,16 @@ License: LGPL-2.1+ with OpenSSL exception
 Files: lib/ack-tracker.h
        lib/bookmark.h
        lib/early_ack_tracker.c
+       lib/host-id.*
        lib/late_ack_tracker.c
        lib/ringbuffer.*
+       lib/template/common-template-typedefs.h
 Copyright: Copyright (C) BalaBit IT Ltd.
            Copyright (C) Laszlo Budai
 License: LGPL-2.1+ with OpenSSL exception
 
-Files: lib/filter/filter-in-list.*
+Files: lib/compat/time.h
+       lib/filter/filter-in-list.*
        lib/logproto-indented-multiline-server.*
        lib/logthrdestdrv.*
        lib/scratch-buffers.*
@@ -81,7 +84,6 @@ Files: lib/cache.*
        lib/compat/socket.h
        lib/compat/string.h
        lib/compat/strtok_r.c
-       lib/compat/time.h
        lib/control/control-server.*
        lib/control/control-server-unix.c
        lib/hostname.h
@@ -115,6 +117,28 @@ License: ivykis-man
  and in case of nontrivial modification author and date
  of the modification is added to the header.
 
+Files: lib/jsonc/*
+Copyright: Copyright (C) Metaparadigm Pte. Ltd
+           Copyright (C) Eric Haszlakiewicz
+License: Expat
+
+Files: lib/jsonc/debug.h
+       lib/jsonc/json.h
+       lib/jsonc/json_object.*
+       lib/jsonc/json_object_iterator.*
+       lib/jsonc/linkhash.*
+Copyright: Copyright (C) Hewlett-Packard Development Company, L.P
+           Copyright (C) Metaparadigm Pte. Ltd
+           Copyright (C) Eric Haszlakiewicz
+License: Expat
+
+Files: lib/jsonc/json_tokener.c
+       lib/jsonc/printbuf.*
+Copyright: Copyright (C) Yahoo! Inc.
+           Copyright (C) Metaparadigm Pte. Ltd
+           Copyright (C) Eric Haszlakiewicz
+License: Expat
+
 Files: modules/*
 Copyright: Copyright (C) Balázs Scheidler
            Copyright (C) BalaBit IT Security Ltd.
@@ -147,6 +171,11 @@ Files: modules/afmongodb/*
        modules/json/json-plugin.*
        modules/json/tests/test_format_json.c
        modules/linux-kmsg-format/*
+       modules/kvformat/tests/test_format_welf.c
+       modules/python/python-dest.*
+       modules/python/python-parser.*
+       modules/python/python-plugin.c
+       modules/python/python-value-pairs.*
        modules/riemann/*
        modules/system-source/*
 Copyright: Copyright (c) BalaBit IT Ltd.
@@ -202,9 +231,26 @@ Copyright: Copyright (C) Péter Gyöngyösi
            Copyright (C) BalaBit IT Security Ltd.
 License: GPL-2+ with OpenSSL exception
 
+Files: modules/geoip/*
+       scl/*
+Copyright: Copyright (C) BalaBit IT Security Ltd.
+License: GPL-2+ with OpenSSL exception
+
+Files: modules/geoip/geoip-parser.*
+       modules/geoip/geoip-parser-parser.*
+       modules/geoip/geoip-plugin.c
+Copyright: Copyright (C) Gergely Nagy
+License: GPL-2+ with OpenSSL exception
+
 Files: modules/graphite/*
 Copyright: Copyright (C) BalaBit IT Ltd.
            Copyright (C) Viktor Tusa
+License: GPL-2+ with OpenSSL exception
+
+Files: modules/java-modules/http/src/main/java/org/syslog_ng/http/HTTPDestinationOptions.java
+Copyright: Copyright (C) BalaBit IT Security Ltd.
+           Copyright (C) Adam Arsenault
+           Copyright (C) Viktor Juhasz
 License: GPL-2+ with OpenSSL exception
 
 Files: modules/json/format-json.c
@@ -214,12 +260,13 @@ Copyright: Copyright (c) BalaBit IT Ltd.
 License: GPL-2+ with OpenSSL exception
 
 Files: modules/systemd-journal/*
+       modules/java-modules/*
+       modules/java/*
 Copyright: Copyright (C) BalaBit IT Security Ltd.
-           Viktor Juhasz
+           Copyright (C) Viktor Juhasz
 License: GPL-2+ with OpenSSL exception
 
-Files: modules/tfgeoip/*
-       scl/*
+Files: modules/kvformat/*
 Copyright: Copyright (C) BalaBit IT Security Ltd.
 License: GPL-2+ with OpenSSL exception
 
@@ -232,8 +279,8 @@ Copyright: Copyright (C) Márton Illés
 License: GPL-2+ with OpenSSL exception
 
 Files: debian/*
-Copyright: Copyright (C) 2011-2014 Gergely Nagy <algernon@madhouse-project.org>,
-           Copyright (C) 2010-2012 Laszlo Boszormenyi (GCS) <gcs@debian.org>
+Copyright: Copyright (C) Gergely Nagy <algernon@madhouse-project.org>,
+           Copyright (C) Laszlo Boszormenyi (GCS) <gcs@debian.org>
 License: GPL-2+
 
 License: GPL-2+
