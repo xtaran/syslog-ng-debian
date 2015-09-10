@@ -410,7 +410,7 @@ Package: syslog-ng-mod-python
 Architecture: any
 Multi-Arch: foreign
 Depends: ${shlibs:Depends}, ${misc:Depends}, ${python:Depends}
-Description: Enhanced system logging daemon (python plugin)
+Description: Enhanced system logging daemon (Python plugin)
  syslog-ng is an enhanced log daemon, supporting a wide range of input
  and output methods: syslog, unstructured text, message queues,
  databases (SQL and NoSQL alike) and more.
@@ -426,5 +426,5 @@ Description: Enhanced system logging daemon (python plugin)
   * hand on messages for further processing using message queues (like
     AMQP), files or databases (like PostgreSQL or MongoDB).
  .
- This package provides the python plugin, that allows one to write
+ This package provides the Python plugin, that allows one to write
  syslog-ng plugins in Python.
