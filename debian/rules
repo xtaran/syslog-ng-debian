@@ -55,6 +55,17 @@ else
 SYSTEMD_CONFIGURE_OPTS = --disable-systemd
 endif
 
+# If DH_QUIET is set, then we want silent mode.
+# If DH_VERBOSE is set, we do not want silent mode.
+# If neither is set, we want the default: verbose mode.
+SILENT_MODE	       = --disable-silent-rules
+ifneq (,${DH_QUIET})
+SILENT_MODE	       = --enable-silent-rules
+endif
+ifneq (,${DH_VERBOSE})
+SILENT_MODE	       = --disable-silent-rules
+endif
+
 ##
 #* Overrides for dh_auto*
 ##
@@ -78,7 +89,7 @@ override_dh_auto_configure:
 		--localstatedir=/var/lib/syslog-ng \
 		--datadir=/usr/share/syslog-ng \
 		--libdir=/usr/lib/syslog-ng \
-		--disable-silent-rules \
+		${SILENT_MODE} \
 		\
 		--enable-dynamic-linking \
 		--enable-ssl \
