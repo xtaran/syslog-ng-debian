@@ -223,11 +223,6 @@ override_dh_python2:
 # package has no build-dep-indeps, rightly so).
 build-indep: ;
 
-# Because debian/rules get-orig-source is easier to type than uscan,
-# and is less scary because of using no force...:
-get-orig-source:
-	uscan --force-download --verbose
-
 # And for the rest, there is debhelper!
 %:
 	dh $@ --with autoreconf,systemd,python2 --parallel
