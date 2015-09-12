@@ -70,9 +70,10 @@ endif
 #* Overrides for dh_auto*
 ##
 
-# We need to call autogen.sh instead of autoreconf.
-override_dh_autoreconf:
-	[ -e "configure" ] || dh_autoreconf -- sh -c "./autogen.sh"
+#FIXME: Thsi does not work because no submodules present
+## We need to call autogen.sh instead of autoreconf.
+#override_dh_autoreconf:
+#	[ -e "configure" ] || dh_autoreconf -- sh -c "./autogen.sh"
 
 # Oh, the joys of configure!
 # We pass down all appropriate options, along with EXTRA_CONFIGURE_OPTS.
