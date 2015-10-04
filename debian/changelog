@@ -15,7 +15,20 @@ syslog-ng (3.7.1-1) experimental; urgency=medium
   * Use dh-exec to install tty10.conf, instead of doing a crazy dance in
     debian/rules.
 
- -- Gergely Nagy <algernon@madhouse-project.org>  Wed, 09 Sep 2015 16:44:34 +0200
+  [SZALAY Attila <sasa@debian.org> ]
+  * [bec27e5] Removed get-orig-source target.
+    The git tree should contains the whole module and not just the
+    debian directory. therefore I added it and as a consequence
+    this target is obsoleted.
+  * [f11f92a] Remove README.markdown.
+    This file is violate the quilt package
+    policy
+  * [4bd2761] debian/rules: Switched to autoreconf from autogen.sh
+  * [e367348] Fixed autoreconf and automake running
+  * [9b38bc4] debian/control: Added needed dependency for testing
+  * [b8398e1] debian/control: Temporally remove syslog-ng-amqp
+
+ -- SZALAY Attila <sasa@debian.org>  Sat, 03 Oct 2015 18:31:11 +0200
 
 syslog-ng (3.6.1+git20141206-g4d90138-4) experimental; urgency=medium
 
