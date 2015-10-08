@@ -1,3 +1,11 @@
+syslog-ng (3.7.1-3) experimental; urgency=medium
+
+  * [d340beb] Re-add debian directory cleanup.
+    For some reason neither in the quilt format will the upstream files
+    removed from the debian directory. So we should do it by hand.
+
+ -- SZALAY Attila <sasa@debian.org>  Thu, 08 Oct 2015 21:51:09 +0200
+
 syslog-ng (3.7.1-2) experimental; urgency=medium
 
   * [bec27e5] Removed get-orig-source target.
