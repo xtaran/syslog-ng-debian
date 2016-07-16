@@ -4,6 +4,7 @@ syslog-ng (3.7.3-1) unstable; urgency=low
   * Adapt to upstream changes handling PYSETUP_OPTIONS.
   * I do not know how that files appeared there, but now definitively not
     there.  (Closes: #801546)
+  * Check if we handled everything installed by the upstream installer.
 
  -- SZALAY Attila <sasa@debian.org>  Sat, 16 Jul 2016 09:55:58 +0200
 

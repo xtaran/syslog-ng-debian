@@ -155,7 +155,7 @@ override_dh_auto_test:
 #
 # So we simply flip a few bits after dh_install, and we're good to go!
 override_dh_install:
-	dh_install
+	dh_install --list-missing
 ifneq (,$(filter syslog-ng-dev,$(shell dh_listpackages)))
 	chmod +x debian/syslog-ng-dev/usr/share/syslog-ng/tools/merge-grammar.pl
 endif
