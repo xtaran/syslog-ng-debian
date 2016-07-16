@@ -136,7 +136,7 @@ override_dh_auto_build:
 # and this is a great time to tell the build system where that is.
 override_dh_auto_install:
 	dh_auto_install -- pkgconfigdir=/usr/lib/pkgconfig \
-			   PYSETUP_OPTIONS=--install-layout=deb
+			   PYSETUP_OPTIONS="--install-layout=deb --root=$(CURDIR)/debian/tmp/"
 
 # To get better test results, and actually see failing tests, we need
 # to pass VERBOSE=1 to make when running the tests. Do that here.

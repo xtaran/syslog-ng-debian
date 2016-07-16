@@ -1,6 +1,7 @@
 syslog-ng (3.7.3-1) UNRELEASED; urgency=low
 
   * New upstream release.
+  * Adapt to upstream changes handling PYSETUP_OPTIONS.
 
  -- SZALAY Attila <sasa@debian.org>  Sat, 16 Jul 2016 09:55:58 +0200
 
