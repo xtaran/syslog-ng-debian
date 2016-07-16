@@ -582,7 +582,7 @@ log_msg_set_value_indirect(LogMessage *self, NVHandle handle, NVHandle ref_handl
 }
 
 gboolean
-log_msg_values_foreach(LogMessage *self, NVTableForeachFunc func, gpointer user_data)
+log_msg_values_foreach(const LogMessage *self, NVTableForeachFunc func, gpointer user_data)
 {
   return nv_table_foreach(self->payload, logmsg_registry, func, user_data);
 }
@@ -1141,8 +1141,8 @@ log_msg_new_empty(void)
   return self;
 }
 
-void
-log_msg_clone_ack(LogMessage *msg, gpointer user_data, AckType ack_type)
+static void
+log_msg_clone_ack(LogMessage *msg, AckType ack_type)
 {
   LogPathOptions path_options = LOG_PATH_OPTIONS_INIT;
 
@@ -1190,7 +1190,7 @@ log_msg_clone_cow(LogMessage *msg, const LogPathOptions *path_options)
     }
   else
     {
-      self->ack_func = (LMAckFunc) log_msg_clone_ack;
+      self->ack_func = log_msg_clone_ack;
     }
 
   self->flags &= ~LF_STATE_MASK;
@@ -1413,7 +1413,7 @@ log_msg_ack(LogMessage *self, const LogPathOptions *path_options, AckType ack_ty
            * delayed until log_msg_refcache_stop() is called */
 
           logmsg_cached_acks--;
-          logmsg_cached_abort |= (ACKTYPE_TO_ABORTFLAG(ack_type) == AT_ABORTED ? TRUE : FALSE);
+          logmsg_cached_abort |= ACKTYPE_TO_ABORTFLAG(ack_type);
           return;
         }
 

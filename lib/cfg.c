@@ -260,6 +260,7 @@ cfg_init(GlobalConfig *cfg)
   dns_cache_set_params(cfg->dns_cache_size, cfg->dns_cache_expire, cfg->dns_cache_expire_failed, cfg->dns_cache_hosts);
   hostname_reinit(cfg->custom_domain);
   host_resolve_options_init(&cfg->host_resolve_options, cfg);
+  log_template_options_init(&cfg->template_options, cfg);
   if (!cfg_init_modules(cfg))
     return FALSE;
   return cfg_tree_start(&cfg->tree);
@@ -563,7 +564,8 @@ cfg_persist_config_add(GlobalConfig *cfg, gchar *name, gpointer value, GDestroyN
               msg_error("Internal error, duplicate configuration elements refer to the same persistent config", 
                         evt_tag_str("name", name),
                         NULL);
-              destroy(value);
+              if (destroy)
+                destroy(value);
               return;
             }
         }

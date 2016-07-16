@@ -747,6 +747,7 @@ test_logstamp(void)
 
   stamp.tv_sec = 1129319257;
   stamp.tv_usec = 123456;
+  stamp.zone_offset = 0;
 
   /* formats */
   log_stamp_format(&stamp, target, TS_FMT_BSD, 3600, 3);
@@ -765,6 +766,13 @@ test_logstamp(void)
   TEST_ASSERT(strcmp(target->str, "2005-10-14T18:47:37.123-01:00") == 0);
   log_stamp_format(&stamp, target, TS_FMT_ISO, -5400, 3);
   TEST_ASSERT(strcmp(target->str, "2005-10-14T18:17:37.123-01:30") == 0);
+
+  /* boundary testing */
+  stamp.tv_sec = 0;
+  stamp.tv_usec = 0;
+
+  log_stamp_format(&stamp, target, TS_FMT_ISO, -1, 0);
+  TEST_ASSERT(strcmp(target->str, "1970-01-01T00:00:00+00:00") == 0);
   g_string_free(target, TRUE);
   return rc;
 }

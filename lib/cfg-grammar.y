@@ -778,6 +778,8 @@ template_stmt
         | template_fn
           {
             user_template_function_register(configuration, last_template->name, last_template);
+            log_template_unref(last_template);
+            last_template = NULL;
           }
         ;
 
@@ -1031,11 +1033,6 @@ parser_opt
                                                   log_parser_set_template(last_parser, template);
                                                   free($3);
                                                 }
-        ;
-
-parser_column_opt
-        : parser_opt
-        | KW_COLUMNS '(' string_list ')'        { log_column_parser_set_columns((LogColumnParser *) last_parser, $3); }
         ;
 
 /* LogSource related options */

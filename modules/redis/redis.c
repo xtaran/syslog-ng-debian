@@ -132,9 +132,14 @@ redis_dd_format_persist_name(LogThrDestDriver *d)
 static gboolean
 redis_dd_connect(RedisDriver *self, gboolean reconnect)
 {
+  redisReply *reply;
+  
   if (reconnect && (self->c != NULL))
     {
-      redisCommand(self->c, "ping");
+      reply = redisCommand(self->c, "ping");
+
+      if (reply)
+        freeReplyObject(reply);
 
       if (!self->c->err)
         return TRUE;
@@ -219,6 +224,20 @@ redis_worker_insert(LogThrDestDriver *s, LogMessage *msg)
     }
 
   reply = redisCommandArgv(self->c, argc, argv, argvlen);
+
+  if (!reply)
+    {
+      msg_error("REDIS server error, suspending",
+                evt_tag_str("driver", self->super.super.super.id),
+                evt_tag_str("command", self->command->str),
+                evt_tag_str("key", self->key_str->str),
+                evt_tag_str("param1", self->param1_str->str),
+                evt_tag_str("param2", self->param2_str->str),
+                evt_tag_str("error", self->c->errstr),
+                evt_tag_int("time_reopen", self->super.time_reopen),
+                NULL);
+      return WORKER_INSERT_RESULT_ERROR;
+    }
 
   msg_debug("REDIS command sent",
             evt_tag_str("driver", self->super.super.super.id),
