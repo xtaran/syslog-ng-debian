@@ -34,7 +34,7 @@ _add_nv_keys_to_list(gpointer key, gpointer value, gpointer user_data)
   PyObject *list = (PyObject *) user_data;
   const gchar *name = (const gchar *) key;
 
-  PyList_Append(list, PyString_FromString(name));
+  PyList_Append(list, PyBytes_FromString(name));
 }
 
 static PyObject *
@@ -56,11 +56,41 @@ static PyMethodDef _syslogngdbg_functions[] =
   { NULL,            NULL, 0, NULL }   /* sentinel*/
 };
 
+#if PY_MAJOR_VERSION >= 3
+
+static struct PyModuleDef syslogngdbgmodule = {
+  .m_base    = PyModuleDef_HEAD_INIT,
+  .m_name    = "syslogngdbg",
+  .m_size    = -1,
+  .m_methods = _syslogngdbg_functions
+};
+
+static PyObject *
+PyInit_syslogngdbg(void)
+{
+  PyGILState_STATE gstate = PyGILState_Ensure();
+  PyObject *module = PyModule_Create(&syslogngdbgmodule);
+  PyGILState_Release(gstate);
+
+  return module;
+}
+
+#else
 
 static void
-python_debugger_export_internals(void)
+PyInit_syslogngdbg(void)
 {
-  Py_InitModule("_syslogngdbg", _syslogngdbg_functions);
+  PyGILState_STATE gstate = PyGILState_Ensure();
+  Py_InitModule("syslogngdbg", _syslogngdbg_functions);
+  PyGILState_Release(gstate);
+}
+
+#endif
+
+void
+python_debugger_append_inittab(void)
+{
+  PyImport_AppendInittab("syslogngdbg", &PyInit_syslogngdbg);
 }
 
 #define DEBUGGER_FETCH_COMMAND "syslogng.debuggercli.fetch_command"
@@ -90,7 +120,7 @@ python_fetch_debugger_command(void)
                 NULL);
       goto exit;
     }
-  if (!PyString_Check(ret))
+  if (!PyBytes_Check(ret))
     {
       msg_error("Return value from debugger fetch_command is not a string",
                 evt_tag_str("function", DEBUGGER_FETCH_COMMAND),
@@ -99,7 +129,7 @@ python_fetch_debugger_command(void)
       Py_DECREF(ret);
       goto exit;
     }
-  command = g_strdup(PyString_AsString(ret));
+  command = g_strdup(PyBytes_AsString(ret));
   Py_DECREF(ret);
  exit:
   PyGILState_Release(gstate);
@@ -111,6 +141,5 @@ python_fetch_debugger_command(void)
 void
 python_debugger_init(void)
 {
-  python_debugger_export_internals();
   debugger_register_command_fetcher(python_fetch_debugger_command);
 }

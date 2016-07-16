@@ -30,6 +30,7 @@ int kv_parser_parse(CfgLexer *lexer, LogParser **instance, gpointer arg);
 static CfgLexerKeyword kv_parser_keywords[] =
 {
   { "kv_parser",          KW_KV_PARSER,  },
+  { "linux_audit_parser", KW_LINUX_AUDIT_PARSER,  },
   { "prefix",             KW_PREFIX,  },
   { NULL }
 };
