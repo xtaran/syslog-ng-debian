@@ -1,3 +1,11 @@
+syslog-ng (3.7.3-2) experimental; urgency=medium
+
+  * [db0cb33] Removed unneeded file mode change.
+    The install type is changed to script for that file, so this is not needed
+    any more.
+
+ -- SZALAY Attila <sasa@debian.org>  Thu, 11 Aug 2016 22:24:11 +0200
+
 syslog-ng (3.7.3-1) unstable; urgency=low
 
   * New upstream release (Closes: #802888, #794585, #804667).
