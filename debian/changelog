@@ -1,3 +1,19 @@
+syslog-ng (3.8.1-1) experimental; urgency=medium
+
+  * [469c62c] Revert to the old watch file.
+    The tags does not work, because the downloaded archive does not contain some
+    essential part of the distribution.
+  * [b1f13dc] Imported Upstream version 3.8.1
+  * [da4ae60] Added import-orig options to exclude the .git files and the debian directory
+  * [c29eaa1] Removed test patches
+  * [f7197f1] Added new dependencies needed by new test cases
+  * [cdfc0cc] Removed datadir which is not needed any more
+  * [e16ea28] Added new files to the appropriate package.
+    Also removed hack installing system init script.
+  * [da85f54] Added native connector to the dev package
+
+ -- SZALAY Attila <sasa@debian.org>  Fri, 26 Aug 2016 23:38:45 +0200
+
 syslog-ng (3.7.3-2) experimental; urgency=medium
 
   * [db0cb33] Removed unneeded file mode change.
