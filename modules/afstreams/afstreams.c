@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2013 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2002-2013 Balabit
  * Copyright (c) 1998-2013 Balázs Scheidler
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -24,7 +24,7 @@
 #include "afstreams.h"
 #include "messages.h"
 #include "logreader.h"
-#include "misc.h"
+#include "fdhelpers.h"
 #include "apphook.h"
 #include "stats/stats-registry.h"
 #include "poll-fd-events.h"
@@ -41,16 +41,15 @@ typedef struct _AFStreamsSourceDriver
 } AFStreamsSourceDriver;
 
 
-#if ENABLE_SUN_STREAMS
-
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <stropts.h>
 #include <sys/strlog.h>
 #include <fcntl.h>
 #include <string.h>
+#include <errno.h>
 
-#if HAVE_DOOR_H
+#if SYSLOG_NG_HAVE_DOOR_H
 #include <door.h>
 #endif
 
@@ -83,8 +82,7 @@ log_transport_streams_read(LogTransport *self, void *buf, gsize buflen, GSockAdd
   else
     {
       msg_error("Insufficient buffer space for retrieving STREAMS log message",
-                evt_tag_printf("res", "%x", res),
-                NULL);
+                evt_tag_printf("res", "%x", res));
     }
   return 0;
 }
@@ -131,8 +129,7 @@ afstreams_init_door(int hook_type G_GNUC_UNUSED, gpointer user_data)
         {
           msg_error("Error creating syslog door file",
                     evt_tag_str(EVT_TAG_FILENAME, self->door_filename->str),
-                    evt_tag_errno(EVT_TAG_OSERROR, errno),
-                    NULL);
+                    evt_tag_errno(EVT_TAG_OSERROR, errno));
           close(fd);
           return;
         }
@@ -143,8 +140,7 @@ afstreams_init_door(int hook_type G_GNUC_UNUSED, gpointer user_data)
     {
       msg_error("Error creating syslog door",
                 evt_tag_str(EVT_TAG_FILENAME, self->door_filename->str),
-                evt_tag_errno(EVT_TAG_OSERROR, errno),
-                NULL);
+                evt_tag_errno(EVT_TAG_OSERROR, errno));
       return;
     }
   g_fd_set_cloexec(self->door_fd, TRUE);
@@ -152,8 +148,7 @@ afstreams_init_door(int hook_type G_GNUC_UNUSED, gpointer user_data)
     {
       msg_error("Error attaching syslog door",
                 evt_tag_str(EVT_TAG_FILENAME, self->door_filename->str),
-                evt_tag_errno(EVT_TAG_OSERROR, errno),
-                NULL);
+                evt_tag_errno(EVT_TAG_OSERROR, errno));
       close(self->door_fd);
       self->door_fd = -1;
       return;
@@ -184,8 +179,7 @@ afstreams_sd_init(LogPipe *s)
         {
           msg_error("Error in ioctl(I_STR, I_CONSLOG)",
                     evt_tag_str(EVT_TAG_FILENAME, self->dev_filename->str),
-                    evt_tag_errno(EVT_TAG_OSERROR, errno),
-                    NULL);
+                    evt_tag_errno(EVT_TAG_OSERROR, errno));
           close(fd);
           return FALSE;
         }
@@ -213,8 +207,7 @@ afstreams_sd_init(LogPipe *s)
       if (!log_pipe_init((LogPipe *) self->reader))
         {
           msg_error("Error initializing log_reader, closing fd",
-                    evt_tag_int("fd", fd),
-                    NULL);
+                    evt_tag_int("fd", fd));
           log_pipe_unref((LogPipe *) self->reader);
           self->reader = NULL;
           close(fd);
@@ -226,8 +219,7 @@ afstreams_sd_init(LogPipe *s)
     {
       msg_error("Error opening syslog device",
                 evt_tag_str(EVT_TAG_FILENAME, self->dev_filename->str),
-                evt_tag_errno(EVT_TAG_OSERROR, errno),
-                NULL);
+                evt_tag_errno(EVT_TAG_OSERROR, errno));
       return FALSE;
     }
   return TRUE;
@@ -286,35 +278,3 @@ afstreams_sd_new(gchar *filename, GlobalConfig *cfg)
   self->reader_options.parse_options.flags &= ~LP_EXPECT_HOSTNAME;
   return &self->super.super;
 }
-#else
-
-void
-afstreams_sd_set_sundoor(LogDriver *s, gchar *filename)
-{
-}
-
-static gboolean
-afstreams_sd_dummy_init(LogPipe *s)
-{
-  return TRUE;
-}
-
-static gboolean
-afstreams_sd_dummy_deinit(LogPipe *s)
-{
-  return TRUE;
-}
-
-LogDriver *
-afstreams_sd_new(gchar *filename, GlobalConfig *cfg)
-{
-  LogDriver *self = g_new0(LogDriver, 1);
-
-  log_src_driver_init_instance(self, cfg);
-  self->super.init = afstreams_sd_dummy_init;
-  self->super.deinit = afstreams_sd_dummy_deinit;
-  self->super.free_fn = log_src_driver_free;
-  return self;
-}
-
-#endif

@@ -89,8 +89,8 @@
 
 /* In a future release of Bison, this section will be replaced
    by #include "y.tab.h".  */
-#ifndef YY_AFSMTP_Y_TAB_H_INCLUDED
-# define YY_AFSMTP_Y_TAB_H_INCLUDED
+#ifndef YY_AFSMTP_MODULES_AFSMTP_AFSMTP_GRAMMAR_H_INCLUDED
+# define YY_AFSMTP_MODULES_AFSMTP_AFSMTP_GRAMMAR_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -99,7 +99,7 @@
 extern int afsmtp_debug;
 #endif
 /* "%code requires" blocks.  */
-#line 24 "afsmtp-grammar.y" /* yacc.c:355  */
+#line 24 "modules/afsmtp/afsmtp-grammar.y" /* yacc.c:355  */
 
 
 #include "afsmtp-parser.h"
@@ -142,23 +142,6 @@ extern int afsmtp_debug;
     KW_CHANNEL = 10009,
     KW_INTERNAL = 10010,
     KW_FILE = 10011,
-    KW_SQL = 10030,
-    KW_TYPE = 10031,
-    KW_COLUMNS = 10032,
-    KW_INDEXES = 10033,
-    KW_VALUES = 10034,
-    KW_PASSWORD = 10035,
-    KW_DATABASE = 10036,
-    KW_USERNAME = 10037,
-    KW_TABLE = 10038,
-    KW_ENCODING = 10039,
-    KW_SESSION_STATEMENTS = 10040,
-    KW_DELIMITERS = 10050,
-    KW_QUOTES = 10051,
-    KW_QUOTE_PAIRS = 10052,
-    KW_NULL = 10053,
-    KW_CHARS = 10054,
-    KW_STRINGS = 10055,
     KW_SYSLOG = 10060,
     KW_MARK_FREQ = 10071,
     KW_STATS_FREQ = 10072,
@@ -171,6 +154,8 @@ extern int afsmtp_debug;
     KW_FILE_TEMPLATE = 10079,
     KW_PROTO_TEMPLATE = 10080,
     KW_MARK_MODE = 10081,
+    KW_ENCODING = 10082,
+    KW_TYPE = 10083,
     KW_CHAIN_HOSTNAMES = 10090,
     KW_NORMALIZE_HOSTNAMES = 10091,
     KW_KEEP_HOSTNAME = 10092,
@@ -200,6 +185,7 @@ extern int afsmtp_debug;
     KW_THROTTLE = 10170,
     KW_THREADED = 10171,
     KW_PASS_UNIX_CREDENTIALS = 10231,
+    KW_PERSIST_NAME = 10302,
     KW_FLAGS = 10190,
     KW_PAD_SIZE = 10200,
     KW_TIME_ZONE = 10201,
@@ -234,10 +220,7 @@ extern int afsmtp_debug;
     KW_NETMASK = 10355,
     KW_TAGS = 10356,
     KW_NETMASK6 = 10357,
-    KW_VALUE = 10361,
     KW_REWRITE = 10370,
-    KW_SET = 10371,
-    KW_SUBST = 10372,
     KW_YES = 10380,
     KW_NO = 10381,
     KW_IFDEF = 10410,
@@ -253,7 +236,6 @@ extern int afsmtp_debug;
     LL_EOL = 10428,
     LL_ERROR = 10429,
     KW_VALUE_PAIRS = 10500,
-    KW_SELECT = 10501,
     KW_EXCLUDE = 10502,
     KW_PAIR = 10503,
     KW_KEY = 10504,
@@ -307,23 +289,6 @@ extern int afsmtp_debug;
 #define KW_CHANNEL 10009
 #define KW_INTERNAL 10010
 #define KW_FILE 10011
-#define KW_SQL 10030
-#define KW_TYPE 10031
-#define KW_COLUMNS 10032
-#define KW_INDEXES 10033
-#define KW_VALUES 10034
-#define KW_PASSWORD 10035
-#define KW_DATABASE 10036
-#define KW_USERNAME 10037
-#define KW_TABLE 10038
-#define KW_ENCODING 10039
-#define KW_SESSION_STATEMENTS 10040
-#define KW_DELIMITERS 10050
-#define KW_QUOTES 10051
-#define KW_QUOTE_PAIRS 10052
-#define KW_NULL 10053
-#define KW_CHARS 10054
-#define KW_STRINGS 10055
 #define KW_SYSLOG 10060
 #define KW_MARK_FREQ 10071
 #define KW_STATS_FREQ 10072
@@ -336,6 +301,8 @@ extern int afsmtp_debug;
 #define KW_FILE_TEMPLATE 10079
 #define KW_PROTO_TEMPLATE 10080
 #define KW_MARK_MODE 10081
+#define KW_ENCODING 10082
+#define KW_TYPE 10083
 #define KW_CHAIN_HOSTNAMES 10090
 #define KW_NORMALIZE_HOSTNAMES 10091
 #define KW_KEEP_HOSTNAME 10092
@@ -365,6 +332,7 @@ extern int afsmtp_debug;
 #define KW_THROTTLE 10170
 #define KW_THREADED 10171
 #define KW_PASS_UNIX_CREDENTIALS 10231
+#define KW_PERSIST_NAME 10302
 #define KW_FLAGS 10190
 #define KW_PAD_SIZE 10200
 #define KW_TIME_ZONE 10201
@@ -399,10 +367,7 @@ extern int afsmtp_debug;
 #define KW_NETMASK 10355
 #define KW_TAGS 10356
 #define KW_NETMASK6 10357
-#define KW_VALUE 10361
 #define KW_REWRITE 10370
-#define KW_SET 10371
-#define KW_SUBST 10372
 #define KW_YES 10380
 #define KW_NO 10381
 #define KW_IFDEF 10410
@@ -418,7 +383,6 @@ extern int afsmtp_debug;
 #define LL_EOL 10428
 #define LL_ERROR 10429
 #define KW_VALUE_PAIRS 10500
-#define KW_SELECT 10501
 #define KW_EXCLUDE 10502
 #define KW_PAIR 10503
 #define KW_KEY 10504
@@ -460,13 +424,13 @@ struct YYLTYPE
 
 int afsmtp_parse (CfgLexer *lexer, LogDriver **instance, gpointer arg);
 
-#endif /* !YY_AFSMTP_Y_TAB_H_INCLUDED  */
+#endif /* !YY_AFSMTP_MODULES_AFSMTP_AFSMTP_GRAMMAR_H_INCLUDED  */
 
 /* Copy the second part of user declarations.  */
 
-#line 468 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:358  */
+#line 432 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:358  */
 /* Unqualified %code blocks.  */
-#line 30 "afsmtp-grammar.y" /* yacc.c:359  */
+#line 30 "modules/afsmtp/afsmtp-grammar.y" /* yacc.c:359  */
 
 
 #include "cfg-parser.h"
@@ -476,7 +440,7 @@ int afsmtp_parse (CfgLexer *lexer, LogDriver **instance, gpointer arg);
 
 extern LogDriver *last_driver;
 
-#line 54 "afsmtp-grammar.y" /* yacc.c:359  */
+#line 54 "modules/afsmtp/afsmtp-grammar.y" /* yacc.c:359  */
 
 
 # define YYLLOC_DEFAULT(Current, Rhs, N)                                \
@@ -537,7 +501,7 @@ extern LogDriver *last_driver;
 
 
 
-#line 541 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:359  */
+#line 505 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:359  */
 
 #ifdef short
 # undef short
@@ -781,16 +745,16 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  4
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   106
+#define YYLAST   112
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  171
+#define YYNTOKENS  153
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  13
+#define YYNNTS  14
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  42
+#define YYNRULES  44
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  118
+#define YYNSTATES  123
 
 /* YYTRANSLATE[YYX] -- Symbol number corresponding to YYX as returned
    by yylex, with out-of-bounds checking.  */
@@ -808,15 +772,15 @@ static const yytype_uint8 yytranslate[] =
       12,    13,    14,    15,    16,    17,    18,    19,    20,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     165,   166,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,   170,   169,
+     147,   148,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,   152,   151,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,   167,     2,   168,     2,     2,     2,     2,
+       2,     2,     2,   149,     2,   150,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -1807,67 +1771,67 @@ static const yytype_uint8 yytranslate[] =
       21,    22,    23,    24,    25,    26,    27,    28,    29,    30,
       31,    32,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      33,    34,    35,    36,    37,    38,    39,    40,    41,    42,
-      43,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      44,    45,    46,    47,    48,    49,     2,     2,     2,     2,
-      50,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,    51,    52,    53,    54,    55,    56,    57,    58,    59,
-      60,    61,     2,     2,     2,     2,     2,     2,     2,     2,
-      62,    63,    64,    65,    66,     2,     2,     2,     2,     2,
-      67,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      68,    69,    70,     2,     2,     2,     2,     2,     2,     2,
-      71,    72,     2,     2,     2,     2,     2,     2,     2,     2,
-      73,    74,    75,     2,     2,     2,     2,     2,     2,     2,
-      76,    77,    78,     2,     2,     2,     2,     2,     2,     2,
-      79,    80,    81,     2,     2,     2,     2,     2,     2,     2,
-      82,     2,    83,    84,    85,    86,    87,     2,     2,     2,
-      88,    89,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      91,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      92,    93,    94,    95,    96,    97,     2,     2,     2,     2,
-      98,    99,   100,     2,     2,     2,     2,     2,     2,     2,
-     101,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     102,    90,     2,     2,     2,     2,     2,     2,     2,     2,
-     103,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     104,   105,   106,     2,     2,     2,     2,     2,     2,     2,
-     107,   108,   109,     2,     2,     2,     2,     2,     2,     2,
-     110,   111,   112,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     113,   114,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,   115,     2,     2,     2,     2,     2,     2,
+      33,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,    34,    35,    36,    37,    38,    39,    40,    41,    42,
+      43,    44,    45,    46,     2,     2,     2,     2,     2,     2,
+      47,    48,    49,    50,    51,     2,     2,     2,     2,     2,
+      52,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+      53,    54,    55,     2,     2,     2,     2,     2,     2,     2,
+      56,    57,     2,     2,     2,     2,     2,     2,     2,     2,
+      58,    59,    60,     2,     2,     2,     2,     2,     2,     2,
+      61,    62,    63,     2,     2,     2,     2,     2,     2,     2,
+      64,    65,    66,     2,     2,     2,     2,     2,     2,     2,
+      67,     2,    68,    69,    70,    71,    72,     2,     2,     2,
+      73,    74,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     116,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     117,   118,   119,   120,   121,   122,   123,   124,     2,     2,
-       2,   125,     2,     2,     2,     2,     2,     2,     2,     2,
-     126,   127,   128,     2,     2,     2,     2,     2,     2,     2,
-     129,   130,     2,     2,     2,     2,     2,     2,     2,     2,
+      77,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+      78,    79,    80,    81,    82,    83,     2,     2,     2,     2,
+      84,    85,    86,     2,     2,     2,     2,     2,     2,     2,
+      87,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+      88,    75,     2,     2,     2,     2,     2,     2,     2,     2,
+      89,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+      90,    91,    92,     2,     2,     2,     2,     2,     2,     2,
+      93,    94,    95,     2,     2,     2,     2,     2,     2,     2,
+      96,    97,    98,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     131,   132,     2,     2,     2,     2,     2,     2,     2,     2,
-     133,   134,   135,   136,   137,   138,   139,   140,   141,   142,
+      99,   100,    76,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,   101,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     102,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     103,   104,   105,   106,   107,   108,   109,   110,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     111,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     112,   113,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     114,   115,     2,     2,     2,     2,     2,     2,     2,     2,
+     116,   117,   118,   119,   120,   121,   122,   123,   124,   125,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     143,   144,   145,   146,   147,   148,   149,   150,   151,   152,
-     153,   154,     2,   155,   156,   157,   158,   159,   160,   161,
-     162,   163,   164
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     126,     2,   127,   128,   129,   130,   131,   132,   133,   134,
+     135,   136,     2,   137,   138,   139,   140,   141,   142,   143,
+     144,   145,   146
 };
 
 #if YYDEBUG
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   387,   387,   386,   394,   395,   399,   404,   405,   410,
-     415,   421,   426,   432,   437,   443,   448,   454,   459,   465,
-     470,   476,   481,   487,   488,   489,   489,   687,   694,   707,
-     707,   713,   714,   850,   858,   859,   860,   937,   938,   939,
-     940,   941,   942
+       0,   367,   367,   366,   374,   375,   379,   384,   385,   390,
+     395,   401,   406,   412,   417,   423,   428,   434,   439,   445,
+     450,   456,   461,   467,   468,   469,   469,   667,   674,   687,
+     687,   693,   694,   837,   841,   849,   850,   851,   869,   925,
+     926,   927,   928,   929,   930
 };
 #endif
 
@@ -1885,24 +1849,21 @@ static const char *const yytname[] =
   "LL_CONTEXT_INNER_SRC", "LL_CONTEXT_CLIENT_PROTO",
   "LL_CONTEXT_SERVER_PROTO", "KW_SOURCE", "KW_FILTER", "KW_PARSER",
   "KW_DESTINATION", "KW_LOG", "KW_OPTIONS", "KW_INCLUDE", "KW_BLOCK",
-  "KW_JUNCTION", "KW_CHANNEL", "KW_INTERNAL", "KW_FILE", "KW_SQL",
-  "KW_TYPE", "KW_COLUMNS", "KW_INDEXES", "KW_VALUES", "KW_PASSWORD",
-  "KW_DATABASE", "KW_USERNAME", "KW_TABLE", "KW_ENCODING",
-  "KW_SESSION_STATEMENTS", "KW_DELIMITERS", "KW_QUOTES", "KW_QUOTE_PAIRS",
-  "KW_NULL", "KW_CHARS", "KW_STRINGS", "KW_SYSLOG", "KW_MARK_FREQ",
-  "KW_STATS_FREQ", "KW_STATS_LEVEL", "KW_STATS_LIFETIME", "KW_FLUSH_LINES",
-  "KW_SUPPRESS", "KW_FLUSH_TIMEOUT", "KW_LOG_MSG_SIZE", "KW_FILE_TEMPLATE",
-  "KW_PROTO_TEMPLATE", "KW_MARK_MODE", "KW_CHAIN_HOSTNAMES",
-  "KW_NORMALIZE_HOSTNAMES", "KW_KEEP_HOSTNAME", "KW_CHECK_HOSTNAME",
-  "KW_BAD_HOSTNAME", "KW_KEEP_TIMESTAMP", "KW_USE_DNS", "KW_USE_FQDN",
-  "KW_CUSTOM_DOMAIN", "KW_DNS_CACHE", "KW_DNS_CACHE_SIZE",
-  "KW_DNS_CACHE_EXPIRE", "KW_DNS_CACHE_EXPIRE_FAILED",
-  "KW_DNS_CACHE_HOSTS", "KW_PERSIST_ONLY", "KW_USE_RCPTID",
-  "KW_USE_UNIQID", "KW_TZ_CONVERT", "KW_TS_FORMAT", "KW_FRAC_DIGITS",
-  "KW_LOG_FIFO_SIZE", "KW_LOG_FETCH_LIMIT", "KW_LOG_IW_SIZE",
-  "KW_LOG_PREFIX", "KW_PROGRAM_OVERRIDE", "KW_HOST_OVERRIDE",
-  "KW_THROTTLE", "KW_THREADED", "KW_PASS_UNIX_CREDENTIALS", "KW_FLAGS",
-  "KW_PAD_SIZE", "KW_TIME_ZONE", "KW_RECV_TIME_ZONE", "KW_SEND_TIME_ZONE",
+  "KW_JUNCTION", "KW_CHANNEL", "KW_INTERNAL", "KW_FILE", "KW_SYSLOG",
+  "KW_MARK_FREQ", "KW_STATS_FREQ", "KW_STATS_LEVEL", "KW_STATS_LIFETIME",
+  "KW_FLUSH_LINES", "KW_SUPPRESS", "KW_FLUSH_TIMEOUT", "KW_LOG_MSG_SIZE",
+  "KW_FILE_TEMPLATE", "KW_PROTO_TEMPLATE", "KW_MARK_MODE", "KW_ENCODING",
+  "KW_TYPE", "KW_CHAIN_HOSTNAMES", "KW_NORMALIZE_HOSTNAMES",
+  "KW_KEEP_HOSTNAME", "KW_CHECK_HOSTNAME", "KW_BAD_HOSTNAME",
+  "KW_KEEP_TIMESTAMP", "KW_USE_DNS", "KW_USE_FQDN", "KW_CUSTOM_DOMAIN",
+  "KW_DNS_CACHE", "KW_DNS_CACHE_SIZE", "KW_DNS_CACHE_EXPIRE",
+  "KW_DNS_CACHE_EXPIRE_FAILED", "KW_DNS_CACHE_HOSTS", "KW_PERSIST_ONLY",
+  "KW_USE_RCPTID", "KW_USE_UNIQID", "KW_TZ_CONVERT", "KW_TS_FORMAT",
+  "KW_FRAC_DIGITS", "KW_LOG_FIFO_SIZE", "KW_LOG_FETCH_LIMIT",
+  "KW_LOG_IW_SIZE", "KW_LOG_PREFIX", "KW_PROGRAM_OVERRIDE",
+  "KW_HOST_OVERRIDE", "KW_THROTTLE", "KW_THREADED",
+  "KW_PASS_UNIX_CREDENTIALS", "KW_PERSIST_NAME", "KW_FLAGS", "KW_PAD_SIZE",
+  "KW_TIME_ZONE", "KW_RECV_TIME_ZONE", "KW_SEND_TIME_ZONE",
   "KW_LOCAL_TIME_ZONE", "KW_FORMAT", "KW_TIME_REOPEN", "KW_TIME_REAP",
   "KW_TIME_SLEEP", "KW_TMPL_ESCAPE", "KW_OPTIONAL", "KW_CREATE_DIRS",
   "KW_OWNER", "KW_GROUP", "KW_PERM", "KW_DIR_OWNER", "KW_DIR_GROUP",
@@ -1910,17 +1871,17 @@ static const char *const yytname[] =
   "KW_TEMPLATE_FUNCTION", "KW_DEFAULT_FACILITY", "KW_DEFAULT_LEVEL",
   "KW_PORT", "KW_USE_TIME_RECVD", "KW_FACILITY", "KW_LEVEL", "KW_HOST",
   "KW_MATCH", "KW_MESSAGE", "KW_NETMASK", "KW_TAGS", "KW_NETMASK6",
-  "KW_VALUE", "KW_REWRITE", "KW_SET", "KW_SUBST", "KW_YES", "KW_NO",
-  "KW_IFDEF", "KW_ENDIF", "LL_DOTDOT", "LL_IDENTIFIER", "LL_NUMBER",
-  "LL_FLOAT", "LL_STRING", "LL_TOKEN", "LL_BLOCK", "LL_PRAGMA", "LL_EOL",
-  "LL_ERROR", "KW_VALUE_PAIRS", "KW_SELECT", "KW_EXCLUDE", "KW_PAIR",
-  "KW_KEY", "KW_SCOPE", "KW_SHIFT", "KW_REKEY", "KW_ADD_PREFIX",
-  "KW_REPLACE_PREFIX", "KW_ON_ERROR", "KW_RETRIES", "KW_SMTP",
-  "KW_SUBJECT", "KW_FROM", "KW_TO", "KW_BODY", "KW_HEADER", "KW_CC",
-  "KW_BCC", "KW_SENDER", "KW_REPLY_TO", "'('", "')'", "'{'", "'}'", "';'",
-  "':'", "$accept", "start", "$@1", "afsmtp_options", "afsmtp_option",
-  "$@2", "template_content_inner", "template_content", "$@8", "string",
-  "threaded_dest_driver_option", "dest_driver_option", "template_option", YY_NULLPTR
+  "KW_REWRITE", "KW_YES", "KW_NO", "KW_IFDEF", "KW_ENDIF", "LL_DOTDOT",
+  "LL_IDENTIFIER", "LL_NUMBER", "LL_FLOAT", "LL_STRING", "LL_TOKEN",
+  "LL_BLOCK", "LL_PRAGMA", "LL_EOL", "LL_ERROR", "KW_VALUE_PAIRS",
+  "KW_EXCLUDE", "KW_PAIR", "KW_KEY", "KW_SCOPE", "KW_SHIFT", "KW_REKEY",
+  "KW_ADD_PREFIX", "KW_REPLACE_PREFIX", "KW_ON_ERROR", "KW_RETRIES",
+  "KW_SMTP", "KW_SUBJECT", "KW_FROM", "KW_TO", "KW_BODY", "KW_HEADER",
+  "KW_CC", "KW_BCC", "KW_SENDER", "KW_REPLY_TO", "'('", "')'", "'{'",
+  "'}'", "';'", "':'", "$accept", "start", "$@1", "afsmtp_options",
+  "afsmtp_option", "$@2", "template_content_inner", "template_content",
+  "$@8", "string", "driver_option", "threaded_dest_driver_option",
+  "dest_driver_option", "template_option", YY_NULLPTR
 };
 #endif
 
@@ -1932,28 +1893,26 @@ static const yytype_uint16 yytoknum[] =
        0,   256, 10512,     1,     2,     3,     4,     5,     6,     7,
        8,     9,    10,    11,    12,    13,    14,    15,    16,    17,
       18, 10000, 10001, 10002, 10003, 10004, 10005, 10006, 10007, 10008,
-   10009, 10010, 10011, 10030, 10031, 10032, 10033, 10034, 10035, 10036,
-   10037, 10038, 10039, 10040, 10050, 10051, 10052, 10053, 10054, 10055,
-   10060, 10071, 10072, 10073, 10074, 10075, 10076, 10077, 10078, 10079,
-   10080, 10081, 10090, 10091, 10092, 10093, 10094, 10100, 10110, 10111,
-   10112, 10120, 10121, 10130, 10131, 10132, 10140, 10141, 10142, 10150,
-   10151, 10152, 10160, 10162, 10163, 10164, 10165, 10166, 10170, 10171,
-   10231, 10190, 10200, 10201, 10202, 10203, 10204, 10205, 10210, 10211,
-   10212, 10220, 10230, 10240, 10250, 10251, 10252, 10260, 10261, 10262,
-   10270, 10271, 10272, 10300, 10301, 10323, 10340, 10350, 10351, 10352,
-   10353, 10354, 10355, 10356, 10357, 10361, 10370, 10371, 10372, 10380,
-   10381, 10410, 10411, 10420, 10421, 10422, 10423, 10424, 10425, 10426,
-   10427, 10428, 10429, 10500, 10501, 10502, 10503, 10504, 10505, 10506,
-   10507, 10508, 10509, 10510, 10511, 10513, 10514, 10515, 10516, 10517,
-   10518, 10519, 10520, 10521, 10522,    40,    41,   123,   125,    59,
-      58
+   10009, 10010, 10011, 10060, 10071, 10072, 10073, 10074, 10075, 10076,
+   10077, 10078, 10079, 10080, 10081, 10082, 10083, 10090, 10091, 10092,
+   10093, 10094, 10100, 10110, 10111, 10112, 10120, 10121, 10130, 10131,
+   10132, 10140, 10141, 10142, 10150, 10151, 10152, 10160, 10162, 10163,
+   10164, 10165, 10166, 10170, 10171, 10231, 10302, 10190, 10200, 10201,
+   10202, 10203, 10204, 10205, 10210, 10211, 10212, 10220, 10230, 10240,
+   10250, 10251, 10252, 10260, 10261, 10262, 10270, 10271, 10272, 10300,
+   10301, 10323, 10340, 10350, 10351, 10352, 10353, 10354, 10355, 10356,
+   10357, 10370, 10380, 10381, 10410, 10411, 10420, 10421, 10422, 10423,
+   10424, 10425, 10426, 10427, 10428, 10429, 10500, 10502, 10503, 10504,
+   10505, 10506, 10507, 10508, 10509, 10510, 10511, 10513, 10514, 10515,
+   10516, 10517, 10518, 10519, 10520, 10521, 10522,    40,    41,   123,
+     125,    59,    58
 };
 # endif
 
-#define YYPACT_NINF -158
+#define YYPACT_NINF -138
 
 #define yypact_value_is_default(Yystate) \
-  (!!((Yystate) == (-158)))
+  (!!((Yystate) == (-138)))
 
 #define YYTABLE_NINF -6
 
@@ -1964,18 +1923,19 @@ static const yytype_uint16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int16 yypact[] =
 {
-      -2,  -152,     7,  -158,  -158,  -157,   -82,  -151,  -150,  -149,
-    -148,  -158,  -147,  -146,  -145,  -144,  -143,  -141,  -137,  -136,
-    -135,  -134,  -153,   -82,   -70,  -158,  -158,  -103,  -101,  -100,
-    -133,   -93,  -158,  -158,  -158,  -158,  -133,  -158,  -158,  -158,
-    -158,  -158,  -158,  -122,  -121,  -120,  -119,  -118,  -117,  -158,
-    -116,  -115,  -113,  -158,  -158,  -112,  -111,  -110,  -125,  -109,
-    -108,  -104,  -158,   -99,   -98,   -97,   -96,  -133,   -86,  -133,
-    -133,  -133,  -133,  -158,  -158,  -158,  -158,  -158,  -158,   -92,
-    -158,  -158,  -158,   -79,  -158,   -73,  -158,   -72,  -158,   -71,
-    -158,   -69,  -158,   -68,  -158,   -67,   -66,   -65,   -64,   -63,
-     -62,   -61,  -133,  -158,  -158,  -158,  -158,  -158,  -158,  -158,
-    -158,  -158,  -158,  -158,  -158,  -158,   -60,  -158
+      -1,  -130,     8,  -138,  -138,  -137,   -67,  -133,  -132,  -131,
+    -129,  -128,  -138,  -127,  -126,  -125,  -124,  -123,  -122,  -120,
+    -117,  -114,  -112,  -111,   -67,   -53,  -138,  -138,  -138,   -87,
+     -86,  -116,   -82,  -116,   -79,  -138,  -138,  -138,  -138,  -116,
+    -138,  -138,  -138,  -138,  -138,  -138,  -106,  -105,  -104,  -103,
+    -102,  -101,  -138,  -100,   -93,  -138,  -138,   -89,   -84,   -83,
+     -81,   -80,  -115,   -78,   -68,   -57,  -138,   -56,   -55,   -54,
+     -52,  -116,   -71,  -116,  -116,  -116,  -116,  -138,  -138,  -138,
+    -138,  -138,  -138,  -138,   -50,  -138,  -138,  -138,   -49,  -138,
+     -48,  -138,   -47,  -138,   -46,  -138,   -45,  -138,   -44,  -138,
+     -43,   -42,   -41,   -40,   -39,   -38,   -37,  -116,  -138,  -138,
+    -138,  -138,  -138,  -138,  -138,  -138,  -138,  -138,  -138,  -138,
+    -138,   -36,  -138
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -1984,31 +1944,32 @@ static const yytype_int16 yypact[] =
 static const yytype_uint8 yydefact[] =
 {
        0,     0,     0,     2,     1,     0,    25,     0,     0,     0,
-       0,    36,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,    25,     0,    23,    24,     0,     0,     0,
-       0,     0,    29,    29,    29,    29,     0,    29,    29,    29,
-      29,     3,     4,     0,     0,     0,     0,     0,     0,    26,
-       0,     0,     0,    31,    32,     0,     0,     0,     0,    29,
-      29,     0,    29,    29,    29,    29,    29,     0,     0,     0,
-       0,     0,     0,    34,    35,     7,     6,    33,     8,    31,
-      30,    27,    11,     0,    15,     0,     9,     0,    17,     0,
-      19,     0,    13,     0,    21,     0,     0,     0,     0,     0,
-       0,     0,     0,    12,    16,    10,    18,    20,    14,    22,
-      37,    38,    39,    40,    41,    42,     0,    28
+       0,     0,    37,     0,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,    25,     0,    38,    23,    24,     0,
+       0,     0,     0,     0,     0,    29,    29,    29,    29,     0,
+      29,    29,    29,    29,     3,     4,     0,     0,     0,     0,
+       0,     0,    26,     0,     0,    31,    32,     0,     0,     0,
+       0,     0,     0,    29,    29,     0,    29,    29,    29,    29,
+      29,     0,     0,     0,     0,     0,     0,    35,    36,    33,
+       7,     6,    34,     8,    31,    30,    27,    11,     0,    15,
+       0,     9,     0,    17,     0,    19,     0,    13,     0,    21,
+       0,     0,     0,     0,     0,     0,     0,     0,    12,    16,
+      10,    18,    20,    14,    22,    39,    40,    41,    42,    43,
+      44,     0,    28
 };
 
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int16 yypgoto[] =
 {
-    -158,  -158,  -158,    73,  -158,  -158,  -158,    26,  -158,   -31,
-    -158,  -158,  -158
+    -138,  -138,  -138,    42,  -138,  -138,  -138,    20,  -138,   -22,
+    -138,  -138,  -138,  -138
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-      -1,     2,     5,    22,    23,    24,    80,    57,    58,    55,
-      25,    26,    49
+      -1,     2,     5,    23,    24,    25,    85,    61,    62,    57,
+      26,    27,    28,    52
 };
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -2016,60 +1977,63 @@ static const yytype_int8 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int8 yytable[] =
 {
-       7,    53,     1,     3,    54,    62,     8,     4,     6,    79,
-      43,    44,    54,    41,    27,    28,    29,    30,    31,    32,
-      33,    34,    35,    45,    36,    46,    47,    81,    37,    38,
-      39,    40,    50,     9,    51,    52,    96,    10,    98,    99,
-     100,   101,    56,    67,    68,    69,    70,    71,    72,    97,
-      73,    74,    11,    75,    76,    77,    78,    82,    84,    59,
-      60,    61,    86,    63,    64,    65,    66,    88,    90,    92,
-      94,   116,    12,   102,    13,    14,    15,    16,    17,    18,
-      19,    20,    21,    48,    -5,    83,    85,   103,    87,    89,
-      91,    93,    95,   104,   105,   106,    42,   107,   108,   109,
-     110,   111,   112,   113,   114,   115,   117
+       7,    55,    84,     1,    56,    56,     8,     3,     4,     9,
+       6,    59,    46,    47,    29,    30,    31,    66,    32,    33,
+      34,    35,    36,    37,    38,    39,    48,    40,    49,    50,
+      41,    53,    54,    42,    10,    43,    58,    44,    11,    60,
+      86,    71,    72,    73,    74,    75,    76,   102,    77,   101,
+      12,   103,   104,   105,   106,    78,    63,    64,    65,    79,
+      67,    68,    69,    70,    80,    81,    45,    82,    83,    13,
+      87,    14,    15,    16,    17,    18,    19,    20,    21,    22,
+      89,    -5,    51,    88,    90,   121,    92,    94,    96,    98,
+     100,    91,    93,    95,    97,     0,    99,   107,     0,   108,
+     109,   110,   111,   112,   113,   114,   115,   116,   117,   118,
+     119,   120,   122
 };
 
-static const yytype_uint8 yycheck[] =
+static const yytype_int16 yycheck[] =
 {
-      82,   134,     4,   155,   137,    36,    88,     0,   165,   134,
-      80,    81,   137,   166,   165,   165,   165,   165,   165,   165,
-     165,   165,   165,    93,   165,    95,    96,    58,   165,   165,
-     165,   165,   135,   115,   135,   135,    67,   119,    69,    70,
-      71,    72,   135,   165,   165,   165,   165,   165,   165,   135,
-     166,   166,   134,   166,   166,   166,   166,   166,   166,    33,
-      34,    35,   166,    37,    38,    39,    40,   166,   166,   166,
-     166,   102,   154,   165,   156,   157,   158,   159,   160,   161,
-     162,   163,   164,   153,   166,    59,    60,   166,    62,    63,
-      64,    65,    66,   166,   166,   166,    23,   166,   166,   166,
-     166,   166,   166,   166,   166,   166,   166
+      67,   117,   117,     4,   120,   120,    73,   137,     0,    76,
+     147,    33,    65,    66,   147,   147,   147,    39,   147,   147,
+     147,   147,   147,   147,   147,   147,    79,   147,    81,    82,
+     147,   118,   118,   147,   101,   147,   118,   148,   105,   118,
+      62,   147,   147,   147,   147,   147,   147,   118,   148,    71,
+     117,    73,    74,    75,    76,   148,    36,    37,    38,   148,
+      40,    41,    42,    43,   148,   148,    24,   148,   148,   136,
+     148,   138,   139,   140,   141,   142,   143,   144,   145,   146,
+     148,   148,   135,    63,    64,   107,    66,    67,    68,    69,
+      70,   148,   148,   148,   148,    -1,   148,   147,    -1,   148,
+     148,   148,   148,   148,   148,   148,   148,   148,   148,   148,
+     148,   148,   148
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
      symbol of state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
-       0,     4,   172,   155,     0,   173,   165,    82,    88,   115,
-     119,   134,   154,   156,   157,   158,   159,   160,   161,   162,
-     163,   164,   174,   175,   176,   181,   182,   165,   165,   165,
-     165,   165,   165,   165,   165,   165,   165,   165,   165,   165,
-     165,   166,   174,    80,    81,    93,    95,    96,   153,   183,
-     135,   135,   135,   134,   137,   180,   135,   178,   179,   178,
-     178,   178,   180,   178,   178,   178,   178,   165,   165,   165,
-     165,   165,   165,   166,   166,   166,   166,   166,   166,   134,
-     177,   180,   166,   178,   166,   178,   166,   178,   166,   178,
-     166,   178,   166,   178,   166,   178,   180,   135,   180,   180,
-     180,   180,   165,   166,   166,   166,   166,   166,   166,   166,
-     166,   166,   166,   166,   166,   166,   180,   166
+       0,     4,   154,   137,     0,   155,   147,    67,    73,    76,
+     101,   105,   117,   136,   138,   139,   140,   141,   142,   143,
+     144,   145,   146,   156,   157,   158,   163,   164,   165,   147,
+     147,   147,   147,   147,   147,   147,   147,   147,   147,   147,
+     147,   147,   147,   147,   148,   156,    65,    66,    79,    81,
+      82,   135,   166,   118,   118,   117,   120,   162,   118,   162,
+     118,   160,   161,   160,   160,   160,   162,   160,   160,   160,
+     160,   147,   147,   147,   147,   147,   147,   148,   148,   148,
+     148,   148,   148,   148,   117,   159,   162,   148,   160,   148,
+     160,   148,   160,   148,   160,   148,   160,   148,   160,   148,
+     160,   162,   118,   162,   162,   162,   162,   147,   148,   148,
+     148,   148,   148,   148,   148,   148,   148,   148,   148,   148,
+     148,   162,   148
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
-       0,   171,   173,   172,   174,   174,   175,   175,   175,   175,
-     175,   175,   175,   175,   175,   175,   175,   175,   175,   175,
-     175,   175,   175,   175,   175,   176,   175,   177,   177,   179,
-     178,   180,   180,   181,   182,   182,   182,   183,   183,   183,
-     183,   183,   183
+       0,   153,   155,   154,   156,   156,   157,   157,   157,   157,
+     157,   157,   157,   157,   157,   157,   157,   157,   157,   157,
+     157,   157,   157,   157,   157,   158,   157,   159,   159,   161,
+     160,   162,   162,   163,   164,   165,   165,   165,   165,   166,
+     166,   166,   166,   166,   166
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
@@ -2078,8 +2042,8 @@ static const yytype_uint8 yyr2[] =
        0,     2,     0,     6,     2,     0,     4,     4,     4,     4,
        5,     4,     5,     4,     5,     4,     5,     4,     5,     4,
        5,     4,     5,     1,     1,     0,     2,     1,     4,     0,
-       2,     1,     1,     4,     4,     4,     1,     4,     4,     4,
-       4,     4,     4
+       2,     1,     1,     4,     4,     4,     4,     1,     1,     4,
+       4,     4,     4,     4,     4
 };
 
 
@@ -2575,7 +2539,36 @@ yydestruct (const char *yymsg, int yytype, YYSTYPE *yyvaluep, YYLTYPE *yylocatio
   YY_SYMBOL_PRINT (yymsg, yytype, yyvaluep, yylocationp);
 
   YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN
-  YYUSE (yytype);
+  switch (yytype)
+    {
+          case 117: /* LL_IDENTIFIER  */
+#line 288 "modules/afsmtp/afsmtp-grammar.y" /* yacc.c:1257  */
+      { free(((*yyvaluep).cptr)); }
+#line 2548 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1257  */
+        break;
+
+    case 120: /* LL_STRING  */
+#line 288 "modules/afsmtp/afsmtp-grammar.y" /* yacc.c:1257  */
+      { free(((*yyvaluep).cptr)); }
+#line 2554 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1257  */
+        break;
+
+    case 122: /* LL_BLOCK  */
+#line 288 "modules/afsmtp/afsmtp-grammar.y" /* yacc.c:1257  */
+      { free(((*yyvaluep).cptr)); }
+#line 2560 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1257  */
+        break;
+
+    case 162: /* string  */
+#line 288 "modules/afsmtp/afsmtp-grammar.y" /* yacc.c:1257  */
+      { free(((*yyvaluep).cptr)); }
+#line 2566 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1257  */
+        break;
+
+
+      default:
+        break;
+    }
   YY_IGNORE_MAYBE_UNINITIALIZED_END
 }
 
@@ -2861,195 +2854,195 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 387 "afsmtp-grammar.y" /* yacc.c:1646  */
+#line 367 "modules/afsmtp/afsmtp-grammar.y" /* yacc.c:1646  */
     {
             last_driver = *instance = afsmtp_dd_new(configuration);
           }
-#line 2869 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
+#line 2862 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
     break;
 
   case 3:
-#line 390 "afsmtp-grammar.y" /* yacc.c:1646  */
+#line 370 "modules/afsmtp/afsmtp-grammar.y" /* yacc.c:1646  */
     { YYACCEPT; }
-#line 2875 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
+#line 2868 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
     break;
 
   case 6:
-#line 400 "afsmtp-grammar.y" /* yacc.c:1646  */
+#line 380 "modules/afsmtp/afsmtp-grammar.y" /* yacc.c:1646  */
     {
             afsmtp_dd_set_host(last_driver, (yyvsp[-1].cptr));
             free((yyvsp[-1].cptr));
           }
-#line 2884 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
+#line 2877 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
     break;
 
   case 7:
-#line 404 "afsmtp-grammar.y" /* yacc.c:1646  */
+#line 384 "modules/afsmtp/afsmtp-grammar.y" /* yacc.c:1646  */
     { afsmtp_dd_set_port(last_driver, (yyvsp[-1].num)); }
-#line 2890 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
+#line 2883 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
     break;
 
   case 8:
-#line 406 "afsmtp-grammar.y" /* yacc.c:1646  */
+#line 386 "modules/afsmtp/afsmtp-grammar.y" /* yacc.c:1646  */
     {
             afsmtp_dd_set_subject(last_driver, (yyvsp[-1].ptr));
             log_template_unref((yyvsp[-1].ptr));
           }
-#line 2899 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
+#line 2892 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 411 "afsmtp-grammar.y" /* yacc.c:1646  */
+#line 391 "modules/afsmtp/afsmtp-grammar.y" /* yacc.c:1646  */
     {
             afsmtp_dd_set_body(last_driver, (yyvsp[-1].ptr));
             log_template_unref((yyvsp[-1].ptr));
           }
-#line 2908 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
+#line 2901 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 416 "afsmtp-grammar.y" /* yacc.c:1646  */
+#line 396 "modules/afsmtp/afsmtp-grammar.y" /* yacc.c:1646  */
     {
             afsmtp_dd_add_header(last_driver, (yyvsp[-2].cptr), (yyvsp[-1].ptr));
             free((yyvsp[-2].cptr));
             log_template_unref((yyvsp[-1].ptr));
           }
-#line 2918 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
+#line 2911 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
     break;
 
   case 11:
-#line 422 "afsmtp-grammar.y" /* yacc.c:1646  */
+#line 402 "modules/afsmtp/afsmtp-grammar.y" /* yacc.c:1646  */
     {
             afsmtp_dd_set_from(last_driver, (yyvsp[-1].ptr), (yyvsp[-1].ptr));
             log_template_unref((yyvsp[-1].ptr));
           }
-#line 2927 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
+#line 2920 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
     break;
 
   case 12:
-#line 427 "afsmtp-grammar.y" /* yacc.c:1646  */
+#line 407 "modules/afsmtp/afsmtp-grammar.y" /* yacc.c:1646  */
     {
             afsmtp_dd_set_from(last_driver, (yyvsp[-2].ptr), (yyvsp[-1].ptr));
             log_template_unref((yyvsp[-2].ptr));
             log_template_unref((yyvsp[-1].ptr));
           }
-#line 2937 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
+#line 2930 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
     break;
 
   case 13:
-#line 433 "afsmtp-grammar.y" /* yacc.c:1646  */
+#line 413 "modules/afsmtp/afsmtp-grammar.y" /* yacc.c:1646  */
     {
             afsmtp_dd_set_from(last_driver, (yyvsp[-1].ptr), (yyvsp[-1].ptr));
             log_template_unref((yyvsp[-1].ptr));
           }
-#line 2946 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
+#line 2939 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
     break;
 
   case 14:
-#line 438 "afsmtp-grammar.y" /* yacc.c:1646  */
+#line 418 "modules/afsmtp/afsmtp-grammar.y" /* yacc.c:1646  */
     {
             afsmtp_dd_set_from(last_driver, (yyvsp[-2].ptr), (yyvsp[-1].ptr));
             log_template_unref((yyvsp[-2].ptr));
             log_template_unref((yyvsp[-1].ptr));
           }
-#line 2956 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
+#line 2949 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
     break;
 
   case 15:
-#line 444 "afsmtp-grammar.y" /* yacc.c:1646  */
+#line 424 "modules/afsmtp/afsmtp-grammar.y" /* yacc.c:1646  */
     {
             afsmtp_dd_add_rcpt(last_driver, AFSMTP_RCPT_TYPE_TO, (yyvsp[-1].ptr), (yyvsp[-1].ptr));
             log_template_unref((yyvsp[-1].ptr));
           }
-#line 2965 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
+#line 2958 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
     break;
 
   case 16:
-#line 449 "afsmtp-grammar.y" /* yacc.c:1646  */
+#line 429 "modules/afsmtp/afsmtp-grammar.y" /* yacc.c:1646  */
     {
             afsmtp_dd_add_rcpt(last_driver, AFSMTP_RCPT_TYPE_TO, (yyvsp[-2].ptr), (yyvsp[-1].ptr));
             log_template_unref((yyvsp[-2].ptr));
             log_template_unref((yyvsp[-1].ptr));
           }
-#line 2975 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
+#line 2968 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
     break;
 
   case 17:
-#line 455 "afsmtp-grammar.y" /* yacc.c:1646  */
+#line 435 "modules/afsmtp/afsmtp-grammar.y" /* yacc.c:1646  */
     {
             afsmtp_dd_add_rcpt(last_driver, AFSMTP_RCPT_TYPE_CC, (yyvsp[-1].ptr), (yyvsp[-1].ptr));
             log_template_unref((yyvsp[-1].ptr));
           }
-#line 2984 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
+#line 2977 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
     break;
 
   case 18:
-#line 460 "afsmtp-grammar.y" /* yacc.c:1646  */
+#line 440 "modules/afsmtp/afsmtp-grammar.y" /* yacc.c:1646  */
     {
             afsmtp_dd_add_rcpt(last_driver, AFSMTP_RCPT_TYPE_CC, (yyvsp[-2].ptr), (yyvsp[-1].ptr));
             log_template_unref((yyvsp[-2].ptr));
             log_template_unref((yyvsp[-1].ptr));
           }
-#line 2994 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
+#line 2987 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
     break;
 
   case 19:
-#line 466 "afsmtp-grammar.y" /* yacc.c:1646  */
+#line 446 "modules/afsmtp/afsmtp-grammar.y" /* yacc.c:1646  */
     {
             afsmtp_dd_add_rcpt(last_driver, AFSMTP_RCPT_TYPE_BCC, (yyvsp[-1].ptr), (yyvsp[-1].ptr));
             log_template_unref((yyvsp[-1].ptr));
           }
-#line 3003 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
+#line 2996 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
     break;
 
   case 20:
-#line 471 "afsmtp-grammar.y" /* yacc.c:1646  */
+#line 451 "modules/afsmtp/afsmtp-grammar.y" /* yacc.c:1646  */
     {
             afsmtp_dd_add_rcpt(last_driver, AFSMTP_RCPT_TYPE_BCC, (yyvsp[-2].ptr), (yyvsp[-1].ptr));
             log_template_unref((yyvsp[-2].ptr));
             log_template_unref((yyvsp[-1].ptr));
           }
-#line 3013 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
+#line 3006 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
     break;
 
   case 21:
-#line 477 "afsmtp-grammar.y" /* yacc.c:1646  */
+#line 457 "modules/afsmtp/afsmtp-grammar.y" /* yacc.c:1646  */
     {
             afsmtp_dd_add_rcpt(last_driver, AFSMTP_RCPT_TYPE_REPLY_TO, (yyvsp[-1].ptr), (yyvsp[-1].ptr));
             log_template_unref((yyvsp[-1].ptr));
           }
-#line 3022 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
+#line 3015 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
     break;
 
   case 22:
-#line 482 "afsmtp-grammar.y" /* yacc.c:1646  */
+#line 462 "modules/afsmtp/afsmtp-grammar.y" /* yacc.c:1646  */
     {
             afsmtp_dd_add_rcpt(last_driver, AFSMTP_RCPT_TYPE_REPLY_TO, (yyvsp[-2].ptr), (yyvsp[-1].ptr));
             log_template_unref((yyvsp[-2].ptr));
             log_template_unref((yyvsp[-1].ptr));
           }
-#line 3032 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
+#line 3025 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
     break;
 
   case 25:
-#line 489 "afsmtp-grammar.y" /* yacc.c:1646  */
+#line 469 "modules/afsmtp/afsmtp-grammar.y" /* yacc.c:1646  */
     { last_template_options = afsmtp_dd_get_template_options(last_driver); }
-#line 3038 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
+#line 3031 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
     break;
 
   case 27:
-#line 688 "afsmtp-grammar.y" /* yacc.c:1646  */
+#line 668 "modules/afsmtp/afsmtp-grammar.y" /* yacc.c:1646  */
     {
           GError *error = NULL;
 
           CHECK_ERROR(log_template_compile(last_template, (yyvsp[0].cptr), &error), (yylsp[0]), "Error compiling template (%s)", error->message);
           free((yyvsp[0].cptr));
         }
-#line 3049 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
+#line 3042 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
     break;
 
   case 28:
-#line 695 "afsmtp-grammar.y" /* yacc.c:1646  */
+#line 675 "modules/afsmtp/afsmtp-grammar.y" /* yacc.c:1646  */
     {
           GError *error = NULL;
 
@@ -3059,43 +3052,49 @@ yyreduce:
           CHECK_ERROR(log_template_set_type_hint(last_template, (yyvsp[-3].cptr), &error), (yylsp[-3]), "Error setting the template type-hint (%s)", error->message);
           free((yyvsp[-3].cptr));
         }
-#line 3063 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
+#line 3056 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
     break;
 
   case 29:
-#line 707 "afsmtp-grammar.y" /* yacc.c:1646  */
+#line 687 "modules/afsmtp/afsmtp-grammar.y" /* yacc.c:1646  */
     { last_template = log_template_new(configuration, NULL); }
-#line 3069 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
+#line 3062 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
     break;
 
   case 30:
-#line 707 "afsmtp-grammar.y" /* yacc.c:1646  */
+#line 687 "modules/afsmtp/afsmtp-grammar.y" /* yacc.c:1646  */
     { (yyval.ptr) = last_template; }
-#line 3075 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
+#line 3068 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
     break;
 
   case 33:
-#line 851 "afsmtp-grammar.y" /* yacc.c:1646  */
-    {
-          log_threaded_dest_driver_set_max_retries(last_driver, (yyvsp[-1].num));
-        }
-#line 3083 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
+#line 837 "modules/afsmtp/afsmtp-grammar.y" /* yacc.c:1646  */
+    { log_pipe_set_persist_name(&last_driver->super, g_strdup((yyvsp[-1].cptr))); free((yyvsp[-1].cptr)); }
+#line 3074 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
     break;
 
   case 34:
-#line 858 "afsmtp-grammar.y" /* yacc.c:1646  */
-    { ((LogDestDriver *) last_driver)->log_fifo_size = (yyvsp[-1].num); }
-#line 3089 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
+#line 842 "modules/afsmtp/afsmtp-grammar.y" /* yacc.c:1646  */
+    {
+          log_threaded_dest_driver_set_max_retries(last_driver, (yyvsp[-1].num));
+        }
+#line 3082 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
     break;
 
   case 35:
-#line 859 "afsmtp-grammar.y" /* yacc.c:1646  */
-    { ((LogDestDriver *) last_driver)->throttle = (yyvsp[-1].num); }
-#line 3095 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
+#line 849 "modules/afsmtp/afsmtp-grammar.y" /* yacc.c:1646  */
+    { ((LogDestDriver *) last_driver)->log_fifo_size = (yyvsp[-1].num); }
+#line 3088 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
     break;
 
   case 36:
-#line 861 "afsmtp-grammar.y" /* yacc.c:1646  */
+#line 850 "modules/afsmtp/afsmtp-grammar.y" /* yacc.c:1646  */
+    { ((LogDestDriver *) last_driver)->throttle = (yyvsp[-1].num); }
+#line 3094 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 37:
+#line 852 "modules/afsmtp/afsmtp-grammar.y" /* yacc.c:1646  */
     {
             Plugin *p;
             gint context = LL_CONTEXT_INNER_DEST;
@@ -3113,41 +3112,41 @@ yyreduce:
               }
             log_driver_add_plugin(last_driver, (LogDriverPlugin *) value);
           }
-#line 3117 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 37:
-#line 937 "afsmtp-grammar.y" /* yacc.c:1646  */
-    { last_template_options->ts_format = cfg_ts_format_value((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 3123 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 38:
-#line 938 "afsmtp-grammar.y" /* yacc.c:1646  */
-    { last_template_options->frac_digits = (yyvsp[-1].num); }
-#line 3129 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
+#line 3116 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
     break;
 
   case 39:
-#line 939 "afsmtp-grammar.y" /* yacc.c:1646  */
-    { last_template_options->time_zone[LTZ_SEND] = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 3135 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
+#line 925 "modules/afsmtp/afsmtp-grammar.y" /* yacc.c:1646  */
+    { last_template_options->ts_format = cfg_ts_format_value((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
+#line 3122 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
     break;
 
   case 40:
-#line 940 "afsmtp-grammar.y" /* yacc.c:1646  */
-    { last_template_options->time_zone[LTZ_SEND] = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 3141 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
+#line 926 "modules/afsmtp/afsmtp-grammar.y" /* yacc.c:1646  */
+    { last_template_options->frac_digits = (yyvsp[-1].num); }
+#line 3128 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
     break;
 
   case 41:
-#line 941 "afsmtp-grammar.y" /* yacc.c:1646  */
-    { last_template_options->time_zone[LTZ_LOCAL] = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 3147 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
+#line 927 "modules/afsmtp/afsmtp-grammar.y" /* yacc.c:1646  */
+    { last_template_options->time_zone[LTZ_SEND] = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
+#line 3134 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
     break;
 
   case 42:
-#line 943 "afsmtp-grammar.y" /* yacc.c:1646  */
+#line 928 "modules/afsmtp/afsmtp-grammar.y" /* yacc.c:1646  */
+    { last_template_options->time_zone[LTZ_SEND] = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
+#line 3140 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 43:
+#line 929 "modules/afsmtp/afsmtp-grammar.y" /* yacc.c:1646  */
+    { last_template_options->time_zone[LTZ_LOCAL] = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
+#line 3146 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 44:
+#line 931 "modules/afsmtp/afsmtp-grammar.y" /* yacc.c:1646  */
     {
           gint on_error;
 
@@ -3156,11 +3155,11 @@ yyreduce:
 
           log_template_options_set_on_error(last_template_options, on_error);
         }
-#line 3160 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
+#line 3159 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
     break;
 
 
-#line 3164 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
+#line 3163 "modules/afsmtp/afsmtp-grammar.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -3395,5 +3394,5 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 1024 "afsmtp-grammar.y" /* yacc.c:1906  */
+#line 1012 "modules/afsmtp/afsmtp-grammar.y" /* yacc.c:1906  */
 

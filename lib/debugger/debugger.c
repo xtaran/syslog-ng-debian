@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2014-2015 BalaBit IT Ltd, Budapest, Hungary
- * Copyright (c) 2014-2015 Balázs Scheidler
+ * Copyright (c) 2015 Balabit
+ * Copyright (c) 2015 Balázs Scheidler
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,7 +23,7 @@
  */
 #include "debugger/debugger.h"
 #include "debugger/tracer.h"
-#include "logmsg.h"
+#include "logmsg/logmsg.h"
 #include "logpipe.h"
 #include "mainloop.h"
 
@@ -326,11 +326,11 @@ debugger_start_console(Debugger *self)
 }
 
 gboolean
-debugger_stop_at_breakpoint(Debugger *self, LogPipe *pipe, LogMessage *msg)
+debugger_stop_at_breakpoint(Debugger *self, LogPipe *pipe_, LogMessage *msg)
 {
   self->drop_current_message = FALSE;
   self->current_msg = log_msg_ref(msg);
-  self->current_pipe = log_pipe_ref(pipe);
+  self->current_pipe = log_pipe_ref(pipe_);
   tracer_stop_on_breakpoint(self->tracer);
   log_msg_unref(self->current_msg);
   log_pipe_unref(self->current_pipe);
@@ -357,5 +357,6 @@ debugger_free(Debugger *self)
 {
   log_template_unref(self->display_template);
   tracer_free(self->tracer);
+  g_free(self->command_buffer);
   g_free(self);
 }

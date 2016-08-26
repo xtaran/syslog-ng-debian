@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2012 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2002-2012 Balabit
  * Copyright (c) 1998-2012 Balázs Scheidler
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -25,7 +25,9 @@
 #include "messages.h"
 
 #include <string.h>
+#include <errno.h>
 #include <sys/uio.h>
+#include <unistd.h>
 
 typedef struct _LogProtoFileWriter
 {
@@ -132,8 +134,7 @@ log_proto_file_writer_flush(LogProtoClient *s)
     {
       msg_error("I/O error occurred while writing",
                 evt_tag_int("fd", self->super.transport->fd),
-                evt_tag_errno(EVT_TAG_OSERROR, errno),
-                NULL);
+                evt_tag_errno(EVT_TAG_OSERROR, errno));
       return LPS_ERROR;
     }
 
@@ -206,7 +207,7 @@ log_proto_file_writer_prepare(LogProtoClient *s, gint *fd, GIOCondition *cond)
 }
 
 LogProtoClient *
-log_proto_file_writer_new(LogTransport *transport, const LogProtoClientOptions *options, gint flush_lines, gint fsync)
+log_proto_file_writer_new(LogTransport *transport, const LogProtoClientOptions *options, gint flush_lines, gint fsync_)
 {
   if (flush_lines == 0)
     /* the flush-lines option has not been specified, use a default value */
@@ -223,7 +224,7 @@ log_proto_file_writer_new(LogTransport *transport, const LogProtoClientOptions *
   log_proto_client_init(&self->super, transport, options);
   self->fd = transport->fd;
   self->buf_size = flush_lines;
-  self->fsync = fsync;
+  self->fsync = fsync_;
   self->super.prepare = log_proto_file_writer_prepare;
   self->super.post = log_proto_file_writer_post;
   self->super.flush = log_proto_file_writer_flush;

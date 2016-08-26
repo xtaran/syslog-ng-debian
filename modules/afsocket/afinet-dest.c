@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2012 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2002-2012 Balabit
  * Copyright (c) 1998-2012 Balázs Scheidler
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -25,7 +25,6 @@
 #include "transport-mapper-inet.h"
 #include "socket-options-inet.h"
 #include "messages.h"
-#include "misc.h"
 #include "gprocess.h"
 
 #include <sys/types.h>
@@ -41,7 +40,7 @@
 #  undef _GNU_SOURCE
 #endif
 
-#if ENABLE_SPOOF_SOURCE
+#if SYSLOG_NG_ENABLE_SPOOF_SOURCE
 #include <libnet.h>
 #endif
 
@@ -83,12 +82,12 @@ afinet_dd_set_destport(LogDriver *s, gchar *service)
 void
 afinet_dd_set_spoof_source(LogDriver *s, gboolean enable)
 {
-#if ENABLE_SPOOF_SOURCE
+#if SYSLOG_NG_ENABLE_SPOOF_SOURCE
   AFInetDestDriver *self = (AFInetDestDriver *) s;
 
   self->spoof_source = enable;
 #else
-  msg_error("Error enabling spoof-source, you need to compile syslog-ng with --enable-spoof-source", NULL);
+  msg_error("Error enabling spoof-source, you need to compile syslog-ng with --enable-spoof-source");
 #endif
 }
 
@@ -135,7 +134,7 @@ afinet_dd_construct_writer(AFSocketDestDriver *s)
 }
 
 static const gint
-_determine_port(AFInetDestDriver *self)
+_determine_port(const AFInetDestDriver *self)
 {
   gint port = 0;
 
@@ -174,8 +173,7 @@ afinet_dd_setup_addresses(AFSocketDestDriver *s)
       if (port_change_warning)
         {
           msg_warning(port_change_warning,
-                      evt_tag_str("id", self->super.super.super.id),
-                      NULL);
+                      evt_tag_str("id", self->super.super.super.id));
         }
     }
 
@@ -185,9 +183,9 @@ afinet_dd_setup_addresses(AFSocketDestDriver *s)
 }
 
 static const gchar *
-afinet_dd_get_dest_name(AFSocketDestDriver *s)
+afinet_dd_get_dest_name(const AFSocketDestDriver *s)
 {
-  AFInetDestDriver *self = (AFInetDestDriver *) s;
+  const AFInetDestDriver *self = (const AFInetDestDriver *)s;
   static gchar buf[256];
 
   if (strchr(self->hostname, ':') != NULL)
@@ -202,7 +200,7 @@ afinet_dd_init(LogPipe *s)
 {
   AFInetDestDriver *self G_GNUC_UNUSED = (AFInetDestDriver *) s;
 
-#if ENABLE_SPOOF_SOURCE
+#if SYSLOG_NG_ENABLE_SPOOF_SOURCE
   if (self->spoof_source)
     self->super.connections_kept_alive_accross_reloads = TRUE;
 #endif
@@ -210,7 +208,7 @@ afinet_dd_init(LogPipe *s)
   if (!afsocket_dd_init(s))
     return FALSE;
 
-#if ENABLE_SPOOF_SOURCE
+#if SYSLOG_NG_ENABLE_SPOOF_SOURCE
   if (self->super.transport_mapper->sock_type == SOCK_DGRAM)
     {
       if (self->spoof_source && !self->lnet_ctx)
@@ -225,8 +223,7 @@ afinet_dd_init(LogPipe *s)
           if (!self->lnet_ctx)
             {
               msg_error("Error initializing raw socket, spoof-source support disabled",
-                        evt_tag_str("error", NULL),
-                        NULL);
+                        evt_tag_str("error", NULL));
             }
         }
     }
@@ -235,7 +232,7 @@ afinet_dd_init(LogPipe *s)
   return TRUE;
 }
 
-#if ENABLE_SPOOF_SOURCE
+#if SYSLOG_NG_ENABLE_SPOOF_SOURCE
 static gboolean
 afinet_dd_construct_ipv4_packet(AFInetDestDriver *self, LogMessage *msg, GString *msg_line)
 {
@@ -280,7 +277,7 @@ afinet_dd_construct_ipv4_packet(AFInetDestDriver *self, LogMessage *msg, GString
   return TRUE;
 }
 
-#if ENABLE_IPV6
+#if SYSLOG_NG_ENABLE_IPV6
 static gboolean
 afinet_dd_construct_ipv6_packet(AFInetDestDriver *self, LogMessage *msg, GString *msg_line)
 {
@@ -352,7 +349,7 @@ afinet_dd_construct_ipv6_packet(AFInetDestDriver *self, LogMessage *msg, GString
 static void
 afinet_dd_queue(LogPipe *s, LogMessage *msg, const LogPathOptions *path_options, gpointer user_data)
 {
-#if ENABLE_SPOOF_SOURCE
+#if SYSLOG_NG_ENABLE_SPOOF_SOURCE
   AFInetDestDriver *self = (AFInetDestDriver *) s;
 
   /* NOTE: this code should probably become a LogTransport instance so that
@@ -379,7 +376,7 @@ afinet_dd_queue(LogPipe *s, LogMessage *msg, const LogPathOptions *path_options,
         case AF_INET:
           success = afinet_dd_construct_ipv4_packet(self, msg, self->lnet_buffer);
           break;
-#if ENABLE_IPV6
+#if SYSLOG_NG_ENABLE_IPV6
         case AF_INET6:
           success = afinet_dd_construct_ipv6_packet(self, msg, self->lnet_buffer);
           break;
@@ -401,8 +398,7 @@ afinet_dd_queue(LogPipe *s, LogMessage *msg, const LogPathOptions *path_options,
           else
             {
               msg_error("Error sending raw frame",
-                        evt_tag_str("error", libnet_geterror(self->lnet_ctx)),
-                        NULL);
+                        evt_tag_str("error", libnet_geterror(self->lnet_ctx)));
             }
         }
       g_static_mutex_unlock(&self->lnet_lock);
@@ -420,7 +416,7 @@ afinet_dd_free(LogPipe *s)
   g_free(self->bind_ip);
   g_free(self->bind_port);
   g_free(self->dest_port);
-#if ENABLE_SPOOF_SOURCE
+#if SYSLOG_NG_ENABLE_SPOOF_SOURCE
   if (self->lnet_buffer)
     g_string_free(self->lnet_buffer, TRUE);
   g_static_mutex_free(&self->lnet_lock);
@@ -444,7 +440,7 @@ afinet_dd_new_instance(TransportMapper *transport_mapper, gchar *hostname, Globa
 
   self->hostname = g_strdup(hostname);
 
-#if ENABLE_SPOOF_SOURCE
+#if SYSLOG_NG_ENABLE_SPOOF_SOURCE
   g_static_mutex_init(&self->lnet_lock);
   self->spoof_source_maxmsglen = 1024;
 #endif

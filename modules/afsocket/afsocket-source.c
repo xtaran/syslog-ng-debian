@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2002-2014 Balabit
  * Copyright (c) 1998-2012 Balázs Scheidler
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -23,7 +23,7 @@
 
 #include "afsocket-source.h"
 #include "messages.h"
-#include "misc.h"
+#include "fdhelpers.h"
 #include "gsocket.h"
 #include "stats/stats-registry.h"
 #include "mainloop.h"
@@ -33,7 +33,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 
-#if ENABLE_TCP_WRAPPER
+#if SYSLOG_NG_ENABLE_TCP_WRAPPER
 #include <tcpd.h>
 int allow_severity = 0;
 int deny_severity = 0;
@@ -252,16 +252,48 @@ afsocket_sd_set_max_connections(LogDriver *s, gint max_connections)
   self->max_connections = max_connections;
 }
 
-static inline gchar *
-afsocket_sd_format_persist_name(AFSocketSourceDriver *self, gboolean listener_name)
+static const gchar *
+afsocket_sd_format_name(const LogPipe *s)
 {
-  static gchar persist_name[128];
-  gchar buf[64];
+  const AFSocketSourceDriver *self = (const AFSocketSourceDriver *)s;
+  static gchar persist_name[1024];
 
-  g_snprintf(persist_name, sizeof(persist_name),
-             listener_name ? "afsocket_sd_listen_fd(%s,%s)" : "afsocket_sd_connections(%s,%s)",
-             (self->transport_mapper->sock_type == SOCK_STREAM) ? "stream" : "dgram",
-             g_sockaddr_format(self->bind_addr, buf, sizeof(buf), GSA_FULL));
+  if (s->persist_name)
+    {
+      g_snprintf(persist_name, sizeof(persist_name), "afsocket_sd.%s",
+                 self->super.super.super.persist_name);
+    }
+  else
+    {
+      gchar buf[64];
+
+      g_snprintf(persist_name, sizeof(persist_name), "afsocket_sd.(%s,%s)",
+                 (self->transport_mapper->sock_type == SOCK_STREAM) ? "stream" : "dgram",
+                 g_sockaddr_format(self->bind_addr, buf, sizeof(buf), GSA_FULL));
+    }
+
+  return persist_name;
+}
+
+static const gchar *
+afsocket_sd_format_listener_name(const AFSocketSourceDriver *self)
+{
+  static gchar persist_name[1024];
+
+  g_snprintf(persist_name, sizeof(persist_name), "%s.listen_fd",
+             afsocket_sd_format_name((const LogPipe *)self));
+
+  return persist_name;
+}
+
+static const gchar *
+afsocket_sd_format_connections_name(const AFSocketSourceDriver *self)
+{
+  static gchar persist_name[1024];
+
+  g_snprintf(persist_name, sizeof(persist_name), "%s.connections",
+             afsocket_sd_format_name((const LogPipe *)self));
+
   return persist_name;
 }
 
@@ -269,9 +301,9 @@ static gboolean
 afsocket_sd_process_connection(AFSocketSourceDriver *self, GSockAddr *client_addr, GSockAddr *local_addr, gint fd)
 {
   gchar buf[MAX_SOCKADDR_STRING], buf2[MAX_SOCKADDR_STRING];
-#if ENABLE_TCP_WRAPPER
+#if SYSLOG_NG_ENABLE_TCP_WRAPPER
   if (client_addr && (client_addr->sa.sa_family == AF_INET
-#if ENABLE_IPV6
+#if SYSLOG_NG_ENABLE_IPV6
                    || client_addr->sa.sa_family == AF_INET6
 #endif
      ))
@@ -285,8 +317,7 @@ afsocket_sd_process_connection(AFSocketSourceDriver *self, GSockAddr *client_add
 
           msg_error("Syslog connection rejected by tcpd",
                     evt_tag_str("client", g_sockaddr_format(client_addr, buf, sizeof(buf), GSA_FULL)),
-                    evt_tag_str("local", g_sockaddr_format(local_addr, buf2, sizeof(buf2), GSA_FULL)),
-                    NULL);
+                    evt_tag_str("local", g_sockaddr_format(local_addr, buf2, sizeof(buf2), GSA_FULL)));
           return FALSE;
         }
     }
@@ -298,8 +329,7 @@ afsocket_sd_process_connection(AFSocketSourceDriver *self, GSockAddr *client_add
       msg_error("Number of allowed concurrent connections reached, rejecting connection",
                 evt_tag_str("client", g_sockaddr_format(client_addr, buf, sizeof(buf), GSA_FULL)),
                 evt_tag_str("local", g_sockaddr_format(local_addr, buf2, sizeof(buf2), GSA_FULL)),
-                evt_tag_int("max", self->max_connections),
-                NULL);
+                evt_tag_int("max", self->max_connections));
       return FALSE;
     }
   else
@@ -348,8 +378,7 @@ afsocket_sd_accept(gpointer s)
       else if (status != G_IO_STATUS_NORMAL)
         {
           msg_error("Error accepting new connection",
-                    evt_tag_errno(EVT_TAG_OSERROR, errno),
-                    NULL);
+                    evt_tag_errno(EVT_TAG_OSERROR, errno));
           return;
         }
 
@@ -364,14 +393,12 @@ afsocket_sd_accept(gpointer s)
             msg_notice("Syslog connection accepted",
                         evt_tag_int("fd", new_fd),
                         evt_tag_str("client", g_sockaddr_format(peer_addr, buf1, sizeof(buf1), GSA_FULL)),
-                        evt_tag_str("local", g_sockaddr_format(self->bind_addr, buf2, sizeof(buf2), GSA_FULL)),
-                        NULL);
+                        evt_tag_str("local", g_sockaddr_format(self->bind_addr, buf2, sizeof(buf2), GSA_FULL)));
           else
             msg_verbose("Syslog connection accepted",
                         evt_tag_int("fd", new_fd),
                         evt_tag_str("client", g_sockaddr_format(peer_addr, buf1, sizeof(buf1), GSA_FULL)),
-                        evt_tag_str("local", g_sockaddr_format(self->bind_addr, buf2, sizeof(buf2), GSA_FULL)),
-                        NULL);
+                        evt_tag_str("local", g_sockaddr_format(self->bind_addr, buf2, sizeof(buf2), GSA_FULL)));
         }
       else
         {
@@ -393,14 +420,12 @@ afsocket_sd_close_connection(AFSocketSourceDriver *self, AFSocketSourceConnectio
     msg_notice("Syslog connection closed",
                evt_tag_int("fd", sc->sock),
                evt_tag_str("client", g_sockaddr_format(sc->peer_addr, buf1, sizeof(buf1), GSA_FULL)),
-               evt_tag_str("local", g_sockaddr_format(self->bind_addr, buf2, sizeof(buf2), GSA_FULL)),
-               NULL);
+               evt_tag_str("local", g_sockaddr_format(self->bind_addr, buf2, sizeof(buf2), GSA_FULL)));
   else
     msg_verbose("Syslog connection closed",
                evt_tag_int("fd", sc->sock),
                evt_tag_str("client", g_sockaddr_format(sc->peer_addr, buf1, sizeof(buf1), GSA_FULL)),
-               evt_tag_str("local", g_sockaddr_format(self->bind_addr, buf2, sizeof(buf2), GSA_FULL)),
-               NULL);
+               evt_tag_str("local", g_sockaddr_format(self->bind_addr, buf2, sizeof(buf2), GSA_FULL)));
   log_pipe_deinit(&sc->super);
   self->connections = g_list_remove(self->connections, sc);
   afsocket_sd_kill_connection(sc);
@@ -442,8 +467,7 @@ afsocket_sd_setup_reader_options(AFSocketSourceDriver *self)
           msg_warning("WARNING: window sizing for tcp sources were changed in " VERSION_3_3 ", the configuration value was divided by the value of max-connections(). The result was too small, clamping to 100 entries. Ensure you have a proper log_fifo_size setting to avoid message loss.",
                       evt_tag_int("orig_log_iw_size", self->reader_options.super.init_window_size),
                       evt_tag_int("new_log_iw_size", 100),
-                      evt_tag_int("min_log_fifo_size", 100 * self->max_connections),
-                      NULL);
+                      evt_tag_int("min_log_fifo_size", 100 * self->max_connections));
           self->reader_options.super.init_window_size = 100;
         }
       self->window_size_initialized = TRUE;
@@ -464,8 +488,7 @@ afsocket_sd_setup_transport(AFSocketSourceDriver *self)
   if (!self->proto_factory)
     {
       msg_error("Unknown value specified in the transport() option, no such LogProto plugin found",
-                evt_tag_str("transport", self->transport_mapper->logproto),
-                NULL);
+                evt_tag_str("transport", self->transport_mapper->logproto));
       return FALSE;
     }
 
@@ -482,7 +505,7 @@ afsocket_sd_restore_kept_alive_connections(AFSocketSourceDriver *self)
   if (self->connections_kept_alive_accross_reloads)
     {
       GList *p = NULL;
-      self->connections = cfg_persist_config_fetch(cfg, afsocket_sd_format_persist_name(self, FALSE));
+      self->connections = cfg_persist_config_fetch(cfg, afsocket_sd_format_connections_name(self));
 
       self->num_connections = 0;
       for (p = self->connections; p; p = p->next)
@@ -519,7 +542,9 @@ afsocket_sd_open_listener(AFSocketSourceDriver *self)
         {
           /* NOTE: this assumes that fd 0 will never be used for listening fds,
            * main.c opens fd 0 so this assumption can hold */
-          sock = GPOINTER_TO_UINT(cfg_persist_config_fetch(cfg, afsocket_sd_format_persist_name(self, TRUE))) - 1;
+          sock = GPOINTER_TO_UINT(
+                     cfg_persist_config_fetch(cfg, afsocket_sd_format_listener_name(self))) -
+                 1;
         }
 
       if (sock == -1)
@@ -534,8 +559,7 @@ afsocket_sd_open_listener(AFSocketSourceDriver *self)
       if (listen(sock, self->listen_backlog) < 0)
         {
           msg_error("Error during listen()",
-                    evt_tag_errno(EVT_TAG_OSERROR, errno),
-                    NULL);
+                    evt_tag_errno(EVT_TAG_OSERROR, errno));
           close(sock);
           return FALSE;
         }
@@ -589,7 +613,8 @@ afsocket_sd_save_connections(AFSocketSourceDriver *self)
         {
           log_pipe_deinit((LogPipe *) p->data);
         }
-      cfg_persist_config_add(cfg, afsocket_sd_format_persist_name(self, FALSE), self->connections, (GDestroyNotify) afsocket_sd_kill_connection_list, FALSE);
+      cfg_persist_config_add(cfg, afsocket_sd_format_connections_name(self), self->connections,
+                             (GDestroyNotify)afsocket_sd_kill_connection_list, FALSE);
     }
   self->connections = NULL;
 }
@@ -605,8 +630,7 @@ afsocket_sd_save_listener(AFSocketSourceDriver *self)
       if (!self->connections_kept_alive_accross_reloads)
         {
           msg_verbose("Closing listener fd",
-                      evt_tag_int("fd", self->fd),
-                      NULL);
+                      evt_tag_int("fd", self->fd));
           close(self->fd);
         }
       else
@@ -614,7 +638,8 @@ afsocket_sd_save_listener(AFSocketSourceDriver *self)
           /* NOTE: the fd is incremented by one when added to persistent config
            * as persist config cannot store NULL */
 
-          cfg_persist_config_add(cfg, afsocket_sd_format_persist_name(self, TRUE), GUINT_TO_POINTER(self->fd + 1), afsocket_sd_close_fd, FALSE);
+          cfg_persist_config_add(cfg, afsocket_sd_format_listener_name(self),
+                                 GUINT_TO_POINTER(self->fd + 1), afsocket_sd_close_fd, FALSE);
         }
     }
 }
@@ -688,6 +713,7 @@ afsocket_sd_init_instance(AFSocketSourceDriver *self,
   self->super.super.super.deinit = afsocket_sd_deinit_method;
   self->super.super.super.free_fn = afsocket_sd_free_method;
   self->super.super.super.notify = afsocket_sd_notify;
+  self->super.super.super.generate_persist_name = afsocket_sd_format_name;
   self->setup_addresses = afsocket_sd_setup_addresses_method;
   self->socket_options = socket_options;
   self->transport_mapper = transport_mapper;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 BalaBit
+ * Copyright (c) 2015-2016 Balabit
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 as published
@@ -21,195 +21,309 @@
 #include "kv-scanner.h"
 #include "testutils.h"
 
-#define kv_scanner_testcase_begin(func, args)             \
-  do                                                            \
-    {                                                           \
-      testcase_begin("%s(%s)", func, args);                     \
-      kv_scanner = kv_scanner_new();                            \
-    }                                                           \
-  while (0)
+static gboolean
+_assert_no_more_tokens(KVScanner *scanner)
+{
+  gboolean ok = kv_scanner_scan_next(scanner);
+  if (ok)
+    {
+      GString *msg = g_string_new("kv_scanner is expected to return no more key-value pairs ");
+      do
+        {
+          const gchar *key = kv_scanner_get_current_key(scanner);
+          if (!key)
+            key = "";
+          const gchar *value = kv_scanner_get_current_value(scanner);
+          if (!value)
+            value = "";
+          g_string_append_printf(msg, "[%s/%s]", key, value);
+        } while (kv_scanner_scan_next(scanner));
+      expect_false(ok, msg->str);
+      g_string_free(msg, TRUE);
+    }
+  return !ok;
+}
 
-#define kv_scanner_testcase_end()                           \
-  do                                                            \
-    {                                                           \
-      kv_scanner_free(kv_scanner);                              \
-      testcase_end();                                           \
-    }                                                           \
-  while (0)
+static gboolean
+_assert_current_key_is(KVScanner *scanner, const gchar *expected_key)
+{
+  const gchar *key = kv_scanner_get_current_key(scanner);
 
-#define KV_SCANNER_TESTCASE(x, ...) \
-  do {                                                          \
-      kv_scanner_testcase_begin(#x, #__VA_ARGS__);  		\
-      x(__VA_ARGS__);                                           \
-      kv_scanner_testcase_end();                                \
-  } while(0)
+  return expect_nstring(key, -1, expected_key, -1, "current key mismatch");
+}
 
-KVScanner *kv_scanner;
+static gboolean
+_assert_current_value_is(KVScanner *scanner, const gchar *expected_value)
+{
+  const gchar *value = kv_scanner_get_current_value(scanner);
+
+  return expect_nstring(value, -1, expected_value, -1, "current value mismatch");
+}
+
+static gboolean
+_compare_key_value(KVScanner *scanner, const gchar *key, const gchar *value, gboolean *expect_more)
+{
+  g_assert(value);
+
+  gboolean ok = kv_scanner_scan_next(scanner);
+  if (ok)
+    {
+      _assert_current_key_is(scanner, key);
+      _assert_current_value_is(scanner, value);
+      return TRUE;
+    }
+  else
+    {
+      *expect_more = FALSE;
+      expect_true(ok, "kv_scanner is expected to return TRUE for scan_next(), "
+                  "first unconsumed pair: [%s/%s]",
+                  key, value);
+      return FALSE;
+    }
+}
+
+typedef const gchar *const VAElement;
 
 static void
-assert_no_more_tokens(void)
+_scan_kv_pairs_scanner(KVScanner *scanner, const gchar *input, VAElement args[])
 {
-  assert_false(kv_scanner_scan_next(kv_scanner), "kv_scanner is expected to return no more key-value pairs");
+  g_assert(input);
+  kv_scanner_input(scanner, input);
+  gboolean expect_more = TRUE;
+  const gchar *key = *(args++);
+  while (key)
+    {
+      const gchar *value = *(args++);
+      if (!value || !_compare_key_value(scanner, key, value, &expect_more))
+        break;
+      key = *(args++);
+    }
+  if (expect_more)
+    _assert_no_more_tokens(scanner);
 }
 
 static void
-scan_next_token(void)
+_scan_kv_pairs_implicit(const gchar *input, VAElement args[])
 {
-  assert_true(kv_scanner_scan_next(kv_scanner),  "kv_scanner is expected to return TRUE for scan_next");
+  KVScanner *scanner = kv_scanner_new();
+  _scan_kv_pairs_scanner(scanner, input, args);
+  kv_scanner_free(scanner);
+}
+
+typedef struct _KVQElement
+{
+  const gchar *const key;
+  const gchar *const value;
+  gboolean quoted;
+} KVQElement;
+
+typedef struct _KVQContainer
+{
+  const gsize n;
+  const KVQElement *const arg;
+} KVQContainer;
+
+#define VARARG_STRUCT(VARARG_STRUCT_cont, VARARG_STRUCT_elem, ...) \
+  (const VARARG_STRUCT_cont) { \
+    sizeof((const VARARG_STRUCT_elem[]) { __VA_ARGS__ }) / sizeof(VARARG_STRUCT_elem), \
+    (const VARARG_STRUCT_elem[]){__VA_ARGS__}\
+  }
+
+static void
+_scan_kv_pairs_quoted(const gchar *input, KVQContainer args)
+{
+  KVScanner *scanner = kv_scanner_new();
+
+  g_assert(input);
+  kv_scanner_input(scanner, input);
+  gboolean expect_more = TRUE;
+  for (gsize i = 0; i < args.n; i++)
+    {
+      if (!_compare_key_value(scanner, args.arg[i].key, args.arg[i].value, &expect_more))
+        break;
+      expect_gboolean(scanner->value_was_quoted, args.arg[i].quoted,
+                      "mismatch in value_was_quoted for [%s/%s]",
+                      args.arg[i].key, args.arg[i].value);
+    }
+  if (expect_more)
+    _assert_no_more_tokens(scanner);
+  kv_scanner_free(scanner);
+}
+
+#define TEST_KV_SCAN(TEST_KV_SCAN_input, ...) \
+  do { \
+    testcase_begin("TEST_KV_SCAN(%s, %s)", #TEST_KV_SCAN_input, #__VA_ARGS__); \
+    _scan_kv_pairs_implicit(TEST_KV_SCAN_input, (VAElement[]){ __VA_ARGS__,  NULL }); \
+    testcase_end(); \
+  } while (0)
+
+#define TEST_KV_SCAN0(TEST_KV_SCAN_input, ...) \
+  do { \
+    testcase_begin("TEST_KV_SCAN(%s, %s)", #TEST_KV_SCAN_input, #__VA_ARGS__); \
+    _scan_kv_pairs_implicit(TEST_KV_SCAN_input, (VAElement[]){ NULL }); \
+    testcase_end(); \
+  } while (0)
+
+#define TEST_KV_SCANNER(TEST_KV_SCAN_scanner, TEST_KV_SCAN_input, ...) \
+  do { \
+    testcase_begin("TEST_KV_SCANNER(%s, %s)", #TEST_KV_SCAN_input, #__VA_ARGS__); \
+    _scan_kv_pairs_scanner(TEST_KV_SCAN_scanner, TEST_KV_SCAN_input, \
+      (VAElement[]){ __VA_ARGS__,  NULL }); \
+    testcase_end(); \
+  } while (0)
+
+#define TEST_KV_SCAN_Q(TEST_KV_SCAN_input, ...) \
+  do { \
+    testcase_begin("TEST_KV_SCAN_Q(%s, %s)", #TEST_KV_SCAN_input, #__VA_ARGS__); \
+    _scan_kv_pairs_quoted(TEST_KV_SCAN_input, VARARG_STRUCT(KVQContainer, KVQElement, __VA_ARGS__)); \
+    testcase_end(); \
+  } while (0)
+
+static void
+_test_incomplete_string_returns_no_pairs(void)
+{
+  TEST_KV_SCAN0("");
+  TEST_KV_SCAN0("f");
+  TEST_KV_SCAN0("fo");
+  TEST_KV_SCAN0("foo");
 }
 
 static void
-assert_current_key_is(const gchar *expected_key)
+_test_name_equals_value_returns_a_pair(void)
 {
-  const gchar *key = kv_scanner_get_current_key(kv_scanner);
-
-  assert_string(key, expected_key, "current key mismatch");
+  TEST_KV_SCAN("foo=", "foo", "");
+  TEST_KV_SCAN("foo=b", "foo", "b");
+  TEST_KV_SCAN("foo=bar", "foo", "bar");
+  TEST_KV_SCAN("foo=barbar", "foo", "barbar");
 }
 
 static void
-assert_current_value_is(const gchar *expected_value)
+_test_stray_words_are_ignored(void)
 {
-  const gchar *value = kv_scanner_get_current_value(kv_scanner);
-
-  assert_string(value, expected_value, "current value mismatch");
+  TEST_KV_SCAN("lorem ipsum foo=bar", "foo", "bar");
+  TEST_KV_SCAN("lorem ipsum/dolor @sitamen foo=bar", "foo", "bar");
+  TEST_KV_SCAN("lorem ipsum/dolor = foo=bar\"", "foo", "bar");
+  TEST_KV_SCAN("foo=bar lorem ipsum key=value some more values", "foo", "bar", "key", "value");
+  TEST_KV_SCAN("*k=v", "k", "v");
+  TEST_KV_SCAN("x *k=v", "k", "v");
 }
 
 static void
-assert_current_kv_is(const gchar *expected_key, const gchar *expected_value)
+_test_with_multiple_key_values_return_multiple_pairs(void)
 {
-  assert_current_key_is(expected_key);
-  assert_current_value_is(expected_value);
+  TEST_KV_SCAN("key1=value1 key2=value2 key3=value3 ",
+               "key1", "value1", "key2", "value2", "key3", "value3");
 }
 
 static void
-assert_next_kv_is(const gchar *expected_key, const gchar *expected_value)
+_test_spaces_between_values_are_ignored(void)
 {
-  scan_next_token();
-  assert_current_kv_is(expected_key, expected_value);
+  TEST_KV_SCAN("key1=value1    key2=value2     key3=value3 ",
+               "key1", "value1", "key2", "value2", "key3", "value3");
 }
 
 static void
-test_kv_scanner_incomplete_string_returns_no_pairs(void)
+_test_with_comma_separated_values(void)
 {
-  kv_scanner_input(kv_scanner, "");
-  assert_no_more_tokens();
-  kv_scanner_input(kv_scanner, "f");
-  assert_no_more_tokens();
-  kv_scanner_input(kv_scanner, "fo");
-  assert_no_more_tokens();
-  kv_scanner_input(kv_scanner, "foo");
-  assert_no_more_tokens();
+  TEST_KV_SCAN("key1=value1, key2=value2, key3=value3",
+               "key1", "value1", "key2", "value2", "key3", "value3");
 }
 
 static void
-test_kv_scanner_name_equals_value_returns_a_pair(void)
+_test_with_comma_separated_values_and_multiple_spaces(void)
 {
-  kv_scanner_input(kv_scanner, "foo=");
-  assert_next_kv_is("foo", "");
-  assert_no_more_tokens();
-
-  kv_scanner_input(kv_scanner, "foo=b");
-  assert_next_kv_is("foo", "b");
-  assert_no_more_tokens();
-
-  kv_scanner_input(kv_scanner, "foo=bar");
-  assert_next_kv_is("foo", "bar");
-  assert_no_more_tokens();
-
-  kv_scanner_input(kv_scanner, "foo=barbar ");
-  assert_next_kv_is("foo", "barbar");
-  assert_no_more_tokens();
+  TEST_KV_SCAN("key1=value1,   key2=value2  ,    key3=value3",
+               "key1", "value1",
+               "key2", "value2",
+               "key3", "value3");
 }
 
 static void
-test_kv_scanner_stray_words_are_ignored(void)
+_test_with_comma_separated_values_without_space(void)
 {
-  kv_scanner_input(kv_scanner, "lorem ipsum foo=bar");
-  assert_next_kv_is("foo", "bar");
-  assert_no_more_tokens();
-
-  kv_scanner_input(kv_scanner, "foo=bar lorem ipsum key=value some more values");
-  assert_next_kv_is("foo", "bar");
-  assert_next_kv_is("key", "value");
-  assert_no_more_tokens();
+  TEST_KV_SCAN("key1=value1,key2=value2,key3=value3",
+               "key1", "value1,key2=value2,key3=value3");
 }
 
 static void
-test_kv_scanner_with_multiple_key_values_return_multiple_pairs(void)
+_test_tab_separated_values(void)
 {
-  kv_scanner_input(kv_scanner, "key1=value1 key2=value2 key3=value3 ");
-  assert_next_kv_is("key1", "value1");
-  assert_next_kv_is("key2", "value2");
-  assert_next_kv_is("key3", "value3");
-  assert_no_more_tokens();
+  TEST_KV_SCAN("key1=value1\tkey2=value2 key3=value3",
+               "key1", "value1\tkey2=value2",
+               "key3", "value3");
+  TEST_KV_SCAN("key1=value1,\tkey2=value2 key3=value3",
+               "key1", "value1,\tkey2=value2",
+               "key3", "value3");
+  TEST_KV_SCAN("key1=value1\t key2=value2 key3=value3",
+               "key1", "value1\t",
+               "key2", "value2",
+               "key3", "value3");
+  TEST_KV_SCAN("k=\t",
+               "k", "\t");
+  TEST_KV_SCAN("k=,\t",
+               "k", ",\t");
 }
 
 static void
-test_kv_scanner_spaces_between_values_are_ignored(void)
+_test_quoted_values_are_unquoted_like_c_strings(void)
 {
-  kv_scanner_input(kv_scanner, "key1=value1    key2=value2     key3=value3 ");
-  assert_next_kv_is("key1", "value1");
-  assert_next_kv_is("key2", "value2");
-  assert_next_kv_is("key3", "value3");
-  assert_no_more_tokens();
-}
+  TEST_KV_SCAN("foo=\"bar\"", "foo", "bar");
 
-static void
-test_kv_scanner_with_comma_separated_values(void)
-{
-  kv_scanner_input(kv_scanner, "key1=value1, key2=value2, key3=value3");
-  assert_next_kv_is("key1", "value1");
-  assert_next_kv_is("key2", "value2");
-  assert_next_kv_is("key3", "value3");
-  assert_no_more_tokens();
-}
-
-static void
-test_kv_scanner_quoted_values_are_unquoted_like_c_strings(void)
-{
-  kv_scanner_input(kv_scanner, "foo=\"bar\"");
-  assert_next_kv_is("foo", "bar");
-  assert_no_more_tokens();
-
-  kv_scanner_input(kv_scanner, "key1=\"value1\", key2=\"value2\"");
-  assert_next_kv_is("key1", "value1");
-  assert_next_kv_is("key2", "value2");
-  assert_no_more_tokens();
+  TEST_KV_SCAN("key1=\"value1\", key2=\"value2\"", "key1", "value1", "key2", "value2");
 
   /* embedded quote */
-  kv_scanner_input(kv_scanner, "key1=\"\\\"value1\"");
-  assert_next_kv_is("key1", "\"value1");
-  assert_no_more_tokens();
+  TEST_KV_SCAN("key1=\"\\\"value1\"", "key1", "\"value1");
 
   /* control sequences */
-  kv_scanner_input(kv_scanner, "key1=\"\\b \\f \\n \\r \\t \\\\\"");
-  assert_next_kv_is("key1", "\b \f \n \r \t \\");
-  assert_no_more_tokens();
+  TEST_KV_SCAN("key1=\"\\b \\f \\n \\r \\t \\\\\"",
+               "key1", "\b \f \n \r \t \\");
 
   /* unknown backslash escape is left as is */
-  kv_scanner_input(kv_scanner, "key1=\"\\p\"");
-  assert_next_kv_is("key1", "\\p");
-  assert_no_more_tokens();
+  TEST_KV_SCAN("key1=\"\\p\"",
+               "key1", "\\p");
 
-  kv_scanner_input(kv_scanner, "key1='value1', key2='value2'");
-  assert_next_kv_is("key1", "value1");
-  assert_next_kv_is("key2", "value2");
-  assert_no_more_tokens();
+  TEST_KV_SCAN("key1='value1', key2='value2'",
+               "key1", "value1",
+               "key2", "value2");
 
   /* embedded quote */
-  kv_scanner_input(kv_scanner, "key1='\\'value1'");
-  assert_next_kv_is("key1", "'value1");
-  assert_no_more_tokens();
+  TEST_KV_SCAN("key1='\\'value1'", "key1", "'value1");
 
   /* control sequences */
-  kv_scanner_input(kv_scanner, "key1='\\b \\f \\n \\r \\t \\\\'");
-  assert_next_kv_is("key1", "\b \f \n \r \t \\");
-  assert_no_more_tokens();
+  TEST_KV_SCAN("key1='\\b \\f \\n \\r \\t \\\\'",
+               "key1", "\b \f \n \r \t \\");
 
   /* unknown backslash escape is left as is */
-  kv_scanner_input(kv_scanner, "key1='\\p'");
-  assert_next_kv_is("key1", "\\p");
-  assert_no_more_tokens();
+  TEST_KV_SCAN("key1='\\p'", "key1", "\\p");
+
+  TEST_KV_SCAN("key1=\\b\\f\\n\\r\\t\\\\",
+               "key1", "\\b\\f\\n\\r\\t\\\\");
+  TEST_KV_SCAN("key1=\b\f\n\r\\",
+               "key1", "\b\f\n\r\\");
+}
+
+static void
+_test_keys_without_values(void)
+{
+  TEST_KV_SCAN("key1 key2=value2, key3, key4=value4",
+               "key2", "value2",
+               "key4", "value4");
+
+  TEST_KV_SCAN("key1= key2=value2, key3=, key4=value4 key5= , key6=value6",
+               "key1", "",
+               "key2", "value2",
+               "key3", "",
+               "key4", "value4",
+               "key5", "",
+               "key6", "value6");
+}
+
+static void
+_test_quoted_values_with_special_characters(void)
+{
+  TEST_KV_SCAN("key1=\"value foo, foo2 =@,\\\"\" key2='value foo,  a='",
+               "key1", "value foo, foo2 =@,\"",
+               "key2", "value foo,  a=");
 }
 
 static gboolean
@@ -224,44 +338,193 @@ _parse_value_by_incrementing_all_bytes(KVScanner *self)
 }
 
 static void
-test_kv_scanner_transforms_values_if_parse_value_is_set(void)
+_test_transforms_values_if_parse_value_is_set(void)
 {
-  kv_scanner->parse_value = _parse_value_by_incrementing_all_bytes;
-  kv_scanner_input(kv_scanner, "foo=\"bar\"");
-  assert_next_kv_is("foo", "cbs");
-  assert_no_more_tokens();
+  KVScanner *scanner = kv_scanner_new();
+  scanner->parse_value = _parse_value_by_incrementing_all_bytes;
+  TEST_KV_SCANNER(scanner, "foo=\"bar\"", "foo", "cbs");
+  kv_scanner_free(scanner);
 }
 
 static void
-test_kv_scanner_quotation_is_stored_in_the_was_quoted_value_member(void)
+_test_quotation_is_stored_in_the_was_quoted_value_member(void)
 {
-  kv_scanner_input(kv_scanner, "foo=\"bar\"");
-  assert_next_kv_is("foo", "bar");
-  assert_true(kv_scanner->value_was_quoted, "expected value_was_quoted to be TRUE");
-  assert_no_more_tokens();
-
-  kv_scanner_input(kv_scanner, "foo=bar");
-  assert_next_kv_is("foo", "bar");
-  assert_false(kv_scanner->value_was_quoted, "expected value_was_quoted to be FALSE");
-  assert_no_more_tokens();
+  TEST_KV_SCAN_Q("foo=\"bar\"", {"foo", "bar", TRUE});
+  TEST_KV_SCAN_Q("foo='bar'", {"foo", "bar", TRUE});
+  TEST_KV_SCAN_Q("foo=bar", {"foo", "bar", FALSE});
+  TEST_KV_SCAN_Q("foo='bar' k=v",
+                  {"foo", "bar", TRUE},
+                  {"k", "v", FALSE});
 }
 
+static void
+_test_value_separator_with_whitespaces_around(void)
+{
+  KVScanner *scanner = kv_scanner_new();
+  kv_scanner_set_value_separator(scanner, ':');
+
+  TEST_KV_SCANNER(scanner, "key1: value1 key2 : value2 key3 :value3 ",
+                  "key1", "");
+
+  kv_scanner_free(scanner);
+}
+
+static void
+_test_value_separator_is_used_to_separate_key_from_value(void)
+{
+  KVScanner *scanner = kv_scanner_new();
+  kv_scanner_set_value_separator(scanner, ':');
+
+  TEST_KV_SCANNER(scanner, "key1:value1 key2:value2 key3:value3 ",
+                  "key1", "value1",
+                  "key2", "value2",
+                  "key3", "value3");
+
+  kv_scanner_free(scanner);
+}
+
+static void
+_test_value_separator_clone(void)
+{
+  KVScanner *scanner = kv_scanner_new();
+  kv_scanner_set_value_separator(scanner, ':');
+  KVScanner *cloned_scanner = kv_scanner_clone(scanner);
+  kv_scanner_free(scanner);
+
+  TEST_KV_SCANNER(cloned_scanner, "key1:value1 key2:value2 key3:value3 ",
+                  "key1", "value1",
+                  "key2", "value2",
+                  "key3", "value3");
+  kv_scanner_free(cloned_scanner);
+}
+
+static void
+_test_invalid_encoding(void)
+{
+  TEST_KV_SCAN("k=\xc3", "k", "\xc3");
+  TEST_KV_SCAN("k=\xc3v", "k", "\xc3v");
+  TEST_KV_SCAN("k=\xff", "k", "\xff");
+  TEST_KV_SCAN("k=\xffv", "k", "\xffv");
+  TEST_KV_SCAN("k=\"\xc3", "k", "\xc3");
+  TEST_KV_SCAN("k=\"\xc3v", "k", "\xc3v");
+  TEST_KV_SCAN("k=\"\xff", "k", "\xff");
+  TEST_KV_SCAN("k=\"\xffv", "k", "\xffv");
+}
+
+static void
+_test_separator_in_key(void)
+{
+  KVScanner *scanner = kv_scanner_new();
+  kv_scanner_set_value_separator(scanner, '-');
+
+  TEST_KV_SCANNER(scanner, "k-v", "k", "v");
+  TEST_KV_SCANNER(scanner, "k--v", "k", "-v");
+  TEST_KV_SCANNER(scanner, "---", "-", "-");
+
+  kv_scanner_free(scanner);
+}
+
+static void
+_test_empty_keys(void)
+{
+  TEST_KV_SCAN0("=v");
+  TEST_KV_SCAN0("k*=v");
+  TEST_KV_SCAN0("=");
+  TEST_KV_SCAN0("==");
+  TEST_KV_SCAN0("===");
+  TEST_KV_SCAN0(" =");
+  TEST_KV_SCAN0(" ==");
+  TEST_KV_SCAN0(" ===");
+  TEST_KV_SCAN0(" = =");
+  TEST_KV_SCAN(" ==k=", "k", "");
+  TEST_KV_SCAN(" = =k=", "k", "");
+  TEST_KV_SCAN(" =k=", "k", "");
+  TEST_KV_SCAN(" =k=v", "k", "v");
+  TEST_KV_SCAN(" ==k=v", "k", "v");
+  TEST_KV_SCAN(" =k=v=w", "k", "v=w");
+}
+
+static void
+_test_unclosed_quotes(void)
+{
+  TEST_KV_SCAN("k=\"a", "k", "a");
+  TEST_KV_SCAN("k=\\", "k", "\\");
+  TEST_KV_SCAN("k=\"\\", "k", "");
+
+  TEST_KV_SCAN("k='a", "k", "a");
+  TEST_KV_SCAN("k='\\", "k", "");
+}
+
+static void
+_test_comma_separator(void)
+{
+  TEST_KV_SCAN(", k=v", "k", "v");
+  TEST_KV_SCAN(",k=v", "k", "v");
+  TEST_KV_SCAN("k=v,", "k", "v,");
+  TEST_KV_SCAN("k=v, ", "k", "v");
+}
+
+static void
+_test_multiple_separators(void)
+{
+  TEST_KV_SCAN("k==", "k", "=");
+  TEST_KV_SCAN("k===", "k", "==");
+}
+
+static void
+_test_key_charset(void)
+{
+  TEST_KV_SCAN("k-j=v", "k-j", "v");
+  TEST_KV_SCAN("0=v", "0", "v");
+  TEST_KV_SCAN("_=v", "_", "v");
+  TEST_KV_SCAN0(":=v");
+  TEST_KV_SCAN("Z=v", "Z", "v");
+  TEST_KV_SCAN0("á=v");
+}
+
+static void
+_test_key_buffer_underrun(void)
+{
+  const gchar *buffer = "ab=v";
+  const gchar *input = buffer + 2;
+  TEST_KV_SCAN0(input);
+}
 
 static void
 test_kv_scanner(void)
 {
-  KV_SCANNER_TESTCASE(test_kv_scanner_incomplete_string_returns_no_pairs);
-  KV_SCANNER_TESTCASE(test_kv_scanner_stray_words_are_ignored);
-  KV_SCANNER_TESTCASE(test_kv_scanner_name_equals_value_returns_a_pair);
-  KV_SCANNER_TESTCASE(test_kv_scanner_with_multiple_key_values_return_multiple_pairs);
-  KV_SCANNER_TESTCASE(test_kv_scanner_spaces_between_values_are_ignored);
-  KV_SCANNER_TESTCASE(test_kv_scanner_with_comma_separated_values);
-  KV_SCANNER_TESTCASE(test_kv_scanner_quoted_values_are_unquoted_like_c_strings);
-  KV_SCANNER_TESTCASE(test_kv_scanner_transforms_values_if_parse_value_is_set);
-  KV_SCANNER_TESTCASE(test_kv_scanner_quotation_is_stored_in_the_was_quoted_value_member);
+  _test_empty_keys();
+  _test_incomplete_string_returns_no_pairs();
+  _test_stray_words_are_ignored();
+  _test_name_equals_value_returns_a_pair();
+  _test_with_multiple_key_values_return_multiple_pairs();
+  _test_spaces_between_values_are_ignored();
+  _test_with_comma_separated_values();
+  _test_with_comma_separated_values_and_multiple_spaces();
+  _test_with_comma_separated_values_without_space();
+  _test_tab_separated_values();
+  _test_quoted_values_are_unquoted_like_c_strings();
+  _test_keys_without_values();
+  _test_quoted_values_with_special_characters();
+  _test_transforms_values_if_parse_value_is_set();
+  _test_quotation_is_stored_in_the_was_quoted_value_member();
+  _test_value_separator_is_used_to_separate_key_from_value();
+  _test_value_separator_clone();
+  _test_value_separator_with_whitespaces_around();
+  _test_invalid_encoding();
+  _test_separator_in_key();
+  _test_unclosed_quotes();
+  _test_comma_separator();
+  _test_multiple_separators();
+  _test_key_charset();
+  _test_key_buffer_underrun();
 }
 
 int main(int argc, char *argv[])
 {
   test_kv_scanner();
+  if (testutils_deinit())
+    return 0;
+  else
+    return 1;
 }

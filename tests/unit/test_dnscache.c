@@ -1,3 +1,26 @@
+/*
+ * Copyright (c) 2007-2013 Balabit
+ * Copyright (c) 2007-2013 Balázs Scheidler
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License version 2 as published
+ * by the Free Software Foundation, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ * As an additional exemption you are allowed to compile & link against the
+ * OpenSSL libraries as published by the OpenSSL project. See the file
+ * COPYING for details.
+ *
+ */
+
 #include "dnscache.h"
 #include "apphook.h"
 #include "timeutils.h"
@@ -18,14 +41,20 @@ test_expiration(void)
   const gchar *hn = NULL;
   gsize hn_len;
   gboolean positive;
-
-  dns_cache_set_params(50000, 3, 1, NULL);
+  DNSCacheOptions options =
+  {
+    .cache_size = 50000,
+    .expire = 3,
+    .expire_failed = 1,
+    .hosts = NULL
+  };
+  DNSCache *cache = dns_cache_new(&options);
 
   for (i = 0; i < 10000; i++)
     {
       guint32 ni = htonl(i);
 
-      dns_cache_store_dynamic(AF_INET, (void *) &ni, i < 5000 ? "hostname" : "negative", i < 5000);
+      dns_cache_store_dynamic(cache, AF_INET, (void *) &ni, i < 5000 ? "hostname" : "negative", i < 5000);
     }
 
   for (i = 0; i < 10000; i++)
@@ -34,7 +63,7 @@ test_expiration(void)
 
       hn = NULL;
       positive = FALSE;
-      if (!dns_cache_lookup(AF_INET, (void *) &ni, &hn, &hn_len, &positive))
+      if (!dns_cache_lookup(cache, AF_INET, (void *) &ni, &hn, &hn_len, &positive))
         {
           fprintf(stderr, "hmmm cache forgot the cache entry too early, i=%d, hn=%s\n", i, hn);
           exit(1);
@@ -73,7 +102,7 @@ test_expiration(void)
       positive = FALSE;
       if (i < 5000)
         {
-          if (!dns_cache_lookup(AF_INET, (void *) &ni, &hn, &hn_len, &positive) || !positive)
+          if (!dns_cache_lookup(cache, AF_INET, (void *) &ni, &hn, &hn_len, &positive) || !positive)
             {
               fprintf(stderr, "hmmm cache forgot positive entries too early, i=%d\n", i);
               exit(1);
@@ -81,7 +110,7 @@ test_expiration(void)
         }
       else
         {
-          if (dns_cache_lookup(AF_INET, (void *) &ni, &hn, &hn_len, &positive) || positive)
+          if (dns_cache_lookup(cache, AF_INET, (void *) &ni, &hn, &hn_len, &positive) || positive)
             {
               fprintf(stderr, "hmmm cache didn't forget negative entries in time, i=%d\n", i);
               exit(1);
@@ -100,12 +129,14 @@ test_expiration(void)
 
       hn = NULL;
       positive = FALSE;
-      if (dns_cache_lookup(AF_INET, (void *) &ni, &hn, &hn_len, &positive))
+      if (dns_cache_lookup(cache, AF_INET, (void *) &ni, &hn, &hn_len, &positive))
         {
           fprintf(stderr, "hmmm cache did not forget an expired entry, i=%d\n", i);
           exit(1);
         }
     }
+
+  dns_cache_free(cache);
 }
 
 void
@@ -116,14 +147,20 @@ test_dns_cache_benchmark(void)
   gsize hn_len;
   gboolean positive;
   gint i;
-
-  dns_cache_set_params(50000, 600, 300, NULL);
+  DNSCacheOptions options =
+  {
+    .cache_size = 50000,
+    .expire = 600,
+    .expire_failed = 300,
+    .hosts = NULL
+  };
+  DNSCache *cache = dns_cache_new(&options);
 
   for (i = 0; i < 10000; i++)
     {
       guint32 ni = htonl(i);
 
-      dns_cache_store_dynamic(AF_INET, (void *) &ni, "hostname", TRUE);
+      dns_cache_store_dynamic(cache, AF_INET, (void *) &ni, "hostname", TRUE);
     }
 
   g_get_current_time(&start);
@@ -133,13 +170,14 @@ test_dns_cache_benchmark(void)
       guint32 ni = htonl(i % 10000);
 
       hn = NULL;
-      if (!dns_cache_lookup(AF_INET, (void *) &ni, &hn, &hn_len, &positive))
+      if (!dns_cache_lookup(cache, AF_INET, (void *) &ni, &hn, &hn_len, &positive))
         {
           fprintf(stderr, "hmm, dns cache entries expired during benchmarking, this is unexpected\n, i=%d", i);
         }
     }
   g_get_current_time(&end);
   printf("DNS cache speed: %12.3f iters/sec\n", i * 1e6 / g_time_val_diff(&end, &start));
+  dns_cache_free(cache);
 }
 
 int

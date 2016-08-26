@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2013 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2002-2013 Balabit
  * Copyright (c) 1998-2011 Balázs Scheidler
  *
  * This library is free software; you can redistribute it and/or
@@ -58,7 +58,9 @@ FilterRE *last_re_filter;
 
 /* INCLUDE_DECLS */
 
-%token KW_PROGRAM KW_IN_LIST
+%token KW_PROGRAM
+%token KW_IN_LIST
+%token KW_VALUE
 
 %left   ';'
 %left	KW_OR
@@ -102,7 +104,7 @@ filter_simple_expr
 	| KW_FILTER '(' string ')'		{ $$ = filter_call_new($3, configuration); free($3); }
 	| KW_NETMASK '(' string ')'    { $$ = filter_netmask_new($3); free($3); }
   | KW_NETMASK6 '(' string ')'   {
-  #if ENABLE_IPV6
+  #if SYSLOG_NG_ENABLE_IPV6
                                     $$ = filter_netmask6_new($3);
   #else
                                     YYERROR;
@@ -116,8 +118,7 @@ filter_simple_expr
             if (p[0] == '$')
               {
                 msg_warning("Value references in filters should not use the '$' prefix, those are only needed in templates",
-                            evt_tag_str("value", $4),
-                            NULL);
+                            evt_tag_str("value", $4));
                 p++;
               }
             $$ = filter_in_list_new($3, p);
@@ -130,8 +131,7 @@ filter_simple_expr
             if (p[0] == '$')
               {
                 msg_warning("Value references in filters should not use the '$' prefix, those are only needed in templates",
-                            evt_tag_str("value", $6),
-                            NULL);
+                            evt_tag_str("value", $6));
                 p++;
               }
             $$ = filter_in_list_new($3, p);
@@ -238,8 +238,7 @@ filter_match_params
 
                 if (!warn_written)
                   {
-                    msg_warning("WARNING: the match() filter without the use of the value() option is deprecated and hinders performance, please use a more specific filter like message() and/or program() instead.",
-                                NULL);
+                    msg_warning("WARNING: the match() filter without the use of the value() option is deprecated and hinders performance, please use a more specific filter like message() and/or program() instead.");
                     warn_written = TRUE;
                   }
               }
@@ -258,8 +257,7 @@ filter_match_opt
             if (p[0] == '$')
               {
                 msg_warning("Value references in filters should not use the '$' prefix, those are only needed in templates",
-                            evt_tag_str("value", $3),
-                            NULL);
+                            evt_tag_str("value", $3));
                 p++;
               }
             last_re_filter->value_handle = log_msg_get_value_handle(p);

@@ -1,3 +1,27 @@
+/*
+ * Copyright (c) 2014 Balabit
+ * Copyright (c) 2014 Viktor Tusa <viktor.tusa@balabit.com>
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ * As an additional exemption you are allowed to compile & link against the
+ * OpenSSL libraries as published by the OpenSSL project. See the file
+ * COPYING for details.
+ *
+ */
+
 #include "apphook.h"
 #include "plugin.h"
 #include "testutils.h"
@@ -56,10 +80,10 @@ create_message_with_field(const char *field_name, const char *field_value)
 }
 
 void
-invoke_rewrite_rule(LogRewrite *pipe, LogMessage *msg)
+invoke_rewrite_rule(LogRewrite *pipe_, LogMessage *msg)
 {
   LogPathOptions po = LOG_PATH_OPTIONS_INIT;
-  log_pipe_queue((LogPipe *) pipe, log_msg_ref(msg), &po);
+  log_pipe_queue((LogPipe *) pipe_, log_msg_ref(msg), &po);
 };
 
 void
@@ -171,6 +195,15 @@ void test_set_field_exist_and_group_set_literal_string()
   rewrite_teardown(msg);
 }
 
+void test_set_field_honors_time_zone()
+{
+  LogRewrite *test_rewrite = create_rewrite_rule("set('${ISODATE}' value('UTCDATE') time-zone('Asia/Tokyo'));");
+  LogMessage *msg = create_message_with_fields("field1", "a123b", NULL);
+  invoke_rewrite_rule(test_rewrite, msg);
+  assert_msg_field_equals(msg, "UTCDATE", "1970-01-01T08:59:59+09:00", -1, ASSERTION_ERROR("Couldn't use time-zone option in rewrite-set"));
+  rewrite_teardown(msg);
+}
+
 void test_set_field_exist_and_group_set_multiple_fields_with_glob_pattern_literal_string()
 {
   LogRewrite *test_rewrite = create_rewrite_rule("groupset(\"value\" values(\"field.*\") );");
@@ -251,6 +284,17 @@ void test_set_field_invalid_template()
   expect_config_parse_failure("groupset(\"${alma\" values(\"field1\") );");
 }
 
+static void
+test_unset_field_disappears(void)
+{
+  LogRewrite *test_rewrite = create_rewrite_rule("unset(value('field1'));");
+  LogMessage *msg = create_message_with_fields("field1", "oldvalue", "PROGRAM", "foobar", NULL);
+  invoke_rewrite_rule(test_rewrite, msg);
+  assert_msg_field_unset(msg, "field1", ASSERTION_ERROR("field1 should be unset"));
+  assert_msg_field_equals(msg, "PROGRAM", "foobar", -1, ASSERTION_ERROR("field1 should be unset"));
+  rewrite_teardown(msg);
+}
+
 int
 main(int argc, char **argv)
 {
@@ -269,6 +313,7 @@ main(int argc, char **argv)
   test_subst_field_exist_and_substring_substituted_only_once_without_global();
   test_subst_field_exist_and_substring_substituted_every_occurence_with_global();
   test_subst_field_exist_and_substring_substituted_when_regexp_matched();
+  test_set_field_honors_time_zone();
   test_set_field_exist_and_group_set_literal_string();
   test_set_field_exist_and_group_set_multiple_fields_with_glob_pattern_literal_string();
   test_set_field_exist_and_group_set_multiple_fields_with_glob_question_mark_pattern_literal_string();
@@ -279,5 +324,6 @@ main(int argc, char **argv)
   test_set_field_exist_and_group_set_when_condition_doesnt_match();
   test_set_field_exist_and_group_set_when_condition_matches();
   test_set_field_cloned();
+  test_unset_field_disappears();
   stop_grabbing_messages();
 }

@@ -1,5 +1,29 @@
+/*
+ * Copyright (c) 2014 Balabit
+ * Copyright (c) 2014 Zoltan Fried
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ * As an additional exemption you are allowed to compile & link against the
+ * OpenSSL libraries as published by the OpenSSL project. See the file
+ * COPYING for details.
+ *
+ */
+
 #include "gsocket.h"
-#include "logmsg.h"
+#include "logmsg/logmsg.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -9,6 +33,16 @@
 
 #include "testutils.h"
 #include "filter/filter-netmask6.h"
+
+static void
+_replace_last_zero_with_wildcard(gchar *ipv6)
+{
+  if (!ipv6)
+    return;
+  gsize n = strlen(ipv6);
+  if ((n >= 2) && (ipv6[n-2] == ':') && (ipv6[n-1] == '0'))
+    ipv6[n-1] = ':';
+}
 
 gchar*
 calculate_network6(const gchar* ipv6, int prefix, gchar *calculated_network)
@@ -21,6 +55,7 @@ calculate_network6(const gchar* ipv6, int prefix, gchar *calculated_network)
   inet_pton(AF_INET6, ipv6, &address);
   get_network_address((unsigned char *)&address, prefix, &network);
   inet_ntop(AF_INET6, &network, calculated_network, INET6_ADDRSTRLEN);
+  _replace_last_zero_with_wildcard(calculated_network);
   return calculated_network;
 }
 
@@ -75,11 +110,11 @@ main()
   assert_netmask6(ipv6, 93,  "2001:db80:85a3:8d30:1319:8a28::");
   assert_netmask6(ipv6, 94,  "2001:db80:85a3:8d30:1319:8a2c::");
   assert_netmask6(ipv6, 95,  "2001:db80:85a3:8d30:1319:8a2e::");
-  assert_netmask6(ipv6, 99,  "2001:db80:85a3:8d30:1319:8a2e:2000:0");
-  assert_netmask6(ipv6, 100, "2001:db80:85a3:8d30:1319:8a2e:3000:0");
-  assert_netmask6(ipv6, 102, "2001:db80:85a3:8d30:1319:8a2e:3400:0");
-  assert_netmask6(ipv6, 103, "2001:db80:85a3:8d30:1319:8a2e:3600:0");
-  assert_netmask6(ipv6, 104, "2001:db80:85a3:8d30:1319:8a2e:3700:0");
+  assert_netmask6(ipv6, 99,  "2001:db80:85a3:8d30:1319:8a2e:2000::");
+  assert_netmask6(ipv6, 100, "2001:db80:85a3:8d30:1319:8a2e:3000::");
+  assert_netmask6(ipv6, 102, "2001:db80:85a3:8d30:1319:8a2e:3400::");
+  assert_netmask6(ipv6, 103, "2001:db80:85a3:8d30:1319:8a2e:3600::");
+  assert_netmask6(ipv6, 104, "2001:db80:85a3:8d30:1319:8a2e:3700::");
   assert_netmask6(ipv6, 114, "2001:db80:85a3:8d30:1319:8a2e:3700:4000");
   assert_netmask6(ipv6, 115, "2001:db80:85a3:8d30:1319:8a2e:3700:6000");
   assert_netmask6(ipv6, 116, "2001:db80:85a3:8d30:1319:8a2e:3700:7000");

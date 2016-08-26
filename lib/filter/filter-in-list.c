@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2014 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2013, 2014 Balabit
  * Copyright (c) 2013, 2014 Gergely Nagy <algernon@balabit.hu>
  *
  * This library is free software; you can redistribute it and/or
@@ -23,9 +23,10 @@
  */
 
 #include "filter-in-list.h"
-#include "logmsg.h"
-#include "misc.h"
+#include "logmsg/logmsg.h"
+#include "str-utils.h"
 
+#include <errno.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -71,8 +72,7 @@ filter_in_list_new(const gchar *list_file, const gchar *property)
     {
       msg_error("Error opening in-list filter list file",
                 evt_tag_str("file", list_file),
-                evt_tag_errno("errno", errno),
-                NULL);
+                evt_tag_errno("errno", errno));
       return NULL;
     }
 

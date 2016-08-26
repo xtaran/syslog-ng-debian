@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2013 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2002-2013 Balabit
  * Copyright (c) 1998-2013 Balázs Scheidler
  *
  * This library is free software; you can redistribute it and/or
@@ -172,8 +172,7 @@ stats_publish_and_prune_counters(void)
     {
       msg_notice("Pruning stats-counters have finished",
                  evt_tag_int("dropped", st.dropped_counters),
-                 evt_tag_long("oldest-timestamp", (long) st.oldest_counter),
-                 NULL);
+                 evt_tag_long("oldest-timestamp", (long) st.oldest_counter));
     }
 }
 

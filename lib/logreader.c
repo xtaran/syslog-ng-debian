@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2012 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2002-2012 Balabit
  * Copyright (c) 1998-2012 Balázs Scheidler
  *
  * This library is free software; you can redistribute it and/or
@@ -26,6 +26,8 @@
 #include "mainloop-io-worker.h"
 #include "mainloop-call.h"
 #include "ack_tracker.h"
+
+#include <iv_event.h>
 
 struct _LogReader
 {
@@ -305,8 +307,7 @@ log_reader_handle_line(LogReader *self, const guchar *line, gint length, LogTran
   LogMessage *m;
   
   msg_debug("Incoming log entry", 
-            evt_tag_printf("line", "%.*s", length, line),
-            NULL);
+            evt_tag_printf("line", "%.*s", length, line));
   /* use the current time to get the time zone offset */
   m = log_msg_new((gchar *) line, length,
                   aux->peer_addr ? : self->peer_addr,
@@ -416,8 +417,7 @@ log_reader_init(LogPipe *s)
   if (!self->options->parse_options.format_handler)
     {
       msg_error("Unknown format plugin specified",
-                evt_tag_str("format", self->options->parse_options.format),
-                NULL);
+                evt_tag_str("format", self->options->parse_options.format));
       return FALSE;
     }
 
@@ -571,8 +571,7 @@ log_reader_options_defaults(LogReaderOptions *options)
   options->fetch_limit = 10;
   if (configuration && cfg_is_config_version_older(configuration, 0x0300))
     {
-      msg_warning_once("WARNING: input: sources do not remove new-line characters from messages by default from " VERSION_3_0 ", please add 'no-multi-line' flag to your configuration if you want to retain this functionality",
-                       NULL);
+      msg_warning_once("WARNING: input: sources do not remove new-line characters from messages by default from " VERSION_3_0 ", please add 'no-multi-line' flag to your configuration if you want to retain this functionality");
       options->parse_options.flags |= LP_NO_MULTI_LINE;
     }
 }

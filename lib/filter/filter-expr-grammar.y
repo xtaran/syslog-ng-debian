@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2013 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2002-2013 Balabit
  * Copyright (c) 1998-2011 Balázs Scheidler
  *
  * This library is free software; you can redistribute it and/or
@@ -160,26 +160,6 @@ FilterRE *last_re_filter;
 /* source & destination items */
 %token KW_INTERNAL                    10010
 %token KW_FILE                        10011
-
-%token KW_SQL                         10030
-%token KW_TYPE                        10031
-%token KW_COLUMNS                     10032
-%token KW_INDEXES                     10033
-%token KW_VALUES                      10034
-%token KW_PASSWORD                    10035
-%token KW_DATABASE                    10036
-%token KW_USERNAME                    10037
-%token KW_TABLE                       10038
-%token KW_ENCODING                    10039
-%token KW_SESSION_STATEMENTS          10040
-
-%token KW_DELIMITERS                  10050
-%token KW_QUOTES                      10051
-%token KW_QUOTE_PAIRS                 10052
-%token KW_NULL                        10053
-%token KW_CHARS                       10054
-%token KW_STRINGS                     10055
-
 %token KW_SYSLOG                      10060
 
 /* option items */
@@ -194,6 +174,8 @@ FilterRE *last_re_filter;
 %token KW_FILE_TEMPLATE               10079
 %token KW_PROTO_TEMPLATE              10080
 %token KW_MARK_MODE                   10081
+%token KW_ENCODING                    10082
+%token KW_TYPE                        10083
 
 %token KW_CHAIN_HOSTNAMES             10090
 %token KW_NORMALIZE_HOSTNAMES         10091
@@ -232,6 +214,8 @@ FilterRE *last_re_filter;
 %token KW_THROTTLE                    10170
 %token KW_THREADED                    10171
 %token KW_PASS_UNIX_CREDENTIALS       10231
+
+%token KW_PERSIST_NAME                10302
 
 /* log statement options */
 %token KW_FLAGS                       10190
@@ -290,13 +274,8 @@ FilterRE *last_re_filter;
 
 /* parser items */
 
-%token KW_VALUE                       10361
-
 /* rewrite items */
-
 %token KW_REWRITE                     10370
-%token KW_SET                         10371
-%token KW_SUBST                       10372
 
 /* yes/no switches */
 
@@ -318,9 +297,10 @@ FilterRE *last_re_filter;
 %token LL_EOL                         10428
 %token LL_ERROR                       10429
 
+%destructor { free($$); } <cptr>
+
 /* value pairs */
 %token KW_VALUE_PAIRS                 10500
-%token KW_SELECT                      10501
 %token KW_EXCLUDE                     10502
 %token KW_PAIR                        10503
 %token KW_KEY                         10504
@@ -381,7 +361,9 @@ FilterRE *last_re_filter;
 %type   <num> level_string
 
 
-%token KW_PROGRAM KW_IN_LIST
+%token KW_PROGRAM
+%token KW_IN_LIST
+%token KW_VALUE
 
 %left   ';'
 %left	KW_OR
@@ -425,7 +407,7 @@ filter_simple_expr
 	| KW_FILTER '(' string ')'		{ $$ = filter_call_new($3, configuration); free($3); }
 	| KW_NETMASK '(' string ')'    { $$ = filter_netmask_new($3); free($3); }
   | KW_NETMASK6 '(' string ')'   {
-  #if ENABLE_IPV6
+  #if SYSLOG_NG_ENABLE_IPV6
                                     $$ = filter_netmask6_new($3);
   #else
                                     YYERROR;
@@ -439,8 +421,7 @@ filter_simple_expr
             if (p[0] == '$')
               {
                 msg_warning("Value references in filters should not use the '$' prefix, those are only needed in templates",
-                            evt_tag_str("value", $4),
-                            NULL);
+                            evt_tag_str("value", $4));
                 p++;
               }
             $$ = filter_in_list_new($3, p);
@@ -453,8 +434,7 @@ filter_simple_expr
             if (p[0] == '$')
               {
                 msg_warning("Value references in filters should not use the '$' prefix, those are only needed in templates",
-                            evt_tag_str("value", $6),
-                            NULL);
+                            evt_tag_str("value", $6));
                 p++;
               }
             $$ = filter_in_list_new($3, p);
@@ -561,8 +541,7 @@ filter_match_params
 
                 if (!warn_written)
                   {
-                    msg_warning("WARNING: the match() filter without the use of the value() option is deprecated and hinders performance, please use a more specific filter like message() and/or program() instead.",
-                                NULL);
+                    msg_warning("WARNING: the match() filter without the use of the value() option is deprecated and hinders performance, please use a more specific filter like message() and/or program() instead.");
                     warn_written = TRUE;
                   }
               }
@@ -581,8 +560,7 @@ filter_match_opt
             if (p[0] == '$')
               {
                 msg_warning("Value references in filters should not use the '$' prefix, those are only needed in templates",
-                            evt_tag_str("value", $3),
-                            NULL);
+                            evt_tag_str("value", $3));
                 p++;
               }
             last_re_filter->value_handle = log_msg_get_value_handle(p);
@@ -926,10 +904,17 @@ source_option
 	| KW_KEEP_TIMESTAMP '(' yesno ')'	{ last_source_options->keep_timestamp = $3; }
         | KW_TAGS '(' string_list ')'		{ log_source_options_set_tags(last_source_options, $3); }
         | { last_host_resolve_options = &last_source_options->host_resolve_options; } host_resolve_option
+        | driver_option
         ;
 
 source_proto_option
-        : KW_ENCODING '(' string ')'		{ last_proto_server_options->encoding = g_strdup($3); free($3); }
+        : KW_ENCODING '(' string ')'
+          {
+            CHECK_ERROR(log_proto_server_options_set_encoding(last_proto_server_options, $3),
+                        @3,
+                        "unknown encoding %s", $3);
+            free($3);
+          }
 	| KW_LOG_MSG_SIZE '(' LL_NUMBER ')'	{ last_proto_server_options->max_msg_size = $3; }
         ;
 
@@ -980,6 +965,10 @@ source_reader_option_flags
 	|
 	;
 
+driver_option
+    : KW_PERSIST_NAME '(' string ')' { log_pipe_set_persist_name(&last_driver->super, g_strdup($3)); free($3); }
+    ;
+
 threaded_dest_driver_option
 	: KW_RETRIES '(' LL_NUMBER ')'
         {
@@ -1009,6 +998,7 @@ dest_driver_option
               }
             log_driver_add_plugin(last_driver, (LogDriverPlugin *) value);
           }
+    | driver_option
         ;
 
 dest_writer_options
@@ -1050,21 +1040,17 @@ dest_writer_options_flags
 
 file_perm_option
 	: KW_OWNER '(' string_or_number ')'	{ file_perm_options_set_file_uid(last_file_perm_options, $3); free($3); }
-	| KW_OWNER '(' ')'	                { file_perm_options_set_file_uid(last_file_perm_options, "-2"); }
+	| KW_OWNER '(' ')'	                { file_perm_options_dont_change_file_uid(last_file_perm_options); }
 	| KW_GROUP '(' string_or_number ')'	{ file_perm_options_set_file_gid(last_file_perm_options, $3); free($3); }
-	| KW_GROUP '(' ')'	                { file_perm_options_set_file_gid(last_file_perm_options, "-2"); }
+	| KW_GROUP '(' ')'	                { file_perm_options_dont_change_file_gid(last_file_perm_options); }
 	| KW_PERM '(' LL_NUMBER ')'		{ file_perm_options_set_file_perm(last_file_perm_options, $3); }
-	| KW_PERM '(' ')'		        { file_perm_options_set_file_perm(last_file_perm_options, -2); }
-        ;
-
-file_dir_perm_option
-        : file_perm_option
+	| KW_PERM '(' ')'		        { file_perm_options_dont_change_file_perm(last_file_perm_options); }
         | KW_DIR_OWNER '(' string_or_number ')'	{ file_perm_options_set_dir_uid(last_file_perm_options, $3); free($3); }
-	| KW_DIR_OWNER '(' ')'	                { file_perm_options_set_dir_uid(last_file_perm_options, "-2"); }
+	| KW_DIR_OWNER '(' ')'	                { file_perm_options_dont_change_dir_uid(last_file_perm_options); }
 	| KW_DIR_GROUP '(' string_or_number ')'	{ file_perm_options_set_dir_gid(last_file_perm_options, $3); free($3); }
-	| KW_DIR_GROUP '(' ')'	                { file_perm_options_set_dir_gid(last_file_perm_options, "-2"); }
+	| KW_DIR_GROUP '(' ')'	                { file_perm_options_dont_change_dir_gid(last_file_perm_options); }
 	| KW_DIR_PERM '(' LL_NUMBER ')'		{ file_perm_options_set_dir_perm(last_file_perm_options, $3); }
-	| KW_DIR_PERM '(' ')'		        { file_perm_options_set_dir_perm(last_file_perm_options, -2); }
+	| KW_DIR_PERM '(' ')'		        { file_perm_options_dont_change_dir_perm(last_file_perm_options); }
         ;
 
 template_option

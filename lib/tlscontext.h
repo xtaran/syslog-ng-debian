@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2013 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2002-2013 Balabit
  * Copyright (c) 1998-2011 Balázs Scheidler
  *
  * This library is free software; you can redistribute it and/or
@@ -44,7 +44,7 @@ typedef enum
   TVM_REQUIRED=0x0020,
 } TLSVerifyMode;
 
-enum
+typedef enum
 {
   TSO_NONE,
   TSO_NOSSLv2=0x0001,

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2012 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2002-2012 Balabit
  * Copyright (c) 1998-2012 Balázs Scheidler
  *
  * This library is free software; you can redistribute it and/or
@@ -28,6 +28,8 @@
 #include "messages.h"
 #include "apphook.h"
 #include "mainloop.h"
+
+#include <iv_event.h>
 
 typedef struct _AFInterSource AFInterSource;
 
@@ -338,7 +340,7 @@ afinter_sd_init(LogPipe *s)
 
   if (current_internal_source != NULL)
     {
-      msg_error("Multiple internal() sources were detected, this is not possible", NULL);
+      msg_error("Multiple internal() sources were detected, this is not possible");
       return FALSE;
     }
 

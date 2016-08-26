@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2013 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2002-2013 Balabit
  * Copyright (c) 1998-2013 Balázs Scheidler
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -24,11 +24,9 @@
 #include "syslog-ng.h"
 #include "messages.h"
 #include "template/templates.h"
-#include "misc.h"
 #include "patterndb.h"
 #include "dbparser.h"
 #include "radix.h"
-#include "tags.h"
 #include "stats/stats-registry.h"
 #include "plugin.h"
 #include "filter/filter-expr-parser.h"
@@ -36,18 +34,21 @@
 #include "pdb-example.h"
 #include "pdb-program.h"
 #include "pdb-load.h"
+#include "pdb-file.h"
 #include "apphook.h"
 #include "transport/transport-file.h"
 #include "logproto/logproto-text-server.h"
 #include "reloc.h"
 #include "pathutils.h"
+#include "resolved-configurable-paths.h"
+#include "crypto.h"
 
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <fcntl.h>
 #include <unistd.h>
-
+#include <errno.h>
 #include <locale.h>
 
 #define BOOL(x) ((x) ? "TRUE" : "FALSE")
@@ -76,44 +77,6 @@ static gchar **colors = empty_colors;
 
 static gchar *patterndb_file = PATH_PATTERNDB_FILE;
 static gboolean color_out = FALSE;
-
-static gint
-pdbfile_detect_version(const gchar *pdbfile)
-{
-  FILE *pdb;
-  gchar line[1024];
-  gint result = 0;
-
-  pdb = fopen(pdbfile, "r");
-  if (!pdb)
-    return 0;
-
-  while (fgets(line, sizeof(line), pdb))
-    {
-      if (strstr(line, "<patterndb"))
-        {
-          gchar *version, *start_quote, *end_quote;
-
-          /* ok, we do have the patterndb tag, look for the version attribute */
-          version = strstr(line, "version=");
-
-          if (!version)
-            goto exit;
-          start_quote = version + 8;
-          end_quote = strchr(start_quote + 1, *start_quote);
-          if (!end_quote)
-            {
-              goto exit;
-            }
-          *end_quote = 0;
-          result = strtoll(start_quote + 1, NULL, 0);
-          break;
-        }
-    }
- exit:
-  fclose(pdb);
-  return result;
-}
 
 typedef struct _PdbToolMergeState
 {
@@ -744,20 +707,12 @@ pdbtool_test(int argc, char *argv[])
 
       if (test_validate)
         {
-          gchar cmd[1024];
-          gint version;
+          GError *error = NULL;
 
-          version = pdbfile_detect_version(argv[arg_pos]);
-          if (!version)
+          if (!pdb_file_validate(argv[arg_pos], &error))
             {
-              fprintf(stderr, "%s: Unable to detect patterndb version, please write the <patterndb> tag on a single line\n", argv[arg_pos]);
-              failed_to_validate = TRUE;
-	      continue;
-            }
-          g_snprintf(cmd, sizeof(cmd), "xmllint --noout --nonet --schema %s/patterndb-%d.xsd %s", get_installation_path_for(PATH_XSDDIR), version, argv[arg_pos]);
-          if (system(cmd) != 0)
-            {
-              fprintf(stderr, "%s: xmllint returned an error, the executed command was: %s", argv[arg_pos], cmd);
+              fprintf(stderr, "%s: error validating pdb file: %s\n", argv[arg_pos], error->message);
+              g_clear_error(&error);
               failed_to_validate = TRUE;
 	      continue;
             }
@@ -1123,8 +1078,8 @@ static GOptionEntry pdbtool_options[] =
     "Enable verbose messages on stderr", NULL },
   { "module", 0, 0, G_OPTION_ARG_CALLBACK, pdbtool_load_module,
     "Load the module specified as parameter", "<module>" },
-  { "module-path",         0,         0, G_OPTION_ARG_STRING, &module_path,
-    "Set the list of colon separated directories to search for modules, default=" MODULE_PATH, "<path>" },
+  { "module-path",         0,         0, G_OPTION_ARG_STRING, &resolvedConfigurablePaths.initial_module_path,
+    "Set the list of colon separated directories to search for modules, default=" SYSLOG_NG_MODULE_PATH, "<path>" },
   { NULL, 0, 0, G_OPTION_ARG_NONE, NULL, NULL }
 };
 
@@ -1194,13 +1149,13 @@ main(int argc, char *argv[])
   setlocale(LC_ALL, "");
 
   msg_init(TRUE);
+  resolved_configurable_paths_init(&resolvedConfigurablePaths);
   stats_init();
   log_msg_global_init();
   log_template_global_init();
   log_tags_global_init();
   pattern_db_global_init();
-
-  module_path = get_installation_path_for(MODULE_PATH);
+  crypto_init();
 
   configuration = cfg_new(VERSION_VALUE);
 
@@ -1226,6 +1181,7 @@ main(int argc, char *argv[])
 
   cfg_free(configuration);
   configuration = NULL;
+  crypto_deinit();
   msg_deinit();
   return ret;
 }

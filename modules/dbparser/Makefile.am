@@ -5,6 +5,10 @@ modules_dbparser_libsyslog_ng_patterndb_la_SOURCES	=	\
 	modules/dbparser/radix.h				\
 	modules/dbparser/patterndb.c				\
 	modules/dbparser/patterndb.h				\
+	modules/dbparser/pdb-error.c				\
+	modules/dbparser/pdb-error.h				\
+	modules/dbparser/pdb-file.c				\
+	modules/dbparser/pdb-file.h				\
 	modules/dbparser/pdb-load.c				\
 	modules/dbparser/pdb-load.h				\
 	modules/dbparser/pdb-rule.c				\
@@ -25,6 +29,8 @@ modules_dbparser_libsyslog_ng_patterndb_la_SOURCES	=	\
 	modules/dbparser/correllation-context.h			\
 	modules/dbparser/synthetic-message.c			\
 	modules/dbparser/synthetic-message.h			\
+	modules/dbparser/synthetic-context.c			\
+	modules/dbparser/synthetic-context.h			\
 	modules/dbparser/timerwheel.c				\
 	modules/dbparser/timerwheel.h				\
 	modules/dbparser/patternize.c				\
@@ -53,6 +59,8 @@ modules_dbparser_libdbparser_la_SOURCES			=	\
 	modules/dbparser/dbparser-parser.c			\
 	modules/dbparser/dbparser-parser.h			\
 	modules/dbparser/dbparser-plugin.c			\
+	modules/dbparser/groupingby.c				\
+	modules/dbparser/groupingby.h				\
 	$(modules_dbparser_libsyslog_ng_patterndb_la_SOURCES)
 modules_dbparser_libdbparser_la_CPPFLAGS		=	\
 	$(AM_CPPFLAGS)						\

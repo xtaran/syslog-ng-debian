@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2013 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2002-2013 Balabit
  * Copyright (c) 1998-2013 Balázs Scheidler
  *
  * This library is free software; you can redistribute it and/or
@@ -24,7 +24,7 @@
 #include "service-management.h"
 #include "messages.h"
 
-#if ENABLE_SYSTEMD
+#if SYSLOG_NG_ENABLE_SYSTEMD
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -46,7 +46,7 @@ struct _ServiceManagement
 
 ServiceManagement *current_service_mgmt = NULL;
 
-#if ENABLE_SYSTEMD
+#if SYSLOG_NG_ENABLE_SYSTEMD
 
 static inline void
 service_management_systemd_publish_status(const gchar *status)
@@ -78,12 +78,12 @@ service_management_systemd_is_active()
 
   if (lstat("/run/systemd/system/", &st) < 0 || !S_ISDIR(st.st_mode))
   {
-    msg_debug("Systemd is not detected as the running init system", NULL);
+    msg_debug("Systemd is not detected as the running init system");
     return FALSE;
   }
   else
   {
-    msg_debug("Systemd is detected as the running init system", NULL);
+    msg_debug("Systemd is detected as the running init system");
     return TRUE;
   }
 }
@@ -143,7 +143,7 @@ ServiceManagement service_managements[] = {
     .indicate_readiness = service_management_dummy_indicate_readiness,
     .is_active = service_management_dummy_is_active
   }
-#if ENABLE_SYSTEMD
+#if SYSLOG_NG_ENABLE_SYSTEMD
   ,{
     .type = SMT_SYSTEMD,
     .publish_status = service_management_systemd_publish_status,

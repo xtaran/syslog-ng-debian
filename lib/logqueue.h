@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2011 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2002-2011 Balabit
  * Copyright (c) 1998-2011 Balázs Scheidler
  *
  * This library is free software; you can redistribute it and/or
@@ -25,7 +25,7 @@
 #ifndef LOGQUEUE_H_INCLUDED
 #define LOGQUEUE_H_INCLUDED
 
-#include "logmsg.h"
+#include "logmsg/logmsg.h"
 #include "stats/stats-registry.h"
 
 extern gint log_queue_max_threads;
@@ -34,8 +34,11 @@ typedef void (*LogQueuePushNotifyFunc)(gpointer user_data);
 
 typedef struct _LogQueue LogQueue;
 
+typedef char *QueueType;
+
 struct _LogQueue
 {
+  QueueType type;
   /* this object is reference counted, but it is _not_ thread safe to
      acquire/release references in code executing in parallel */
   gint ref_cnt;

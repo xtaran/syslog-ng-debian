@@ -1,9 +1,32 @@
+/*
+ * Copyright (c) 2010-2015 Balabit
+ * Copyright (c) 2010-2015 Balázs Scheidler <balazs.scheidler@balabit.com>
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License version 2 as published
+ * by the Free Software Foundation, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ * As an additional exemption you are allowed to compile & link against the
+ * OpenSSL libraries as published by the OpenSSL project. See the file
+ * COPYING for details.
+ *
+ */
+
 #include "apphook.h"
-#include "tags.h"
-#include "logmsg.h"
+#include "logmsg/logmsg.h"
 #include "messages.h"
 #include "filter/filter-expr.h"
 #include "patterndb.h"
+#include "pdb-file.h"
 #include "plugin.h"
 #include "cfg.h"
 #include "timerwheel.h"
@@ -31,7 +54,18 @@ _emit_func(LogMessage *msg, gboolean synthetic, gpointer user_data)
 }
 
 static void
-_load_pattern_db_from_string(gchar *pdb)
+assert_pdb_file_valid(const gchar *filename_, const gchar *pdb)
+{
+  GError *error = NULL;
+  gboolean success;
+  
+  success = pdb_file_validate(filename_, &error);
+  assert_true(success, "Error validating patterndb, error=%s\n>>>\n%s\n<<<", error ? error->message : "unknown", pdb);
+  g_clear_error(&error);
+}
+
+static void
+_load_pattern_db_from_string(const gchar *pdb)
 {
   patterndb = pattern_db_new();
   messages = g_ptr_array_new();
@@ -40,9 +74,10 @@ _load_pattern_db_from_string(gchar *pdb)
 
   g_file_open_tmp("patterndbXXXXXX.xml", &filename, NULL);
   g_file_set_contents(filename, pdb, strlen(pdb), NULL);
+  
+  assert_pdb_file_valid(filename, pdb);
 
   assert_true(pattern_db_reload_ruleset(patterndb, configuration, filename), "Error loading ruleset [[[%s]]]", pdb);
-  assert_string(pattern_db_get_ruleset_version(patterndb), "3", "Invalid version");
   assert_string(pattern_db_get_ruleset_pub_date(patterndb), "2010-02-22", "Invalid pubdate");
 }
 
@@ -206,6 +241,24 @@ assert_msg_matches_and_output_message_nvpair_equals_with_timeout(const gchar *pa
   log_msg_unref(msg);
 }
 
+static void
+assert_no_such_output_message(gint ndx)
+{
+  assert_true(ndx >= messages->len, "Unexpected message generated at %d index\n", ndx);
+}
+
+void
+assert_msg_matches_and_no_such_output_message(const gchar *pattern, gint ndx)
+{
+  LogMessage *msg;
+
+  msg = _construct_message("prog2", pattern);
+  _process(msg);
+
+  assert_no_such_output_message(ndx);
+  log_msg_unref(msg);
+}
+
 void
 assert_msg_matches_and_output_message_nvpair_equals(const gchar *pattern, gint ndx, const gchar *name, const gchar *value)
 {
@@ -239,23 +292,25 @@ assert_msg_matches_and_output_message_has_tag(const gchar *pattern, gint ndx, co
   assert_msg_matches_and_output_message_has_tag_with_timeout(pattern, 0, ndx, tag, set);
 }
 
-gchar *pdb_conflicting_rules_with_different_parsers = "<patterndb version='3' pub_date='2010-02-22'>\
+gchar *pdb_conflicting_rules_with_different_parsers = "<patterndb version='4' pub_date='2010-02-22'>\
  <ruleset name='testset' id='1'>\
   <patterns>\
    <pattern>prog1</pattern>\
    <pattern>prog2</pattern>\
   </patterns>\
-  <!-- different parsers at the same location -->\
-  <rule provider='test' id='11' class='short'>\
-   <patterns>\
-    <pattern>pattern @ESTRING:foo1: @</pattern>\
-   </patterns>\
-  </rule>\
-  <rule provider='test' id='12' class='long'>\
-   <patterns>\
-    <pattern>pattern @ESTRING:foo2: @tail</pattern>\
-   </patterns>\
-  </rule>\
+  <rules>\
+    <!-- different parsers at the same location -->\
+    <rule provider='test' id='11' class='short'>\
+     <patterns>\
+      <pattern>pattern @ESTRING:foo1: @</pattern>\
+     </patterns>\
+    </rule>\
+    <rule provider='test' id='12' class='long'>\
+     <patterns>\
+      <pattern>pattern @ESTRING:foo2: @tail</pattern>\
+     </patterns>\
+    </rule>\
+  </rules>\
  </ruleset>\
 </patterndb>";
 
@@ -275,23 +330,25 @@ test_conflicting_rules_with_different_parsers(void)
   _destroy_pattern_db();
 }
 
-gchar *pdb_conflicting_rules_with_the_same_parsers = "<patterndb version='3' pub_date='2010-02-22'>\
+gchar *pdb_conflicting_rules_with_the_same_parsers = "<patterndb version='4' pub_date='2010-02-22'>\
  <ruleset name='testset' id='1'>\
   <patterns>\
    <pattern>prog1</pattern>\
    <pattern>prog2</pattern>\
   </patterns>\
-  <!-- different parsers at the same location -->\
-  <rule provider='test' id='11' class='short'>\
-   <patterns>\
-    <pattern>pattern @ESTRING:foo: @</pattern>\
-   </patterns>\
-  </rule>\
-  <rule provider='test' id='12' class='long'>\
-   <patterns>\
-    <pattern>pattern @ESTRING:foo: @tail</pattern>\
-   </patterns>\
-  </rule>\
+  <rules>\
+    <!-- different parsers at the same location -->\
+    <rule provider='test' id='11' class='short'>\
+     <patterns>\
+      <pattern>pattern @ESTRING:foo: @</pattern>\
+     </patterns>\
+    </rule>\
+    <rule provider='test' id='12' class='long'>\
+     <patterns>\
+      <pattern>pattern @ESTRING:foo: @tail</pattern>\
+     </patterns>\
+    </rule>\
+  </rules>\
  </ruleset>\
 </patterndb>";
 
@@ -315,150 +372,506 @@ test_conflicting_rules_with_the_same_parsers(void)
 /* pdb skeleton used to test patterndb rule actions. E.g. whenever a rule
  * matches, certain actions described in the rule need to be performed.
  * This tests those */
-gchar *pdb_ruletest_skeleton = "<patterndb version='3' pub_date='2010-02-22'>\
+gchar *pdb_ruletest_skeleton = "<patterndb version='5' pub_date='2010-02-22'>\
  <ruleset name='testset' id='1'>\
+  <description>This is a test set</description>\
   <patterns>\
     <pattern>prog1</pattern>\
     <pattern>prog2</pattern>\
   </patterns>\
-  <rule provider='test' id='11' class='system' context-scope='program' context-id='$PID' context-timeout='60'>\
-   <patterns>\
-    <pattern>pattern11</pattern>\
-    <pattern>pattern11a</pattern>\
-   </patterns>\
-   <tags>\
-    <tag>tag11-1</tag>\
-    <tag>tag11-2</tag>\
-   </tags>\
-   <values>\
-    <value name='n11-1'>v11-1</value>\
-    <value name='n11-2'>v11-2</value>\
-    <value name='vvv'>${HOST}</value>\
-    <value name='context-id'>${CONTEXT_ID}</value>\
-   </values>\
-   <actions>\
-     <action rate='1/60' condition='\"${n11-1}\" == \"v11-1\"' trigger='match'>\
-       <message>\
-         <value name='MESSAGE'>rule11 matched</value>\
-         <value name='context-id'>${CONTEXT_ID}</value>\
-         <tags>\
-           <tag>tag11-3</tag>\
-         </tags>\
-       </message>\
-     </action>\
-     <action rate='1/60' condition='\"${n11-1}\" == \"v11-1\"' trigger='timeout'>\
-       <message>\
-         <value name='MESSAGE'>rule11 timed out</value>\
-         <value name='context-id'>${CONTEXT_ID}</value>\
-         <tags>\
-           <tag>tag11-4</tag>\
-         </tags>\
-       </message>\
-     </action>\
-   </actions>\
-  </rule>\
-  <rule provider='test' id='12' class='violation'>\
-   <patterns>\
-    <pattern>pattern12</pattern>\
-    <pattern>pattern12a</pattern>\
-   </patterns>\
-  </rule>\
-  <rule provider='test' id='11' class='system'>\
-   <patterns>\
-    <pattern>contextlesstest @STRING:field:@</pattern>\
-   </patterns>\
-   <actions>\
-     <action condition='\"${field}\" == \"value1\"'>\
-       <message>\
-         <value name='MESSAGE'>message1</value>\
-       </message>\
-     </action>\
-     <action condition='\"${field}\" == \"value2\"'>\
-       <message>\
-         <value name='MESSAGE'>message2</value>\
-       </message>\
-     </action>\
-   </actions>\
-  </rule>\
+  <rules>\
+    <rule provider='test' id='10' class='system' context-scope='program'>\
+     <patterns>\
+      <pattern>simple-message</pattern>\
+     </patterns>\
+     <tags>\
+      <tag>simple-msg-tag1</tag>\
+      <tag>simple-msg-tag2</tag>\
+     </tags>\
+     <values>\
+      <value name='simple-msg-value-1'>value1</value>\
+      <value name='simple-msg-value-2'>value2</value>\
+      <value name='simple-msg-host'>${HOST}</value>\
+     </values>\
+    </rule>\
+    <rule provider='test' id='10a' class='system' context-scope='program' context-id='$PID' context-timeout='60'>\
+     <patterns>\
+      <pattern>correllated-message-based-on-pid</pattern>\
+     </patterns>\
+     <values>\
+      <value name='correllated-msg-context-id'>${CONTEXT_ID}</value>\
+      <value name='correllated-msg-context-length'>$(context-length)</value>\
+     </values>\
+    </rule>\
+    <rule provider='test' id='10b' class='violation' context-scope='program' context-id='$PID' context-timeout='60'>\
+     <patterns>\
+      <pattern>correllated-message-with-action-on-match</pattern>\
+     </patterns>\
+     <actions>\
+       <action trigger='match'>\
+         <message>\
+           <values>\
+             <value name='MESSAGE'>generated-message-on-match</value>\
+             <value name='context-id'>${CONTEXT_ID}</value>\
+           </values>\
+           <tags>\
+             <tag>correllated-msg-tag</tag>\
+           </tags>\
+         </message>\
+       </action>\
+     </actions>\
+    </rule>\
+    <rule provider='test' id='10c' class='violation' context-scope='program' context-id='$PID' context-timeout='60'>\
+     <patterns>\
+      <pattern>correllated-message-with-action-on-timeout</pattern>\
+     </patterns>\
+     <actions>\
+       <action trigger='timeout'>\
+         <message>\
+           <values>\
+             <value name='MESSAGE'>generated-message-on-timeout</value>\
+           </values>\
+         </message>\
+       </action>\
+     </actions>\
+    </rule>\
+    <rule provider='test' id='10d' class='violation' context-scope='program' context-id='$PID' context-timeout='60'>\
+     <patterns>\
+      <pattern>correllated-message-with-action-condition</pattern>\
+     </patterns>\
+     <actions>\
+       <action trigger='match' condition='\"${PID}\" ne \"" MYPID "\"' >\
+         <message>\
+           <values>\
+             <value name='MESSAGE'>not-generated-message</value>\
+           </values>\
+         </message>\
+       </action>\
+       <action trigger='match' condition='\"${PID}\" eq \"" MYPID "\"' >\
+         <message>\
+           <values>\
+             <value name='MESSAGE'>generated-message-on-condition</value>\
+           </values>\
+         </message>\
+       </action>\
+     </actions>\
+    </rule>\
+    <rule provider='test' id='10e' class='violation' context-scope='program' context-id='$PID' context-timeout='60'>\
+     <patterns>\
+      <pattern>correllated-message-with-rate-limited-action</pattern>\
+     </patterns>\
+     <actions>\
+       <action trigger='match' rate='1/60'>\
+         <message>\
+           <values>\
+             <value name='MESSAGE'>generated-message-rate-limit</value>\
+           </values>\
+         </message>\
+       </action>\
+     </actions>\
+    </rule>\
+    <rule provider='test' id='11b' class='violation'>\
+     <patterns>\
+      <pattern>simple-message-with-action-on-match</pattern>\
+     </patterns>\
+     <actions>\
+       <action trigger='match'>\
+         <message>\
+           <values>\
+             <value name='MESSAGE'>generated-message-on-match</value>\
+             <value name='context-id'>${CONTEXT_ID}</value>\
+           </values>\
+           <tags>\
+             <tag>simple-msg-tag</tag>\
+           </tags>\
+         </message>\
+       </action>\
+     </actions>\
+    </rule>\
+    <rule provider='test' id='11d' class='violation'>\
+     <patterns>\
+      <pattern>simple-message-with-action-condition</pattern>\
+     </patterns>\
+     <actions>\
+       <action trigger='match' condition='\"${PID}\" ne \"" MYPID "\"' >\
+         <message>\
+           <values>\
+             <value name='MESSAGE'>not-generated-message</value>\
+           </values>\
+         </message>\
+       </action>\
+       <action trigger='match' condition='\"${PID}\" eq \"" MYPID "\"' >\
+         <message>\
+           <values>\
+             <value name='MESSAGE'>generated-message-on-condition</value>\
+           </values>\
+         </message>\
+       </action>\
+     </actions>\
+    </rule>\
+    <rule provider='test' id='11e' class='violation'>\
+     <patterns>\
+      <pattern>simple-message-with-rate-limited-action</pattern>\
+     </patterns>\
+     <actions>\
+       <action trigger='match' rate='1/60'>\
+         <message>\
+           <values>\
+             <value name='MESSAGE'>generated-message-rate-limit</value>\
+           </values>\
+         </message>\
+       </action>\
+     </actions>\
+     <examples>\
+       <example>\
+         <test_message program='prog1'>simple-message-with-rate-limited-action</test_message>\
+         <test_values>\
+            <test_value name='PROGRAM'>prog1</test_value>\
+            <test_value name='MESSAGE'>foobar</test_value>\
+         </test_values>\
+       </example>\
+       <example>\
+         <test_message program='prog2'>simple-message-with-rate-limited-action</test_message>\
+       </example>\
+     </examples>\
+    </rule>\
+    <rule provider='test' id='12' class='violation'>\
+     <patterns>\
+      <pattern>simple-message-with-action-to-create-context</pattern>\
+     </patterns>\
+     <actions>\
+       <action trigger='match'>\
+         <create-context context-id='1000' context-timeout='60' context-scope='program'>\
+           <message inherit-properties='context'>\
+             <values>\
+               <value name='MESSAGE'>context message</value>\
+             </values>\
+           </message>\
+         </create-context>\
+       </action>\
+     </actions>\
+    </rule>\
+    <rule provider='test' id='13' class='violation' context-id='1000' context-timeout='60' context-scope='program'>\
+     <patterns>\
+      <pattern>correllated-message-that-uses-context-created-by-rule-id#12</pattern>\
+     </patterns>\
+     <values>\
+       <value name='triggering-message'>${MESSAGE}@1 assd</value>\
+     </values>\
+    </rule>\
+    <rule provider='test' id='14' class='violation' context-id='1001' context-timeout='60' context-scope='program'>\
+     <patterns>\
+      <pattern>correllated-message-with-action-to-create-context</pattern>\
+     </patterns>\
+     <values>\
+       <value name='rule-msg-context-id'>${.classifier.context_id}</value>\
+     </values>\
+     <actions>\
+       <action trigger='match'>\
+         <create-context context-id='1002' context-timeout='60' context-scope='program'>\
+           <message inherit-properties='context'>\
+             <values>\
+               <!-- we should inherit from the LogMessage matching this rule and not the to be created context -->\
+               <value name='MESSAGE'>context message ${rule-msg-context-id}</value>\
+             </values>\
+           </message>\
+         </create-context>\
+       </action>\
+     </actions>\
+    </rule>\
+    <rule provider='test' id='15' class='violation' context-id='1002' context-timeout='60' context-scope='program'>\
+     <patterns>\
+      <pattern>correllated-message-that-uses-context-created-by-rule-id#14</pattern>\
+     </patterns>\
+     <values>\
+       <value name='triggering-message'>${MESSAGE}@1 assd</value>\
+       <value name='triggering-message-context-id'>$(grep ('${rule-msg-context-id}' ne '') ${rule-msg-context-id})</value>\
+     </values>\
+    </rule>\
+  </rules>\
  </ruleset>\
 </patterndb>";
 
-void
+static void
+test_simple_rule_without_context_or_actions(void)
+{
+  /* tag assigned based on "class" */
+  assert_msg_matches_and_has_tag("simple-message", ".classifier.system", TRUE);
+
+  /* tag assignment based on <tags/> */
+  assert_msg_matches_and_nvpair_equals("simple-message", "TAGS", ".classifier.system,simple-msg-tag1,simple-msg-tag2");
+
+  assert_msg_matches_and_nvpair_equals("simple-message", "simple-msg-value-1", "value1");
+  assert_msg_matches_and_nvpair_equals("simple-message", "simple-msg-value-2", "value2");
+  assert_msg_matches_and_nvpair_equals("simple-message", "simple-msg-host", MYHOST);
+}
+
+static void
+test_correllation_rule_without_actions(void)
+{
+  /* tag assigned based on "class" */
+  assert_msg_matches_and_has_tag("correllated-message-based-on-pid", ".classifier.system", TRUE);
+  assert_msg_matches_and_nvpair_equals("correllated-message-based-on-pid", "correllated-msg-context-id", MYPID);
+  assert_msg_matches_and_nvpair_equals("correllated-message-based-on-pid", "correllated-msg-context-length", "1");
+  _dont_reset_patterndb_state_for_the_next_call();
+  assert_msg_matches_and_nvpair_equals("correllated-message-based-on-pid", "correllated-msg-context-length", "2");
+  _dont_reset_patterndb_state_for_the_next_call();
+  assert_msg_matches_and_nvpair_equals("correllated-message-based-on-pid", "correllated-msg-context-length", "3");
+}
+
+static void
+test_correllation_rule_with_action_on_match(void)
+{
+  /* tag assigned based on "class" */
+  assert_msg_matches_and_has_tag("correllated-message-with-action-on-match", ".classifier.violation", TRUE);
+
+  assert_msg_matches_and_output_message_nvpair_equals("correllated-message-with-action-on-match", 1, "MESSAGE", "generated-message-on-match");
+  assert_msg_matches_and_output_message_nvpair_equals("correllated-message-with-action-on-match", 1, "context-id", "999");
+  assert_msg_matches_and_output_message_has_tag("correllated-message-with-action-on-match", 1, "correllated-msg-tag", TRUE);
+}
+
+static void
+test_correllation_rule_with_action_on_timeout(void)
+{
+  /* tag assigned based on "class" */
+  assert_msg_matches_and_has_tag("correllated-message-with-action-on-timeout", ".classifier.violation", TRUE);
+
+  assert_msg_matches_and_output_message_nvpair_equals_with_timeout("correllated-message-with-action-on-timeout", 60, 1, "MESSAGE", "generated-message-on-timeout");
+}
+
+static void
+test_correllation_rule_with_action_condition(void)
+{
+  /* tag assigned based on "class" */
+  assert_msg_matches_and_has_tag("correllated-message-with-action-condition", ".classifier.violation", TRUE);
+
+  assert_msg_matches_and_output_message_nvpair_equals("correllated-message-with-action-condition", 1, "MESSAGE", "generated-message-on-condition");
+}
+
+static void
+test_correllation_rule_with_rate_limited_action(void)
+{
+  /* tag assigned based on "class" */
+  assert_msg_matches_and_has_tag("correllated-message-with-rate-limited-action", ".classifier.violation", TRUE);
+
+  /* messages in the output:
+   * [0] trigger
+   * [1] GENERATED (as rate limit was met)
+   * [2] trigger
+   * [3] trigger
+   * [4] trigger
+   * [5] GENERATED (as rate limit was met again due to advance time */
+
+  assert_msg_matches_and_output_message_nvpair_equals("correllated-message-with-rate-limited-action", 1, "MESSAGE", "generated-message-rate-limit");
+  _dont_reset_patterndb_state_for_the_next_call();
+  assert_msg_matches_and_no_such_output_message("correllated-message-with-rate-limited-action", 3);
+  _dont_reset_patterndb_state_for_the_next_call();
+  assert_msg_matches_and_no_such_output_message("correllated-message-with-rate-limited-action", 4);
+  _dont_reset_patterndb_state_for_the_next_call();
+  _advance_time(120);
+  assert_msg_matches_and_output_message_nvpair_equals("correllated-message-with-rate-limited-action", 5, "MESSAGE", "generated-message-rate-limit");
+}
+
+static void
+test_simple_rule_with_action_on_match(void)
+{
+  /* tag assigned based on "class" */
+  assert_msg_matches_and_has_tag("simple-message-with-action-on-match", ".classifier.violation", TRUE);
+
+  assert_msg_matches_and_output_message_nvpair_equals("simple-message-with-action-on-match", 1, "MESSAGE", "generated-message-on-match");
+  assert_msg_matches_and_output_message_has_tag("simple-message-with-action-on-match", 1, "simple-msg-tag", TRUE);
+}
+
+static void
+test_simple_rule_with_rate_limited_action(void)
+{
+  /* tag assigned based on "class" */
+  assert_msg_matches_and_has_tag("simple-message-with-rate-limited-action", ".classifier.violation", TRUE);
+
+  /* messages in the output:
+   * [0] trigger
+   * [1] GENERATED (as rate limit was met)
+   * [2] trigger
+   * [3] trigger
+   * [4] trigger
+   * [5] GENERATED (as rate limit was met again due to advance time */
+
+  assert_msg_matches_and_output_message_nvpair_equals("simple-message-with-rate-limited-action", 1, "MESSAGE", "generated-message-rate-limit");
+  _dont_reset_patterndb_state_for_the_next_call();
+  assert_msg_matches_and_no_such_output_message("simple-message-with-rate-limited-action", 3);
+  _dont_reset_patterndb_state_for_the_next_call();
+  assert_msg_matches_and_no_such_output_message("simple-message-with-rate-limited-action", 4);
+  _dont_reset_patterndb_state_for_the_next_call();
+  _advance_time(120);
+  assert_msg_matches_and_output_message_nvpair_equals("simple-message-with-rate-limited-action", 5, "MESSAGE", "generated-message-rate-limit");
+}
+
+
+static void
+test_simple_rule_with_action_condition(void)
+{
+  /* tag assigned based on "class" */
+  assert_msg_matches_and_has_tag("simple-message-with-action-condition", ".classifier.violation", TRUE);
+
+  assert_msg_matches_and_output_message_nvpair_equals("simple-message-with-action-condition", 1, "MESSAGE", "generated-message-on-condition");
+}
+
+static void
+test_correllation_rule_with_create_context(void)
+{
+  assert_msg_matches_and_nvpair_equals("simple-message-with-action-to-create-context", ".classifier.rule_id", "12");
+  _dont_reset_patterndb_state_for_the_next_call();
+  assert_msg_matches_and_nvpair_equals("correllated-message-that-uses-context-created-by-rule-id#12", "triggering-message", "context message assd");
+  _dont_reset_patterndb_state_for_the_next_call();
+  assert_msg_matches_and_nvpair_equals("correllated-message-that-uses-context-created-by-rule-id#12", "PROGRAM", "prog1");
+
+
+  assert_msg_matches_and_nvpair_equals("correllated-message-with-action-to-create-context", ".classifier.rule_id", "14");
+  _dont_reset_patterndb_state_for_the_next_call();
+  assert_msg_matches_and_nvpair_equals("correllated-message-that-uses-context-created-by-rule-id#14", "triggering-message", "context message 1001 assd");
+  _dont_reset_patterndb_state_for_the_next_call();
+  assert_msg_matches_and_nvpair_equals("correllated-message-that-uses-context-created-by-rule-id#14", "PROGRAM", "prog1");
+  _dont_reset_patterndb_state_for_the_next_call();
+  assert_msg_matches_and_nvpair_equals("correllated-message-that-uses-context-created-by-rule-id#14", "triggering-message-context-id", "1001");
+}
+
+static void
 test_patterndb_rule(void)
 {
   _load_pattern_db_from_string(pdb_ruletest_skeleton);
-  assert_msg_matches_and_has_tag("pattern11", "tag11-1", TRUE);
-  assert_msg_matches_and_has_tag("pattern11", ".classifier.system", TRUE);
-  assert_msg_matches_and_has_tag("pattern11", "tag11-2", TRUE);
-  assert_msg_matches_and_has_tag("pattern11", "tag11-3", FALSE);
-  assert_msg_matches_and_has_tag("pattern11a", "tag11-1", TRUE);
-  assert_msg_matches_and_has_tag("pattern11a", "tag11-2", TRUE);
-  assert_msg_matches_and_has_tag("pattern11a", "tag11-3", FALSE);
-  assert_msg_matches_and_has_tag("pattern12", ".classifier.violation", TRUE);
-  assert_msg_matches_and_has_tag("pattern12", "tag12-1", FALSE);
-  assert_msg_matches_and_has_tag("pattern12", "tag12-2", FALSE);
-  assert_msg_matches_and_has_tag("pattern12", "tag12-3", FALSE);
-  assert_msg_matches_and_has_tag("pattern12a", "tag12-1", FALSE);
-  assert_msg_matches_and_has_tag("pattern12a", "tag12-2", FALSE);
-  assert_msg_matches_and_has_tag("pattern12a", "tag12-3", FALSE);
-  assert_msg_doesnot_match("pattern1x");
 
-  assert_msg_matches_and_nvpair_equals("pattern11", "n11-1", "v11-1");
-  assert_msg_matches_and_nvpair_equals("pattern11", ".classifier.class", "system");
-  assert_msg_matches_and_nvpair_equals("pattern11", "n11-2", "v11-2");
-  assert_msg_matches_and_nvpair_equals("pattern11", "n11-3", NULL);
-  assert_msg_matches_and_nvpair_equals("pattern11", "context-id", "999");
-  assert_msg_matches_and_nvpair_equals("pattern11", ".classifier.context_id", "999");
-  assert_msg_matches_and_nvpair_equals("pattern11a", "n11-1", "v11-1");
-  assert_msg_matches_and_nvpair_equals("pattern11a", "n11-2", "v11-2");
-  assert_msg_matches_and_nvpair_equals("pattern11a", "n11-3", NULL);
-  assert_msg_matches_and_nvpair_equals("pattern12", ".classifier.class", "violation");
-  assert_msg_matches_and_nvpair_equals("pattern12", "n12-1", NULL);
-  assert_msg_matches_and_nvpair_equals("pattern12", "n12-2", NULL);
-  assert_msg_matches_and_nvpair_equals("pattern12", "n12-3", NULL);
-  assert_msg_matches_and_nvpair_equals("pattern11", "vvv", MYHOST);
+  test_simple_rule_without_context_or_actions();
+  test_correllation_rule_without_actions();
+  test_correllation_rule_with_action_on_match();
+  test_correllation_rule_with_action_on_timeout();
+  test_correllation_rule_with_action_condition();
+  test_correllation_rule_with_rate_limited_action();
 
-  assert_msg_matches_and_output_message_nvpair_equals("pattern11", 1, "MESSAGE", "rule11 matched");
-  assert_msg_matches_and_output_message_nvpair_equals("pattern11", 1, "context-id", "999");
-  assert_msg_matches_and_output_message_has_tag("pattern11", 1, "tag11-3", TRUE);
-  assert_msg_matches_and_output_message_has_tag("pattern11", 1, "tag11-4", FALSE);
+  test_simple_rule_with_action_on_match();
+  test_simple_rule_with_action_condition();
+  test_simple_rule_with_rate_limited_action();
 
-  assert_msg_matches_and_output_message_nvpair_equals_with_timeout("pattern11", 60, 2, "MESSAGE", "rule11 timed out");
-  assert_msg_matches_and_output_message_nvpair_equals_with_timeout("pattern11", 60, 2, "context-id", "999");
-  assert_msg_matches_and_output_message_has_tag_with_timeout("pattern11", 60, 2, "tag11-3", FALSE);
-  assert_msg_matches_and_output_message_has_tag_with_timeout("pattern11", 60, 2, "tag11-4", TRUE);
+  test_correllation_rule_with_create_context();
 
-  assert_msg_matches_and_output_message_nvpair_equals("contextlesstest value1", 1, "MESSAGE",  "message1");
-  assert_msg_matches_and_output_message_nvpair_equals("contextlesstest value2", 1, "MESSAGE",  "message2");
-
+  assert_msg_doesnot_match("non-matching-pattern");
   _destroy_pattern_db();
 }
 
-gchar *pdb_inheritance_enabled_skeleton = "<patterndb version='3' pub_date='2010-02-22'>\
+const gchar *pdb_complete_syntax = "\
+<patterndb version='5' pub_date='2010-02-22'>\
  <ruleset name='testset' id='1'>\
+  <url>http://foobar.org/</url>\
+  <urls>\
+    <url>http://foobar.org/1</url>\
+    <url>http://foobar.org/2</url>\
+  </urls>\
+  <description>This is a test set</description>\
   <patterns>\
-   <pattern>prog2</pattern>\
+    <pattern>prog2</pattern>\
+    <pattern>prog3</pattern>\
   </patterns>\
-  <rule provider='test' id='11' class='system'>\
-   <patterns>\
-    <pattern>pattern-with-inheritance-enabled</pattern>\
-   </patterns>\
-   <tags>\
-    <tag>basetag1</tag>\
-    <tag>basetag2</tag>\
-   </tags>\
-   <actions>\
-    <action trigger='match'>\
-     <message inherit-properties='TRUE'>\
-      <value name='actionkey'>actionvalue</value>\
-      <tags>\
-       <tag>actiontag</tag>\
-      </tags>\
-     </message>\
-    </action>\
-   </actions>\
-  </rule>\
- </ruleset>\
+  <pattern>prog1</pattern>\
+  <rules>\
+    <rule provider='test' id='10' class='system' context-id='foobar' context-scope='program'>\
+     <description>This is a rule description</description>\
+     <urls>\
+       <url>http://foobar.org/1</url>\
+       <url>http://foobar.org/2</url>\
+     </urls>\
+     <patterns>\
+      <pattern>simple-message</pattern>\
+      <pattern>simple-message-alternative</pattern>\
+     </patterns>\
+     <tags>\
+      <tag>simple-msg-tag1</tag>\
+      <tag>simple-msg-tag2</tag>\
+     </tags>\
+     <values>\
+      <value name='simple-msg-value-1'>value1</value>\
+      <value name='simple-msg-value-2'>value2</value>\
+      <value name='simple-msg-host'>${HOST}</value>\
+     </values>\
+     <examples>\
+       <example>\
+         <test_message program='foobar'>This is foobar message</test_message>\
+         <test_values>\
+           <test_value name='foo'>foo</test_value>\
+           <test_value name='bar'>bar</test_value>\
+         </test_values>\
+       </example>\
+     </examples>\
+     <actions>\
+       <action>\
+         <message>\
+           <values>\
+             <value name='FOO'>foo</value>\
+             <value name='BAR'>bar</value>\
+           </values>\
+           <tags>\
+             <tag>tag1</tag>\
+             <tag>tag2</tag>\
+           </tags>\
+         </message>\
+       </action>\
+       <action>\
+         <create-context context-id='foobar'>\
+           <message>\
+             <values>\
+               <value name='FOO'>foo</value>\
+               <value name='BAR'>bar</value>\
+             </values>\
+             <tags>\
+               <tag>tag1</tag>\
+               <tag>tag2</tag>\
+             </tags>\
+             </message>\
+         </create-context>\
+       </action>\
+     </actions>\
+    </rule>\
+  </rules>\
+</ruleset>\
+</patterndb>\
+";
+
+static void
+test_patterndb_loads_a_syntactically_complete_xml_properly(void)
+{
+  _load_pattern_db_from_string(pdb_complete_syntax);
+  /* check we did indeed load the patterns */
+  assert_msg_matches_and_has_tag("simple-message", ".classifier.system", TRUE);
+  _destroy_pattern_db();
+}
+
+gchar *pdb_inheritance_enabled_skeleton = "<patterndb version='4' pub_date='2010-02-22'>\
+  <ruleset name='testset' id='1'>\
+    <patterns>\
+      <pattern>prog2</pattern>\
+    </patterns>\
+    <rules>\
+      <rule provider='test' id='11' class='system'>\
+        <patterns>\
+          <pattern>pattern-with-inheritance-enabled</pattern>\
+        </patterns>\
+        <tags>\
+          <tag>basetag1</tag>\
+          <tag>basetag2</tag>\
+        </tags>\
+        <actions>\
+          <action trigger='match'>\
+            <message inherit-properties='TRUE'>\
+              <values>\
+                <value name='actionkey'>actionvalue</value>\
+              </values>\
+              <tags>\
+                <tag>actiontag</tag>\
+              </tags>\
+            </message>\
+          </action>\
+        </actions>\
+      </rule>\
+    </rules>\
+  </ruleset>\
 </patterndb>";
 
 void
@@ -475,30 +888,34 @@ test_patterndb_message_property_inheritance_enabled()
   _destroy_pattern_db();
 }
 
-gchar *pdb_inheritance_disabled_skeleton = "<patterndb version='3' pub_date='2010-02-22'>\
- <ruleset name='testset' id='1'>\
-  <patterns>\
-   <pattern>prog2</pattern>\
-  </patterns>\
-  <rule provider='test' id='12' class='system'>\
-   <patterns>\
-    <pattern>pattern-with-inheritance-disabled</pattern>\
-   </patterns>\
-   <tags>\
-    <tag>basetag1</tag>\
-    <tag>basetag2</tag>\
-   </tags>\
-   <actions>\
-    <action trigger='match'>\
-     <message inherit-properties='FALSE'>\
-      <value name='actionkey'>actionvalue</value>\
-      <tags>\
-       <tag>actiontag</tag>\
-      </tags>\
-     </message>\
-    </action>\
-   </actions>\
-  </rule>\
+gchar *pdb_inheritance_disabled_skeleton = "<patterndb version='4' pub_date='2010-02-22'>\
+  <ruleset name='testset' id='1'>\
+    <patterns>\
+      <pattern>prog2</pattern>\
+    </patterns>\
+    <rules>\
+      <rule provider='test' id='12' class='system'>\
+        <patterns>\
+          <pattern>pattern-with-inheritance-disabled</pattern>\
+        </patterns>\
+        <tags>\
+          <tag>basetag1</tag>\
+          <tag>basetag2</tag>\
+        </tags>\
+        <actions>\
+          <action trigger='match'>\
+            <message inherit-properties='FALSE'>\
+              <values>\
+                <value name='actionkey'>actionvalue</value>\
+              </values>\
+              <tags>\
+                <tag>actiontag</tag>\
+              </tags>\
+            </message>\
+          </action>\
+        </actions>\
+      </rule>\
+    </rules>\
  </ruleset>\
 </patterndb>";
 
@@ -516,32 +933,37 @@ test_patterndb_message_property_inheritance_disabled()
   _destroy_pattern_db();
 }
 
-gchar *pdb_inheritance_context_skeleton = "<patterndb version='3' pub_date='2010-02-22'>\
- <ruleset name='testset' id='1'>\
-  <patterns>\
-   <pattern>prog2</pattern>\
-  </patterns>\
-  <rule provider='test' id='11' class='system' context-scope='program'\
-        context-id='$PID' context-timeout='60'>\
-   <patterns>\
-    <pattern>pattern-with-inheritance-context</pattern>\
-   </patterns>\
-   <tags>\
-    <tag>basetag1</tag>\
-    <tag>basetag2</tag>\
-   </tags>\
-   <actions>\
-    <action trigger='timeout'>\
-     <message inherit-properties='context'>\
-      <value name='MESSAGE'>action message</value>\
-      <tags>\
-       <tag>actiontag</tag>\
-      </tags>\
-     </message>\
-    </action>\
-   </actions>\
-  </rule>\
- </ruleset>\
+gchar *pdb_inheritance_context_skeleton = "\
+<patterndb version='4' pub_date='2010-02-22'>\
+  <ruleset name='testset' id='1'>\
+    <patterns>\
+      <pattern>prog2</pattern>\
+    </patterns>\
+    <rules>\
+      <rule provider='test' id='11' class='system' context-scope='program'\
+           context-id='$PID' context-timeout='60'>\
+        <patterns>\
+          <pattern>pattern-with-inheritance-context</pattern>\
+        </patterns>\
+        <tags>\
+          <tag>basetag1</tag>\
+          <tag>basetag2</tag>\
+        </tags>\
+        <actions>\
+          <action trigger='timeout'>\
+            <message inherit-properties='context'>\
+              <values>\
+                <value name='MESSAGE'>action message</value>\
+              </values>\
+              <tags>\
+                <tag>actiontag</tag>\
+              </tags>\
+            </message>\
+          </action>\
+        </actions>\
+     </rule>\
+    </rules>\
+  </ruleset>\
 </patterndb>";
 
 void
@@ -569,54 +991,62 @@ test_patterndb_message_property_inheritance(void)
   test_patterndb_message_property_inheritance_context();
 }
 
-gchar *pdb_msg_count_skeleton = "<patterndb version='3' pub_date='2010-02-22'>\
+gchar *pdb_msg_count_skeleton = "<patterndb version='4' pub_date='2010-02-22'>\
  <ruleset name='testset' id='1'>\
   <patterns>\
    <pattern>prog1</pattern>\
    <pattern>prog2</pattern>\
   </patterns>\
-  <rule provider='test' id='13' class='system' context-scope='program'\
-        context-id='$PID' context-timeout='60'>\
-   <patterns>\
-    <pattern>pattern13</pattern>\
-   </patterns>\
-   <values>\
-    <value name='n13-1'>v13-1</value>\
-   </values>\
-   <actions>\
-    <action condition='\"${n13-1}\" == \"v13-1\"' trigger='match'>\
-     <message inherit-properties='TRUE'>\
-      <value name='CONTEXT_LENGTH'>$(context-length)</value>\
-     </message>\
-    </action>\
-   </actions>\
-  </rule>\
-  <rule provider='test' id='14' class='system' context-scope='program'\
-        context-id='$PID' context-timeout='60'>\
-   <patterns>\
-    <pattern>pattern14</pattern>\
-   </patterns>\
-   <actions>\
-    <action condition='\"$(context-length)\" == \"1\"' trigger='match'>\
-     <message inherit-properties='TRUE'>\
-      <value name='CONTEXT_LENGTH'>$(context-length)</value>\
-     </message>\
-    </action>\
-   </actions>\
-  </rule>\
-  <rule provider='test' id='15' class='system' context-scope='program'\
-        context-id='$PID' context-timeout='60'>\
-   <patterns>\
-    <pattern>pattern15@ANYSTRING:p15@</pattern>\
-   </patterns>\
-   <actions>\
-    <action condition='\"$(context-length)\" == \"2\"' trigger='match'>\
-     <message inherit-properties='FALSE'>\
-      <value name='fired'>true</value>\
-     </message>\
-    </action>\
-   </actions>\
-  </rule>\
+  <rules>\
+    <rule provider='test' id='13' class='system' context-scope='program'\
+          context-id='$PID' context-timeout='60'>\
+      <patterns>\
+        <pattern>pattern13</pattern>\
+      </patterns>\
+      <values>\
+        <value name='n13-1'>v13-1</value>\
+      </values>\
+      <actions>\
+        <action condition='\"${n13-1}\" eq \"v13-1\"' trigger='match'>\
+          <message inherit-properties='TRUE'>\
+            <values>\
+              <value name='CONTEXT_LENGTH'>$(context-length)</value>\
+            </values>\
+          </message>\
+        </action>\
+      </actions>\
+    </rule>\
+    <rule provider='test' id='14' class='system' context-scope='program'\
+          context-id='$PID' context-timeout='60'>\
+      <patterns>\
+        <pattern>pattern14</pattern>\
+      </patterns>\
+      <actions>\
+        <action condition='\"$(context-length)\" eq \"1\"' trigger='match'>\
+          <message inherit-properties='TRUE'>\
+            <values>\
+              <value name='CONTEXT_LENGTH'>$(context-length)</value>\
+            </values>\
+          </message>\
+        </action>\
+      </actions>\
+    </rule>\
+    <rule provider='test' id='15' class='system' context-scope='program'\
+          context-id='$PID' context-timeout='60'>\
+      <patterns>\
+        <pattern>pattern15@ANYSTRING:p15@</pattern>\
+      </patterns>\
+      <actions>\
+        <action condition='\"$(context-length)\" eq \"2\"' trigger='match'>\
+          <message inherit-properties='FALSE'>\
+            <values>\
+              <value name='fired'>true</value>\
+            </values>\
+          </message>\
+        </action>\
+      </actions>\
+    </rule>\
+  </rules>\
  </ruleset>\
 </patterndb>";
 
@@ -680,6 +1110,7 @@ main(int argc, char *argv[])
   test_conflicting_rules_with_different_parsers();
   test_conflicting_rules_with_the_same_parsers();
   test_patterndb_rule();
+  test_patterndb_loads_a_syntactically_complete_xml_properly();
   test_patterndb_parsers();
   test_patterndb_message_property_inheritance();
   test_patterndb_context_length();

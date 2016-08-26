@@ -3,14 +3,18 @@ if ENABLE_PYTHON
 module_LTLIBRARIES				+= modules/python/libmod-python.la
 
 modules_python_libmod_python_la_CFLAGS		= \
+    $(AM_CFLAGS) \
 	$(PYTHON_CFLAGS)			  \
 	$(SYSLOG_NG_CFLAGS)			  \
 	$(EVENTLOG_CFLAGS)			  \
-	$(IVYKIS_CFLAGS)			  \
+	$(IVYKIS_CFLAGS)
+modules_python_libmod_python_la_CPPFLAGS		= \
+    $(AM_CPPFLAGS) \
 	-I$(top_srcdir)/modules/python		  \
 	-I$(top_builddir)/modules/python
 
 modules_python_libmod_python_la_LIBADD		= \
+	$(MODULE_DEPS_LIBS) \
 	$(PYTHON_LIBS)				  \
 	$(EVENTLOG_LIBS)			  \
 	$(SYSLOG_NG_LIBS)			  \
@@ -41,8 +45,11 @@ modules_python_libmod_python_la_SOURCES		= \
 
 
 modules_python_libmod_python_la_LDFLAGS		 = \
-	-avoid-version -module -no-undefined	   \
+	$(MODULE_LDFLAGS) \
 	$(PYTHON_LDADD)
+
+modules_python_libmod_python_la_DEPENDENCIES=	\
+	$(MODULE_DEPS_LIBS)
 
 BUILT_SOURCES					+= \
 	modules/python/python-grammar.y		   \

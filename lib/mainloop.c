@@ -1,5 +1,5 @@
  /*
- * Copyright (c) 2002-2013 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2002-2013 Balabit
  * Copyright (c) 1998-2013 Balázs Scheidler
  *
  * This library is free software; you can redistribute it and/or
@@ -37,6 +37,8 @@
 #include "run-id.h"
 #include "host-id.h"
 #include "debugger/debugger-main.h"
+#include "plugin.h"
+#include "resolved-configurable-paths.h"
 
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -92,11 +94,6 @@
  * closer to their usage.  The simple reason they are here, is that mainloop
  * needed them and it implements the command line options to parse them.
  * This is far from perfect. (Bazsi) */
-static const gchar *cfgfilename;
-static const gchar *persist_file;
-static const gchar *ctlfilename;
-const gchar *module_path;
-const gchar *java_module_path;
 static gchar *preprocess_into = NULL;
 gboolean syntax_only = FALSE;
 gboolean interactive_mode = FALSE;
@@ -204,7 +201,7 @@ main_loop_reload_config_apply(void)
 
   if (cfg_init(main_loop_new_config))
     {
-      msg_verbose("New configuration initialized", NULL);
+      msg_verbose("New configuration initialized");
       persist_config_free(main_loop_new_config->persist);
       main_loop_new_config->persist = NULL;
       cfg_free(main_loop_old_config);
@@ -213,7 +210,7 @@ main_loop_reload_config_apply(void)
     }
   else
     {
-      msg_error("Error initializing new configuration, reverting to old config", NULL);
+      msg_error("Error initializing new configuration, reverting to old config");
       service_management_publish_status("Error initializing new configuration, using the old config");
       cfg_persist_config_move(main_loop_new_config, main_loop_old_config);
       cfg_deinit(main_loop_new_config);
@@ -235,8 +232,7 @@ main_loop_reload_config_apply(void)
 
   /* this is already running with the new config in place */
   app_post_config_loaded();
-  msg_notice("Configuration reload request received, reloading configuration",
-               NULL);
+  msg_notice("Configuration reload request received, reloading configuration");
 
  finish:
   main_loop_new_config = NULL;
@@ -269,14 +265,13 @@ main_loop_reload_config_initiate(void)
   main_loop_old_config = current_configuration;
   app_pre_config_loaded();
   main_loop_new_config = cfg_new(0);
-  if (!cfg_read_config(main_loop_new_config, cfgfilename, FALSE, NULL))
+  if (!cfg_read_config(main_loop_new_config, resolvedConfigurablePaths.cfgfilename, FALSE, NULL))
     {
       cfg_free(main_loop_new_config);
       main_loop_new_config = NULL;
       main_loop_old_config = NULL;
       msg_error("Error parsing configuration",
-                evt_tag_str(EVT_TAG_FILENAME, cfgfilename),
-                NULL);
+                evt_tag_str(EVT_TAG_FILENAME, resolvedConfigurablePaths.cfgfilename));
       service_management_publish_status("Error parsing new configuration, using the old config");
       return;
     }
@@ -312,8 +307,7 @@ main_loop_exit_initiate(void)
     return;
 
   msg_notice("syslog-ng shutting down",
-             evt_tag_str("version", VERSION),
-             NULL);
+             evt_tag_str("version", SYSLOG_NG_VERSION));
 
   IV_TIMER_INIT(&main_loop_exit_timer);
   iv_validate_now();
@@ -436,7 +430,7 @@ main_loop_init(void)
 
   main_loop_init_events();
   if (!syntax_only)
-    control_init(ctlfilename);
+    control_init(resolvedConfigurablePaths.ctlfilename);
   setup_signals();
 }
 
@@ -447,7 +441,7 @@ int
 main_loop_read_and_init_config(void)
 {
   current_configuration = cfg_new(0);
-  if (!cfg_read_config(current_configuration, cfgfilename, syntax_only, preprocess_into))
+  if (!cfg_read_config(current_configuration, resolvedConfigurablePaths.cfgfilename, syntax_only, preprocess_into))
     {
       return 1;
     }
@@ -457,7 +451,7 @@ main_loop_read_and_init_config(void)
       return 0;
     }
 
-  if (!main_loop_initialize_state(current_configuration, persist_file))
+  if (!main_loop_initialize_state(current_configuration, resolvedConfigurablePaths.persist_file))
     {
       return 2;
     }
@@ -490,8 +484,7 @@ void
 main_loop_run(void)
 {
   msg_notice("syslog-ng starting up",
-             evt_tag_str("version", VERSION),
-             NULL);
+             evt_tag_str("version", SYSLOG_NG_VERSION));
 
   /* main loop */
   service_management_indicate_readiness();
@@ -508,11 +501,11 @@ main_loop_run(void)
 
 static GOptionEntry main_loop_options[] =
 {
-  { "cfgfile",           'f',         0, G_OPTION_ARG_STRING, &cfgfilename, "Set config file name, default=" PATH_SYSLOG_NG_CONF, "<config>" },
-  { "persist-file",      'R',         0, G_OPTION_ARG_STRING, &persist_file, "Set the name of the persistent configuration file, default=" PATH_PERSIST_CONFIG, "<fname>" },
+  { "cfgfile",           'f',         0, G_OPTION_ARG_STRING, &resolvedConfigurablePaths.cfgfilename, "Set config file name, default=" PATH_SYSLOG_NG_CONF, "<config>" },
+  { "persist-file",      'R',         0, G_OPTION_ARG_STRING, &resolvedConfigurablePaths.persist_file, "Set the name of the persistent configuration file, default=" PATH_PERSIST_CONFIG, "<fname>" },
   { "preprocess-into",     0,         0, G_OPTION_ARG_STRING, &preprocess_into, "Write the preprocessed configuration file to the file specified", "output" },
   { "syntax-only",       's',         0, G_OPTION_ARG_NONE, &syntax_only, "Only read and parse config file", NULL},
-  { "control",           'c',         0, G_OPTION_ARG_STRING, &ctlfilename, "Set syslog-ng control socket, default=" PATH_CONTROL_SOCKET, "<ctlpath>" },
+  { "control",           'c',         0, G_OPTION_ARG_STRING, &resolvedConfigurablePaths.ctlfilename, "Set syslog-ng control socket, default=" PATH_CONTROL_SOCKET, "<ctlpath>" },
   { "interactive",       'i',         0, G_OPTION_ARG_NONE, &interactive_mode, "Enable interactive mode" },
   { NULL },
 };
@@ -523,15 +516,3 @@ main_loop_add_options(GOptionContext *ctx)
   g_option_context_add_main_entries(ctx, main_loop_options, NULL);
   main_loop_io_worker_add_options(ctx);
 }
-
-
-void
-main_loop_global_init(void)
-{
-  cfgfilename = get_installation_path_for(PATH_SYSLOG_NG_CONF);
-  persist_file = get_installation_path_for(PATH_PERSIST_CONFIG);
-  ctlfilename = get_installation_path_for(PATH_CONTROL_SOCKET);
-  module_path = get_installation_path_for(MODULE_PATH);
-  java_module_path = get_installation_path_for(JAVA_MODULE_PATH);
-}
-

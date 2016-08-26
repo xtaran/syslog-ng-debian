@@ -359,7 +359,7 @@ extern int _cfg_lexer_lex \
 #undef YY_DECL
 #endif
 
-#line 308 "cfg-lex.l"
+#line 313 "../syslog-ng/lib/cfg-lex.l"
 
 
 #line 366 "lib/cfg-lex.h"

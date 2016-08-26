@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2013, 2015 BalaBit
+ * Copyright (c) 2002-2013, 2015 Balabit
  * Copyright (c) 1998-2013, 2015 Balázs Scheidler
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -27,6 +27,7 @@ PDBRuleSet *
 pdb_rule_set_new(void)
 {
   PDBRuleSet *self = g_new0(PDBRuleSet, 1);
+  self->is_empty = TRUE;
 
   return self;
 }

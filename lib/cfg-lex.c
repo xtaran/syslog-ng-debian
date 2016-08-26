@@ -591,9 +591,9 @@ goto find_rule; \
 #define yymore() yymore_used_but_not_detected
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
-#line 1 "cfg-lex.l"
+#line 1 "../syslog-ng/lib/cfg-lex.l"
 /*
- * Copyright (c) 2002-2013 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2002-2013 Balabit
  * Copyright (c) 1998-2011 Balázs Scheidler
  *
  * This library is free software; you can redistribute it and/or
@@ -615,7 +615,7 @@ goto find_rule; \
  * COPYING for details.
  *
  */
-#line 25 "cfg-lex.l"
+#line 25 "../syslog-ng/lib/cfg-lex.l"
 
 #include "syslog-ng.h"
 #include "cfg-lexer.h"
@@ -640,8 +640,7 @@ yy_input_run_backtick_substitution(CfgLexer *self, gchar *buf, gsize buf_size)
       msg_error("Error performing backtick substitution in configuration file",
                 evt_tag_str("error", error->message),
                 evt_tag_str("filename", cur_lloc->level->name),
-                evt_tag_printf("line", "%d:%d", cur_lloc->first_line, cur_lloc->first_column),
-                NULL);
+                evt_tag_printf("line", "%d:%d", cur_lloc->first_line, cur_lloc->first_column));
       g_clear_error(&error);
       goto error;
     }
@@ -652,8 +651,7 @@ yy_input_run_backtick_substitution(CfgLexer *self, gchar *buf, gsize buf_size)
           msg_error("Error performing backtick substitution in configuration file",
                     evt_tag_str("error", "lexer buffer is too small to hold substituted result"),
                     evt_tag_str("filename", cur_lloc->level->name),
-                    evt_tag_printf("line", "%d:%d", cur_lloc->first_line, cur_lloc->first_column),
-                    NULL);
+                    evt_tag_printf("line", "%d:%d", cur_lloc->first_line, cur_lloc->first_column));
           goto error;
         }
       else
@@ -715,11 +713,12 @@ yy_input_run_backtick_substitution(CfgLexer *self, gchar *buf, gsize buf_size)
   
 #define YY_FATAL_ERROR(msg)						\
   do {									\
-    struct yyguts_t * yyg = (struct yyguts_t*) yyscanner;		\
+    struct yyguts_t * __yyg = (struct yyguts_t*) yyscanner;		\
+                                                                        \
     msg_error("Fatal error in configuration lexer, giving up",		\
               evt_tag_str("error", msg),				\
               NULL);							\
-    longjmp(yyextra->fatal_error, 1);					\
+    longjmp(__yyg->yyextra_r->fatal_error, 1);				\
   } while(0)
 
 
@@ -739,7 +738,7 @@ _cfg_lex_new_line(CfgLexer *lexer)
 
 
 
-#line 743 "lib/cfg-lex.c"
+#line 742 "lib/cfg-lex.c"
 
 #define INITIAL 0
 #define string 1
@@ -1050,10 +1049,10 @@ YY_DECL
 		}
 
 	{
-#line 166 "cfg-lex.l"
+#line 165 "../syslog-ng/lib/cfg-lex.l"
 
 
-#line 1057 "lib/cfg-lex.c"
+#line 1056 "lib/cfg-lex.c"
 
 	while ( 1 )		/* loops until end-of-file is reached */
 		{
@@ -1116,7 +1115,7 @@ do_action:	/* This label is used only to access EOF actions. */
 	{ /* beginning of action switch */
 case 1:
 YY_RULE_SETUP
-#line 168 "cfg-lex.l"
+#line 167 "../syslog-ng/lib/cfg-lex.l"
 {
                              int ch;
 
@@ -1135,7 +1134,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 183 "cfg-lex.l"
+#line 182 "../syslog-ng/lib/cfg-lex.l"
 {
                              return LL_PRAGMA;
                            }
@@ -1143,7 +1142,7 @@ YY_RULE_SETUP
 case 3:
 /* rule 3 can match eol */
 YY_RULE_SETUP
-#line 186 "cfg-lex.l"
+#line 185 "../syslog-ng/lib/cfg-lex.l"
 {
                              *yylloc = yyextra->include_stack[yyextra->include_depth].lloc;
                              _cfg_lex_new_line(yyextra);
@@ -1155,32 +1154,32 @@ YY_RULE_SETUP
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 194 "cfg-lex.l"
+#line 193 "../syslog-ng/lib/cfg-lex.l"
 ;
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 195 "cfg-lex.l"
+#line 194 "../syslog-ng/lib/cfg-lex.l"
 { return LL_DOTDOT; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 196 "cfg-lex.l"
+#line 195 "../syslog-ng/lib/cfg-lex.l"
 { yylval->fnum = strtod(yytext, NULL); return LL_FLOAT; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 197 "cfg-lex.l"
+#line 196 "../syslog-ng/lib/cfg-lex.l"
 { yylval->num = strtoll(yytext + 2, NULL, 16); return LL_NUMBER; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 198 "cfg-lex.l"
+#line 197 "../syslog-ng/lib/cfg-lex.l"
 { yylval->num = strtoll(yytext + 1, NULL, 8); return LL_NUMBER; }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 199 "cfg-lex.l"
+#line 198 "../syslog-ng/lib/cfg-lex.l"
 {
                              if (!parse_number_with_suffix(yytext, &yylval->num))
                                {
@@ -1191,34 +1190,34 @@ YY_RULE_SETUP
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 206 "cfg-lex.l"
+#line 205 "../syslog-ng/lib/cfg-lex.l"
 { return cfg_lexer_lookup_keyword(yyextra, yylval, yylloc, yytext); }
 	YY_BREAK
 case 11:
-#line 208 "cfg-lex.l"
+#line 207 "../syslog-ng/lib/cfg-lex.l"
 case 12:
-#line 209 "cfg-lex.l"
+#line 208 "../syslog-ng/lib/cfg-lex.l"
 case 13:
-#line 210 "cfg-lex.l"
+#line 209 "../syslog-ng/lib/cfg-lex.l"
 case 14:
-#line 211 "cfg-lex.l"
+#line 210 "../syslog-ng/lib/cfg-lex.l"
 case 15:
-#line 212 "cfg-lex.l"
+#line 211 "../syslog-ng/lib/cfg-lex.l"
 case 16:
-#line 213 "cfg-lex.l"
+#line 212 "../syslog-ng/lib/cfg-lex.l"
 case 17:
 YY_RULE_SETUP
-#line 213 "cfg-lex.l"
+#line 212 "../syslog-ng/lib/cfg-lex.l"
 { return yytext[0]; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 214 "cfg-lex.l"
+#line 213 "../syslog-ng/lib/cfg-lex.l"
 ;
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 216 "cfg-lex.l"
+#line 215 "../syslog-ng/lib/cfg-lex.l"
 {
 			     g_string_truncate(yyextra->string_buffer, 0);
 			     yy_push_state(string, yyscanner);
@@ -1226,7 +1225,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 220 "cfg-lex.l"
+#line 219 "../syslog-ng/lib/cfg-lex.l"
 {
 			     g_string_truncate(yyextra->string_buffer, 0);
 			     yy_push_state(qstring, yyscanner);
@@ -1234,48 +1233,48 @@ YY_RULE_SETUP
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 224 "cfg-lex.l"
+#line 223 "../syslog-ng/lib/cfg-lex.l"
 { g_string_append_c(yyextra->string_buffer, 7); }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 225 "cfg-lex.l"
+#line 224 "../syslog-ng/lib/cfg-lex.l"
 { g_string_append_c(yyextra->string_buffer, 10); }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 226 "cfg-lex.l"
+#line 225 "../syslog-ng/lib/cfg-lex.l"
 { g_string_append_c(yyextra->string_buffer, 13); }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 227 "cfg-lex.l"
+#line 226 "../syslog-ng/lib/cfg-lex.l"
 { g_string_append_c(yyextra->string_buffer, 9); }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 228 "cfg-lex.l"
+#line 227 "../syslog-ng/lib/cfg-lex.l"
 { g_string_append_c(yyextra->string_buffer, 11); }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 229 "cfg-lex.l"
+#line 228 "../syslog-ng/lib/cfg-lex.l"
 { g_string_append_c(yyextra->string_buffer, strtol(yytext+2, NULL, 16)); }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 230 "cfg-lex.l"
+#line 229 "../syslog-ng/lib/cfg-lex.l"
 { g_string_append_c(yyextra->string_buffer, strtol(yytext+2, NULL, 8)); }
 	YY_BREAK
 case 28:
 /* rule 28 can match eol */
 YY_RULE_SETUP
-#line 231 "cfg-lex.l"
+#line 230 "../syslog-ng/lib/cfg-lex.l"
 { g_string_append_c(yyextra->string_buffer, yytext[1]); }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 232 "cfg-lex.l"
+#line 231 "../syslog-ng/lib/cfg-lex.l"
 {
 			     yy_pop_state(yyscanner);
 			     yylval->cptr = strdup(yyextra->string_buffer->str);
@@ -1285,18 +1284,18 @@ YY_RULE_SETUP
 case 30:
 /* rule 30 can match eol */
 YY_RULE_SETUP
-#line 237 "cfg-lex.l"
+#line 236 "../syslog-ng/lib/cfg-lex.l"
 { g_string_append(yyextra->string_buffer, yytext); }
 	YY_BREAK
 case 31:
 /* rule 31 can match eol */
 YY_RULE_SETUP
-#line 238 "cfg-lex.l"
+#line 237 "../syslog-ng/lib/cfg-lex.l"
 { g_string_append(yyextra->string_buffer, yytext); }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 239 "cfg-lex.l"
+#line 238 "../syslog-ng/lib/cfg-lex.l"
 {
 			     yy_pop_state(yyscanner);
 			     yylval->cptr = strdup(yyextra->string_buffer->str);
@@ -1306,18 +1305,18 @@ YY_RULE_SETUP
 /* rules to parse a block as a LL_BLOCK token */
 case 33:
 YY_RULE_SETUP
-#line 247 "cfg-lex.l"
+#line 246 "../syslog-ng/lib/cfg-lex.l"
 ;
 	YY_BREAK
 case 34:
 /* rule 34 can match eol */
 YY_RULE_SETUP
-#line 248 "cfg-lex.l"
+#line 247 "../syslog-ng/lib/cfg-lex.l"
 { return LL_ERROR; }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 249 "cfg-lex.l"
+#line 248 "../syslog-ng/lib/cfg-lex.l"
 {
                              if (yytext[0] != yyextra->block_boundary[0])
                                REJECT;
@@ -1328,7 +1327,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 257 "cfg-lex.l"
+#line 256 "../syslog-ng/lib/cfg-lex.l"
 {
                              g_string_append_c(yyextra->string_buffer, yytext[0]);
                              yy_push_state(block_string, yyscanner);
@@ -1336,7 +1335,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 262 "cfg-lex.l"
+#line 261 "../syslog-ng/lib/cfg-lex.l"
 {
                              g_string_append_c(yyextra->string_buffer, yytext[0]);
                              yy_push_state(block_qstring, yyscanner);
@@ -1345,17 +1344,17 @@ YY_RULE_SETUP
 case 38:
 /* rule 38 can match eol */
 YY_RULE_SETUP
-#line 267 "cfg-lex.l"
+#line 266 "../syslog-ng/lib/cfg-lex.l"
 { g_string_append(yyextra->string_buffer, yytext); }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 268 "cfg-lex.l"
+#line 267 "../syslog-ng/lib/cfg-lex.l"
 { g_string_append(yyextra->string_buffer, yytext); }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 269 "cfg-lex.l"
+#line 268 "../syslog-ng/lib/cfg-lex.l"
 {
                              g_string_append_c(yyextra->string_buffer, yytext[0]);
                              yy_pop_state(yyscanner);
@@ -1363,7 +1362,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 274 "cfg-lex.l"
+#line 273 "../syslog-ng/lib/cfg-lex.l"
 {
                              g_string_append_c(yyextra->string_buffer, yytext[0]);
                              yy_pop_state(yyscanner);
@@ -1372,14 +1371,14 @@ YY_RULE_SETUP
 case 42:
 /* rule 42 can match eol */
 YY_RULE_SETUP
-#line 278 "cfg-lex.l"
+#line 277 "../syslog-ng/lib/cfg-lex.l"
 {
                              g_string_append(yyextra->string_buffer, yytext);
                            }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 283 "cfg-lex.l"
+#line 282 "../syslog-ng/lib/cfg-lex.l"
 {
                              g_string_append_c(yyextra->string_buffer, yytext[0]);
                              if (yytext[0] == yyextra->block_boundary[0])
@@ -1388,7 +1387,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 288 "cfg-lex.l"
+#line 287 "../syslog-ng/lib/cfg-lex.l"
 {
                              if (yytext[0] == yyextra->block_boundary[1])
                                yyextra->brace_count--;
@@ -1408,19 +1407,25 @@ YY_RULE_SETUP
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 305 "cfg-lex.l"
+#line 304 "../syslog-ng/lib/cfg-lex.l"
 { g_string_append(yyextra->string_buffer, yytext); }
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
-#line 307 "cfg-lex.l"
-{ if (!cfg_lexer_start_next_include(yyextra)) yyterminate(); }
+#line 306 "../syslog-ng/lib/cfg-lex.l"
+{
+                             if (!cfg_lexer_start_next_include(yyextra))
+                               {
+                                 *yylloc = yyextra->include_stack[0].lloc;
+                                 yyterminate();
+                               }
+                           }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 309 "cfg-lex.l"
+#line 314 "../syslog-ng/lib/cfg-lex.l"
 ECHO;
 	YY_BREAK
-#line 1424 "lib/cfg-lex.c"
+#line 1429 "lib/cfg-lex.c"
 			case YY_STATE_EOF(string):
 			case YY_STATE_EOF(qstring):
 			case YY_STATE_EOF(block):
@@ -2619,7 +2624,7 @@ void _cfg_lexer_free (void * ptr , yyscan_t yyscanner)
 
 #define YYTABLES_NAME "yytables"
 
-#line 308 "cfg-lex.l"
+#line 313 "../syslog-ng/lib/cfg-lex.l"
 
 
 
@@ -2646,5 +2651,5 @@ cfg_lexer_start_block_state(CfgLexer *self, gchar block_boundary[2])
 }
 
 /* avoid warnings of unused symbols */
-gpointer __dummy[] = { yy_top_state };
+gpointer __dummy[] = { yy_top_state, yy_fatal_error };
 

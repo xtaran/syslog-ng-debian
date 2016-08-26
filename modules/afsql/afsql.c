@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2012 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2002-2012 Balabit
  * Copyright (c) 1998-2012 Balázs Scheidler
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -23,25 +23,25 @@
 
 #include "afsql.h"
 
-#if ENABLE_SQL
-
 #include "logqueue.h"
 #include "template/templates.h"
 #include "messages.h"
-#include "misc.h"
+#include "string-list.h"
 #include "str-format.h"
+#include "seqnum.h"
 #include "stats/stats-registry.h"
 #include "apphook.h"
 #include "timeutils.h"
 #include "mainloop-worker.h"
 
 #include <string.h>
-
+#include <errno.h>
 #include <openssl/md5.h>
 
 static gboolean dbi_initialized = FALSE;
 static const char *s_oracle = "oracle";
 static const char *s_freetds = "freetds";
+static dbi_inst dbi_instance;
 
 #define MAX_FAILED_ATTEMPTS 3
 
@@ -232,8 +232,7 @@ afsql_dd_run_query(AFSqlDestDriver *self, const gchar *query, gboolean silent, d
   dbi_result db_res;
 
   msg_debug("Running SQL query",
-            evt_tag_str("query", query),
-            NULL);
+            evt_tag_str("query", query));
 
   db_res = dbi_conn_query(self->dbi_ctx, query);
   if (!db_res)
@@ -250,8 +249,7 @@ afsql_dd_run_query(AFSqlDestDriver *self, const gchar *query, gboolean silent, d
                     evt_tag_str("user", self->user),
                     evt_tag_str("database", self->database),
                     evt_tag_str("error", dbi_error),
-                    evt_tag_str("query", query),
-                    NULL);
+                    evt_tag_str("query", query));
         }
       return FALSE;
     }
@@ -300,8 +298,7 @@ afsql_dd_commit_transaction(AFSqlDestDriver *self)
     }
   else
     {
-      msg_error("SQL transaction commit failed, rewinding backlog and starting again",
-                NULL);
+      msg_error("SQL transaction commit failed, rewinding backlog and starting again");
       afsql_dd_handle_transaction_error(self);
     }
   return success;
@@ -442,8 +439,7 @@ afsql_dd_create_index(AFSqlDestDriver *self, const gchar *table, const gchar *co
     {
       msg_error("Error adding missing index",
                 evt_tag_str("table", table),
-                evt_tag_str("column", column),
-                NULL);
+                evt_tag_str("column", column));
       success = FALSE;
     }
   g_string_free(query_string, TRUE);
@@ -470,8 +466,7 @@ _is_table_present(AFSqlDestDriver *self, const gchar *table, dbi_result *metadat
 
   if (!afsql_dd_begin_new_transaction(self))
     {
-      msg_error("Starting new transaction has failed",
-                NULL);
+      msg_error("Starting new transaction has failed");
 
       return FALSE;
     }
@@ -504,8 +499,7 @@ _ensure_table_is_syslogng_conform(AFSqlDestDriver *self, dbi_result db_res, cons
               if (!afsql_dd_begin_new_transaction(self))
                 {
                   msg_error("Starting new transaction for modifying(ALTER) table has failed",
-                            evt_tag_str("table", table),
-                            NULL);
+                            evt_tag_str("table", table));
                   success = FALSE;
                   break;
                 }
@@ -517,8 +511,7 @@ _ensure_table_is_syslogng_conform(AFSqlDestDriver *self, dbi_result db_res, cons
             {
               msg_error("Error adding missing column, giving up",
                         evt_tag_str("table", table),
-                        evt_tag_str("column", self->fields[i].name),
-                        NULL);
+                        evt_tag_str("column", self->fields[i].name));
               success = FALSE;
               break;
             }
@@ -553,8 +546,7 @@ _table_create_indexes(AFSqlDestDriver *self, const gchar *table)
   if (!afsql_dd_begin_new_transaction(self))
     {
       msg_error("Starting new transaction for table creation has failed",
-                evt_tag_str("table", table),
-                NULL);
+                evt_tag_str("table", table));
       return FALSE;
     }
 
@@ -580,8 +572,7 @@ _table_create(AFSqlDestDriver *self, const gchar *table)
   if (!afsql_dd_begin_new_transaction(self))
     {
       msg_error("Starting new transaction for table creation has failed",
-                evt_tag_str("table", table),
-                NULL);
+                evt_tag_str("table", table));
       return FALSE;
     }
 
@@ -600,8 +591,7 @@ _table_create(AFSqlDestDriver *self, const gchar *table)
   else
     {
       msg_error("Error creating table, giving up",
-                evt_tag_str("table", table),
-                NULL);
+                evt_tag_str("table", table));
     }
 
   if (!success || !afsql_dd_commit_transaction(self))
@@ -702,13 +692,12 @@ afsql_dd_ensure_initialized_connection(AFSqlDestDriver *self)
   if (self->dbi_ctx)
     return TRUE;
 
-  self->dbi_ctx = dbi_conn_new(self->type);
+  self->dbi_ctx = dbi_conn_new_r(self->type, dbi_instance);
 
   if (!self->dbi_ctx)
     {
       msg_error("No such DBI driver",
-                evt_tag_str("type", self->type),
-                NULL);
+                evt_tag_str("type", self->type));
       return FALSE;
     }
 
@@ -745,8 +734,7 @@ afsql_dd_ensure_initialized_connection(AFSqlDestDriver *self)
                 evt_tag_str("port", self->port),
                 evt_tag_str("username", self->user),
                 evt_tag_str("database", self->database),
-                evt_tag_str("error", dbi_error),
-                NULL);
+                evt_tag_str("error", dbi_error));
 
       return FALSE;
     }
@@ -760,8 +748,7 @@ afsql_dd_ensure_initialized_connection(AFSqlDestDriver *self)
           if (!afsql_dd_run_query(self, (gchar *) l->data, FALSE, NULL))
             {
               msg_error("Error executing SQL connection statement",
-                        evt_tag_str("statement", (gchar *) l->data),
-                        NULL);
+                        evt_tag_str("statement", (gchar *) l->data));
 
               return FALSE;
             }
@@ -782,8 +769,7 @@ afsql_dd_ensure_accessible_database_table(AFSqlDestDriver *self, LogMessage *msg
     {
       /* If validate table is FALSE then close the connection and wait time_reopen time (next call) */
       msg_error("Error checking table, disconnecting from database, trying again shortly",
-                evt_tag_int("time_reopen", self->time_reopen),
-                NULL);
+                evt_tag_int("time_reopen", self->time_reopen));
       g_string_free(table, TRUE);
       return NULL;
     }
@@ -916,8 +902,7 @@ afsql_dd_handle_insert_row_error_depending_on_connection_availability(AFSqlDestD
             evt_tag_str("port", self->port),
             evt_tag_str("username", self->user),
             evt_tag_str("database", self->database),
-            evt_tag_str("error", dbi_error),
-            NULL);
+            evt_tag_str("error", dbi_error));
 
   return FALSE;
 }
@@ -1011,10 +996,9 @@ afsql_dd_insert_db(AFSqlDestDriver *self)
       else
         {
           msg_error("Multiple failures while inserting this record into the database, message dropped",
-                    evt_tag_int("attempts", self->num_retries),
-                    NULL);
+                    evt_tag_int("attempts", self->num_retries));
           stats_counter_inc(self->dropped_messages);
-          log_msg_drop(msg, &path_options);
+          log_msg_drop(msg, &path_options, AT_PROCESSED);
           self->failed_message_counter = 0;
           success = TRUE;
         }
@@ -1056,8 +1040,7 @@ afsql_dd_database_thread(gpointer arg)
   AFSqlDestDriver *self = (AFSqlDestDriver *) arg;
 
   msg_verbose("Database thread started",
-              evt_tag_str("driver", self->super.super.id),
-              NULL);
+              evt_tag_str("driver", self->super.super.id));
   while (!self->db_thread_terminate)
     {
       g_mutex_lock(self->db_thread_mutex);
@@ -1124,8 +1107,7 @@ exit:
   afsql_dd_disconnect(self);
 
   msg_verbose("Database thread finished",
-              evt_tag_str("driver", self->super.super.id),
-              NULL);
+              evt_tag_str("driver", self->super.super.id));
 }
 
 static void
@@ -1156,14 +1138,18 @@ afsql_dd_format_stats_instance(AFSqlDestDriver *self)
   return persist_name;
 }
 
-static inline gchar *
-afsql_dd_format_persist_name(AFSqlDestDriver *self)
+static inline const gchar *
+afsql_dd_format_persist_name(const LogPipe *s)
 {
+  AFSqlDestDriver *self = (AFSqlDestDriver *)s;
   static gchar persist_name[256];
 
-  g_snprintf(persist_name, sizeof(persist_name),
-             "afsql_dd(%s,%s,%s,%s,%s)",
-             self->type, self->host, self->port, self->database, self->table->template);
+  if (s->persist_name)
+    g_snprintf(persist_name, sizeof(persist_name), "afsql_dd.%s", s->persist_name);
+  else
+    g_snprintf(persist_name, sizeof(persist_name), "afsql_dd(%s,%s,%s,%s,%s)", self->type,
+               self->host, self->port, self->database, self->table->template);
+
   return persist_name;
 }
 
@@ -1192,8 +1178,7 @@ afsql_dd_init(LogPipe *s)
   if (!self->columns || !self->values)
     {
       msg_error("Default columns and values must be specified for database destinations",
-                evt_tag_str("database type", self->type),
-                NULL);
+                evt_tag_str("database type", self->type));
       return FALSE;
     }
 
@@ -1206,7 +1191,8 @@ afsql_dd_init(LogPipe *s)
   if (!self->seq_num)
     init_sequence_number(&self->seq_num);
 
-  self->queue = log_dest_driver_acquire_queue(&self->super, afsql_dd_format_persist_name(self));
+  self->queue = log_dest_driver_acquire_queue(&self->super,
+                                              afsql_dd_format_persist_name((const LogPipe *)self));
   if (self->queue == NULL)
     {
       return FALSE;
@@ -1228,8 +1214,7 @@ afsql_dd_init(LogPipe *s)
         {
           msg_error("The number of columns and values do not match",
                     evt_tag_int("len_columns", len_cols),
-                    evt_tag_int("len_values", len_values),
-                    NULL);
+                    evt_tag_int("len_values", len_values));
           goto error;
         }
       self->fields_len = len_cols;
@@ -1258,8 +1243,7 @@ afsql_dd_init(LogPipe *s)
           if (!_is_sql_identifier_sanitized(self->fields[i].name))
             {
               msg_error("Column name is not a proper SQL name",
-                        evt_tag_str("column", self->fields[i].name),
-                        NULL);
+                        evt_tag_str("column", self->fields[i].name));
               return FALSE;
             }
 
@@ -1297,21 +1281,20 @@ afsql_dd_init(LogPipe *s)
 
   if (!dbi_initialized)
     {
-      gint rc = dbi_initialize(NULL);
+      errno = 0;
+      gint rc = dbi_initialize_r(NULL, &dbi_instance);
 
       if (rc < 0)
         {
           /* NOTE: errno might be unreliable, but that's all we have */
           msg_error("Unable to initialize database access (DBI)",
                     evt_tag_int("rc", rc),
-                    evt_tag_errno("error", errno),
-                    NULL);
+                    evt_tag_errno("error", errno));
           goto error;
         }
       else if (rc == 0)
         {
-          msg_error("The database access library (DBI) reports no usable SQL drivers, perhaps DBI drivers are not installed properly",
-                    NULL);
+          msg_error("The database access library (DBI) reports no usable SQL drivers, perhaps DBI drivers are not installed properly");
           goto error;
         }
       else
@@ -1417,6 +1400,7 @@ afsql_dd_new(GlobalConfig *cfg)
   self->super.super.super.deinit = afsql_dd_deinit;
   self->super.super.super.queue = afsql_dd_queue;
   self->super.super.super.free_fn = afsql_dd_free;
+  self->super.super.super.generate_persist_name = afsql_dd_format_persist_name;
 
   self->type = g_strdup("mysql");
   self->host = g_strdup("");
@@ -1459,9 +1443,6 @@ afsql_dd_lookup_flag(const gchar *flag)
     return AFSQL_DDF_DONT_CREATE_TABLES;
   else
     msg_warning("Unknown SQL flag",
-                evt_tag_str("flag", flag),
-                NULL);
+                evt_tag_str("flag", flag));
   return 0;
 }
-
-#endif

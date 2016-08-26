@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2012 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2002-2012 Balabit
  * Copyright (c) 1998-2012 Balázs Scheidler
  *
  * This library is free software; you can redistribute it and/or
@@ -26,6 +26,8 @@
 #include "serialize.h"
 #include "compat/string.h"
 
+#include <errno.h>
+#include <unistd.h>
 #include <sys/stat.h>
 #include <stdlib.h>
 
@@ -93,8 +95,7 @@ log_proto_buffered_server_convert_from_raw(LogProtoBufferedServer *self, const g
                           msg_error("Invalid byte sequence, the remaining raw buffer is larger than the supported leftover size",
                                     evt_tag_str("encoding", self->super.options->encoding),
                                     evt_tag_int("avail_in", avail_in),
-                                    evt_tag_int("leftover_size", sizeof(state->raw_buffer_leftover)),
-                                    NULL);
+                                    evt_tag_int("leftover_size", sizeof(state->raw_buffer_leftover)));
                           goto error;
                         }
                       memcpy(state->raw_buffer_leftover, raw_buffer, avail_in);
@@ -102,8 +103,7 @@ log_proto_buffered_server_convert_from_raw(LogProtoBufferedServer *self, const g
                       state->raw_buffer_size -= avail_in;
                       msg_trace("Leftover characters remained after conversion, delaying message until another chunk arrives",
                                 evt_tag_str("encoding", self->super.options->encoding),
-                                evt_tag_int("avail_in", avail_in),
-                                NULL);
+                                evt_tag_int("avail_in", avail_in));
                       goto success;
                     }
                 }
@@ -111,8 +111,7 @@ log_proto_buffered_server_convert_from_raw(LogProtoBufferedServer *self, const g
                 {
                   msg_error("Byte sequence too short, cannot convert an individual frame in its entirety",
                             evt_tag_str("encoding", self->super.options->encoding),
-                            evt_tag_int("avail_in", avail_in),
-                            NULL);
+                            evt_tag_int("avail_in", avail_in));
                   goto error;
                 }
               break;
@@ -135,8 +134,7 @@ log_proto_buffered_server_convert_from_raw(LogProtoBufferedServer *self, const g
                 {
                   msg_error("Incoming byte stream requires a too large conversion buffer, probably invalid character sequence",
                             evt_tag_str("encoding", self->super.options->encoding),
-                            evt_tag_printf("buffer", "%.*s", (gint) state->pending_buffer_end, self->buffer),
-                            NULL);
+                            evt_tag_printf("buffer", "%.*s", (gint) state->pending_buffer_end, self->buffer));
                   goto error;
                 }
               break;
@@ -144,8 +142,7 @@ log_proto_buffered_server_convert_from_raw(LogProtoBufferedServer *self, const g
             default:
               msg_notice("Invalid byte sequence or other error while converting input, skipping character",
                          evt_tag_str("encoding", self->super.options->encoding),
-                         evt_tag_printf("char", "0x%02x", *(guchar *) raw_buffer),
-                         NULL);
+                         evt_tag_printf("char", "0x%02x", *(guchar *) raw_buffer));
               goto error;
             }
         }
@@ -205,8 +202,7 @@ log_proto_buffered_server_apply_state(LogProtoBufferedServer *self, PersistEntry
                      evt_tag_int("cur_file_inode", st.st_ino),
                      evt_tag_int("stored_size", state->file_size),
                      evt_tag_int("cur_file_size", st.st_size),
-                     evt_tag_int("raw_stream_pos", state->raw_stream_pos),
-                     NULL);
+                     evt_tag_int("raw_stream_pos", state->raw_stream_pos));
         }
       goto error;
     }
@@ -224,8 +220,7 @@ log_proto_buffered_server_apply_state(LogProtoBufferedServer *self, PersistEntry
                          evt_tag_str("state", persist_name),
                          evt_tag_int("raw_buffer_size", state->raw_buffer_size),
                          evt_tag_int("buffer_size", state->buffer_size),
-                         evt_tag_int("init_buffer_size", self->super.options->init_buffer_size),
-                         NULL);
+                         evt_tag_int("init_buffer_size", self->super.options->init_buffer_size));
               goto error;
             }
           raw_buffer = self->buffer;
@@ -238,8 +233,7 @@ log_proto_buffered_server_apply_state(LogProtoBufferedServer *self, PersistEntry
                          evt_tag_str("state", persist_name),
                          evt_tag_int("raw_buffer_size", state->raw_buffer_size),
                          evt_tag_int("init_buffer_size", self->super.options->init_buffer_size),
-                         evt_tag_int("max_buffer_size", self->super.options->max_buffer_size),
-                         NULL);
+                         evt_tag_int("max_buffer_size", self->super.options->max_buffer_size));
               goto error;
             }
           raw_buffer = g_alloca(state->raw_buffer_size);
@@ -249,8 +243,7 @@ log_proto_buffered_server_apply_state(LogProtoBufferedServer *self, PersistEntry
       if (rc != state->raw_buffer_size)
         {
           msg_notice("Error re-reading buffer contents of the file to be continued, restarting from the beginning",
-                     evt_tag_str("state", persist_name),
-                     NULL);
+                     evt_tag_str("state", persist_name));
           goto error;
         }
 
@@ -260,8 +253,7 @@ log_proto_buffered_server_apply_state(LogProtoBufferedServer *self, PersistEntry
           if (!log_proto_buffered_server_convert_from_raw(self, raw_buffer, rc))
             {
               msg_notice("Error re-converting buffer contents of the file to be continued, restarting from the beginning",
-                         evt_tag_str("state", persist_name),
-                         NULL);
+                         evt_tag_str("state", persist_name));
               goto error;
             }
         }
@@ -273,8 +265,7 @@ log_proto_buffered_server_apply_state(LogProtoBufferedServer *self, PersistEntry
       if (state->buffer_pos > state->pending_buffer_end)
         {
           msg_notice("Converted buffer contents is smaller than the current buffer position, starting from the beginning of the buffer, some lines may be duplicated",
-                     evt_tag_str("state", persist_name),
-                     NULL);
+                     evt_tag_str("state", persist_name));
           state->buffer_pos = state->pending_buffer_pos = 0;
         }
     }
@@ -381,24 +372,21 @@ log_proto_buffered_server_convert_state(LogProtoBufferedServer *self, guint8 per
           !serialize_read_uint64(archive, (guint64 *) &cur_inode) ||
           !serialize_read_uint64(archive, (guint64 *) &cur_size))
         {
-          msg_error("Internal error restoring information about the current file position, restarting from the beginning",
-                    NULL);
+          msg_error("Internal error restoring information about the current file position, restarting from the beginning");
           goto error_converting_v3;
         }
 
       if (!serialize_read_uint16(archive, &version) || version != 0)
         {
           msg_error("Internal error, protocol state has incorrect version",
-                    evt_tag_int("version", version),
-                    NULL);
+                    evt_tag_int("version", version));
           goto error_converting_v3;
         }
 
       if (!serialize_read_cstring(archive, &buffer, &buffer_len))
         {
           msg_error("Internal error, error reading buffer contents",
-                    evt_tag_int("version", version),
-                    NULL);
+                    evt_tag_int("version", version));
           goto error_converting_v3;
         }
 
@@ -662,8 +650,7 @@ log_proto_buffered_server_fetch_into_buffer(LogProtoBufferedServer *self)
           /* an error occurred while reading */
           msg_error("I/O error occurred while reading",
                     evt_tag_int(EVT_TAG_FD, self->super.transport->fd),
-                    evt_tag_errno(EVT_TAG_OSERROR, errno),
-                    NULL);
+                    evt_tag_errno(EVT_TAG_OSERROR, errno));
           result = G_IO_STATUS_ERROR;
         }
     }
@@ -671,12 +658,10 @@ log_proto_buffered_server_fetch_into_buffer(LogProtoBufferedServer *self)
     {
       /* EOF read */
       msg_verbose("EOF occurred while reading",
-                  evt_tag_int(EVT_TAG_FD, self->super.transport->fd),
-                  NULL);
+                  evt_tag_int(EVT_TAG_FD, self->super.transport->fd));
       if (state->raw_buffer_leftover_size > 0)
         {
-          msg_error("EOF read on a channel with leftovers from previous character conversion, dropping input",
-                    NULL);
+          msg_error("EOF read on a channel with leftovers from previous character conversion, dropping input");
           state->pending_buffer_pos = state->pending_buffer_end = 0;
         }
       result = G_IO_STATUS_EOF;
@@ -746,8 +731,7 @@ _buffered_server_bookmark_save(Bookmark *bookmark)
             evt_tag_int("raw_stream_pos", state->raw_stream_pos),
             evt_tag_int("raw_buffer_len", state->raw_buffer_size),
             evt_tag_int("buffer_pos", state->buffer_pos),
-            evt_tag_int("buffer_end", state->pending_buffer_end),
-            NULL);
+            evt_tag_int("buffer_end", state->pending_buffer_end));
   persist_state_unmap_entry(bookmark->persist_state, bookmark_data->persist_handle);
 }
 
@@ -846,6 +830,20 @@ log_proto_buffered_server_is_position_tracked(LogProtoServer *s)
   return self->pos_tracking;
 }
 
+gboolean
+log_proto_buffered_server_validate_options_method(LogProtoServer *s)
+{
+  LogProtoBufferedServer *self = (LogProtoBufferedServer *) s;
+
+  if (self->super.options->encoding && self->convert == (GIConv) -1)
+    {
+      msg_error("Unknown character set name specified",
+                evt_tag_str("encoding", self->super.options->encoding));
+      return FALSE;
+    }
+  return log_proto_server_validate_options_method(s);
+}
+
 void
 log_proto_buffered_server_free_method(LogProtoServer *s)
 {
@@ -858,6 +856,8 @@ log_proto_buffered_server_free_method(LogProtoServer *s)
     {
       g_free(self->state1);
     }
+  if (self->convert != (GIConv) -1)
+    g_iconv_close(self->convert);
   log_proto_server_free_method(s);
 }
 
@@ -871,10 +871,13 @@ log_proto_buffered_server_init(LogProtoBufferedServer *self, LogTransport *trans
   self->super.transport = transport;
   self->super.restart_with_state = log_proto_buffered_server_restart_with_state;
   self->super.is_position_tracked = log_proto_buffered_server_is_position_tracked;
+  self->super.validate_options = log_proto_buffered_server_validate_options_method;
   self->convert = (GIConv) -1;
   self->read_data = log_proto_buffered_server_read_data_method;
   self->io_status = G_IO_STATUS_NORMAL;
   if (options->encoding)
     self->convert = g_iconv_open("utf-8", options->encoding);
+  else
+    self->convert = (GIConv) -1;
   self->stream_based = TRUE;
 }

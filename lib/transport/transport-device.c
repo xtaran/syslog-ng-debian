@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2013 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2002-2013 Balabit
  * Copyright (c) 1998-2013 Balázs Scheidler
  *
  * This library is free software; you can redistribute it and/or
@@ -26,6 +26,9 @@
 #include "messages.h"
 #include "alarms.h"
 
+#include <errno.h>
+#include <unistd.h>
+
 typedef struct _LogTransportDevice LogTransportDevice;
 struct _LogTransportDevice
 {
@@ -49,8 +52,7 @@ log_transport_device_read_method(LogTransport *s, gpointer buf, gsize buflen, Lo
         {
           msg_notice("Nonblocking read has blocked, returning with an error",
                      evt_tag_int("fd", self->super.fd),
-                     evt_tag_int("timeout", self->timeout),
-                     NULL);
+                     evt_tag_int("timeout", self->timeout));
           alarm_cancel();
           break;
         }

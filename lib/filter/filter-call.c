@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2013 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2002-2013 Balabit
  * Copyright (c) 1998-2013 Balázs Scheidler
  *
  * This library is free software; you can redistribute it and/or
@@ -73,8 +73,7 @@ filter_call_init(FilterExprNode *s, GlobalConfig *cfg)
   else
     {
       msg_error("Referenced filter rule not found in filter() expression",
-                evt_tag_str("rule", self->rule),
-                NULL);
+                evt_tag_str("rule", self->rule));
     }
 }
 

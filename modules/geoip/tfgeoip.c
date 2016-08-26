@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2013 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2012-2013 Balabit
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 as published
@@ -27,7 +27,7 @@
 #include "cfg.h"
 #include "tls-support.h"
 
-#include "config.h"
+#include "syslog-ng-config.h"
 
 #include <GeoIP.h>
 
@@ -64,8 +64,7 @@ tf_geoip(LogMessage *msg, gint argc, GString *argv[], GString *result)
   if (argc != 1)
     {
       msg_debug("tfgeoip takes only one argument",
-                evt_tag_int("count", argc),
-                NULL);
+                evt_tag_int("count", argc));
       return FALSE;
     }
 

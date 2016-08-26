@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2014, 2015 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2013, 2014, 2015 Balabit
  * Copyright (c) 2013, 2014, 2015 Gergely Nagy
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -27,7 +27,7 @@
 #include <time.h>
 
 #include "logthrdestdrv.h"
-#include "misc.h"
+#include "string-list.h"
 #include "stats/stats.h"
 #include "scratch-buffers.h"
 #include "riemann.h"
@@ -154,8 +154,7 @@ riemann_dd_set_field_attributes(LogDriver *d, ValuePairs *vp)
 {
   RiemannDestDriver *self = (RiemannDestDriver *)d;
 
-  if (self->fields.attributes)
-    value_pairs_unref(self->fields.attributes);
+  value_pairs_unref(self->fields.attributes);
   self->fields.attributes = vp;
 }
 
@@ -236,19 +235,25 @@ riemann_dd_format_stats_instance(LogThrDestDriver *s)
   RiemannDestDriver *self = (RiemannDestDriver *)s;
   static gchar persist_name[1024];
 
-  g_snprintf(persist_name, sizeof(persist_name),
-             "riemann,%s,%u", self->server, self->port);
+  if (s->super.super.super.persist_name)
+    g_snprintf(persist_name, sizeof(persist_name), "riemann,%s", s->super.super.super.persist_name);
+  else
+    g_snprintf(persist_name, sizeof(persist_name), "riemann,%s,%u", self->server, self->port);
+
   return persist_name;
 }
 
-static gchar *
-riemann_dd_format_persist_name(LogThrDestDriver *s)
+static const gchar *
+riemann_dd_format_persist_name(const LogPipe *s)
 {
-  RiemannDestDriver *self = (RiemannDestDriver *)s;
+  const RiemannDestDriver *self = (const RiemannDestDriver *)s;
   static gchar persist_name[1024];
 
-  g_snprintf(persist_name, sizeof(persist_name),
-             "riemann(%s,%u)", self->server, self->port);
+  if (s->persist_name)
+    g_snprintf(persist_name, sizeof(persist_name), "riemann.%s", s->persist_name);
+  else
+    g_snprintf(persist_name, sizeof(persist_name), "riemann(%s,%u)", self->server, self->port);
+
   return persist_name;
 }
 
@@ -290,8 +295,7 @@ riemann_dd_connect(RiemannDestDriver *self, gboolean reconnect)
   if (!self->client)
     {
       msg_error("Error connecting to Riemann",
-                evt_tag_errno("errno", errno),
-                NULL);
+                evt_tag_errno("errno", errno));
       return FALSE;
     }
 
@@ -356,8 +360,7 @@ riemann_worker_init(LogPipe *s)
   msg_verbose("Initializing Riemann destination",
               evt_tag_str("driver", self->super.super.super.id),
               evt_tag_str("server", self->server),
-              evt_tag_int("port", self->port),
-              NULL);
+              evt_tag_int("port", self->port));
 
   return log_threaded_dest_driver_start(s);
 }
@@ -400,9 +403,11 @@ riemann_dd_field_add_msg_tag(const LogMessage *msg,
   return TRUE;
 }
 
+/* TODO escape '\0' when passing down the value */
 static gboolean
 riemann_dd_field_add_attribute_vp(const gchar *name,
                                   TypeHint type, const gchar *value,
+                                  gsize value_len,
                                   gpointer user_data)
 {
   riemann_event_t *event = (riemann_event_t *)user_data;
@@ -640,8 +645,7 @@ riemann_dd_free(LogPipe *d)
   log_template_unref(self->fields.metric);
   log_template_unref(self->fields.ttl);
   string_list_free(self->fields.tags);
-  if (self->fields.attributes)
-    value_pairs_unref(self->fields.attributes);
+  value_pairs_unref(self->fields.attributes);
 
   log_threaded_dest_driver_free(d);
 }
@@ -655,13 +659,13 @@ riemann_dd_new(GlobalConfig *cfg)
 
   self->super.super.super.super.init = riemann_worker_init;
   self->super.super.super.super.free_fn = riemann_dd_free;
+  self->super.super.super.super.generate_persist_name = riemann_dd_format_persist_name;
 
   self->super.worker.disconnect = riemann_dd_disconnect;
   self->super.worker.insert = riemann_worker_insert;
   self->super.worker.thread_deinit = riemann_worker_thread_deinit;
 
   self->super.format.stats_instance = riemann_dd_format_stats_instance;
-  self->super.format.persist_name = riemann_dd_format_persist_name;
   self->super.stats_source = SCS_RIEMANN;
 
   self->port = -1;

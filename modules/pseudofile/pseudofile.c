@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2013 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2002-2013 Balabit
  * Copyright (c) 1998-2013 Balázs Scheidler
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -27,6 +27,7 @@
 
 #include <string.h>
 #include <fcntl.h>
+#include <errno.h>
 #include <unistd.h>
 
 typedef struct _PseudoFileDestDriver
@@ -98,8 +99,7 @@ _write_message(PseudoFileDestDriver *self, const GString *msg)
   msg_debug("Posting message to pseudo file",
             evt_tag_str("pseudofile", self->pseudofile_name),
             evt_tag_str("driver", self->super.super.id),
-            _evt_tag_message(msg),
-            NULL);
+            _evt_tag_message(msg));
   fd = open(self->pseudofile_name, O_NOCTTY | O_WRONLY | O_NONBLOCK);
   if (fd < 0) 
     {
@@ -107,8 +107,7 @@ _write_message(PseudoFileDestDriver *self, const GString *msg)
                 evt_tag_str("pseudofile", self->pseudofile_name),
                 evt_tag_str("driver", self->super.super.id),
                 evt_tag_errno("error", errno),
-                _evt_tag_message(msg),
-                NULL);
+                _evt_tag_message(msg));
       goto exit;
     }
 
@@ -119,8 +118,7 @@ _write_message(PseudoFileDestDriver *self, const GString *msg)
                 evt_tag_str("pseudofile", self->pseudofile_name),
                 evt_tag_str("driver", self->super.super.id),
                 evt_tag_errno("error", errno),
-                _evt_tag_message(msg),
-                NULL);
+                _evt_tag_message(msg));
       goto exit;
     }
   else if (rc != msg->len)
@@ -128,8 +126,7 @@ _write_message(PseudoFileDestDriver *self, const GString *msg)
       msg_error("Partial write to pseudofile, probably the output is too much for the kernel to consume",
                 evt_tag_str("pseudofile", self->pseudofile_name),
                 evt_tag_str("driver", self->super.super.id),
-                _evt_tag_message(msg),
-                NULL);
+                _evt_tag_message(msg));
       goto exit;
     }
 

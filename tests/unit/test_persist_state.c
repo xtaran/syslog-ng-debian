@@ -1,3 +1,27 @@
+/*
+ * Copyright (c) 2010-2014 Balabit
+ * Copyright (c) 2010-2014 Balázs Scheidler
+ * Copyright (c) 2014 Viktor Tusa
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License version 2 as published
+ * by the Free Software Foundation, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ * As an additional exemption you are allowed to compile & link against the
+ * OpenSSL libraries as published by the OpenSSL project. See the file
+ * COPYING for details.
+ *
+ */
+
 #include "persist-state.h"
 #include "apphook.h"
 
@@ -22,7 +46,9 @@ test_persist_state_open_success_on_invalid_file(void)
   unlink("test_invalid_magic.persist");
 
   fd = open("test_invalid_magic.persist", O_CREAT | O_RDWR, 0777);
-  write(fd, "aaa", 3);
+  assert_false(fd < 0, ASSERTION_ERROR("Can't open diskq file for writing"));
+  ssize_t written = write(fd, "aaa", 3);
+  assert_gint(written, 3, ASSERTION_ERROR("Can't write to diskq file"));
   close(fd);
 
   state = persist_state_new("test_invalid_magic.persist");
@@ -39,7 +65,9 @@ test_persist_state_open_fails_on_invalid_file_with_dump(void)
   unlink("test_invalid_magic.persist");
 
   fd = open("test_invalid_magic.persist", O_CREAT | O_RDWR, 0777);
-  write(fd, "aaa", 3);
+  assert_false(fd < 0, ASSERTION_ERROR("Can't open diskq file for writing"));
+  ssize_t written = write(fd, "aaa", 3);
+  assert_gint(written, 3, ASSERTION_ERROR("Can't write to diskq file"));
   close(fd);
 
   state = persist_state_new("test_invalid_magic.persist");

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2014 Balabit
  * Copyright (c) 2013 Tihamer Petrovics <tihameri@gmail.com>
  * Copyright (c) 2014 Gergely Nagy <algernon@balabit.hu>
  *
@@ -28,7 +28,6 @@
 #include "redis-parser.h"
 #include "plugin.h"
 #include "messages.h"
-#include "misc.h"
 #include "stats/stats-registry.h"
 #include "logqueue.h"
 #include "driver.h"
@@ -113,19 +112,25 @@ redis_dd_format_stats_instance(LogThrDestDriver *d)
   RedisDriver *self = (RedisDriver *)d;
   static gchar persist_name[1024];
 
-  g_snprintf(persist_name, sizeof(persist_name),
-             "redis,%s,%u", self->host, self->port);
+  if (d->super.super.super.persist_name)
+    g_snprintf(persist_name, sizeof(persist_name), "redis,%s", d->super.super.super.persist_name);
+  else
+    g_snprintf(persist_name, sizeof(persist_name), "redis,%s,%u", self->host, self->port);
+
   return persist_name;
 }
 
-static gchar *
-redis_dd_format_persist_name(LogThrDestDriver *d)
+static const gchar *
+redis_dd_format_persist_name(const LogPipe *s)
 {
-  RedisDriver *self = (RedisDriver *)d;
+  const RedisDriver *self = (const RedisDriver *)s;
   static gchar persist_name[1024];
 
-  g_snprintf(persist_name, sizeof(persist_name),
-             "redis(%s,%u)", self->host, self->port);
+  if (s->persist_name)
+    g_snprintf(persist_name, sizeof(persist_name), "redis.%s", s->persist_name);
+  else
+    g_snprintf(persist_name, sizeof(persist_name), "redis(%s,%u)", self->host, self->port);
+
   return persist_name;
 }
 
@@ -154,13 +159,12 @@ redis_dd_connect(RedisDriver *self, gboolean reconnect)
       msg_error("REDIS server error, suspending",
                 evt_tag_str("driver", self->super.super.super.id),
                 evt_tag_str("error", self->c->errstr),
-                evt_tag_int("time_reopen", self->super.time_reopen),
-                NULL);
+                evt_tag_int("time_reopen", self->super.time_reopen));
       return FALSE;
     }
   else
     msg_debug("Connecting to REDIS succeeded",
-              evt_tag_str("driver", self->super.super.super.id), NULL);
+              evt_tag_str("driver", self->super.super.super.id));
 
   return TRUE;
 }
@@ -234,8 +238,7 @@ redis_worker_insert(LogThrDestDriver *s, LogMessage *msg)
                 evt_tag_str("param1", self->param1_str->str),
                 evt_tag_str("param2", self->param2_str->str),
                 evt_tag_str("error", self->c->errstr),
-                evt_tag_int("time_reopen", self->super.time_reopen),
-                NULL);
+                evt_tag_int("time_reopen", self->super.time_reopen));
       return WORKER_INSERT_RESULT_ERROR;
     }
 
@@ -244,8 +247,7 @@ redis_worker_insert(LogThrDestDriver *s, LogMessage *msg)
             evt_tag_str("command", self->command->str),
             evt_tag_str("key", self->key_str->str),
             evt_tag_str("param1", self->param1_str->str),
-            evt_tag_str("param2", self->param2_str->str),
-            NULL);
+            evt_tag_str("param2", self->param2_str->str));
   freeReplyObject(reply);
 
   return WORKER_INSERT_RESULT_SUCCESS;
@@ -257,8 +259,7 @@ redis_worker_thread_init(LogThrDestDriver *d)
   RedisDriver *self = (RedisDriver *)d;
 
   msg_debug("Worker thread started",
-            evt_tag_str("driver", self->super.super.super.id),
-            NULL);
+            evt_tag_str("driver", self->super.super.super.id));
 
   self->key_str = g_string_sized_new(1024);
   self->param1_str = g_string_sized_new(1024);
@@ -295,8 +296,7 @@ redis_dd_init(LogPipe *s)
   msg_verbose("Initializing Redis destination",
               evt_tag_str("driver", self->super.super.super.id),
               evt_tag_str("host", self->host),
-              evt_tag_int("port", self->port),
-              NULL);
+              evt_tag_int("port", self->port));
 
   return log_threaded_dest_driver_start(s);
 }
@@ -331,6 +331,7 @@ redis_dd_new(GlobalConfig *cfg)
   log_threaded_dest_driver_init_instance(&self->super, cfg);
   self->super.super.super.super.init = redis_dd_init;
   self->super.super.super.super.free_fn = redis_dd_free;
+  self->super.super.super.super.generate_persist_name = redis_dd_format_persist_name;
 
   self->super.worker.thread_init = redis_worker_thread_init;
   self->super.worker.thread_deinit = redis_worker_thread_deinit;
@@ -338,7 +339,6 @@ redis_dd_new(GlobalConfig *cfg)
   self->super.worker.insert = redis_worker_insert;
 
   self->super.format.stats_instance = redis_dd_format_stats_instance;
-  self->super.format.persist_name = redis_dd_format_persist_name;
   self->super.stats_source = SCS_REDIS;
 
   redis_dd_set_host((LogDriver *)self, "127.0.0.1");
@@ -371,9 +371,9 @@ redis_module_init(GlobalConfig *cfg, CfgArgs *args)
 const ModuleInfo module_info =
 {
   .canonical_name = "redis",
-  .version = VERSION,
+  .version = SYSLOG_NG_VERSION,
   .description = "The afredis module provides Redis destination support for syslog-ng.",
-  .core_revision = SOURCE_REVISION,
+  .core_revision = SYSLOG_NG_SOURCE_REVISION,
   .plugins = &redis_plugin,
   .plugins_len = 1,
 };

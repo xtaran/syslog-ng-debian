@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2012 Nagy, Attila <bra@fsn.hu>
- * Copyright (c) 2014 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2014 Balabit
  * Copyright (c) 2013 Viktor Tusa <tusa@balabit.hu>
  * Copyright (c) 2014 Gergely Nagy <algernon@balabit.hu>
  *
@@ -8,13 +8,13 @@
  * under the terms of the GNU General Public License version 2 as published
  * by the Free Software Foundation, or (at your option) any later version.
  *
- * This library is distributed in the hope that it will be useful,
+ * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * As an additional exemption you are allowed to compile & link against the
@@ -27,9 +27,8 @@
 #include "afstomp-parser.h"
 #include "plugin.h"
 #include "messages.h"
-#include "misc.h"
 #include "stats/stats-registry.h"
-#include "nvtable.h"
+#include "logmsg/nvtable.h"
 #include "logqueue.h"
 #include "scratch-buffers.h"
 #include "plugin-types.h"
@@ -140,8 +139,7 @@ afstomp_dd_set_value_pairs(LogDriver *s, ValuePairs *vp)
 {
   STOMPDestDriver *self = (STOMPDestDriver *) s;
 
-  if (self->vp)
-    value_pairs_unref(self->vp);
+  value_pairs_unref(self->vp);
   self->vp = vp;
 }
 
@@ -164,19 +162,27 @@ afstomp_dd_format_stats_instance(LogThrDestDriver *s)
   STOMPDestDriver *self = (STOMPDestDriver *) s;
   static gchar persist_name[1024];
 
-  g_snprintf(persist_name, sizeof(persist_name), "afstomp,%s,%u,%s",
-             self->host, self->port, self->destination);
+  if (s->super.super.super.persist_name)
+    g_snprintf(persist_name, sizeof(persist_name), "afstomp,%s", s->super.super.super.persist_name);
+  else
+    g_snprintf(persist_name, sizeof(persist_name), "afstomp,%s,%u,%s", self->host, self->port,
+               self->destination);
+
   return persist_name;
 }
 
-static gchar *
-afstomp_dd_format_persist_name(LogThrDestDriver *s)
+static const gchar *
+afstomp_dd_format_persist_name(const LogPipe *s)
 {
-  STOMPDestDriver *self = (STOMPDestDriver *) s;
+  const STOMPDestDriver *self = (const STOMPDestDriver *)s;
   static gchar persist_name[1024];
 
-  g_snprintf(persist_name, sizeof(persist_name), "afstomp(%s,%u,%s)",
-             self->host, self->port, self->destination);
+  if (s->persist_name)
+    g_snprintf(persist_name, sizeof(persist_name), "afstomp.%s", s->persist_name);
+  else
+    g_snprintf(persist_name, sizeof(persist_name), "afstomp(%s,%u,%s)", self->host, self->port,
+               self->destination);
+
   return persist_name;
 }
 
@@ -213,21 +219,20 @@ afstomp_dd_connect(STOMPDestDriver *self, gboolean reconnect)
   afstomp_create_connect_frame(self, &frame);
   if (!afstomp_send_frame(self, &frame))
     {
-      msg_error("Sending CONNECT frame to STOMP server failed!", NULL);
+      msg_error("Sending CONNECT frame to STOMP server failed!");
       return FALSE;
     }
 
   stomp_receive_frame(self->conn, &frame);
   if (strcmp(frame.command, "CONNECTED"))
     {
-      msg_debug("Error connecting to STOMP server, stomp server did not accept CONNECT request", NULL);
+      msg_debug("Error connecting to STOMP server, stomp server did not accept CONNECT request");
       stomp_frame_deinit(&frame);
 
       return FALSE;
   }
   msg_debug("Connecting to STOMP succeeded",
-            evt_tag_str("driver", self->super.super.super.id),
-            NULL);
+            evt_tag_str("driver", self->super.super.super.id));
 
   stomp_frame_deinit(&frame);
 
@@ -243,8 +248,9 @@ afstomp_dd_disconnect(LogThrDestDriver *s)
   self->conn = NULL;
 }
 
+/* TODO escape '\0' when passing down the value */
 static gboolean
-afstomp_vp_foreach(const gchar *name, TypeHint type, const gchar *value,
+afstomp_vp_foreach(const gchar *name, TypeHint type, const gchar *value, gsize value_len,
                    gpointer user_data)
 {
   stomp_frame *frame = (stomp_frame *) (user_data);
@@ -276,7 +282,7 @@ afstomp_worker_publish(STOMPDestDriver *self, LogMessage *msg)
 
   if (!self->conn)
     {
-      msg_error("STOMP server is not connected, not sending message!", NULL);
+      msg_error("STOMP server is not connected, not sending message!");
       return FALSE;
     }
 
@@ -301,7 +307,7 @@ afstomp_worker_publish(STOMPDestDriver *self, LogMessage *msg)
 
   if (!afstomp_send_frame(self, &frame))
     {
-      msg_error("Error while inserting into STOMP server", NULL);
+      msg_error("Error while inserting into STOMP server");
       success = FALSE;
     }
 
@@ -351,8 +357,7 @@ afstomp_dd_init(LogPipe *s)
   msg_verbose("Initializing STOMP destination",
               evt_tag_str("host", self->host),
               evt_tag_int("port", self->port),
-              evt_tag_str("destination", self->destination),
-              NULL);
+              evt_tag_str("destination", self->destination));
 
   return log_threaded_dest_driver_start(s);
 }
@@ -369,8 +374,7 @@ afstomp_dd_free(LogPipe *d)
   g_free(self->user);
   g_free(self->password);
   g_free(self->host);
-  if (self->vp)
-    value_pairs_unref(self->vp);
+  value_pairs_unref(self->vp);
   log_threaded_dest_driver_free(d);
 }
 
@@ -382,13 +386,13 @@ afstomp_dd_new(GlobalConfig *cfg)
   log_threaded_dest_driver_init_instance(&self->super, cfg);
   self->super.super.super.super.init = afstomp_dd_init;
   self->super.super.super.super.free_fn = afstomp_dd_free;
+  self->super.super.super.super.generate_persist_name = afstomp_dd_format_persist_name;
 
   self->super.worker.thread_init = afstomp_worker_thread_init;
   self->super.worker.disconnect = afstomp_dd_disconnect;
   self->super.worker.insert = afstomp_worker_insert;
 
   self->super.format.stats_instance = afstomp_dd_format_stats_instance;
-  self->super.format.persist_name = afstomp_dd_format_persist_name;
   self->super.stats_source = SCS_STOMP;
 
   afstomp_dd_set_host((LogDriver *) self, "127.0.0.1");
@@ -422,9 +426,9 @@ afstomp_module_init(GlobalConfig *cfg, CfgArgs *args)
 const ModuleInfo module_info =
 {
   .canonical_name = "afstomp",
-  .version = VERSION,
+  .version = SYSLOG_NG_VERSION,
   .description = "The afstomp module provides STOMP destination support for syslog-ng.",
-  .core_revision = SOURCE_REVISION,
+  .core_revision = SYSLOG_NG_SOURCE_REVISION,
   .plugins = &afstomp_plugin,
   .plugins_len = 1,
 };

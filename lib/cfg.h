@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2013 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2002-2013 Balabit
  * Copyright (c) 1998-2012 Balázs Scheidler
  *
  * This library is free software; you can redistribute it and/or
@@ -34,6 +34,8 @@
 #include "host-resolve.h"
 #include "type-hinting.h"
 #include "stats/stats.h"
+#include "dnscache.h"
+#include "file-perms.h"
 
 #include <sys/types.h>
 #include <regex.h>
@@ -81,9 +83,8 @@ struct _GlobalConfig
   gboolean bad_hostname_compiled;
   regex_t bad_hostname;
   gchar *bad_hostname_re;
-  gint dns_cache_size, dns_cache_expire, dns_cache_expire_failed;
-  gchar *dns_cache_hosts;
   gchar *custom_domain;
+  DNSCacheOptions dns_cache_options;
   gint time_reopen;
   gint time_reap;
   gint suppress;
@@ -93,14 +94,7 @@ struct _GlobalConfig
   gint log_msg_size;
 
   gboolean create_dirs;
-  gint file_uid;
-  gint file_gid;
-  gint file_perm;
-  
-  gint dir_uid;
-  gint dir_gid;
-  gint dir_perm;
-
+  FilePermOptions file_perm_options;
   gboolean use_uniqid;
 
   gboolean keep_timestamp;  
@@ -125,16 +119,10 @@ struct _GlobalConfig
 
 gboolean cfg_allow_config_dups(GlobalConfig *self);
 
-void cfg_file_owner_set(GlobalConfig *self, gchar *owner);
-void cfg_file_group_set(GlobalConfig *self, gchar *group);
-void cfg_file_perm_set(GlobalConfig *self, gint perm);
 void cfg_bad_hostname_set(GlobalConfig *self, gchar *bad_hostname_re);
 gint cfg_lookup_mark_mode(gchar *mark_mode);
 void cfg_set_mark_mode(GlobalConfig *self, gchar *mark_mode);
 
-void cfg_dir_owner_set(GlobalConfig *self, gchar *owner);
-void cfg_dir_group_set(GlobalConfig *self, gchar *group);
-void cfg_dir_perm_set(GlobalConfig *self, gint perm);
 gint cfg_tz_convert_value(gchar *convert);
 gint cfg_ts_format_value(gchar *format);
 
@@ -155,8 +143,8 @@ gboolean cfg_deinit(GlobalConfig *cfg);
 PersistConfig *persist_config_new(void);
 void persist_config_free(PersistConfig *self);
 void cfg_persist_config_move(GlobalConfig *src, GlobalConfig *dest);
-void cfg_persist_config_add(GlobalConfig *cfg, gchar *name, gpointer value, GDestroyNotify destroy, gboolean force);
-gpointer cfg_persist_config_fetch(GlobalConfig *cfg, gchar *name);
+void cfg_persist_config_add(GlobalConfig *cfg, const gchar *name, gpointer value, GDestroyNotify destroy, gboolean force);
+gpointer cfg_persist_config_fetch(GlobalConfig *cfg, const gchar *name);
 
 static inline gboolean
 cfg_is_config_version_older(GlobalConfig *cfg, gint req)

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2012 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2002-2012 Balabit
  * Copyright (c) 1998-2012 Balázs Scheidler
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -23,7 +23,6 @@
 
 #include "afinet-source.h"
 #include "messages.h"
-#include "misc.h"
 #include "transport-mapper-inet.h"
 #include "socket-options-inet.h"
 
@@ -83,8 +82,7 @@ afinet_sd_setup_addresses(AFSocketSourceDriver *s)
       if (port_change_warning)
         {
           msg_warning(port_change_warning,
-                      evt_tag_str("id", self->super.super.super.id),
-                      NULL);
+                      evt_tag_str("id", self->super.super.super.id));
         }
       g_sockaddr_set_port(self->super.bind_addr, transport_mapper_inet_get_server_port(self->super.transport_mapper));
     }

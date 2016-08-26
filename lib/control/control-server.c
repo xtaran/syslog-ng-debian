@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2002-2014 Balabit
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,15 +20,16 @@
  * COPYING for details.
  *
  */
-#include <string.h>
 
 #include "control-server.h"
 #include "messages.h"
-#include "misc.h"
+#include "str-utils.h"
 
 #ifndef CONTROL_UNITTEST
 #include "control-server-unix.c"
 #endif
+#include <string.h>
+#include <errno.h>
 
 void
 control_server_init_instance(ControlServer *self, const gchar *path, GList *control_commands)
@@ -78,8 +79,7 @@ control_connection_io_output(gpointer s)
       if (errno != EAGAIN)
         {
           msg_error("Error writing control channel",
-                    evt_tag_errno("error", errno),
-                    NULL);
+                    evt_tag_errno("error", errno));
           control_connection_stop_watches(self);
           control_connection_free(self);
           return;
@@ -106,8 +106,7 @@ control_connection_io_input(void *s)
   if (self->input_buffer->len > MAX_CONTROL_LINE_LENGTH)
     {
       /* too much data in input, drop the connection */
-      msg_error("Too much data in the control socket input buffer",
-                NULL);
+      msg_error("Too much data in the control socket input buffer");
       control_connection_stop_watches(self);
       control_connection_free(self);
       return;
@@ -123,8 +122,7 @@ control_connection_io_input(void *s)
       if (errno != EAGAIN)
         {
           msg_error("Error reading command on control channel, closing control channel",
-                    evt_tag_errno("error", errno),
-                    NULL);
+                    evt_tag_errno("error", errno));
           goto destroy_connection;
         }
       /* EAGAIN, should try again when data comes */
@@ -133,8 +131,7 @@ control_connection_io_input(void *s)
     }
   else if (rc == 0)
     {
-      msg_debug("EOF on control channel, closing connection",
-                NULL);
+      msg_debug("EOF on control channel, closing connection");
       goto destroy_connection;
     }
   else
@@ -173,7 +170,7 @@ control_connection_io_input(void *s)
   if (iter == NULL)
     {
       msg_error("Unknown command read on control channel, closing control channel",
-                evt_tag_str("command", command->str), NULL);
+                evt_tag_str("command", command->str));
       g_string_free(command, TRUE);
       goto destroy_connection;
     }

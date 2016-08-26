@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2014 Balabit
  * Copyright (c) 2014 Balazs Scheidler <bazsi@balabit.hu>
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -55,16 +55,16 @@ static gboolean
 _compile_dot_notation_array_ref(const gchar *level, JSONDotNotationElem *elem)
 {
   const gchar *p = level;
-  gint index = 0;
+  gint index_ = 0;
 
   g_assert(*p == '[');
 
   p++;
-  index = strtol(p, (gchar **) &p, 10);
+  index_ = strtol(p, (gchar **) &p, 10);
 
   if (*p != ']')
     return FALSE;
-  if (index < 0)
+  if (index_ < 0)
     return FALSE;
   p++;
 
@@ -72,7 +72,7 @@ _compile_dot_notation_array_ref(const gchar *level, JSONDotNotationElem *elem)
     return FALSE;
 
   elem->type = JS_ARRAY_REF;
-  elem->array_ref.index = index;
+  elem->array_ref.index = index_;
   return TRUE;
 }
 

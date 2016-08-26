@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2012 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2002-2012 Balabit
  * Copyright (c) 1998-2012 Balázs Scheidler
  *
  * This library is free software; you can redistribute it and/or
@@ -26,7 +26,7 @@
 #define LOGPIPE_H_INCLUDED
 
 #include "syslog-ng.h"
-#include "logmsg.h"
+#include "logmsg/logmsg.h"
 #include "cfg.h"
 #include "atomic.h"
 #include "messages.h"
@@ -185,7 +185,7 @@ struct _LogPathOptions
     * ack_needed.
     */
 
-  gboolean ack_needed:1,
+  gboolean ack_needed;
 
   /* The user has requested flow-control on this processing path,
    * which means that the destination should invoke log_msg_ack()
@@ -199,7 +199,7 @@ struct _LogPathOptions
    * required action.
    */
 
-    flow_control_requested:1;
+  gboolean flow_control_requested;
 
   gboolean *matched;
 };
@@ -213,6 +213,7 @@ struct _LogPipe
   GlobalConfig *cfg;
   LogExprNode *expr_node;
   LogPipe *pipe_next;
+  const gchar *persist_name;
 
   /* user_data pointer of the "queue" method in case it is overridden
      by a plugin, see the explanation in the comment on the top. */
@@ -220,6 +221,8 @@ struct _LogPipe
   void (*queue)(LogPipe *self, LogMessage *msg, const LogPathOptions *path_options, gpointer user_data);
   gboolean (*init)(LogPipe *self);
   gboolean (*deinit)(LogPipe *self);
+
+  const gchar *(*generate_persist_name)(const LogPipe *self);
 
   /* clone this pipe when used in multiple locations in the processing
    * pipe-line. If it contains state, it should behave as if it was
@@ -300,7 +303,7 @@ log_pipe_forward_msg(LogPipe *self, LogMessage *msg, const LogPathOptions *path_
     }
   else
     {
-      log_msg_drop(msg, path_options);
+      log_msg_drop(msg, path_options, AT_PROCESSED);
     }
 }
 
@@ -313,7 +316,7 @@ log_pipe_queue(LogPipe *s, LogMessage *msg, const LogPathOptions *path_options)
     {
       if (!pipe_single_step_hook(s, msg, path_options))
         {
-          log_msg_drop(msg, path_options);
+          log_msg_drop(msg, path_options, AT_PROCESSED);
           return;
         }
     }
@@ -327,8 +330,7 @@ log_pipe_queue(LogPipe *s, LogMessage *msg, const LogPathOptions *path_options)
       if (G_UNLIKELY(debug_flag))
         {
           msg_debug("Requesting flow control",
-                    log_pipe_location_tag(s),
-                    NULL);
+                    log_pipe_location_tag(s));
         }
     }
 
@@ -362,6 +364,12 @@ log_pipe_append(LogPipe *s, LogPipe *next)
 {
   s->pipe_next = next;
 }
+
+void
+log_pipe_set_persist_name(LogPipe *self, const gchar *persist_name);
+
+const gchar *
+log_pipe_get_persist_name(const LogPipe *self);
 
 void log_pipe_free_method(LogPipe *s);
 

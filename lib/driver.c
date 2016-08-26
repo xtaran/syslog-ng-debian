@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2012 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2002-2012 Balabit
  * Copyright (c) 1998-2012 Balázs Scheidler
  *
  * This library is free software; you can redistribute it and/or
@@ -190,7 +190,8 @@ log_src_driver_free(LogPipe *s)
 
 /* returns a reference */
 static LogQueue *
-log_dest_driver_acquire_queue_method(LogDestDriver *self, gchar *persist_name, gpointer user_data)
+log_dest_driver_acquire_queue_method(LogDestDriver *self, const gchar *persist_name,
+                                     gpointer user_data)
 {
   GlobalConfig *cfg = log_pipe_get_config(&self->super.super);
   LogQueue *queue = NULL;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2012 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2002-2012 Balabit
  * Copyright (c) 1998-2012 Balázs Scheidler
  *
  * This library is free software; you can redistribute it and/or
@@ -25,6 +25,8 @@
 #include "logproto-buffered-server.h"
 #include "messages.h"
 
+#include <errno.h>
+
 /* proto that reads the stream in even sized chunks */
 typedef struct _LogProtoRecordServer LogProtoRecordServer;
 struct _LogProtoRecordServer
@@ -42,11 +44,10 @@ log_proto_record_server_validate_options(LogProtoServer *s)
     {
       msg_error("Buffer is too small to hold the number of bytes required for a record, please make sure log-msg-size() is greater than equal to record-size",
                 evt_tag_int("record_size", self->record_size),
-                evt_tag_int("max_buffer_size", s->options->max_buffer_size),
-                NULL);
+                evt_tag_int("max_buffer_size", s->options->max_buffer_size));
       return FALSE;
     }
-  return log_proto_server_options_validate(s->options);
+  return log_proto_buffered_server_validate_options_method(s);
 }
 
 static gint
@@ -64,8 +65,7 @@ log_proto_record_server_read_data(LogProtoBufferedServer *s, guchar *buf, gsize 
       msg_error("Record size was set, and couldn't read enough bytes",
                 evt_tag_int(EVT_TAG_FD, self->super.super.transport->fd),
                 evt_tag_int("record_size", self->record_size),
-                evt_tag_int("read", rc),
-                NULL);
+                evt_tag_int("read", rc));
       errno = EIO;
       return -1;
     }

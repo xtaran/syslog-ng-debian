@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2012 Nagy, Attila <bra@fsn.hu>
- * Copyright (c) 2012-2014 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2012-2014 Balabit
  * Copyright (c) 2012-2014 Gergely Nagy <algernon@balabit.hu>
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -26,9 +26,8 @@
 #include "afamqp-parser.h"
 #include "plugin.h"
 #include "messages.h"
-#include "misc.h"
 #include "stats/stats-registry.h"
-#include "nvtable.h"
+#include "logmsg/nvtable.h"
 #include "logqueue.h"
 #include "scratch-buffers.h"
 #include "plugin-types.h"
@@ -176,8 +175,7 @@ afamqp_dd_set_value_pairs(LogDriver *d, ValuePairs *vp)
 {
   AMQPDestDriver *self = (AMQPDestDriver *) d;
 
-  if (self->vp)
-    value_pairs_unref(self->vp);
+  value_pairs_unref(self->vp);
   self->vp = vp;
 }
 
@@ -199,21 +197,27 @@ afamqp_dd_format_stats_instance(LogThrDestDriver *s)
   AMQPDestDriver *self = (AMQPDestDriver *) s;
   static gchar persist_name[1024];
 
-  g_snprintf(persist_name, sizeof(persist_name), "amqp,%s,%s,%u,%s,%s",
-             self->vhost, self->host, self->port, self->exchange,
-             self->exchange_type);
+  if (s->super.super.super.persist_name)
+    g_snprintf(persist_name, sizeof(persist_name), "amqp,%s", s->super.super.super.persist_name);
+  else
+    g_snprintf(persist_name, sizeof(persist_name), "amqp,%s,%s,%u,%s,%s", self->vhost, self->host,
+               self->port, self->exchange, self->exchange_type);
+
   return persist_name;
 }
 
-static gchar *
-afamqp_dd_format_persist_name(LogThrDestDriver *s)
+static const gchar *
+afamqp_dd_format_persist_name(const LogPipe *s)
 {
-  AMQPDestDriver *self = (AMQPDestDriver *) s;
+  const AMQPDestDriver *self = (const AMQPDestDriver *)s;
   static gchar persist_name[1024];
 
-  g_snprintf(persist_name, sizeof(persist_name), "afamqp(%s,%s,%u,%s,%s)",
-             self->vhost, self->host, self->port, self->exchange,
-             self->exchange_type);
+  if (s->persist_name)
+    g_snprintf(persist_name, sizeof(persist_name), "afamqp.%s", s->persist_name);
+  else
+    g_snprintf(persist_name, sizeof(persist_name), "afamqp(%s,%s,%u,%s,%s)", self->vhost,
+               self->host, self->port, self->exchange, self->exchange_type);
+
   return persist_name;
 }
 
@@ -255,8 +259,7 @@ afamqp_is_ok(AMQPDestDriver *self, gchar *context, amqp_rpc_reply_t ret)
       msg_error(context,
                 evt_tag_str("driver", self->super.super.super.id),
                 evt_tag_str("error", "missing RPC reply type"),
-                evt_tag_int("time_reopen", self->super.time_reopen),
-                NULL);
+                evt_tag_int("time_reopen", self->super.time_reopen));
       log_threaded_dest_driver_suspend(&self->super);
       return FALSE;
 
@@ -265,8 +268,7 @@ afamqp_is_ok(AMQPDestDriver *self, gchar *context, amqp_rpc_reply_t ret)
         msg_error(context,
                   evt_tag_str("driver", self->super.super.super.id),
                   evt_tag_str("error", amqp_error_string2(ret.library_error)),
-                  evt_tag_int("time_reopen", self->super.time_reopen),
-                  NULL);
+                  evt_tag_int("time_reopen", self->super.time_reopen));
         log_threaded_dest_driver_suspend(&self->super);
         return FALSE;
       }
@@ -283,8 +285,7 @@ afamqp_is_ok(AMQPDestDriver *self, gchar *context, amqp_rpc_reply_t ret)
                       evt_tag_str("error", "server connection error"),
                       evt_tag_int("code", m->reply_code),
                       evt_tag_str("text", m->reply_text.bytes),
-                      evt_tag_int("time_reopen", self->super.time_reopen),
-                      NULL);
+                      evt_tag_int("time_reopen", self->super.time_reopen));
             log_threaded_dest_driver_suspend(&self->super);
             return FALSE;
           }
@@ -297,8 +298,7 @@ afamqp_is_ok(AMQPDestDriver *self, gchar *context, amqp_rpc_reply_t ret)
                       evt_tag_str("error", "server channel error"),
                       evt_tag_int("code", m->reply_code),
                       evt_tag_str("text", m->reply_text.bytes),
-                      evt_tag_int("time_reopen", self->super.time_reopen),
-                      NULL);
+                      evt_tag_int("time_reopen", self->super.time_reopen));
             log_threaded_dest_driver_suspend(&self->super);
             return FALSE;
           }
@@ -307,8 +307,7 @@ afamqp_is_ok(AMQPDestDriver *self, gchar *context, amqp_rpc_reply_t ret)
                     evt_tag_str("driver", self->super.super.super.id),
                     evt_tag_str("error", "unknown server error"),
                     evt_tag_printf("method_id", "0x%08X", ret.reply.id),
-                    evt_tag_int("time_reopen", self->super.time_reopen),
-                    NULL);
+                    evt_tag_int("time_reopen", self->super.time_reopen));
           log_threaded_dest_driver_suspend(&self->super);
           return FALSE;
         }
@@ -340,8 +339,7 @@ afamqp_dd_connect(AMQPDestDriver *self, gboolean reconnect)
 
   if (self->conn == NULL)
     {
-      msg_error("Error allocating AMQP connection.",
-                NULL);
+      msg_error("Error allocating AMQP connection.");
       goto exception_amqp_dd_connect_failed_init;
     }
 
@@ -356,8 +354,7 @@ afamqp_dd_connect(AMQPDestDriver *self, gboolean reconnect)
       msg_error("Error connecting to AMQP server",
                 evt_tag_str("driver", self->super.super.super.id),
                 evt_tag_str("error", amqp_error_string2(-sockfd_ret)),
-                evt_tag_int("time_reopen", self->super.time_reopen),
-                NULL);
+                evt_tag_int("time_reopen", self->super.time_reopen));
 
       goto exception_amqp_dd_connect_failed_init;
     }
@@ -389,8 +386,7 @@ afamqp_dd_connect(AMQPDestDriver *self, gboolean reconnect)
     }
 
   msg_debug ("Connecting to AMQP succeeded",
-             evt_tag_str("driver", self->super.super.super.id),
-             NULL);
+             evt_tag_str("driver", self->super.super.super.id));
 
   return TRUE;
 
@@ -410,9 +406,10 @@ afamqp_dd_connect(AMQPDestDriver *self, gboolean reconnect)
  * Worker thread
  */
 
+/* TODO escape '\0' when passing down the value */
 static gboolean
 afamqp_vp_foreach(const gchar *name,
-                  TypeHint type, const gchar *value,
+                  TypeHint type, const gchar *value, gsize value_len,
                   gpointer user_data)
 {
   amqp_table_entry_t **entries = (amqp_table_entry_t **) ((gpointer *)user_data)[0];
@@ -427,6 +424,7 @@ afamqp_vp_foreach(const gchar *name,
 
   (*entries)[*pos].key = amqp_cstring_bytes(strdup(name));
   (*entries)[*pos].value.kind = AMQP_FIELD_KIND_UTF8;
+
   (*entries)[*pos].value.value.bytes = amqp_cstring_bytes(strdup(value));
 
   (*pos)++;
@@ -484,7 +482,7 @@ afamqp_worker_publish(AMQPDestDriver *self, LogMessage *msg)
       msg_error("Network error while inserting into AMQP server",
                 evt_tag_str("driver", self->super.super.super.id),
                 evt_tag_str("error", amqp_error_string2(-ret)),
-                evt_tag_int("time_reopen", self->super.time_reopen), NULL);
+                evt_tag_int("time_reopen", self->super.time_reopen));
       success = FALSE;
     }
 
@@ -535,8 +533,7 @@ afamqp_dd_init(LogPipe *s)
   if (!self->user || !self->password)
     {
       msg_error("Error initializing AMQP destination: username and password MUST be set!",
-                evt_tag_str("driver", self->super.super.super.id),
-                NULL);
+                evt_tag_str("driver", self->super.super.super.id));
       return FALSE;
     }
 
@@ -547,8 +544,7 @@ afamqp_dd_init(LogPipe *s)
               evt_tag_str("host", self->host),
               evt_tag_int("port", self->port),
               evt_tag_str("exchange", self->exchange),
-              evt_tag_str("exchange_type", self->exchange_type),
-              NULL);
+              evt_tag_str("exchange_type", self->exchange_type));
 
   return log_threaded_dest_driver_start(s);
 }
@@ -569,8 +565,7 @@ afamqp_dd_free(LogPipe *d)
   g_free(self->host);
   g_free(self->vhost);
   g_free(self->entries);
-  if (self->vp)
-    value_pairs_unref(self->vp);
+  value_pairs_unref(self->vp);
 
   log_threaded_dest_driver_free(d);
 }
@@ -588,13 +583,13 @@ afamqp_dd_new(GlobalConfig *cfg)
 
   self->super.super.super.super.init = afamqp_dd_init;
   self->super.super.super.super.free_fn = afamqp_dd_free;
+  self->super.super.super.super.generate_persist_name = afamqp_dd_format_persist_name;
 
   self->super.worker.thread_init = afamqp_worker_thread_init;
   self->super.worker.disconnect = afamqp_dd_disconnect;
   self->super.worker.insert = afamqp_worker_insert;
 
   self->super.format.stats_instance = afamqp_dd_format_stats_instance;
-  self->super.format.persist_name = afamqp_dd_format_persist_name;
   self->super.stats_source = SCS_AMQP;
 
   self->routing_key_template = log_template_new(cfg, NULL);
@@ -636,8 +631,8 @@ afamqp_module_init(GlobalConfig *cfg, CfgArgs *args)
 const ModuleInfo module_info =
 {
   .canonical_name = "afamqp",
-  .version = VERSION,
+  .version = SYSLOG_NG_VERSION,
   .description = "The afamqp module provides AMQP destination support for syslog-ng.",
-  .core_revision = SOURCE_REVISION, .plugins = &afamqp_plugin,
+  .core_revision = SYSLOG_NG_SOURCE_REVISION, .plugins = &afamqp_plugin,
   .plugins_len = 1,
 };

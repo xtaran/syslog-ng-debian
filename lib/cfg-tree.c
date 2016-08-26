@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2012 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2002-2012 Balabit
  * Copyright (c) 1998-2012 Balázs Scheidler
  *
  * This library is free software; you can redistribute it and/or
@@ -23,9 +23,8 @@
  */
 
 #include "cfg-tree.h"
-#include "messages.h"
-#include "afinter.h"
 #include "logmpx.h"
+#include "logpipe.h"
 
 #include <string.h>
 
@@ -372,7 +371,7 @@ log_expr_node_lookup_flag(const gchar *flag)
     return LC_FINAL;
   else if (strcmp(flag, "flow_control") == 0 || strcmp(flag, "flow-control") == 0)
     return LC_FLOW_CONTROL;
-  msg_error("Unknown log statement flag", evt_tag_str("flag", flag), NULL);
+  msg_error("Unknown log statement flag", evt_tag_str("flag", flag));
   return 0;
 }
 
@@ -472,8 +471,7 @@ cfg_tree_compile_single(CfgTree *self, LogExprNode *node,
       if (!pipe)
         {
           msg_error("Error cloning pipe into its reference point, probably the element in question is not meant to be used in this situation",
-                    log_expr_node_location_tag(node),
-                    NULL);
+                    log_expr_node_location_tag(node));
           goto error;
         }
       pipe->flags |= PIF_INLINED;
@@ -511,8 +509,7 @@ cfg_tree_compile_reference(CfgTree *self, LogExprNode *node,
       msg_error("Error resolving reference",
                 evt_tag_str("content", log_expr_node_get_content_name(node->content)),
                 evt_tag_str("name", node->name),
-                log_expr_node_location_tag(node),
-                NULL);
+                log_expr_node_location_tag(node));
       goto error;
     }
 
@@ -665,8 +662,7 @@ cfg_tree_compile_sequence(CfgTree *self, LogExprNode *node,
     {
       /* the catch-all resolution code clears this flag */
 
-      msg_error("Error in configuration, catch-all flag can only be specified for top-level log statements",
-                NULL);
+      msg_error("Error in configuration, catch-all flag can only be specified for top-level log statements");
       goto error;
     }
 
@@ -741,8 +737,7 @@ cfg_tree_compile_sequence(CfgTree *self, LogExprNode *node,
           if (first_pipe)
             {
               msg_error("Error compiling sequence, source-pipe follows a non-source one, please list source references/definitions first",
-                        log_expr_node_location_tag(ep),
-                        NULL);
+                        log_expr_node_location_tag(ep));
               goto error;
             }
 
@@ -838,8 +833,7 @@ cfg_tree_compile_junction(CfgTree *self,
           if (!is_first_branch && !fork_mpx)
             {
               msg_error("Error compiling junction, source and non-source branches are mixed",
-                        log_expr_node_location_tag(ep),
-                        NULL);
+                        log_expr_node_location_tag(ep));
               goto error;
             }
           if (!fork_mpx)
@@ -855,8 +849,7 @@ cfg_tree_compile_junction(CfgTree *self,
           if (fork_mpx)
             {
               msg_error("Error compiling junction, source and non-source branches are mixed",
-                        log_expr_node_location_tag(ep),
-                        NULL);
+                        log_expr_node_location_tag(ep));
               goto error;
             }
         }
@@ -1044,6 +1037,8 @@ cfg_tree_compile(CfgTree *self)
   gint i;
 
   /* resolve references within the configuration */
+  if (self->compiled)
+    return TRUE;
 
   for (i = 0; i < self->rules->len; i++)
     {
@@ -1062,7 +1057,43 @@ cfg_tree_compile(CfgTree *self)
           return FALSE;
         }
     }
+  self->compiled = TRUE;
   return TRUE;
+}
+
+static gboolean
+_verify_unique_persist_names_among_pipes(const GPtrArray *initialized_pipes)
+{
+  GHashTable *pipe_persist_names = g_hash_table_new(g_str_hash, g_str_equal);
+  gboolean result = TRUE;
+
+  for (gint i = 0; i < initialized_pipes->len; ++i)
+    {
+      LogPipe *current_pipe = g_ptr_array_index(initialized_pipes, i);
+      const gchar *current_pipe_name = log_pipe_get_persist_name(current_pipe);
+
+      if (current_pipe_name != NULL)
+        {
+          if (g_hash_table_lookup_extended(pipe_persist_names, current_pipe_name, NULL, NULL))
+            {
+              msg_error("Error checking the uniqueness of the persist names, please override it "
+                        "with persist-name option. Shutting down.",
+                        evt_tag_str("persist_name", current_pipe_name),
+                        log_pipe_location_tag(current_pipe), NULL);
+              result = FALSE;
+            }
+          else
+            {
+              g_hash_table_replace(pipe_persist_names,
+                                   (gpointer)current_pipe_name,
+                                   (gpointer)current_pipe_name);
+            }
+        }
+    }
+
+  g_hash_table_destroy(pipe_persist_names);
+
+  return result;
 }
 
 gboolean
@@ -1085,12 +1116,12 @@ cfg_tree_start(CfgTree *self)
 
       if (!log_pipe_init(pipe))
         {
-          msg_error("Error initializing message pipeline",
-                    NULL);
+          msg_error("Error initializing message pipeline");
           return FALSE;
         }
     }
-  return TRUE;
+
+  return _verify_unique_persist_names_among_pipes(self->initialized_pipes);
 }
 
 gboolean
@@ -1111,6 +1142,7 @@ cfg_tree_stop(CfgTree *self)
 void
 cfg_tree_init_instance(CfgTree *self, GlobalConfig *cfg)
 {
+  memset(self, 0, sizeof(*self));
   self->initialized_pipes = g_ptr_array_new();
   self->objects = g_hash_table_new_full(cfg_tree_objects_hash, cfg_tree_objects_equal, NULL, (GDestroyNotify) log_expr_node_free);
   self->templates = g_hash_table_new_full(g_str_hash, g_str_equal, NULL, (GDestroyNotify) log_template_unref);

@@ -89,8 +89,8 @@
 
 /* In a future release of Bison, this section will be replaced
    by #include "y.tab.h".  */
-#ifndef YY_AFMONGODB_Y_TAB_H_INCLUDED
-# define YY_AFMONGODB_Y_TAB_H_INCLUDED
+#ifndef YY_AFMONGODB_MODULES_AFMONGODB_AFMONGODB_GRAMMAR_H_INCLUDED
+# define YY_AFMONGODB_MODULES_AFMONGODB_AFMONGODB_GRAMMAR_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -99,7 +99,7 @@
 extern int afmongodb_debug;
 #endif
 /* "%code requires" blocks.  */
-#line 24 "afmongodb-grammar.y" /* yacc.c:355  */
+#line 24 "modules/afmongodb/afmongodb-grammar.y" /* yacc.c:355  */
 
 
 #include "afmongodb-parser.h"
@@ -142,23 +142,6 @@ extern int afmongodb_debug;
     KW_CHANNEL = 10009,
     KW_INTERNAL = 10010,
     KW_FILE = 10011,
-    KW_SQL = 10030,
-    KW_TYPE = 10031,
-    KW_COLUMNS = 10032,
-    KW_INDEXES = 10033,
-    KW_VALUES = 10034,
-    KW_PASSWORD = 10035,
-    KW_DATABASE = 10036,
-    KW_USERNAME = 10037,
-    KW_TABLE = 10038,
-    KW_ENCODING = 10039,
-    KW_SESSION_STATEMENTS = 10040,
-    KW_DELIMITERS = 10050,
-    KW_QUOTES = 10051,
-    KW_QUOTE_PAIRS = 10052,
-    KW_NULL = 10053,
-    KW_CHARS = 10054,
-    KW_STRINGS = 10055,
     KW_SYSLOG = 10060,
     KW_MARK_FREQ = 10071,
     KW_STATS_FREQ = 10072,
@@ -171,6 +154,8 @@ extern int afmongodb_debug;
     KW_FILE_TEMPLATE = 10079,
     KW_PROTO_TEMPLATE = 10080,
     KW_MARK_MODE = 10081,
+    KW_ENCODING = 10082,
+    KW_TYPE = 10083,
     KW_CHAIN_HOSTNAMES = 10090,
     KW_NORMALIZE_HOSTNAMES = 10091,
     KW_KEEP_HOSTNAME = 10092,
@@ -200,6 +185,7 @@ extern int afmongodb_debug;
     KW_THROTTLE = 10170,
     KW_THREADED = 10171,
     KW_PASS_UNIX_CREDENTIALS = 10231,
+    KW_PERSIST_NAME = 10302,
     KW_FLAGS = 10190,
     KW_PAD_SIZE = 10200,
     KW_TIME_ZONE = 10201,
@@ -234,10 +220,7 @@ extern int afmongodb_debug;
     KW_NETMASK = 10355,
     KW_TAGS = 10356,
     KW_NETMASK6 = 10357,
-    KW_VALUE = 10361,
     KW_REWRITE = 10370,
-    KW_SET = 10371,
-    KW_SUBST = 10372,
     KW_YES = 10380,
     KW_NO = 10381,
     KW_IFDEF = 10410,
@@ -253,7 +236,6 @@ extern int afmongodb_debug;
     LL_EOL = 10428,
     LL_ERROR = 10429,
     KW_VALUE_PAIRS = 10500,
-    KW_SELECT = 10501,
     KW_EXCLUDE = 10502,
     KW_PAIR = 10503,
     KW_KEY = 10504,
@@ -265,10 +247,14 @@ extern int afmongodb_debug;
     KW_ON_ERROR = 10510,
     KW_RETRIES = 10511,
     KW_MONGODB = 10513,
-    KW_COLLECTION = 10514,
-    KW_SERVERS = 10515,
-    KW_SAFE_MODE = 10516,
-    KW_PATH = 10517
+    KW_URI = 10514,
+    KW_COLLECTION = 10515,
+    KW_SERVERS = 10516,
+    KW_SAFE_MODE = 10517,
+    KW_PATH = 10518,
+    KW_PASSWORD = 10519,
+    KW_USERNAME = 10520,
+    KW_DATABASE = 10521
   };
 #endif
 /* Tokens.  */
@@ -302,23 +288,6 @@ extern int afmongodb_debug;
 #define KW_CHANNEL 10009
 #define KW_INTERNAL 10010
 #define KW_FILE 10011
-#define KW_SQL 10030
-#define KW_TYPE 10031
-#define KW_COLUMNS 10032
-#define KW_INDEXES 10033
-#define KW_VALUES 10034
-#define KW_PASSWORD 10035
-#define KW_DATABASE 10036
-#define KW_USERNAME 10037
-#define KW_TABLE 10038
-#define KW_ENCODING 10039
-#define KW_SESSION_STATEMENTS 10040
-#define KW_DELIMITERS 10050
-#define KW_QUOTES 10051
-#define KW_QUOTE_PAIRS 10052
-#define KW_NULL 10053
-#define KW_CHARS 10054
-#define KW_STRINGS 10055
 #define KW_SYSLOG 10060
 #define KW_MARK_FREQ 10071
 #define KW_STATS_FREQ 10072
@@ -331,6 +300,8 @@ extern int afmongodb_debug;
 #define KW_FILE_TEMPLATE 10079
 #define KW_PROTO_TEMPLATE 10080
 #define KW_MARK_MODE 10081
+#define KW_ENCODING 10082
+#define KW_TYPE 10083
 #define KW_CHAIN_HOSTNAMES 10090
 #define KW_NORMALIZE_HOSTNAMES 10091
 #define KW_KEEP_HOSTNAME 10092
@@ -360,6 +331,7 @@ extern int afmongodb_debug;
 #define KW_THROTTLE 10170
 #define KW_THREADED 10171
 #define KW_PASS_UNIX_CREDENTIALS 10231
+#define KW_PERSIST_NAME 10302
 #define KW_FLAGS 10190
 #define KW_PAD_SIZE 10200
 #define KW_TIME_ZONE 10201
@@ -394,10 +366,7 @@ extern int afmongodb_debug;
 #define KW_NETMASK 10355
 #define KW_TAGS 10356
 #define KW_NETMASK6 10357
-#define KW_VALUE 10361
 #define KW_REWRITE 10370
-#define KW_SET 10371
-#define KW_SUBST 10372
 #define KW_YES 10380
 #define KW_NO 10381
 #define KW_IFDEF 10410
@@ -413,7 +382,6 @@ extern int afmongodb_debug;
 #define LL_EOL 10428
 #define LL_ERROR 10429
 #define KW_VALUE_PAIRS 10500
-#define KW_SELECT 10501
 #define KW_EXCLUDE 10502
 #define KW_PAIR 10503
 #define KW_KEY 10504
@@ -425,10 +393,14 @@ extern int afmongodb_debug;
 #define KW_ON_ERROR 10510
 #define KW_RETRIES 10511
 #define KW_MONGODB 10513
-#define KW_COLLECTION 10514
-#define KW_SERVERS 10515
-#define KW_SAFE_MODE 10516
-#define KW_PATH 10517
+#define KW_URI 10514
+#define KW_COLLECTION 10515
+#define KW_SERVERS 10516
+#define KW_SAFE_MODE 10517
+#define KW_PATH 10518
+#define KW_PASSWORD 10519
+#define KW_USERNAME 10520
+#define KW_DATABASE 10521
 
 /* Value type.  */
 
@@ -450,20 +422,20 @@ struct YYLTYPE
 
 int afmongodb_parse (CfgLexer *lexer, LogDriver **instance, gpointer arg);
 
-#endif /* !YY_AFMONGODB_Y_TAB_H_INCLUDED  */
+#endif /* !YY_AFMONGODB_MODULES_AFMONGODB_AFMONGODB_GRAMMAR_H_INCLUDED  */
 
 /* Copy the second part of user declarations.  */
 
-#line 458 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:358  */
+#line 430 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:358  */
 /* Unqualified %code blocks.  */
-#line 30 "afmongodb-grammar.y" /* yacc.c:359  */
+#line 30 "modules/afmongodb/afmongodb-grammar.y" /* yacc.c:359  */
 
 
 #include "cfg-grammar.h"
 #include "plugin.h"
-#include "vptransform.h"
+#include "value-pairs/value-pairs.h"
 
-#line 52 "afmongodb-grammar.y" /* yacc.c:359  */
+#line 52 "modules/afmongodb/afmongodb-grammar.y" /* yacc.c:359  */
 
 
 # define YYLLOC_DEFAULT(Current, Rhs, N)                                \
@@ -524,7 +496,7 @@ int afmongodb_parse (CfgLexer *lexer, LogDriver **instance, gpointer arg);
 
 
 
-#line 528 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:359  */
+#line 500 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:359  */
 
 #ifdef short
 # undef short
@@ -768,21 +740,21 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  4
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   143
+#define YYLAST   153
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  166
+#define YYNTOKENS  152
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  26
+#define YYNNTS  28
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  62
+#define YYNRULES  68
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  162
+#define YYNSTATES  174
 
 /* YYTRANSLATE[YYX] -- Symbol number corresponding to YYX as returned
    by yylex, with out-of-bounds checking.  */
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   10517
+#define YYMAXUTOK   10521
 
 #define YYTRANSLATE(YYX)                                                \
   ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
@@ -795,15 +767,15 @@ static const yytype_uint8 yytranslate[] =
       12,    13,    14,    15,    16,    17,    18,    19,    20,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     160,   161,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,   165,   164,
+     146,   147,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,   151,   150,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,   162,     2,   163,     2,     2,     2,     2,
+       2,     2,     2,   148,     2,   149,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -1794,68 +1766,69 @@ static const yytype_uint8 yytranslate[] =
       21,    22,    23,    24,    25,    26,    27,    28,    29,    30,
       31,    32,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      33,    34,    35,    36,    37,    38,    39,    40,    41,    42,
-      43,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      44,    45,    46,    47,    48,    49,     2,     2,     2,     2,
-      50,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,    51,    52,    53,    54,    55,    56,    57,    58,    59,
-      60,    61,     2,     2,     2,     2,     2,     2,     2,     2,
-      62,    63,    64,    65,    66,     2,     2,     2,     2,     2,
-      67,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      68,    69,    70,     2,     2,     2,     2,     2,     2,     2,
-      71,    72,     2,     2,     2,     2,     2,     2,     2,     2,
-      73,    74,    75,     2,     2,     2,     2,     2,     2,     2,
-      76,    77,    78,     2,     2,     2,     2,     2,     2,     2,
-      79,    80,    81,     2,     2,     2,     2,     2,     2,     2,
-      82,     2,    83,    84,    85,    86,    87,     2,     2,     2,
-      88,    89,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      91,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      92,    93,    94,    95,    96,    97,     2,     2,     2,     2,
-      98,    99,   100,     2,     2,     2,     2,     2,     2,     2,
-     101,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     102,    90,     2,     2,     2,     2,     2,     2,     2,     2,
-     103,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     104,   105,   106,     2,     2,     2,     2,     2,     2,     2,
-     107,   108,   109,     2,     2,     2,     2,     2,     2,     2,
-     110,   111,   112,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     113,   114,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,   115,     2,     2,     2,     2,     2,     2,
+      33,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,    34,    35,    36,    37,    38,    39,    40,    41,    42,
+      43,    44,    45,    46,     2,     2,     2,     2,     2,     2,
+      47,    48,    49,    50,    51,     2,     2,     2,     2,     2,
+      52,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+      53,    54,    55,     2,     2,     2,     2,     2,     2,     2,
+      56,    57,     2,     2,     2,     2,     2,     2,     2,     2,
+      58,    59,    60,     2,     2,     2,     2,     2,     2,     2,
+      61,    62,    63,     2,     2,     2,     2,     2,     2,     2,
+      64,    65,    66,     2,     2,     2,     2,     2,     2,     2,
+      67,     2,    68,    69,    70,    71,    72,     2,     2,     2,
+      73,    74,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     116,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     117,   118,   119,   120,   121,   122,   123,   124,     2,     2,
-       2,   125,     2,     2,     2,     2,     2,     2,     2,     2,
-     126,   127,   128,     2,     2,     2,     2,     2,     2,     2,
-     129,   130,     2,     2,     2,     2,     2,     2,     2,     2,
+      77,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+      78,    79,    80,    81,    82,    83,     2,     2,     2,     2,
+      84,    85,    86,     2,     2,     2,     2,     2,     2,     2,
+      87,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+      88,    75,     2,     2,     2,     2,     2,     2,     2,     2,
+      89,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+      90,    91,    92,     2,     2,     2,     2,     2,     2,     2,
+      93,    94,    95,     2,     2,     2,     2,     2,     2,     2,
+      96,    97,    98,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     131,   132,     2,     2,     2,     2,     2,     2,     2,     2,
-     133,   134,   135,   136,   137,   138,   139,   140,   141,   142,
+      99,   100,    76,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,   101,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     102,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     103,   104,   105,   106,   107,   108,   109,   110,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     111,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     112,   113,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     114,   115,     2,     2,     2,     2,     2,     2,     2,     2,
+     116,   117,   118,   119,   120,   121,   122,   123,   124,   125,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     143,   144,   145,   146,   147,   148,   149,   150,   151,   152,
-     153,   154,     2,   155,   156,   157,   158,   159
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     126,     2,   127,   128,   129,   130,   131,   132,   133,   134,
+     135,   136,     2,   137,   138,   139,   140,   141,   142,   143,
+     144,   145
 };
 
 #if YYDEBUG
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   380,   380,   379,   387,   388,   392,   397,   403,   408,
-     414,   415,   416,   417,   418,   419,   420,   421,   422,   422,
-     620,   627,   640,   640,   646,   647,   651,   652,   653,   668,
-     672,   673,   783,   791,   792,   793,   870,   871,   872,   873,
-     874,   875,   898,   897,   906,   907,   911,   916,   922,   928,
-     921,   929,   931,   930,   936,   937,   941,   942,   946,   947,
-     951,   952,   953
+       0,   364,   364,   363,   371,   372,   376,   380,   384,   385,
+     389,   390,   391,   391,   395,   399,   405,   412,   418,   425,
+     429,   433,   437,   441,   642,   649,   662,   662,   668,   669,
+     673,   674,   675,   690,   694,   695,   812,   816,   824,   825,
+     826,   844,   900,   901,   902,   903,   904,   905,   928,   927,
+     936,   937,   941,   946,   952,   958,   951,   959,   961,   960,
+     966,   967,   971,   972,   976,   977,   981,   982,   983
 };
 #endif
 
@@ -1873,24 +1846,21 @@ static const char *const yytname[] =
   "LL_CONTEXT_INNER_SRC", "LL_CONTEXT_CLIENT_PROTO",
   "LL_CONTEXT_SERVER_PROTO", "KW_SOURCE", "KW_FILTER", "KW_PARSER",
   "KW_DESTINATION", "KW_LOG", "KW_OPTIONS", "KW_INCLUDE", "KW_BLOCK",
-  "KW_JUNCTION", "KW_CHANNEL", "KW_INTERNAL", "KW_FILE", "KW_SQL",
-  "KW_TYPE", "KW_COLUMNS", "KW_INDEXES", "KW_VALUES", "KW_PASSWORD",
-  "KW_DATABASE", "KW_USERNAME", "KW_TABLE", "KW_ENCODING",
-  "KW_SESSION_STATEMENTS", "KW_DELIMITERS", "KW_QUOTES", "KW_QUOTE_PAIRS",
-  "KW_NULL", "KW_CHARS", "KW_STRINGS", "KW_SYSLOG", "KW_MARK_FREQ",
-  "KW_STATS_FREQ", "KW_STATS_LEVEL", "KW_STATS_LIFETIME", "KW_FLUSH_LINES",
-  "KW_SUPPRESS", "KW_FLUSH_TIMEOUT", "KW_LOG_MSG_SIZE", "KW_FILE_TEMPLATE",
-  "KW_PROTO_TEMPLATE", "KW_MARK_MODE", "KW_CHAIN_HOSTNAMES",
-  "KW_NORMALIZE_HOSTNAMES", "KW_KEEP_HOSTNAME", "KW_CHECK_HOSTNAME",
-  "KW_BAD_HOSTNAME", "KW_KEEP_TIMESTAMP", "KW_USE_DNS", "KW_USE_FQDN",
-  "KW_CUSTOM_DOMAIN", "KW_DNS_CACHE", "KW_DNS_CACHE_SIZE",
-  "KW_DNS_CACHE_EXPIRE", "KW_DNS_CACHE_EXPIRE_FAILED",
-  "KW_DNS_CACHE_HOSTS", "KW_PERSIST_ONLY", "KW_USE_RCPTID",
-  "KW_USE_UNIQID", "KW_TZ_CONVERT", "KW_TS_FORMAT", "KW_FRAC_DIGITS",
-  "KW_LOG_FIFO_SIZE", "KW_LOG_FETCH_LIMIT", "KW_LOG_IW_SIZE",
-  "KW_LOG_PREFIX", "KW_PROGRAM_OVERRIDE", "KW_HOST_OVERRIDE",
-  "KW_THROTTLE", "KW_THREADED", "KW_PASS_UNIX_CREDENTIALS", "KW_FLAGS",
-  "KW_PAD_SIZE", "KW_TIME_ZONE", "KW_RECV_TIME_ZONE", "KW_SEND_TIME_ZONE",
+  "KW_JUNCTION", "KW_CHANNEL", "KW_INTERNAL", "KW_FILE", "KW_SYSLOG",
+  "KW_MARK_FREQ", "KW_STATS_FREQ", "KW_STATS_LEVEL", "KW_STATS_LIFETIME",
+  "KW_FLUSH_LINES", "KW_SUPPRESS", "KW_FLUSH_TIMEOUT", "KW_LOG_MSG_SIZE",
+  "KW_FILE_TEMPLATE", "KW_PROTO_TEMPLATE", "KW_MARK_MODE", "KW_ENCODING",
+  "KW_TYPE", "KW_CHAIN_HOSTNAMES", "KW_NORMALIZE_HOSTNAMES",
+  "KW_KEEP_HOSTNAME", "KW_CHECK_HOSTNAME", "KW_BAD_HOSTNAME",
+  "KW_KEEP_TIMESTAMP", "KW_USE_DNS", "KW_USE_FQDN", "KW_CUSTOM_DOMAIN",
+  "KW_DNS_CACHE", "KW_DNS_CACHE_SIZE", "KW_DNS_CACHE_EXPIRE",
+  "KW_DNS_CACHE_EXPIRE_FAILED", "KW_DNS_CACHE_HOSTS", "KW_PERSIST_ONLY",
+  "KW_USE_RCPTID", "KW_USE_UNIQID", "KW_TZ_CONVERT", "KW_TS_FORMAT",
+  "KW_FRAC_DIGITS", "KW_LOG_FIFO_SIZE", "KW_LOG_FETCH_LIMIT",
+  "KW_LOG_IW_SIZE", "KW_LOG_PREFIX", "KW_PROGRAM_OVERRIDE",
+  "KW_HOST_OVERRIDE", "KW_THROTTLE", "KW_THREADED",
+  "KW_PASS_UNIX_CREDENTIALS", "KW_PERSIST_NAME", "KW_FLAGS", "KW_PAD_SIZE",
+  "KW_TIME_ZONE", "KW_RECV_TIME_ZONE", "KW_SEND_TIME_ZONE",
   "KW_LOCAL_TIME_ZONE", "KW_FORMAT", "KW_TIME_REOPEN", "KW_TIME_REAP",
   "KW_TIME_SLEEP", "KW_TMPL_ESCAPE", "KW_OPTIONAL", "KW_CREATE_DIRS",
   "KW_OWNER", "KW_GROUP", "KW_PERM", "KW_DIR_OWNER", "KW_DIR_GROUP",
@@ -1898,17 +1868,18 @@ static const char *const yytname[] =
   "KW_TEMPLATE_FUNCTION", "KW_DEFAULT_FACILITY", "KW_DEFAULT_LEVEL",
   "KW_PORT", "KW_USE_TIME_RECVD", "KW_FACILITY", "KW_LEVEL", "KW_HOST",
   "KW_MATCH", "KW_MESSAGE", "KW_NETMASK", "KW_TAGS", "KW_NETMASK6",
-  "KW_VALUE", "KW_REWRITE", "KW_SET", "KW_SUBST", "KW_YES", "KW_NO",
-  "KW_IFDEF", "KW_ENDIF", "LL_DOTDOT", "LL_IDENTIFIER", "LL_NUMBER",
-  "LL_FLOAT", "LL_STRING", "LL_TOKEN", "LL_BLOCK", "LL_PRAGMA", "LL_EOL",
-  "LL_ERROR", "KW_VALUE_PAIRS", "KW_SELECT", "KW_EXCLUDE", "KW_PAIR",
-  "KW_KEY", "KW_SCOPE", "KW_SHIFT", "KW_REKEY", "KW_ADD_PREFIX",
-  "KW_REPLACE_PREFIX", "KW_ON_ERROR", "KW_RETRIES", "KW_MONGODB",
-  "KW_COLLECTION", "KW_SERVERS", "KW_SAFE_MODE", "KW_PATH", "'('", "')'",
+  "KW_REWRITE", "KW_YES", "KW_NO", "KW_IFDEF", "KW_ENDIF", "LL_DOTDOT",
+  "LL_IDENTIFIER", "LL_NUMBER", "LL_FLOAT", "LL_STRING", "LL_TOKEN",
+  "LL_BLOCK", "LL_PRAGMA", "LL_EOL", "LL_ERROR", "KW_VALUE_PAIRS",
+  "KW_EXCLUDE", "KW_PAIR", "KW_KEY", "KW_SCOPE", "KW_SHIFT", "KW_REKEY",
+  "KW_ADD_PREFIX", "KW_REPLACE_PREFIX", "KW_ON_ERROR", "KW_RETRIES",
+  "KW_MONGODB", "KW_URI", "KW_COLLECTION", "KW_SERVERS", "KW_SAFE_MODE",
+  "KW_PATH", "KW_PASSWORD", "KW_USERNAME", "KW_DATABASE", "'('", "')'",
   "'{'", "'}'", "';'", "':'", "$accept", "start", "$@1",
-  "afmongodb_options", "afmongodb_option", "$@2", "template_content_inner",
-  "template_content", "$@8", "string", "yesno", "string_list",
-  "string_list_build", "threaded_dest_driver_option", "dest_driver_option",
+  "afmongodb_options", "afmongodb_option", "$@2",
+  "afmongodb_legacy_option", "template_content_inner", "template_content",
+  "$@8", "string", "yesno", "string_list", "string_list_build",
+  "driver_option", "threaded_dest_driver_option", "dest_driver_option",
   "template_option", "value_pair_option", "$@14", "vp_options",
   "vp_option", "$@15", "$@16", "$@17", "vp_scope_list", "vp_rekey_options",
   "vp_rekey_option", YY_NULLPTR
@@ -1923,27 +1894,26 @@ static const yytype_uint16 yytoknum[] =
        0,   256, 10512,     1,     2,     3,     4,     5,     6,     7,
        8,     9,    10,    11,    12,    13,    14,    15,    16,    17,
       18, 10000, 10001, 10002, 10003, 10004, 10005, 10006, 10007, 10008,
-   10009, 10010, 10011, 10030, 10031, 10032, 10033, 10034, 10035, 10036,
-   10037, 10038, 10039, 10040, 10050, 10051, 10052, 10053, 10054, 10055,
-   10060, 10071, 10072, 10073, 10074, 10075, 10076, 10077, 10078, 10079,
-   10080, 10081, 10090, 10091, 10092, 10093, 10094, 10100, 10110, 10111,
-   10112, 10120, 10121, 10130, 10131, 10132, 10140, 10141, 10142, 10150,
-   10151, 10152, 10160, 10162, 10163, 10164, 10165, 10166, 10170, 10171,
-   10231, 10190, 10200, 10201, 10202, 10203, 10204, 10205, 10210, 10211,
-   10212, 10220, 10230, 10240, 10250, 10251, 10252, 10260, 10261, 10262,
-   10270, 10271, 10272, 10300, 10301, 10323, 10340, 10350, 10351, 10352,
-   10353, 10354, 10355, 10356, 10357, 10361, 10370, 10371, 10372, 10380,
-   10381, 10410, 10411, 10420, 10421, 10422, 10423, 10424, 10425, 10426,
-   10427, 10428, 10429, 10500, 10501, 10502, 10503, 10504, 10505, 10506,
-   10507, 10508, 10509, 10510, 10511, 10513, 10514, 10515, 10516, 10517,
-      40,    41,   123,   125,    59,    58
+   10009, 10010, 10011, 10060, 10071, 10072, 10073, 10074, 10075, 10076,
+   10077, 10078, 10079, 10080, 10081, 10082, 10083, 10090, 10091, 10092,
+   10093, 10094, 10100, 10110, 10111, 10112, 10120, 10121, 10130, 10131,
+   10132, 10140, 10141, 10142, 10150, 10151, 10152, 10160, 10162, 10163,
+   10164, 10165, 10166, 10170, 10171, 10231, 10302, 10190, 10200, 10201,
+   10202, 10203, 10204, 10205, 10210, 10211, 10212, 10220, 10230, 10240,
+   10250, 10251, 10252, 10260, 10261, 10262, 10270, 10271, 10272, 10300,
+   10301, 10323, 10340, 10350, 10351, 10352, 10353, 10354, 10355, 10356,
+   10357, 10370, 10380, 10381, 10410, 10411, 10420, 10421, 10422, 10423,
+   10424, 10425, 10426, 10427, 10428, 10429, 10500, 10502, 10503, 10504,
+   10505, 10506, 10507, 10508, 10509, 10510, 10511, 10513, 10514, 10515,
+   10516, 10517, 10518, 10519, 10520, 10521,    40,    41,   123,   125,
+      59,    58
 };
 # endif
 
-#define YYPACT_NINF -151
+#define YYPACT_NINF -119
 
 #define yypact_value_is_default(Yystate) \
-  (!!((Yystate) == (-151)))
+  (!!((Yystate) == (-119)))
 
 #define YYTABLE_NINF -6
 
@@ -1952,25 +1922,26 @@ static const yytype_uint16 yytoknum[] =
 
   /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
      STATE-NUM.  */
-static const yytype_int16 yypact[] =
+static const yytype_int8 yypact[] =
 {
-       0,  -150,    21,  -151,  -151,  -135,   -23,  -120,  -117,  -112,
-    -110,  -109,  -108,  -107,  -151,  -151,  -106,  -105,  -104,  -100,
-     -99,   -98,   -23,   -73,  -151,  -151,  -151,  -123,  -123,  -123,
-     -86,   -78,   -71,  -123,   -94,   -68,  -123,  -123,  -111,  -123,
-    -151,  -151,   -92,   -91,   -90,   -89,   -88,   -87,  -151,  -151,
-    -151,   -82,   -80,   -79,   -77,   -76,   -75,   -74,  -118,   -72,
-     -67,  -123,   -66,  -151,  -151,  -151,  -151,   -63,   -62,  -123,
-     -61,  -123,  -123,  -123,  -123,  -151,  -151,  -151,  -151,  -151,
-    -151,  -151,   -70,   -60,   -59,   -57,   -56,   -55,  -118,  -151,
-    -151,  -151,  -151,  -151,  -151,   -54,   -53,   -52,   -51,   -49,
-     -48,  -123,  -123,  -123,  -123,  -123,  -151,  -151,  -151,  -151,
-    -151,  -151,  -151,  -151,   -47,   -44,  -124,   -45,  -123,   -39,
-    -151,  -151,  -151,   -38,  -103,   -43,  -151,  -151,  -151,  -116,
-     -37,  -151,   -35,  -151,  -151,  -151,   -33,   -32,   -31,   -29,
-    -116,  -151,  -123,  -116,   -42,  -123,  -123,  -151,  -151,   -24,
-     -22,   -21,   -20,  -123,  -151,  -151,  -151,  -151,   -19,   -18,
-    -151,  -151
+      10,   -98,    41,  -119,  -119,  -104,   -51,  -103,   -95,   -94,
+     -93,   -91,  -119,  -119,  -119,  -119,   -90,   -89,   -88,   -87,
+     -86,   -81,   -79,   -78,   -77,   -76,   -51,   -62,  -119,  -119,
+    -119,  -119,  -119,   -73,   -56,   -85,   -48,   -85,   -74,   -44,
+     -85,   -85,   -85,  -105,   -85,   -85,   -85,   -85,  -119,  -119,
+     -70,   -69,   -68,   -63,   -60,   -49,  -119,   -47,   -45,  -119,
+    -119,   -43,   -42,   -41,  -101,   -40,   -39,   -38,   -85,   -37,
+    -119,  -119,  -119,  -119,   -36,   -34,   -33,   -32,   -31,   -85,
+     -20,   -85,   -85,   -85,   -85,  -119,  -119,  -119,  -119,  -119,
+     -29,   -28,   -26,   -25,   -22,   -21,  -101,  -119,  -119,  -119,
+    -119,  -119,  -119,  -119,  -119,  -119,  -119,   -19,   -18,   -16,
+     -15,   -14,   -13,   -85,   -85,   -85,   -85,   -85,  -119,  -119,
+    -119,  -119,  -119,  -119,  -119,  -119,   -12,   -52,  -102,   -11,
+     -85,   -10,  -119,  -119,  -119,    -9,   -84,    -7,  -119,  -119,
+    -119,  -110,    -6,  -119,    -4,  -119,  -119,  -119,    -3,    -2,
+      -1,     0,  -110,  -119,   -85,  -110,     7,   -85,   -85,  -119,
+    -119,     1,     2,     3,     4,   -85,  -119,  -119,  -119,  -119,
+       5,     6,  -119,  -119
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -1978,39 +1949,40 @@ static const yytype_int16 yypact[] =
      means the default is an error.  */
 static const yytype_uint8 yydefact[] =
 {
-       0,     0,     0,     2,     1,     0,    18,     0,     0,     0,
-       0,     0,     0,     0,    35,    42,     0,     0,     0,     0,
-       0,     0,    18,     0,    17,    16,    15,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,    31,     0,     0,
-       3,     4,     0,     0,     0,     0,     0,     0,    19,    24,
-      25,     0,     0,     0,     0,     0,     0,     0,    45,     0,
-       0,    31,     0,    29,    26,    27,    28,     0,     0,     0,
-       0,     0,     0,     0,     0,    13,    10,    12,    33,    34,
-       8,     7,     0,     0,     0,     0,     0,     0,    45,    32,
-      11,    30,     6,    14,     9,     0,     0,     0,     0,     0,
-       0,    31,     0,    31,    57,     0,    43,    44,    36,    37,
-      38,    39,    40,    41,     0,    22,    31,     0,    57,     0,
-      52,    54,    22,     0,     0,     0,    51,    56,    55,    59,
-       0,    47,    24,    23,    20,    48,     0,     0,     0,     0,
-      59,    46,     0,    59,     0,     0,     0,    53,    58,     0,
-       0,     0,     0,     0,    21,    49,    60,    61,     0,     0,
-      62,    50
+       0,     0,     0,     2,     1,     0,    12,     0,     0,     0,
+       0,     0,    14,    23,    40,    48,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,    12,     0,     8,    41,
+      11,    10,     9,     0,     0,     0,     0,     0,     0,     0,
+       0,     0,    35,     0,     0,     0,     0,     0,     3,     4,
+       0,     0,     0,     0,     0,     0,    13,     0,     0,    28,
+      29,     0,     0,     0,    51,     0,     0,     0,    35,     0,
+      33,    30,    31,    32,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,    38,    39,    36,    17,    16,
+       0,     0,     0,     0,     0,     0,    51,    37,     6,     7,
+      34,    15,    22,    18,    21,    20,    19,     0,     0,     0,
+       0,     0,     0,    35,     0,    35,    63,     0,    49,    50,
+      42,    43,    44,    45,    46,    47,     0,    26,    35,     0,
+      63,     0,    58,    60,    26,     0,     0,     0,    57,    62,
+      61,    65,     0,    53,    28,    27,    24,    54,     0,     0,
+       0,     0,    65,    52,     0,    65,     0,     0,     0,    59,
+      64,     0,     0,     0,     0,     0,    25,    55,    66,    67,
+       0,     0,    68,    56
 };
 
   /* YYPGOTO[NTERM-NUM].  */
-static const yytype_int16 yypgoto[] =
+static const yytype_int8 yypgoto[] =
 {
-    -151,  -151,  -151,    40,  -151,  -151,  -151,   -34,  -151,   -27,
-    -151,   -64,   -58,  -151,  -151,  -151,  -151,  -151,    -5,  -151,
-    -151,  -151,  -151,   -16,  -102,  -151
+    -119,  -119,  -119,    58,  -119,  -119,  -119,  -119,    12,  -119,
+     -35,  -119,   -75,   -67,  -119,  -119,  -119,  -119,  -119,  -119,
+      16,  -119,  -119,  -119,  -119,   -27,  -118,  -119
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int16 yydefgoto[] =
 {
-      -1,     2,     5,    21,    22,    23,   133,   123,   124,    61,
-      67,    62,    63,    24,    25,    48,    26,    34,    87,    88,
-     143,   159,   129,   119,   139,   140
+      -1,     2,     5,    25,    26,    27,    28,   145,   135,   136,
+      68,    74,    69,    70,    29,    30,    31,    56,    32,    38,
+      95,    96,   155,   171,   141,   131,   151,   152
 };
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -2018,87 +1990,90 @@ static const yytype_int16 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int16 yytable[] =
 {
-      51,    52,    53,    91,     1,     3,    57,    42,    43,    60,
-      49,    49,    68,    50,    50,     7,     8,     9,    64,    65,
-      44,     4,    45,    46,    66,     6,   125,    82,    83,    84,
-      85,   132,    86,   136,    50,   137,   138,   114,   148,   117,
-      27,   150,    95,    28,    97,    98,    99,   100,    29,    54,
-      30,    31,    32,    33,    35,    36,    37,    55,    91,    10,
-      38,    39,    41,    40,    56,    11,    58,    59,    69,    70,
-      71,    72,    73,    74,    96,   115,   116,   118,   120,    75,
-      47,    76,    77,   107,    78,    79,    80,    81,   130,    89,
-     101,   118,    12,   151,    90,    92,    13,   134,    93,    94,
-     102,   103,   127,   104,   105,     0,   106,   108,   109,   110,
-     111,    14,   112,   113,   121,   149,   126,   135,   152,   153,
-      15,   122,   128,   131,   141,   142,   158,   144,   145,   146,
-       0,    16,   147,    17,    18,    19,    20,   154,    -5,   155,
-     156,   157,   160,   161
+      61,   100,    63,    50,    51,    66,    67,    71,    72,    75,
+      76,    77,    78,    73,     1,    59,     7,    52,    60,    53,
+      54,   148,     8,   149,   150,     9,    90,    91,    92,    93,
+     137,    94,    59,   144,   160,    60,    60,   162,   126,     3,
+     129,     4,     6,    33,   107,    57,   109,   110,   111,   112,
+      10,    34,    35,    36,    11,    37,    39,    40,    41,    42,
+      43,   100,    58,    12,    13,    44,    14,    45,    46,    47,
+      62,    48,    64,    55,    65,    15,    79,    80,    81,   127,
+     128,   130,   132,    82,    49,    16,    83,    17,    18,    19,
+      20,    21,    22,    23,    24,   130,    -5,    84,   108,   134,
+      85,   146,    86,   139,    87,    88,    89,    97,    98,    99,
+     101,   102,   119,   103,   104,   105,   106,   113,   114,   161,
+     115,   116,   164,   165,   117,   163,   118,     0,   120,   121,
+     170,   122,   123,   124,   125,   133,   138,   140,   143,   147,
+       0,   153,   154,   156,   157,   158,   142,   159,   166,   167,
+     168,   169,   172,   173
 };
 
 static const yytype_int16 yycheck[] =
 {
-      27,    28,    29,    61,     4,   155,    33,    80,    81,    36,
-     134,   134,    39,   137,   137,    38,    39,    40,   129,   130,
-      93,     0,    95,    96,   135,   160,   150,   145,   146,   147,
-     148,   134,   150,   149,   137,   151,   152,   101,   140,   103,
-     160,   143,    69,   160,    71,    72,    73,    74,   160,   135,
-     160,   160,   160,   160,   160,   160,   160,   135,   116,    82,
-     160,   160,    22,   161,   135,    88,   160,   135,   160,   160,
-     160,   160,   160,   160,   135,   102,   103,   104,   105,   161,
-     153,   161,   161,    88,   161,   161,   161,   161,   122,   161,
-     160,   118,   115,   135,   161,   161,   119,   124,   161,   161,
-     160,   160,   118,   160,   160,    -1,   161,   161,   161,   161,
-     161,   134,   161,   161,   161,   142,   161,   160,   145,   146,
-     143,   165,   161,   161,   161,   160,   153,   160,   160,   160,
-      -1,   154,   161,   156,   157,   158,   159,   161,   161,   161,
-     161,   161,   161,   161
+      35,    68,    37,    65,    66,    40,    41,   112,   113,    44,
+      45,    46,    47,   118,     4,   117,    67,    79,   120,    81,
+      82,   131,    73,   133,   134,    76,   127,   128,   129,   130,
+     132,   132,   117,   117,   152,   120,   120,   155,   113,   137,
+     115,     0,   146,   146,    79,   118,    81,    82,    83,    84,
+     101,   146,   146,   146,   105,   146,   146,   146,   146,   146,
+     146,   128,   118,   114,   115,   146,   117,   146,   146,   146,
+     118,   147,   146,   135,   118,   126,   146,   146,   146,   114,
+     115,   116,   117,   146,    26,   136,   146,   138,   139,   140,
+     141,   142,   143,   144,   145,   130,   147,   146,   118,   151,
+     147,   136,   147,   130,   147,   147,   147,   147,   147,   147,
+     147,   147,    96,   147,   147,   147,   147,   146,   146,   154,
+     146,   146,   157,   158,   146,   118,   147,    -1,   147,   147,
+     165,   147,   147,   147,   147,   147,   147,   147,   147,   146,
+      -1,   147,   146,   146,   146,   146,   134,   147,   147,   147,
+     147,   147,   147,   147
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
      symbol of state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
-       0,     4,   167,   155,     0,   168,   160,    38,    39,    40,
-      82,    88,   115,   119,   134,   143,   154,   156,   157,   158,
-     159,   169,   170,   171,   179,   180,   182,   160,   160,   160,
-     160,   160,   160,   160,   183,   160,   160,   160,   160,   160,
-     161,   169,    80,    81,    93,    95,    96,   153,   181,   134,
-     137,   175,   175,   175,   135,   135,   135,   175,   160,   135,
-     175,   175,   177,   178,   129,   130,   135,   176,   175,   160,
-     160,   160,   160,   160,   160,   161,   161,   161,   161,   161,
-     161,   161,   145,   146,   147,   148,   150,   184,   185,   161,
-     161,   178,   161,   161,   161,   175,   135,   175,   175,   175,
-     175,   160,   160,   160,   160,   160,   161,   184,   161,   161,
-     161,   161,   161,   161,   177,   175,   175,   177,   175,   189,
-     175,   161,   165,   173,   174,   150,   161,   189,   161,   188,
-     173,   161,   134,   172,   175,   160,   149,   151,   152,   190,
-     191,   161,   160,   186,   160,   160,   160,   161,   190,   175,
-     190,   135,   175,   175,   161,   161,   161,   161,   175,   187,
-     161,   161
+       0,     4,   153,   137,     0,   154,   146,    67,    73,    76,
+     101,   105,   114,   115,   117,   126,   136,   138,   139,   140,
+     141,   142,   143,   144,   145,   155,   156,   157,   158,   166,
+     167,   168,   170,   146,   146,   146,   146,   146,   171,   146,
+     146,   146,   146,   146,   146,   146,   146,   146,   147,   155,
+      65,    66,    79,    81,    82,   135,   169,   118,   118,   117,
+     120,   162,   118,   162,   146,   118,   162,   162,   162,   164,
+     165,   112,   113,   118,   163,   162,   162,   162,   162,   146,
+     146,   146,   146,   146,   146,   147,   147,   147,   147,   147,
+     127,   128,   129,   130,   132,   172,   173,   147,   147,   147,
+     165,   147,   147,   147,   147,   147,   147,   162,   118,   162,
+     162,   162,   162,   146,   146,   146,   146,   146,   147,   172,
+     147,   147,   147,   147,   147,   147,   164,   162,   162,   164,
+     162,   177,   162,   147,   151,   160,   161,   132,   147,   177,
+     147,   176,   160,   147,   117,   159,   162,   146,   131,   133,
+     134,   178,   179,   147,   146,   174,   146,   146,   146,   147,
+     178,   162,   178,   118,   162,   162,   147,   147,   147,   147,
+     162,   175,   147,   147
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
-       0,   166,   168,   167,   169,   169,   170,   170,   170,   170,
-     170,   170,   170,   170,   170,   170,   170,   170,   171,   170,
-     172,   172,   174,   173,   175,   175,   176,   176,   176,   177,
-     178,   178,   179,   180,   180,   180,   181,   181,   181,   181,
-     181,   181,   183,   182,   184,   184,   185,   185,   186,   187,
-     185,   185,   188,   185,   185,   185,   189,   189,   190,   190,
-     191,   191,   191
+       0,   152,   154,   153,   155,   155,   156,   156,   156,   156,
+     156,   156,   157,   156,   158,   158,   158,   158,   158,   158,
+     158,   158,   158,   158,   159,   159,   161,   160,   162,   162,
+     163,   163,   163,   164,   165,   165,   166,   167,   168,   168,
+     168,   168,   169,   169,   169,   169,   169,   169,   171,   170,
+     172,   172,   173,   173,   174,   175,   173,   173,   176,   173,
+     173,   173,   177,   177,   178,   178,   179,   179,   179
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
 static const yytype_uint8 yyr2[] =
 {
-       0,     2,     0,     6,     2,     0,     4,     4,     4,     4,
-       4,     4,     4,     4,     4,     1,     1,     1,     0,     2,
-       1,     4,     0,     2,     1,     1,     1,     1,     1,     1,
-       2,     0,     4,     4,     4,     1,     4,     4,     4,     4,
-       4,     4,     0,     5,     2,     0,     6,     5,     0,     0,
-      10,     4,     0,     6,     4,     4,     2,     0,     2,     0,
-       4,     4,     5
+       0,     2,     0,     6,     2,     0,     4,     4,     1,     1,
+       1,     1,     0,     2,     1,     4,     4,     4,     4,     4,
+       4,     4,     4,     1,     1,     4,     0,     2,     1,     1,
+       1,     1,     1,     1,     2,     0,     4,     4,     4,     4,
+       1,     1,     4,     4,     4,     4,     4,     4,     0,     5,
+       2,     0,     6,     5,     0,     0,    10,     4,     0,     6,
+       4,     4,     2,     0,     2,     0,     4,     4,     5
 };
 
 
@@ -2594,7 +2569,36 @@ yydestruct (const char *yymsg, int yytype, YYSTYPE *yyvaluep, YYLTYPE *yylocatio
   YY_SYMBOL_PRINT (yymsg, yytype, yyvaluep, yylocationp);
 
   YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN
-  YYUSE (yytype);
+  switch (yytype)
+    {
+          case 117: /* LL_IDENTIFIER  */
+#line 286 "modules/afmongodb/afmongodb-grammar.y" /* yacc.c:1257  */
+      { free(((*yyvaluep).cptr)); }
+#line 2578 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1257  */
+        break;
+
+    case 120: /* LL_STRING  */
+#line 286 "modules/afmongodb/afmongodb-grammar.y" /* yacc.c:1257  */
+      { free(((*yyvaluep).cptr)); }
+#line 2584 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1257  */
+        break;
+
+    case 122: /* LL_BLOCK  */
+#line 286 "modules/afmongodb/afmongodb-grammar.y" /* yacc.c:1257  */
+      { free(((*yyvaluep).cptr)); }
+#line 2590 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1257  */
+        break;
+
+    case 162: /* string  */
+#line 286 "modules/afmongodb/afmongodb-grammar.y" /* yacc.c:1257  */
+      { free(((*yyvaluep).cptr)); }
+#line 2596 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1257  */
+        break;
+
+
+      default:
+        break;
+    }
   YY_IGNORE_MAYBE_UNINITIALIZED_END
 }
 
@@ -2880,112 +2884,152 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 380 "afmongodb-grammar.y" /* yacc.c:1646  */
+#line 364 "modules/afmongodb/afmongodb-grammar.y" /* yacc.c:1646  */
     {
             last_driver = *instance = afmongodb_dd_new(configuration);
-          }
-#line 2888 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
+        }
+#line 2892 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
     break;
 
   case 3:
-#line 383 "afmongodb-grammar.y" /* yacc.c:1646  */
+#line 367 "modules/afmongodb/afmongodb-grammar.y" /* yacc.c:1646  */
     { YYACCEPT; }
-#line 2894 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
+#line 2898 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
     break;
 
   case 6:
-#line 393 "afmongodb-grammar.y" /* yacc.c:1646  */
+#line 377 "modules/afmongodb/afmongodb-grammar.y" /* yacc.c:1646  */
     {
-            CHECK_ERROR(afmongodb_dd_check_address(last_driver, FALSE), (yylsp[-1]), "Can't mix path() & servers()");
-            afmongodb_dd_set_servers(last_driver, (yyvsp[-1].ptr));
-          }
-#line 2903 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
+            afmongodb_dd_set_uri(last_driver, (yyvsp[-1].cptr)); free((yyvsp[-1].cptr));
+        }
+#line 2906 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
     break;
 
   case 7:
-#line 398 "afmongodb-grammar.y" /* yacc.c:1646  */
+#line 381 "modules/afmongodb/afmongodb-grammar.y" /* yacc.c:1646  */
     {
-            CHECK_ERROR(afmongodb_dd_check_address(last_driver, FALSE), (yylsp[-1]), "Can't mix path() & host()");
-            afmongodb_dd_set_host(last_driver, (yyvsp[-1].cptr));
-            free((yyvsp[-1].cptr));
-          }
-#line 2913 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 8:
-#line 404 "afmongodb-grammar.y" /* yacc.c:1646  */
-    {
-            CHECK_ERROR(afmongodb_dd_check_address(last_driver, FALSE), (yylsp[-1]), "Can't mix path() & port()");
-            afmongodb_dd_set_port(last_driver, (yyvsp[-1].num));
-          }
-#line 2922 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
+            afmongodb_dd_set_collection(last_driver, (yyvsp[-1].cptr)); free((yyvsp[-1].cptr));
+        }
+#line 2914 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 409 "afmongodb-grammar.y" /* yacc.c:1646  */
+#line 386 "modules/afmongodb/afmongodb-grammar.y" /* yacc.c:1646  */
     {
-            CHECK_ERROR(afmongodb_dd_check_address(last_driver, TRUE), (yylsp[-1]), "Can't mix path() with host() or server()");
-            afmongodb_dd_set_path(last_driver, (yyvsp[-1].cptr));
-            free((yyvsp[-1].cptr));
-          }
-#line 2932 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 10:
-#line 414 "afmongodb-grammar.y" /* yacc.c:1646  */
-    { afmongodb_dd_set_database(last_driver, (yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 2938 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 11:
-#line 415 "afmongodb-grammar.y" /* yacc.c:1646  */
-    { afmongodb_dd_set_collection(last_driver, (yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 2944 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
+            afmongodb_dd_set_value_pairs(last_driver, (yyvsp[0].ptr));
+        }
+#line 2922 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
     break;
 
   case 12:
-#line 416 "afmongodb-grammar.y" /* yacc.c:1646  */
-    { afmongodb_dd_set_user(last_driver, (yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 2950 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 13:
-#line 417 "afmongodb-grammar.y" /* yacc.c:1646  */
-    { afmongodb_dd_set_password(last_driver, (yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 2956 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
+#line 391 "modules/afmongodb/afmongodb-grammar.y" /* yacc.c:1646  */
+    { last_template_options = afmongodb_dd_get_template_options(last_driver); }
+#line 2928 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
     break;
 
   case 14:
-#line 418 "afmongodb-grammar.y" /* yacc.c:1646  */
-    { afmongodb_dd_set_safe_mode(last_driver, (yyvsp[-1].num)); }
-#line 2962 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
+#line 396 "modules/afmongodb/afmongodb-grammar.y" /* yacc.c:1646  */
+    {
+#if SYSLOG_NG_ENABLE_LEGACY_MONGODB_OPTIONS
+        }
+#line 2936 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
     break;
 
   case 15:
-#line 419 "afmongodb-grammar.y" /* yacc.c:1646  */
-    { afmongodb_dd_set_value_pairs(last_driver, (yyvsp[0].ptr)); }
-#line 2968 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
+#line 400 "modules/afmongodb/afmongodb-grammar.y" /* yacc.c:1646  */
+    {
+            CHECK_ERROR(afmongodb_dd_validate_network_combination(last_driver), (yylsp[-1]),
+                         "Can't mix path() & servers()");
+            afmongodb_dd_set_servers(last_driver, (yyvsp[-1].ptr));
+        }
+#line 2946 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 16:
+#line 406 "modules/afmongodb/afmongodb-grammar.y" /* yacc.c:1646  */
+    {
+            CHECK_ERROR(afmongodb_dd_validate_network_combination(last_driver), (yylsp[-1]),
+                         "Can't mix path() & host()");
+            afmongodb_dd_set_host(last_driver, (yyvsp[-1].cptr));
+            free((yyvsp[-1].cptr));
+        }
+#line 2957 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 17:
+#line 413 "modules/afmongodb/afmongodb-grammar.y" /* yacc.c:1646  */
+    {
+            CHECK_ERROR(afmongodb_dd_validate_network_combination(last_driver), (yylsp[-1]),
+                         "Can't mix path() & port()");
+            afmongodb_dd_set_port(last_driver, (yyvsp[-1].num));
+        }
+#line 2967 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
     break;
 
   case 18:
-#line 422 "afmongodb-grammar.y" /* yacc.c:1646  */
-    { last_template_options = afmongodb_dd_get_template_options(last_driver); }
-#line 2974 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
+#line 419 "modules/afmongodb/afmongodb-grammar.y" /* yacc.c:1646  */
+    {
+            CHECK_ERROR(afmongodb_dd_validate_socket_combination(last_driver), (yylsp[-1]),
+                          "Can't mix path() with host() or server()");
+            afmongodb_dd_set_path(last_driver, (yyvsp[-1].cptr));
+            free((yyvsp[-1].cptr));
+        }
+#line 2978 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 19:
+#line 426 "modules/afmongodb/afmongodb-grammar.y" /* yacc.c:1646  */
+    {
+            afmongodb_dd_set_database(last_driver, (yyvsp[-1].cptr)); free((yyvsp[-1].cptr));
+        }
+#line 2986 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
     break;
 
   case 20:
-#line 621 "afmongodb-grammar.y" /* yacc.c:1646  */
+#line 430 "modules/afmongodb/afmongodb-grammar.y" /* yacc.c:1646  */
+    {
+            afmongodb_dd_set_user(last_driver, (yyvsp[-1].cptr)); free((yyvsp[-1].cptr));
+        }
+#line 2994 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 21:
+#line 434 "modules/afmongodb/afmongodb-grammar.y" /* yacc.c:1646  */
+    {
+            afmongodb_dd_set_password(last_driver, (yyvsp[-1].cptr)); free((yyvsp[-1].cptr));
+        }
+#line 3002 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 22:
+#line 438 "modules/afmongodb/afmongodb-grammar.y" /* yacc.c:1646  */
+    {
+	        afmongodb_dd_set_safe_mode(last_driver, !!(yyvsp[-1].num));
+        }
+#line 3010 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 23:
+#line 442 "modules/afmongodb/afmongodb-grammar.y" /* yacc.c:1646  */
+    {
+#endif /* SYSLOG_NG_ENABLE_LEGACY_MONGODB_OPTIONS */
+        }
+#line 3018 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 24:
+#line 643 "modules/afmongodb/afmongodb-grammar.y" /* yacc.c:1646  */
     {
           GError *error = NULL;
 
           CHECK_ERROR(log_template_compile(last_template, (yyvsp[0].cptr), &error), (yylsp[0]), "Error compiling template (%s)", error->message);
           free((yyvsp[0].cptr));
         }
-#line 2985 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
+#line 3029 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 21:
-#line 628 "afmongodb-grammar.y" /* yacc.c:1646  */
+  case 25:
+#line 650 "modules/afmongodb/afmongodb-grammar.y" /* yacc.c:1646  */
     {
           GError *error = NULL;
 
@@ -2995,79 +3039,85 @@ yyreduce:
           CHECK_ERROR(log_template_set_type_hint(last_template, (yyvsp[-3].cptr), &error), (yylsp[-3]), "Error setting the template type-hint (%s)", error->message);
           free((yyvsp[-3].cptr));
         }
-#line 2999 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 22:
-#line 640 "afmongodb-grammar.y" /* yacc.c:1646  */
-    { last_template = log_template_new(configuration, NULL); }
-#line 3005 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 23:
-#line 640 "afmongodb-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = last_template; }
-#line 3011 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
+#line 3043 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
     break;
 
   case 26:
-#line 651 "afmongodb-grammar.y" /* yacc.c:1646  */
-    { (yyval.num) = 1; }
-#line 3017 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
+#line 662 "modules/afmongodb/afmongodb-grammar.y" /* yacc.c:1646  */
+    { last_template = log_template_new(configuration, NULL); }
+#line 3049 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
     break;
 
   case 27:
-#line 652 "afmongodb-grammar.y" /* yacc.c:1646  */
-    { (yyval.num) = 0; }
-#line 3023 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 28:
-#line 653 "afmongodb-grammar.y" /* yacc.c:1646  */
-    { (yyval.num) = (yyvsp[0].num); }
-#line 3029 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 29:
-#line 668 "afmongodb-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = g_list_reverse((yyvsp[0].ptr)); }
-#line 3035 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 30:
-#line 672 "afmongodb-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = g_list_append((yyvsp[0].ptr), g_strdup((yyvsp[-1].cptr))); free((yyvsp[-1].cptr)); }
-#line 3041 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 31:
-#line 673 "afmongodb-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = NULL; }
-#line 3047 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 32:
-#line 784 "afmongodb-grammar.y" /* yacc.c:1646  */
-    {
-          log_threaded_dest_driver_set_max_retries(last_driver, (yyvsp[-1].num));
-        }
+#line 662 "modules/afmongodb/afmongodb-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = last_template; }
 #line 3055 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 33:
-#line 791 "afmongodb-grammar.y" /* yacc.c:1646  */
-    { ((LogDestDriver *) last_driver)->log_fifo_size = (yyvsp[-1].num); }
+  case 30:
+#line 673 "modules/afmongodb/afmongodb-grammar.y" /* yacc.c:1646  */
+    { (yyval.num) = 1; }
 #line 3061 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 34:
-#line 792 "afmongodb-grammar.y" /* yacc.c:1646  */
-    { ((LogDestDriver *) last_driver)->throttle = (yyvsp[-1].num); }
+  case 31:
+#line 674 "modules/afmongodb/afmongodb-grammar.y" /* yacc.c:1646  */
+    { (yyval.num) = 0; }
 #line 3067 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
     break;
 
+  case 32:
+#line 675 "modules/afmongodb/afmongodb-grammar.y" /* yacc.c:1646  */
+    { (yyval.num) = (yyvsp[0].num); }
+#line 3073 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 33:
+#line 690 "modules/afmongodb/afmongodb-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = g_list_reverse((yyvsp[0].ptr)); }
+#line 3079 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 34:
+#line 694 "modules/afmongodb/afmongodb-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = g_list_append((yyvsp[0].ptr), g_strdup((yyvsp[-1].cptr))); free((yyvsp[-1].cptr)); }
+#line 3085 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
+    break;
+
   case 35:
-#line 794 "afmongodb-grammar.y" /* yacc.c:1646  */
+#line 695 "modules/afmongodb/afmongodb-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = NULL; }
+#line 3091 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 36:
+#line 812 "modules/afmongodb/afmongodb-grammar.y" /* yacc.c:1646  */
+    { log_pipe_set_persist_name(&last_driver->super, g_strdup((yyvsp[-1].cptr))); free((yyvsp[-1].cptr)); }
+#line 3097 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 37:
+#line 817 "modules/afmongodb/afmongodb-grammar.y" /* yacc.c:1646  */
+    {
+          log_threaded_dest_driver_set_max_retries(last_driver, (yyvsp[-1].num));
+        }
+#line 3105 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 38:
+#line 824 "modules/afmongodb/afmongodb-grammar.y" /* yacc.c:1646  */
+    { ((LogDestDriver *) last_driver)->log_fifo_size = (yyvsp[-1].num); }
+#line 3111 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 39:
+#line 825 "modules/afmongodb/afmongodb-grammar.y" /* yacc.c:1646  */
+    { ((LogDestDriver *) last_driver)->throttle = (yyvsp[-1].num); }
+#line 3117 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 40:
+#line 827 "modules/afmongodb/afmongodb-grammar.y" /* yacc.c:1646  */
     {
             Plugin *p;
             gint context = LL_CONTEXT_INNER_DEST;
@@ -3085,41 +3135,41 @@ yyreduce:
               }
             log_driver_add_plugin(last_driver, (LogDriverPlugin *) value);
           }
-#line 3089 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
+#line 3139 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 36:
-#line 870 "afmongodb-grammar.y" /* yacc.c:1646  */
+  case 42:
+#line 900 "modules/afmongodb/afmongodb-grammar.y" /* yacc.c:1646  */
     { last_template_options->ts_format = cfg_ts_format_value((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 3095 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
+#line 3145 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 37:
-#line 871 "afmongodb-grammar.y" /* yacc.c:1646  */
+  case 43:
+#line 901 "modules/afmongodb/afmongodb-grammar.y" /* yacc.c:1646  */
     { last_template_options->frac_digits = (yyvsp[-1].num); }
-#line 3101 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
+#line 3151 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 38:
-#line 872 "afmongodb-grammar.y" /* yacc.c:1646  */
+  case 44:
+#line 902 "modules/afmongodb/afmongodb-grammar.y" /* yacc.c:1646  */
     { last_template_options->time_zone[LTZ_SEND] = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 3107 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
+#line 3157 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 39:
-#line 873 "afmongodb-grammar.y" /* yacc.c:1646  */
+  case 45:
+#line 903 "modules/afmongodb/afmongodb-grammar.y" /* yacc.c:1646  */
     { last_template_options->time_zone[LTZ_SEND] = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 3113 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
+#line 3163 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 40:
-#line 874 "afmongodb-grammar.y" /* yacc.c:1646  */
+  case 46:
+#line 904 "modules/afmongodb/afmongodb-grammar.y" /* yacc.c:1646  */
     { last_template_options->time_zone[LTZ_LOCAL] = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 3119 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
+#line 3169 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 41:
-#line 876 "afmongodb-grammar.y" /* yacc.c:1646  */
+  case 47:
+#line 906 "modules/afmongodb/afmongodb-grammar.y" /* yacc.c:1646  */
     {
           gint on_error;
 
@@ -3128,110 +3178,110 @@ yyreduce:
 
           log_template_options_set_on_error(last_template_options, on_error);
         }
-#line 3132 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
+#line 3182 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 42:
-#line 898 "afmongodb-grammar.y" /* yacc.c:1646  */
+  case 48:
+#line 928 "modules/afmongodb/afmongodb-grammar.y" /* yacc.c:1646  */
     {
             last_value_pairs = value_pairs_new();
           }
-#line 3140 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
+#line 3190 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 43:
-#line 902 "afmongodb-grammar.y" /* yacc.c:1646  */
+  case 49:
+#line 932 "modules/afmongodb/afmongodb-grammar.y" /* yacc.c:1646  */
     { (yyval.ptr) = last_value_pairs; }
-#line 3146 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
+#line 3196 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 46:
-#line 912 "afmongodb-grammar.y" /* yacc.c:1646  */
+  case 52:
+#line 942 "modules/afmongodb/afmongodb-grammar.y" /* yacc.c:1646  */
     {
           value_pairs_add_pair(last_value_pairs, (yyvsp[-3].cptr), (yyvsp[-1].ptr));
           free((yyvsp[-3].cptr));
         }
-#line 3155 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
+#line 3205 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 47:
-#line 917 "afmongodb-grammar.y" /* yacc.c:1646  */
+  case 53:
+#line 947 "modules/afmongodb/afmongodb-grammar.y" /* yacc.c:1646  */
     {
           value_pairs_add_pair(last_value_pairs, (yyvsp[-2].cptr), (yyvsp[-1].ptr));
           free((yyvsp[-2].cptr));
         }
-#line 3164 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
+#line 3214 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 48:
-#line 922 "afmongodb-grammar.y" /* yacc.c:1646  */
+  case 54:
+#line 952 "modules/afmongodb/afmongodb-grammar.y" /* yacc.c:1646  */
     {
           last_vp_transset = value_pairs_transform_set_new((yyvsp[-2].cptr));
           value_pairs_add_glob_pattern(last_value_pairs, (yyvsp[-2].cptr), TRUE);
           free((yyvsp[-2].cptr));
         }
-#line 3174 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
+#line 3224 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 49:
-#line 928 "afmongodb-grammar.y" /* yacc.c:1646  */
+  case 55:
+#line 958 "modules/afmongodb/afmongodb-grammar.y" /* yacc.c:1646  */
     { value_pairs_add_transforms(last_value_pairs, last_vp_transset); }
-#line 3180 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
+#line 3230 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 51:
-#line 929 "afmongodb-grammar.y" /* yacc.c:1646  */
+  case 57:
+#line 959 "modules/afmongodb/afmongodb-grammar.y" /* yacc.c:1646  */
     { value_pairs_add_glob_patterns(last_value_pairs, (yyvsp[-1].ptr), TRUE); }
-#line 3186 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
+#line 3236 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 52:
-#line 931 "afmongodb-grammar.y" /* yacc.c:1646  */
+  case 58:
+#line 961 "modules/afmongodb/afmongodb-grammar.y" /* yacc.c:1646  */
     {
           last_vp_transset = value_pairs_transform_set_new((yyvsp[0].cptr));
           free((yyvsp[0].cptr));
         }
-#line 3195 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
+#line 3245 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 53:
-#line 935 "afmongodb-grammar.y" /* yacc.c:1646  */
+  case 59:
+#line 965 "modules/afmongodb/afmongodb-grammar.y" /* yacc.c:1646  */
     { value_pairs_add_transforms(last_value_pairs, last_vp_transset); }
-#line 3201 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 54:
-#line 936 "afmongodb-grammar.y" /* yacc.c:1646  */
-    { value_pairs_add_glob_patterns(last_value_pairs, (yyvsp[-1].ptr), FALSE); }
-#line 3207 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 56:
-#line 941 "afmongodb-grammar.y" /* yacc.c:1646  */
-    { value_pairs_add_scope(last_value_pairs, (yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 3213 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
+#line 3251 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
     break;
 
   case 60:
-#line 951 "afmongodb-grammar.y" /* yacc.c:1646  */
-    { value_pairs_transform_set_add_func(last_vp_transset, value_pairs_new_transform_shift((yyvsp[-1].num))); }
-#line 3219 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 61:
-#line 952 "afmongodb-grammar.y" /* yacc.c:1646  */
-    { value_pairs_transform_set_add_func(last_vp_transset, value_pairs_new_transform_add_prefix((yyvsp[-1].cptr))); free((yyvsp[-1].cptr)); }
-#line 3225 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
+#line 966 "modules/afmongodb/afmongodb-grammar.y" /* yacc.c:1646  */
+    { value_pairs_add_glob_patterns(last_value_pairs, (yyvsp[-1].ptr), FALSE); }
+#line 3257 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
     break;
 
   case 62:
-#line 953 "afmongodb-grammar.y" /* yacc.c:1646  */
+#line 971 "modules/afmongodb/afmongodb-grammar.y" /* yacc.c:1646  */
+    { value_pairs_add_scope(last_value_pairs, (yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
+#line 3263 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 66:
+#line 981 "modules/afmongodb/afmongodb-grammar.y" /* yacc.c:1646  */
+    { value_pairs_transform_set_add_func(last_vp_transset, value_pairs_new_transform_shift((yyvsp[-1].num))); }
+#line 3269 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 67:
+#line 982 "modules/afmongodb/afmongodb-grammar.y" /* yacc.c:1646  */
+    { value_pairs_transform_set_add_func(last_vp_transset, value_pairs_new_transform_add_prefix((yyvsp[-1].cptr))); free((yyvsp[-1].cptr)); }
+#line 3275 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 68:
+#line 983 "modules/afmongodb/afmongodb-grammar.y" /* yacc.c:1646  */
     { value_pairs_transform_set_add_func(last_vp_transset, value_pairs_new_transform_replace_prefix((yyvsp[-2].cptr), (yyvsp[-1].cptr))); free((yyvsp[-2].cptr)); free((yyvsp[-1].cptr)); }
-#line 3231 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
+#line 3281 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
     break;
 
 
-#line 3235 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
+#line 3285 "modules/afmongodb/afmongodb-grammar.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -3466,5 +3516,5 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 957 "afmongodb-grammar.y" /* yacc.c:1906  */
+#line 987 "modules/afmongodb/afmongodb-grammar.y" /* yacc.c:1906  */
 

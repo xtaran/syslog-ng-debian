@@ -1,56 +1,233 @@
-3.7.3
+3.8.1
 =====
 
-<!-- Tue, 22 Mar 2016 10:40:37 +0100 -->
-
-Changes compared to 3.7.2:
-
-Improvements
-------------
-
- * Updated Python package requirements.
-
- * Can now compile without MongoDB.
-
- * Added eventlog to the list of required pkg-config packages.
-
- * Basic FreeBSD and HP-UX support of syslog debug bundle generator by
-   improving POSIX shell compatibility.
-
- * Keep the program destination open between configuration reloads.
-
- * `system-source` now uses `keep-timestamp(no)` for Linux kernel log.
-   The time source used by `/dev/kmsg` is not updated after system
-   SUSPEND/RESUME.
+<!-- Fri, 19 Aug 2016 10:07:25 +0200 -->
 
 
-Fixes
------
+# Library updates
+  * Kafka-client updated to version to 0.9.0.0
+  * Minimal required version of hiredis is set to 0.11.0 to avoid
+    possible deadlocks
+  * Minimal version of libdbi is set to 0.9.0
 
- * Fix a SIGSEGV when a Redis command returns an error.
+# New dependencies
+ * From now `autoconf-archive` package is a build-dependency.
 
- * Resolve deadlock in logwriter triggered by `suppress()`
+# Improvements and features
+  * Added the long-waited disk-buffer.
+  * `date-parser` ported from incubator to upstream
+  * New template functions: min, max, sum, average
+  * Added Apache-accesslog-parser
+  * Added loggly destination
+  * Added logmatic destination
+  * Added template function for supporting CEF.
+  * cURL-based HTTP destination driver added (implemented in C 
+    programming language)
+  * SELinux policy installer script now has support for Red Hat Enterprise Linux/CentOS/
+     Oracle Linux 5, 6 and 7.
+  * Implemented `add-contextual-data`:
+    With `add-context-data` syslog-ng can use an external database file to append
+    custom name-value pairs on incoming logs (to enrich messages). The 'database'
+    is actually a file that containing `<selector, name, value>` records.
+    Currently only `CSV` format is supported.    
+    It is like `geoip parser` where the selector is `$HOST`, but in this case,
+    the user can define the selector, and also the database contents.
 
- * Mitigate possible deadlock in patterndb
+## Drivers
+  * Program destination/source drivers
+    * Added inherit-environment configuration option to program source and
+      destination. When it is set to true then the process will inherit the
+      entire environment of the parent process.
+    * Added `keep-alive` option to program destination (afprog).
+      This option will control whether the destination program should be
+      terminated at reload, or should be left running.
 
- * Fixed global inheritance of `pass-unix-credentials()` and `create-dirs()`.
+  * Java drivers
+    * HTTP destination
+      * Added the ability to use templates in both url and message.
+    * ElasticSearch Destination driver :
+      * Support 2.2.x series of ElasticSearch (transport and node mode) .
+      * Support Shield plugin for both ElasticSearch 1.x and ElasticSearch
+        2.x .
+      * Implemented new mode (HTTP) that can work with ElasticSearch 1.x,
+        ElasticSearch 2.x, and even with Elastic 5. HTTP mode is based on
+        a Java HTTP Rest client (Jest : https://github.com/searchbox-io/Jest).
+        Note: `make install` will copy Jest library to the syslog-ng install
+        directory.
 
- * Certain compilers complained about an undefined symbol when setting
-   `keep-alive(yes)`.
+  * MongoDB destination driver
+    * Replaced submodule limongo-client with mongo-c-driver.
+    * Additional support for previous syntax used by libmongo-client
+    before we started using mongo-c-driver and its URI syntax exclusively.
+    Note that these are plainly translated to a connection URI without
+    much sanity checking or preserving their former semantic meaning.
+    So various aspects of the MongoDB connection like health checks, retries,
+    error reporting and synchronicity will still follow the slightly altered
+    semantics of mongo-c-driver.
 
- * For certain use cases, afsocket would not handle procfs read errors due
-   to an integer underflow.
+  * Riemann destination driver
+    * Use cert-file() and key-file() options to match afsocket keywords as
+      the same way as afsocket drivers use these options. The old one still
+      work though.
 
- * Enhanced Java version check and the handling of SyslogNgInternalLogger
-   (used by Kafka), the FATAL loglevel and `getLocationInformation()`.
+## Rewrite rules
+  * Introduced template options in rewrite rules.
+  * Added unset operation to make it possible to unset a specific name-value pair
+    for a logmessage.
 
- * When a big amount of kernel log was produced in a very short time,
-   the syslog-ng process sometimes entered into a spin and stop processing
-   messages.
+## Parsers
+  * kvformat: make it possible to specify name-value separator
+  * linux-audit-scanner: recognize a0-a9* as fields to be decoded
+    Argument lists are encoded in a0, a1, ... fields that can potentially be
+    hex-encoded.
+  * `csv-parser` has been refactored, extended with new dialect and prefix options.
+    Dialect is to convey CSV format information, instead of using flags
+    Prefix option gets prefixed to all column names, just like with
+    other parsers.
 
+## PatternDB
+  * added groupingby() parser that can perform simple correlation on
+    log messages. In a way it is similar to the SQL GROUP BY operation, where
+    an aggregate of a set of input records can be calculated.
+    The major difference between SQL GROUP BY and groupingby() is that the
+    first _always_ operates on a enumerable list of records, whereas
+    groupingby() works on a stream of data. 
+    A few use-cases where this can be useful:
+      * Linux audit logs
+      * postfix logs
 
-Credits
--------
+  * added create-context action    
+    Added a new possible action in the <actions> element, to create
+    a new correlation context out of the current message and its associated
+    context. This can be used to "split" a state.
+
+  * Added NLSTRING parser that captures a string until the
+    following end-of-line. It can be used in patterns as: @NLSTRING:value@
+    It doesn't expect any additional parameters. This makes it pretty easy to
+    parse multi-line Windows logs.
+
+## Miscellaneous features
+ * syslog-debun (debug bundle script for syslog-ng) has been improved
+
+# Bugfixes
+ * geoip-parser: When default database if not specified, syslog-ng crashed.
+ * Added support for multiple drivers with the same name in syslog-ng config.
+ * Fixed aack counting logic for junctions that have branches that modify
+   the LogMessage.
+ * Fixed a potential crash for code that uses log_msg_clear()
+   in production (e.g. syslog-parser()).
+ * Fixed potential crash in reload logic
+ * system(): use string comparison instead of numeric in PID rewrite
+   The meaning of the != operator has been fixed to refer to numeric comparison
+   in @version: 3.8, so make sure we are using string comparison.
+ * Support encoding on glib compiled with libiconv
+ * pdbtool: Fix the ordering of the debug-info list in PatternDB 
+ * afprog: Don't kill our own process group    
+    If, for some reason, the program source/destination failed to set up its
+    own process group, we need to make sure we do not run killpg() on that
+    process group, as it would kill ourselves.
+ * Handle option names with hyphen (-) characters in java scls  
+ * dnscache performance improved
+    Instead of getting rid off the per-thread DNSCache when a worker thread
+    exits, store them in a linked list and acquire them as a new thread starts.
+    The set of cached hostnames are valuable as worker threads come and
+    go (they exit after 10seconds of inactivity), but without this
+    reusing of cache instances, our DNS cache is filled again and again.
+ * Fixed IPv6 parser in patterndb.
+ * Fixed journald program name flapping
+ * Fixed create-dirs() inheritance in file destinations
+ * Fixed pass-unix-credentials() global inheritance in afunix
+    The global `pass-unix-credentials` option was not inherited in afunix-source
+    if the `options{};` block was positioned lower in the
+    configuration file than the given module declaration.
+ * Fixed create-dirs() global inheritance in afunix
+   When the global `create-dirs` option was set to `yes`, the local one was ignored.
+ * Fixed byteorder handling on bigendian systems in netmask6 filter
+ * Fixed flow-control issue when overflow queue is full
+   (suspending source by setting the window size to 0).
+ * Log HTTP response error codes in HTTPDestination (Java).
+ * Fixed potential leaks related $(sanitize) argument parsing in basicfuncs.
+ * Fixed a memory leak in python debugger
+ * Fixed a use-after-free bug in templates.
+ * Fixed a memory leak around reload in netmask6 filter.
+ * Fixed a memory leak in LogProtoBufferedServer in case the
+   encoding() option is used.
+ * configure: don't override $enable_python while executing pkg-config
+ * Fixed BSD timestamp parsing in syslog-format.
+ * Fixed a SIGPIPE bug in program destination.   
+ * Error handling has been improved in AMQP destination.
+ * value-pairs performance improvements, memleak fixes
+ * Various issues around UTF-8 support fixed.
+ * Fixed integer overflow in numerical operations template function
+ * Fixed an integer underflow in afsocket.
+ * Fixed numerical comperisons issues around filters.
+    There's a problem in straight fixing this issue though: anyone who used
+    the numeric operators erroneously will have their behaviour changed, therefore
+    this patch also adds a configuration update warning in case
+    someone is using the wrong syntax.
+ * Fixed kernel log message time drift on Linux.
+ * Take CRLF sequences equivalent to an LF in patterndb.    
+    Windows logs contain embedded CRLFs which is difficult to match against
+    from db-parser(), as we use a UNIX text file to store the patterns. Also,
+    the fact that the input contains CRLF whereas our patterns only contain
+    an LF makes it a very unintuitive non-match, which is difficult to debug.
+ * When syslog-ng failed to insert data into Redis, it has crashed.
+ * When device file is set as a file destination then syslog-ng will not try
+   to change the permission of the device file.
+ * Various fixes around config file parsing:
+    * in some circumstances syslog-ng crashed when the config
+      file contained non-readable characters
+    * fixed a memory leak
+    * fixed memory leak around backtick substitution
+
+# Notes to the Developers
+ * copyright cleanup in source tree
+
+ * install tools and scl under a syslog-ng specific subdirectory    
+   These should never be installed in /usr/share directly, but rather under a
+    subdirectory and as described in    
+    https://www.gnu.org/prep/standards/html_node/Directory-Variables.html
+    we should do that right within the source and not rely on packaging tools
+    to do it for us.This will trigger a required change in packaging scripts to
+    avoid changing the --datadir, as the default of
+    /usr/share should work out-of-the-box.
+
+ * Support for native-lanugage (compiled languages, like Rust) bindings.
+    These bindings just forward the calls to the native side.    
+    This whole module compiles into a static library
+    (libsyslog-ng-native-connector.a) which is linked to all external native
+    modules. A native module defines the required functions
+    (like native_parser_proxy_new()) so those symbols will be resolved.    
+    Some symbols have the visibility(hidden) attribute applied to them. Those
+    symbols are defined by the other half of the native bindings, we only need
+    their signature here. They are hidden because their definition is contained
+    in other source files but we would like to keep them as "library private".
+    If they are exported, the dynamic linker will resolve them when a module is
+    loaded, therefore every module would be mapped to the first loaded one.
+    It is best to hide everything in this native connector.
+    
+
+ * Support system librabbitmq-c (AMQP destination)    
+    Currently only the internal librabbitmq-c is supported,
+    if we want to use the preexisting library, the configuration
+    will fail.
+    This change is required if we want to get rid of the
+    internal libraries.
+    
+ * Added `check-valgrind` target to Makefile
+
+ * Remove dependency on Gradle for building Java language bindings
+  (not modules, just the language binding)
+
+ * Experimental CMake support added
+ * Experimental OSX support added
+ * Improved Travis build matrix
+ * Added plugin skeleton creator.
+ * Debian packaging improved: Debian packaging from unofficial 
+   OBS repository has been ported to upstream.
+   From now, someone could easily build debian packages from upstream source.
+
+#Credits
 
 syslog-ng is developed as a community project, and as such it relies
 on volunteers, to do the work necessarily to produce syslog-ng.
@@ -61,467 +238,9 @@ of syslog-ng, contribute.
 
 We would like to thank the following people for their contribution:
 
-András Mitzki, Avleen Vig, Balázs Scheidler, Ben Kibbey, Christian Herzig,
-David Schweikert, Douglas Carmichael, Dezso Endre Molnar, Fabien Wernli,
-Gergely Czuczy, Gergely Nagy, Gergo Nagy, Hanno Böck, Herzig, Christian,
-Laszlo Budai, László Várady, MÓZES Ádám István, PÁSZTOR György, Péter Czanik, 
-Robert Fekete, Saurabh Shukla, Tamás Nagy, Tibor Benke, Viktor Juhász,
-Vincent Bernat, Wang Long, Zdenek Styblik, Zoltán FRIED, Zoltán Pallagi
-
-
-3.7.2
-=====
-
-<!-- Mon, 26 Oct 2015 11:18:07 +0100 -->
-
-This is the first maintenance release for the 3.7.x series.
-
-Changes compared to 3.7.1:
-
-Improvements
-------------
-
- * Added mbox() source.
-   This source can be used to fetch emails from local mbox files:
-   source { mbox("/var/spool/mail/root"); };
-   This will fetch root emails and parse them into a multiline $MSG.
-   Original implementation by Fabien Wernli, I only converted it into
-   an SCL.
-
- * It is possible to append dynamically options into SCL blocks from now.
-
- * `concurrent_request` option added to ElasticSearch with default value 1.
-
- * In elasticsearch destinaton, message_template() argument renamed to 
-   template().
-
- * SCL added to every Java module (ElasticSearch, Kafka, HDFS).
-
- * Linux Audit Parser added for parsing key-value pairs produced by 
-   the Linux Audit subsystem.
-
- * HTTP destination is now able to receive HTTP method as an option.
-   All the supported methods are available
-   (POST, PUT, HEAD, OPTIONS, DELETE, TRACE, GET). 
-
-
-Fixes
------
-
- * In some circumstances syslog-ng mod-journal re-read every already
-   processed messages.
-
- * When syslog-ng got a reload and the reload process done within 1 second then
-   mafter the reload, syslog-ng stop generating mark-messages.
-
- * When initialization of a network destination in syslog-ng failed (eg. due to
-   DNS resolution failure) we didn't create a queue which caused message loss.
-
- * syslog-ng segfaulted on TLS errors when wrong certs was provided
-  (eg.: CA cert with the cert-file directive instead of the server cert).
-
- * Fixed a continuous spinning case in the file driver, when the
-   destination file is a device (e.g. /dev/stdout).
-
- * A memory leak in around template functions in grammar fixed.
-
- * Fixed Python3 support.
-
- * Fixed Python GIL issue in python destination.
-
- * From now, instead of skipping doc/ alltogether when ENABLE_MANPAGES is
-   not set, only skip the actual man pages, but handle the rest properly.
-
- *  Allow overriding the python setup.py options.
-
-    When installing the python modules, allow overriding the options. This
-    is useful for distributions that want to pass extra options. For
-    example, on Debian, we want --install-layout="deb" instead of the
-    --prefix and --root options.
-
-    With this change, the previous behaviour remains the default, but one
-    can supply PYSETUP_OPTIONS on the make command-line to override it.
-
- * The systemd service file read /etc/default/syslog-ng and /etc/sysconfig/syslog-ng,
-   but didn't do anything with their contents. $SYSLOGNG_OPTS added to ExecStart, so 
-   that the EnvironmentFiles have an effect (at least on Debian).
-
- * Java support checking fixed (not only jdk is required but also gradle).
-
- * Memory leak around ping() in Redis fixed.
-
- * A crash in pdbtool fixed around r_parser_email().
-
- * Removed cygwin fdlimit statement.
-   Make the default for RLIMIT_NOFILE equal to the current system limits.
-   --fd-limit can still override this, but the default will be configured 
-   based on existing system limits.
-
- * Fixed BSD year inference.
-   Fixed logic and made clearer the inference of year from bsd-style
-   rfc3164 syslog-messages, which do not include a year.
-
- * Handle correctly the epoch 0 timestamp.
-   (Previously, syslog-ng cached the zero timestamp and treated 1970 as it was
-    1900.)
- 
-Credits
--------
-
-syslog-ng is developed as a community project, and as such it relies
-on volunteers, to do the work necessarily to produce syslog-ng.
-
-Reporting bugs, testing changes, writing code or simply providing
-feedback are all important contributions, so please if you are a user
-of syslog-ng, contribute.
-
-We would like to thank the following people for their contribution:
-
-Adam Arsenault, Adam Istvan Mozes, Andras Mitzki, Avleen Vig,
-Balazs Scheidler, Fabien Wernli, Gergely Czuczy, Gergely Nagy, Gergo Nagy,
-Laszlo Budai, Peter Czanik, Robert Fekete, Saurabh Shukla, Tamas Nagy,
-Tibor Benke, Viktor Juhasz, Vincent Bernat, Wang Long, Zdenek Styblik,
-Zoltan Pallagi.
-
-
-3.7.1
-=====
-
-<!-- Mon, 17 Aug 2015 09:42:17 +0200 -->
-
-
-New dependencies
-----------------
-
-OpenSSL is now a required dependency for syslog-ng because the newly added 
-`hostid` and `uniqid` features requires a CPRNG provided by OpenSSL.
-Therefore non-embedded crypto lib is not a real option, so the support of 
-having such a crypto lib discontinued and all SSL-dependent features enabled
-by default.
-
-Library updates
----------------
-
-* Minimal libriemann-client version bumped from 1.0.0 to 1.6.0.
-* Added support for the monolithic libsystemd library (systemd 209).
-* RabbitMQ submodule upgraded.
-
-Features
---------
-
-### Language bindings
-
- * Java-destination driver ported from syslog-ng-incubator.
-   Purpose of having Java destination driver is to make it possible
-   to implement destination drivers in the Java language (and using
-   'official' Java client libraries).
-
- * Python language support is ported from syslog-ng incubator and 
-   has been completely reworked. Now, it is possible to implement template
-   functions in Python language and also destination drivers.
-   Main purpose of supporting Python language is to implement a nice
-   interactive syslog-ng config debugger for syslog-ng.
-
-### New drivers
-
-#### New Java destination drivers
-
-ElastiSearch, Kafka and HDFS destination drivers are implemented by using
-the 'official' Java client libraries and syslog-ng provides a way to set
-their own, native configuration file. Log messages generated by the client 
-Java libraries are redirected to syslog-ng via our own Log4JAppender which
-means that those logs are available as internal syslog-ng messages.
-
- * ElasticSearch
- * Kafka
- * Hadoop/HDFS
- * HTTP
-
-### Parsers
-
-* Added a `geoip()` parser, that can look up the country code and
-  latitude/longitude information from an IPv4 address. For lat/long to
-  work, one will need the City database.
-
-* New parser, `extract-solaris-msgid()` added for automatically extracts
-  (parses & removes) the msgid portion of Solaris messages.
-
-* Extended the set of supported characters to every printable ASCII's except
-   `.`, `[` and `]` in `extract-prefix` for `json-parser()`.
-
-* Added string-delimiters option to csvparser to support multi character
-  delimiters in CSV parsing.
-
-* A kv-parser() introduced for WELF (WebTrens Enhanced Log Format) that 
-  implements key=value parsing. The kv-parser() tries to extract 
-  key=value formatted name-value pairs from  the input string.
-
-
-* value-pairs: make it possible to pass --key as a positional argument
-  From now it is possible to use value-pairs expressions like this:    
-      $(format-json MSG DATE)    
-  instead of    
-      $(format-json --key MSG --key DATE)
-
-
-### Filters
-
-* Added IPv6 netmask filter for selecting only messages sent by a host whose
-  IP address belongs to the specified IPv6 subnet.
-
-### Macros
-
- * Added a new macro, called HOSTID which is a 32-bit number generated by
-   a cryptographically secure PRNG. Its purpose is to identify the
-   syslog-ng host, thus it is the same for every message generated on the same
-   host.
-
- * Added a new macro, called UNIQID which is a practically unique ID generated
-   from the `HOSTID` and the `RCPTID` in the format of `HOSTID@RCPTID`. 
-   Uniqid is a derived value: it is built up from the always available hostid
-   and the optional rcptid. In other words: uniqid is an extension over rcptid.
-   For that reason `use-rcptid` has been deprecated and `use-uniqid` could be
-   use instead.
-
-### Templates
-
-* welf was renamed to kvformat
-  As this reflects the purpose of this module much better, WELF is just
-  one of the format it has support for.
-
-* $(format-cim) template function added into an SCL module.
-* It is possible to create templates without braces.
-
-
-### SMTP destination
-
-* The `afsmtp` driver now supports templatable recipients field.
-  Just like the subject() and body() fields, now the address containing
-  parameters of to(), from(), cc() and bcc() can contain macros.
-
-### Unix Domain Sockets
-
-* Added pass-unix-credentials() global option for enabling/disabling unix 
-  credentials passing on those platforms which has this feature. By default
-  it is enabled.
-
-* Added create-dirs() option to unix-*() sources for creating the
-  containing directories for Unix domain sockets.
-
-### Riemann destination
-
-* Added batched event sending support for riemann destination driver which
-  makes the riemann destination respect flush-lines(), and send event
-  in batches of configurable amount (defaults to 1). In case of an error,
-  all messages within the batch will be dropped. Dropped messages, and
-  messages that result in formatting errors do not count towards the batch
-  size. There is no timeout, but messages will be flushed upon deinit.
-
-* A timeout() option added to the Riemann destination.
-
-### PatternDB
-
-* Earlier, in patterndb, the first applicable rule won, even if it was
-  only a partial match. This means that when rules overlapped, the shorter 
-  match would have been found, if it was the first to be loaded.
-  A strong preference introduced for rules that match the input string 
-  completely. The load order is still applicable though, it is possible to
-  create two distinct rules that would match the same input, in those cases
-  the first one to be loaded wins.
-
-### Miscellaneous features
-
-* New builtin interactive syslog-ng.conf debugger implemented for syslog-ng.
-  The debugger has a Python frontend which contains a full Completer
-  (just press TABs and works like bash)
-
-* Added a reset option to syslog-ng-ctl stats. With this option the non-stored
-  stats counters can be zeroed.
-
-* New parameter added to loggen: --permanent (-T) wich is for sending logs 
-   indefinitely.
-
-* Loggen uses the proper timezone offset in generated message.
-
-* The ssl_options inside tls() extended with the following set:
-  no-sslv2, no-sslv3, no-tlsv1, no-tlsv11, no-tlsv12.
-
-* Added syslog-debug bundle generator script to make it easier to reproduce bugs
-  by collecting debug related information, like:
-    * process information gathering
-    * syscall tracing (strace/truss)
-    * configuration gathering
-    * selinux related information gathering
-    * solaris information gathering (sysdef, kstat, showrev, release)
-    * get information about syslog-ng svr4 solaris packages, if possible
-
-
-Bugfixes
---------
-
-* New utf8 string sanitizers instead of old broken one.
-
-* syslog-ng won't send SIGTERM when `getpgid()` fails in program destination
-  (`afprog`).
-
-* In some cases program destination respawned during syslog-ng stop/restart
-  (`afprog`).
-
-* syslog-ng generates mark messages when `mark-mode` is set
-  to `host-idle`.
-
-* Using msg_control only when credential passing is supported in socket 
-  destination (`afsocket`).
-
-* Writer is replaced only when protocol changed during reload in socket
-  destination (`afsocket`).
-
-* Fix spinning on EOF for `unix-stream()` sockets. Root cause of the spinning
-  was that a unix-dgram socket was created even in case of unix-stream.
-
-* When the configured host was not available during the initialization of
-  `afsocket` destination syslog-ng just didn't start. From now, syslog-ng
-  starts in that case and will retry connecting to the host periodically.
-
-* Fixed BSD year inference in syslogformat. When the difference between the
-  current month and the month part of the timestamp of an incoming logmessage
-  in BSD format (which has no year part) was greater than 1 then syslog-ng
-  computed the year badly.
-
-* In some cases, localtime related macros had a wrong value(eg.:$YEAR).
-
-* TLS support added to Riemann destination
-
-* Excluded "tags" from Riemann destination driver as an attribute which 
-  conflicts with reserved keyword
-
-* When a not writeable/non-existent file becomes writeable/exists later,
-  syslog-ng recognize it (with the help of reopen-timer) and delivers messages
-  to the file without dropping those which were received while the file was
-  not available (`affile`).
-
-* Fixed a crash around affile at the first message delivery when templates
-  were used (`affile`).
-
-* Fixed a configure error around libsystemd-journal.
-
-* Removed syslog.socket from service file on systems using systemd.
-  Syslog-ng reads the messages directly from journal on systems with systemd.
-
-* Fixed compilation where the monolitic libsystemd was not available.
-
-* Fixed compilation failure on OpenBSD.
-
-* AMQP connection process fixed.
-
-* Added DOS/Windows line ending support in config.
-
-* Retries fixed in SQL destination. In some circumstances when
-  `retry_sql_inserts` was set to 1, after an insertion failure all incoming
-  messages were dropped.
-
-* Transaction handling fixed in SQL destination. In some circumstances when
-  both select and insert commands were run within a single transaction and
-  the select failed (eg.: in case of mssql), the log messages related to
-  the insert commands, broken by the invalid transaction, were lost.
-
-* Fixed a memleak in SQL destination driver.
-  The memleak occured during one of the transaction failures.
-
-* Memory leak around reload and internal queueing mechanism has been fixed.
-
-* Fixed a potential abort when the localhost name cannot be detected.
-
-* Security issue fixed around $HOST.
-  Tech details:
-  When the name of the host is too long, the buffer we use to format the
-  chained hostname is truncated. However snprintf() returns the length the
-  result would be if no truncation happened, thus we will read uninitialized
-  bytes off the stack when we use that pointer to set $HOST
-  with log_msg_set_value().
-
-  There can be some security implications, like reading values from the stack
-  that can help to craft further exploits, especially in the presense of
-  address space randomization. It can also cause a DoS if the hostname length
-  is soo large that we would read over the top-of-the-stack, which is probably
-  not mmapped causing a SIGSEGV.
-
-* Journal entries containing name-value pairs without '=' caused syslog-ng
-  to crash. Instead of crashing, syslog-ng just drop these nv pairs.
-
-* Fixed the encoding of characters below 32 if escaping is enabled in 
-  templates. Templated outputs never contained references to characters below
-  32, essentially they were dropped from the output for two reasons:
-
-    - the prefixing backslash was removed from the code
-    - the format_uint32_padded() function produced no outputs in base 8
-
-* Fixed afstomp destination port issue. It always tried to connect to the port 0.
-
-* Fixed memleak in db-parser which could happen at every reload.
-
-* Fixed a class of rule conflicts in db-parser:
-  Because an error in the pdb load algorithms, some rules would conflict which
-  shouldn't have done that. The problem was that several programs would use 
-  the same RADIX tree to store their patterns. Merging independent programs 
-  meant that if they the same pattern listed, it would clash, even though     
-  their $PROGRAM is different.
-
-  There were multiple issues:
-    * we looked up pattern string directly, even they might have contained
-      @parser@ references. It was simply not designed that way and only   
-      worked as long as we didn't have the possibility to use parsers     
-      in program names
-
-    * we could merge programs with the same prefix, e.g.
-      su, supervise/syslog-ng and supervise/logindexd would clash, on "su",
-      which is a common prefix for all three.
-
-  The solution involved in using a separate hash table for loading, which
-  at the end is turned into the radix tree.
-
-* pdbtool match when used with the --debug-pattern option used a low-level
-  lookup function, that didn't perform all the db-parser actions specified
-  in the rule
-
-* Max packet length for spoof source is set to 1024 (previously : 256).
-
-* A certificate which is not contained by the list of fingerprints is
-  rejected from now.
-
-* Hostname check in tls certificate is case insensitive from now.
-
-* There is a use-case where user wants to ignore an assignment to a name-value
-  pair. (eg.: when using `csv-parser()`, sometimes we get a column we really
-  want to drop instead of adding it to the message). In previous versions an
-  error message was printed out:
-  'Name-value pairs cannot have a zero-length name'.
-  That error message has been removed.
-
-* Fixed a docbook related compilation error: there was a hardcoded path that
-  caused build to fail  if docbook is not on that path. Debian based
-  platforms did not affected by this problem.
-  Now a new option was created for `./configure` that is `--enable-manpages`
-  that enables the generation of manpages using docbook from online source.
-  '--with-docbook=PATH' gives you the opportunity to specify the path for
-  your own installed docbook.
-
-
-Credits
--------
-
-syslog-ng is developed as a community project, and as such it relies
-on volunteers, to do the work necessarily to produce syslog-ng.
-
-Reporting bugs, testing changes, writing code or simply providing
-feedback are all important contributions, so please if you are a user
-of syslog-ng, contribute.
-
-We would like to thank the following people for their contribution:
-
-Adam Arsenault, Adam Istvan Mozes, Alex Badics, Andras Mitzki, 
-Balazs Scheidler, Bence Tamas Gedai, Ben Kibbey, Botond Borsits, Fabien Wernli,
-Gergely Nagy, Gergo Nagy, Gyorgy Pasztor, Kristof Havasi, Laszlo Budai,
-Manikandan-Selvaganesh, Michael Sterrett, Peter Czanik, Robert Fekete, 
-Sean Hussey, Tibor Benke, Toralf Förster, Viktor Juhasz, Viktor Tusa, 
-Vincent Bernat, Zdenek Styblik, Zoltan Fried, Zoltan Pallagi.
+Adam Istvan Mozes, Andras Mitzki, Arnaud Vamorec, Balazs Scheidler,
+David Schweikert, Fabien Wernli, Flavio Medeiros, Hanno Böck,
+Henrik Grindal Bakken, Gergo Nagy, Gyorgy Pasztor, Laszlo Budai,
+Laszlo Varady, Marc Falzon, Noemi Vanyi, Peter Czanik, Robert Fekete,
+Tibor Benke, Viktor Juhasz, Viktor Tusa, Vincent Bernat, Zdenek Styblik,
+Zoltan Fried, Zoltan Pallagi, Yilin Li

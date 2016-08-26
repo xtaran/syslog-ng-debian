@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2014 Balabit
  * Copyright (c) 2014 Gergely Nagy <algernon@madhouse-project.org>
  *
  * This library is free software; you can redistribute it and/or
@@ -28,8 +28,22 @@
 #include "compat/compat.h"
 #include <time.h>
 
+#ifdef __MACH__
+
+#include <mach/clock.h>
+#include <mach/mach.h>
+
+#define CLOCK_REALTIME CALENDAR_CLOCK
+#define CLOCK_MONOTONIC SYSTEM_CLOCK
+
+int clock_gettime(clock_t clock_id, struct timespec *timestamp);
+
+#else
+
 #ifndef CLOCK_MONOTONIC
 #define CLOCK_MONOTONIC CLOCK_REALTIME
 #endif
 
-#endif
+#endif /* __MACH__ */
+
+#endif /* COMPAT_TIME_H_INCLUDED */

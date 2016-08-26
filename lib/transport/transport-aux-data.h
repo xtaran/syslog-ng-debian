@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2013 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2002-2013 Balabit
  * Copyright (c) 1998-2013 Balázs Scheidler
  *
  * This library is free software; you can redistribute it and/or
@@ -23,8 +23,8 @@
 #ifndef TRANSPORT_TRANSPORT_AUX_DATA_H_INCLUDED
 #define TRANSPORT_TRANSPORT_AUX_DATA_H_INCLUDED
 
-#include <string.h>
 #include "gsockaddr.h"
+#include <string.h>
 
 typedef struct _LogTransportAuxData
 {

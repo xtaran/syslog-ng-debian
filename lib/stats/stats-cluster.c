@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2013 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2002-2013 Balabit
  * Copyright (c) 1998-2013 Balázs Scheidler
  *
  * This library is free software; you can redistribute it and/or
@@ -94,7 +94,8 @@ _get_module_name(gint source)
     "snmp",
     "riemann",
     "journald",
-    "java"
+    "java",
+    "http"
   };
   return module_names[source & SCS_SOURCE_MASK];
 }
