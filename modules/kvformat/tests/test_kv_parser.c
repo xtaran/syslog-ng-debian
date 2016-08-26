@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 BalaBit
+ * Copyright (c) 2015 Balabit
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 as published
@@ -57,7 +57,8 @@ parse_kv_into_log_message_no_check(const gchar *kv)
 
   cloned_parser = (LogParser *) log_pipe_clone(&kv_parser->super);
   msg = log_msg_new_empty();
-  if (!log_parser_process(cloned_parser, &msg, &path_options, kv, strlen(kv)))
+  log_msg_set_value(msg, LM_V_MESSAGE, kv, -1);
+  if (!log_parser_process_message(cloned_parser, &msg, &path_options))
     {
       log_msg_unref(msg);
       log_pipe_unref(&cloned_parser->super);
@@ -78,15 +79,6 @@ parse_kv_into_log_message(const gchar *kv)
 }
 
 static void
-assert_kv_parser_fails(const gchar *kv)
-{
-  LogMessage *msg;
-
-  msg = parse_kv_into_log_message_no_check(kv);
-  assert_null(msg, "expected kv-parser failure and it returned success, kv=%s", kv);
-}
-
-static void
 test_kv_parser_basics(void)
 {
   LogMessage *msg;
@@ -98,6 +90,20 @@ test_kv_parser_basics(void)
   kv_parser_set_prefix(kv_parser, ".prefix.");
   msg = parse_kv_into_log_message("foo=bar");
   assert_log_message_value(msg, log_msg_get_value_handle(".prefix.foo"), "bar");
+  log_msg_unref(msg);
+}
+
+static void
+test_kv_parser_uses_template_to_parse_input(void)
+{
+  LogMessage *msg;
+  LogTemplate *template;
+
+  template = log_template_new(NULL, NULL);
+  log_template_compile(template, "foo=bar", NULL);
+  log_parser_set_template(kv_parser, template);
+  msg = parse_kv_into_log_message("foo=this-value-doesnot-matter-as-template-overrides");
+  assert_log_message_value(msg, log_msg_get_value_handle("foo"), "bar");
   log_msg_unref(msg);
 }
 
@@ -134,6 +140,7 @@ test_kv_parser(void)
 {
   KV_PARSER_TESTCASE(test_kv_parser_basics);
   KV_PARSER_TESTCASE(test_kv_parser_audit);
+  KV_PARSER_TESTCASE(test_kv_parser_uses_template_to_parse_input);
 }
 
 int

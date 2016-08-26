@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2012 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2002-2012 Balabit
  * Copyright (c) 1998-2012 Balázs Scheidler
  *
  * This library is free software; you can redistribute it and/or
@@ -35,6 +35,8 @@
 #include <unistd.h>
 #include <string.h>
 #include <iv_thread.h>
+
+const QueueType log_queue_fifo_type = "FIFO";
 
 /*
  * LogFifo is a scalable first-in-first-output queue implementation, that:
@@ -179,16 +181,19 @@ log_queue_fifo_move_input_unlocked(LogQueueFifo *self, gint thread_id)
           iv_list_del(&node->list);
           self->qoverflow_input[thread_id].len--;
           path_options.ack_needed = node->ack_needed;
+          path_options.flow_control_requested = node->flow_control_requested;
           stats_counter_inc(self->super.dropped_messages);
           log_msg_free_queue_node(node);
-          log_msg_drop(msg, &path_options);
+          if (path_options.flow_control_requested)
+            log_msg_drop(msg, &path_options, AT_SUSPENDED);
+          else
+            log_msg_drop(msg, &path_options, AT_PROCESSED);
         }
       msg_debug("Destination queue full, dropping messages",
                 evt_tag_int("queue_len", queue_len),
                 evt_tag_int("log_fifo_size", self->qoverflow_size),
                 evt_tag_int("count", n),
-                evt_tag_str("persist_name", self->super.persist_name),
-                NULL);
+                evt_tag_str("persist_name", self->super.persist_name));
     }
   stats_counter_add(self->super.stored_messages, self->qoverflow_input[thread_id].len);
   iv_list_splice_tail_init(&self->qoverflow_input[thread_id].items, &self->qoverflow_wait);
@@ -295,13 +300,16 @@ log_queue_fifo_push_tail(LogQueue *s, LogMessage *msg, const LogPathOptions *pat
     {
       stats_counter_inc(self->super.dropped_messages);
       g_static_mutex_unlock(&self->super.lock);
-      log_msg_drop(msg, path_options);
+
+      if (path_options->flow_control_requested)
+        log_msg_drop(msg, path_options, AT_SUSPENDED);
+      else
+        log_msg_drop(msg, path_options, AT_PROCESSED);
 
       msg_debug("Destination queue full, dropping message",
                 evt_tag_int("queue_len", log_queue_fifo_get_length(&self->super)),
                 evt_tag_int("log_fifo_size", self->qoverflow_size),
-                evt_tag_str("persist_name", self->super.persist_name),
-                NULL);
+                evt_tag_str("persist_name", self->super.persist_name));
     }
   return;
 }
@@ -512,6 +520,7 @@ log_queue_fifo_new(gint qoverflow_size, const gchar *persist_name)
   self = g_malloc0(sizeof(LogQueueFifo) + log_queue_max_threads * sizeof(self->qoverflow_input[0]));
 
   log_queue_init_instance(&self->super, persist_name);
+  self->super.type = log_queue_fifo_type;
   self->super.use_backlog = FALSE;
   self->super.get_length = log_queue_fifo_get_length;
   self->super.is_empty_racy = log_queue_fifo_is_empty_racy;

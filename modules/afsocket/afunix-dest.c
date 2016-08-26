@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2012 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2002-2012 Balabit
  * Copyright (c) 1998-2012 Balázs Scheidler
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -22,7 +22,6 @@
  */
 
 #include "afunix-dest.h"
-#include "misc.h"
 #include "messages.h"
 #include "gprocess.h"
 
@@ -35,9 +34,9 @@
 #include <stdlib.h>
 
 static const gchar *
-afunix_dd_get_dest_name(AFSocketDestDriver *s)
+afunix_dd_get_dest_name(const AFSocketDestDriver *s)
 {
-  AFUnixDestDriver *self = (AFUnixDestDriver *) s;
+  const AFUnixDestDriver *self = (const AFUnixDestDriver *)s;
   static gchar buf[256];
 
   g_snprintf(buf, sizeof(buf), "localhost.afunix:%s", self->filename);

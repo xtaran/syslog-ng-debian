@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 BalaBit
+ * Copyright (c) 2015 Balabit
  * Copyright (c) 2015 Balazs Scheidler <balazs.scheidler@balabit.com>
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -24,7 +24,9 @@
 #ifndef _SNG_PYTHON_TF_H
 #define _SNG_PYTHON_TF_H
 
+#include "python-module.h"
 #include "lib/template/function.h"
+#include "plugin.h"
 
 TEMPLATE_FUNCTION_PROTOTYPE(tf_python);
 

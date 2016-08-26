@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2013 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2002-2013 Balabit
  * Copyright (c) 1998-2012 Balázs Scheidler
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -91,6 +91,23 @@ r_parser_estring_c(guint8 *str, gint *len, const gchar *param, gpointer state, R
 }
 
 gboolean
+r_parser_nlstring(guint8 *str, gint *len, const gchar *param, gpointer state, RParserMatch *match)
+{
+  guint8 *end;
+
+  if ((end = strchr(str, '\n')) != NULL)
+    {
+      /* drop CR before to LF */
+      if (end - str >= 1 && *(end - 1) == '\r')
+        end--;
+      *len = (end - str);
+      return TRUE;
+    }
+  else
+    return FALSE;
+}
+
+gboolean
 r_parser_estring(guint8 *str, gint *len, const gchar *param, gpointer state, RParserMatch *match)
 {
   guint8 *end;
@@ -145,8 +162,7 @@ r_parser_pcre_compile_state(const gchar *expr)
                 evt_tag_str("error_at", &expr[erroffset]),
                 evt_tag_int("error_offset", erroffset),
                 evt_tag_str("error_message", errptr),
-                evt_tag_int("error_code", rc),
-                NULL);
+                evt_tag_int("error_code", rc));
       g_free(self);
       return NULL;
     }
@@ -155,8 +171,7 @@ r_parser_pcre_compile_state(const gchar *expr)
     {
       msg_error("Error while optimizing regular expression",
                 evt_tag_str("regular_expression", expr),
-                evt_tag_str("error_message", errptr),
-                NULL);
+                evt_tag_str("error_message", errptr));
       pcre_free(self->re);
       if (self->extra)
         pcre_free(self->extra);
@@ -411,14 +426,17 @@ r_parser_ipv6(guint8 *str, gint *len, const gchar *param, gpointer state, RParse
     {
       if (str[*len] == ':')
         {
-          if (G_UNLIKELY(octet > 0xffff || (octet == -1 && shortened) || digit == 10))
+          if (G_UNLIKELY(octet > 0xffff || (octet == -1 && shortened)))
+            return FALSE;
+
+          if (G_UNLIKELY(colons == 7 || dots == 3))
+            break;
+
+          if (G_UNLIKELY(digit == 10))
             return FALSE;
 
           if (octet == -1)
             shortened = TRUE;
-
-          if (G_UNLIKELY(colons == 7))
-            break;
 
           colons++;
           octet = -1;
@@ -613,10 +631,24 @@ r_new_pnode(guint8 *key)
         {
           g_free(parser_node);
           msg_error("Missing ESTRING parser parameters",
-                     evt_tag_str("type", params[0]), NULL);
+                     evt_tag_str("type", params[0]));
           parser_node = NULL;
         }
 
+    }
+  else if (strcmp(params[0], "NLSTRING") == 0)
+    {
+      if (params_len <= 2)
+        {
+          parser_node->parse = r_parser_nlstring;
+          parser_node->type = RPT_NLSTRING;
+        }
+      else
+        {
+          g_free(parser_node);
+          msg_error("Too many arguments to NLSTRING, no 3rd parameter supported");
+          parser_node = NULL;
+        }
     }
   else if (strcmp(params[0], "PCRE") == 0)
     {
@@ -632,7 +664,7 @@ r_new_pnode(guint8 *key)
         {
           g_free(parser_node);
           msg_error("Missing regular expression as 3rd argument",
-                     evt_tag_str("type", params[0]), NULL);
+                     evt_tag_str("type", params[0]));
           parser_node = NULL;
         }
     }
@@ -652,7 +684,7 @@ r_new_pnode(guint8 *key)
         {
           g_free(parser_node);
           msg_error("Missing SET parser parameters",
-                     evt_tag_str("type", params[0]), NULL);
+                     evt_tag_str("type", params[0]));
           parser_node = NULL;
         }
     }
@@ -691,7 +723,7 @@ r_new_pnode(guint8 *key)
         {
           g_free(parser_node);
           msg_error("Missing QSTRING parser parameters",
-                     evt_tag_str("type", params[0]), NULL);
+                     evt_tag_str("type", params[0]));
           parser_node = NULL;
         }
     }
@@ -699,7 +731,7 @@ r_new_pnode(guint8 *key)
     {
       g_free(parser_node);
       msg_error("Unknown parser type specified",
-                 evt_tag_str("type", params[0]), NULL);
+                 evt_tag_str("type", params[0]));
       parser_node = NULL;
     }
 
@@ -902,8 +934,7 @@ r_insert_node(RNode *root, guint8 *key, gpointer value, RNodeGetValueFunc value_
                 msg_error("Duplicate key in parser radix tree",
                     evt_tag_str("key", "@"),
                     evt_tag_str("value", value_func ? value_func(value) : "unknown"),
-                    evt_tag_str("other-value", value_func ? value_func(node->value) : "unknown"),
-                    NULL);
+                    evt_tag_str("other-value", value_func ? value_func(node->value) : "unknown"));
             }
 
           /* go down building the tree if there is key left */
@@ -955,8 +986,7 @@ r_insert_node(RNode *root, guint8 *key, gpointer value, RNodeGetValueFunc value_
                                 evt_tag_int("type", node->parser->type),
                                 evt_tag_str("name", log_msg_get_value_name(node->parser->handle, NULL)),
                                 evt_tag_str("value", value_func ? value_func(value) : "unknown"),
-                                evt_tag_str("other-value", value_func ? value_func(node->value) : "unknown"),
-                                NULL);
+                                evt_tag_str("other-value", value_func ? value_func(node->value) : "unknown"));
                     }
                 }
             }
@@ -965,8 +995,7 @@ r_insert_node(RNode *root, guint8 *key, gpointer value, RNodeGetValueFunc value_
       else
         msg_error("Key contains '@' without escaping",
                     evt_tag_str("key", key),
-                    evt_tag_str("value", value_func ? value_func(value) : "unknown"),
-                    NULL);
+                    evt_tag_str("value", value_func ? value_func(value) : "unknown"));
     }
   else
     {
@@ -1010,8 +1039,7 @@ r_insert_node(RNode *root, guint8 *key, gpointer value, RNodeGetValueFunc value_
           else
             msg_error("Duplicate key in radix tree",
                         evt_tag_str("key", key),
-                        evt_tag_str("value", value_func ? value_func(value) : "unknown"),
-                        NULL);
+                        evt_tag_str("value", value_func ? value_func(value) : "unknown"));
         }
       else if (i > 0 && i < nodelen)
         {
@@ -1113,20 +1141,19 @@ _truncate_debug_info(RFindNodeState *state, gint truncated_size)
     g_array_set_size(state->dbg_list, truncated_size);
 }
 
-static gint
-_find_matching_literal_prefix(RNode *root, guint8 *key, gint keylen)
+static void
+_find_matching_literal_prefix(RNode *root, guint8 *key, gint keylen,
+                              gint *literal_prefix_inputlen,
+                              gint *literal_prefix_radixlen)
 {
   gint current_node_key_length = root->keylen;
-  gint match_length;
+  gint input_length;
+  gint radix_length;
 
   if (current_node_key_length < 1)
-    match_length = 0;
-  else if (current_node_key_length == 1)
-    match_length = 1;
+    radix_length = input_length = 0;
   else
     {
-      gint m = MIN(keylen, current_node_key_length);
-
       /* this is a prefix match algorithm, we are interested how long the
        * common part between key and root->key is.  Currently this uses a
        * byte-by-byte comparison, using a 64/32/16 bit units would be
@@ -1135,27 +1162,38 @@ _find_matching_literal_prefix(RNode *root, guint8 *key, gint keylen)
        * removed. We might want to rerun perf tests and see if we could
        * speed things up, but db-parser() seems fast enough as it is.
        */
-      match_length = 1;
-      while (match_length < m)
+      input_length = radix_length = 0;
+      while (input_length < keylen && radix_length < current_node_key_length)
         {
-          if (key[match_length] != root->key[match_length])
+          if (key[input_length] == '\r' && root->key[radix_length] == '\n')
+            {
+              /* skip CR from input if the radix contains a newline */
+              input_length++;
+            }
+          if (key[input_length] != root->key[radix_length])
             break;
 
-          match_length++;
+          input_length++;
+          radix_length++;
         }
     }
-  return match_length;
+  *literal_prefix_inputlen = input_length;
+  *literal_prefix_radixlen = radix_length;
 }
 
 static RNode *
 _find_child_by_remaining_key(RFindNodeState *state, RNode *root, guint8 *remaining_key, gint remaining_keylen)
 {
-  RNode *candidate = r_find_child_by_first_character(root, remaining_key[0]);
+  RNode *candidate;
 
-  if (candidate)
+  if (remaining_keylen >= 2 && remaining_key[0] == '\r' && remaining_key[1] == '\n')
     {
-      return _find_node_recursively(state, candidate, remaining_key, remaining_keylen);
+      remaining_key++;
+      remaining_keylen--;
     }
+  candidate = r_find_child_by_first_character(root, remaining_key[0]);
+  if (candidate)
+    return _find_node_recursively(state, candidate, remaining_key, remaining_keylen);
   return NULL;
 }
 
@@ -1272,8 +1310,8 @@ _try_parse_with_a_given_child(RFindNodeState *state, RNode *root, gint parser_nd
        * collision occurs, so there's a slight chance we'll
        * recognize if this happens in real life. */
 
-      ret = _find_node_recursively(state, root->pchildren[parser_ndx], remaining_key + extracted_match_len, remaining_keylen - extracted_match_len);
       _add_parser_match_debug_info(state, root, parser_node, remaining_key, extracted_match_len, match_slot);
+      ret = _find_node_recursively(state, root->pchildren[parser_ndx], remaining_key + extracted_match_len, remaining_keylen - extracted_match_len);
 
       /* we have to look up "match_slot" again as the GArray may have
        * moved the data in case r_find_node() expanded it above */
@@ -1315,20 +1353,22 @@ _find_child_by_parser(RFindNodeState *state, RNode *root, guint8 *remaining_key,
 static RNode *
 _find_node_recursively(RFindNodeState *state, RNode *root, guint8 *key, gint keylen)
 {
-  gint literal_prefix_len;
+  gint literal_prefix_inputlen, literal_prefix_radixlen;
 
-  literal_prefix_len = _find_matching_literal_prefix(root, key, keylen);
-  _add_literal_match_to_debug_info(state, root, literal_prefix_len);
+  _find_matching_literal_prefix(root, key, keylen,
+                                &literal_prefix_inputlen,
+                                &literal_prefix_radixlen);
+  _add_literal_match_to_debug_info(state, root, literal_prefix_inputlen);
 
   msg_trace("Looking up node in the radix tree",
-            evt_tag_int("literal_prefix_len", literal_prefix_len),
+            evt_tag_int("literal_prefix_inputlen", literal_prefix_inputlen),
+            evt_tag_int("literal_prefix_radixlen", literal_prefix_radixlen),
             evt_tag_int("root->keylen", root->keylen),
             evt_tag_int("keylen", keylen),
             evt_tag_str("root_key", root->key),
-            evt_tag_str("key", key),
-            NULL);
+            evt_tag_str("key", key));
 
-  if (literal_prefix_len == keylen && (literal_prefix_len == root->keylen || root->keylen == -1))
+  if (literal_prefix_inputlen == keylen && (literal_prefix_radixlen == root->keylen || root->keylen == -1))
     {
       /* key completely consumed by the literal */
 
@@ -1342,12 +1382,12 @@ _find_node_recursively(RFindNodeState *state, RNode *root, guint8 *key, gint key
       if (root->value)
         return root;
     }
-  else if ((root->keylen < 1) || (literal_prefix_len < keylen && literal_prefix_len >= root->keylen))
+  else if ((root->keylen < 1) || (literal_prefix_inputlen < keylen && literal_prefix_radixlen >= root->keylen))
     {
       /* we matched the key partially, go on with child nodes */
       RNode *ret;
-      guint8 *remaining_key = key + literal_prefix_len;
-      gint remaining_keylen = keylen - literal_prefix_len;
+      guint8 *remaining_key = key + literal_prefix_inputlen;
+      gint remaining_keylen = keylen - literal_prefix_inputlen;
 
       /* prefer a literal match over parsers */
       ret = _find_child_by_remaining_key(state, root, remaining_key, remaining_keylen);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2012 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2002-2012 Balabit
  * Copyright (c) 1998-2012 Balázs Scheidler
  *
  * This library is free software; you can redistribute it and/or
@@ -49,8 +49,7 @@ filter_expr_eval_with_context(FilterExprNode *self, LogMessage **msg, gint num_m
   res = self->eval(self, msg, num_msg);
   msg_debug("Filter node evaluation result",
             evt_tag_str("result", res ? "match" : "not-match"),
-            evt_tag_str("type", self->type),
-            NULL);
+            evt_tag_str("type", self->type));
   return res;
 }
 

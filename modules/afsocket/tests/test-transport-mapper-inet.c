@@ -1,3 +1,26 @@
+/*
+ * Copyright (c) 2013 Balabit
+ * Copyright (c) 2013 Balázs Scheidler <balazs.scheidler@balabit.com>
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License version 2 as published
+ * by the Free Software Foundation, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ * As an additional exemption you are allowed to compile & link against the
+ * OpenSSL libraries as published by the OpenSSL project. See the file
+ * COPYING for details.
+ *
+ */
+
 #include "afinet.h"
 #include "afsocket.h"
 #include "stats/stats-registry.h"
@@ -5,6 +28,8 @@
 #include "transport-mapper-inet.h"
 #include "socket-options-inet.h"
 #include "transport-mapper-lib.h"
+
+#include <unistd.h>
 
 TransportMapper *transport_mapper;
 
@@ -32,43 +57,47 @@ assert_transport_mapper_inet_server_port(TransportMapper *s, gint server_port)
 }
 
 static void
-assert_transport_mapper_tcp_socket(TransportMapper *transport_mapper)
+assert_transport_mapper_tcp_socket(TransportMapper *self)
 {
-  assert_transport_mapper_address_family(transport_mapper, AF_INET);
-  assert_transport_mapper_sock_type(transport_mapper, SOCK_STREAM);
-  assert_transport_mapper_sock_proto(transport_mapper, IPPROTO_TCP);
+  assert_transport_mapper_address_family(self, AF_INET);
+  assert_transport_mapper_sock_type(self, SOCK_STREAM);
+  assert_transport_mapper_sock_proto(self, IPPROTO_TCP);
 }
 
 static void
-assert_transport_mapper_tcp6_socket(TransportMapper *transport_mapper)
+assert_transport_mapper_tcp6_socket(TransportMapper *self)
 {
-  assert_transport_mapper_address_family(transport_mapper, AF_INET6);
-  assert_transport_mapper_sock_type(transport_mapper, SOCK_STREAM);
-  assert_transport_mapper_sock_proto(transport_mapper, IPPROTO_TCP);
+  assert_transport_mapper_address_family(self, AF_INET6);
+  assert_transport_mapper_sock_type(self, SOCK_STREAM);
+  assert_transport_mapper_sock_proto(self, IPPROTO_TCP);
 }
 
 static void
-assert_transport_mapper_udp_socket(TransportMapper *transport_mapper)
+assert_transport_mapper_udp_socket(TransportMapper *self)
 {
-  assert_transport_mapper_address_family(transport_mapper, AF_INET);
-  assert_transport_mapper_sock_type(transport_mapper, SOCK_DGRAM);
-  assert_transport_mapper_sock_proto(transport_mapper, IPPROTO_UDP);
+  assert_transport_mapper_address_family(self, AF_INET);
+  assert_transport_mapper_sock_type(self, SOCK_DGRAM);
+  assert_transport_mapper_sock_proto(self, IPPROTO_UDP);
 }
 
 static void
-assert_transport_mapper_udp6_socket(TransportMapper *transport_mapper)
+assert_transport_mapper_udp6_socket(TransportMapper *self)
 {
-  assert_transport_mapper_address_family(transport_mapper, AF_INET6);
-  assert_transport_mapper_sock_type(transport_mapper, SOCK_DGRAM);
-  assert_transport_mapper_sock_proto(transport_mapper, IPPROTO_UDP);
+  assert_transport_mapper_address_family(self, AF_INET6);
+  assert_transport_mapper_sock_type(self, SOCK_DGRAM);
+  assert_transport_mapper_sock_proto(self, IPPROTO_UDP);
 }
 
 static gboolean
 create_socket_with_address(GSockAddr *addr, gint *sock)
 {
-  SocketOptionsInet *sock_options = socket_options_inet_new_instance();
+  SocketOptionsInet *sock_options;
+  gboolean result;
 
-  return transport_mapper_open_socket(transport_mapper, &sock_options->super, addr, AFSOCKET_DIR_RECV, sock);
+  sock_options = socket_options_inet_new_instance();
+  result = transport_mapper_open_socket(transport_mapper, &sock_options->super, addr, AFSOCKET_DIR_RECV, sock);
+  socket_options_free(&sock_options->super);
+  return result;
 }
 
 static gboolean

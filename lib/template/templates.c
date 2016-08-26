@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2013 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2002-2013 Balabit
  * Copyright (c) 1998-2013 Balázs Scheidler
  *
  * This library is free software; you can redistribute it and/or
@@ -184,19 +184,50 @@ log_template_format(LogTemplate *self, LogMessage *lm, const LogTemplateOptions 
   log_template_append_format(self, lm, opts, tz, seq_num, context_id, result);
 }
 
+
+/* NOTE: we should completely get rid off the name property of templates,
+ * we basically use it at two locations:
+ *
+ *   1) dbparser uses it to store SyntheticMessages, there the "name" of a
+ *      value is stored here
+ *
+ *   2) we reuse the LogTemplate structure (which represents a compiled
+ *      template) to store a template {} statement in the configuration,
+ *      which apart from a compiled template, also sports a name.  This was
+ *      the original reason the name attribute was introduced. This basically
+ *      blends two unrelated purposes in the same struct.
+ *
+ * Other call sites pass a dummy value, which is probably never used in any
+ * meaningful way.
+ *
+ * Both usages and the dummy call-sites should be removed, and the entire
+ * thing replaced by another struct that contains a LogTemplate.
+ *
+ * I saw this to cause confusion numerous times already.
+ * --
+ * Bazsi.
+ */
+void
+log_template_set_name(LogTemplate *self, const gchar *name)
+{
+  if (self->name)
+    g_free(self->name);
+  self->name = g_strdup(name);
+}
+
+/* NOTE: the name parameter should not be used, please pass a NULL until it is eliminated */
 LogTemplate *
 log_template_new(GlobalConfig *cfg, const gchar *name)
 {
   LogTemplate *self = g_new0(LogTemplate, 1);
 
-  self->name = g_strdup(name);
+  log_template_set_name(self, name);
   self->ref_cnt = 1;
   self->cfg = cfg;
   g_static_mutex_init(&self->arg_lock);
   if (cfg_is_config_version_older(cfg, 0x0300))
     {
-      msg_warning_once("WARNING: template: the default value for template-escape has changed to 'no' from " VERSION_3_0 ", please update your configuration file accordingly",
-                       NULL);
+      msg_warning_once("WARNING: template: the default value for template-escape has changed to 'no' from " VERSION_3_0 ", please update your configuration file accordingly");
       self->escape = TRUE;
     }
   return self;

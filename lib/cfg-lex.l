@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2013 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2002-2013 Balabit
  * Copyright (c) 1998-2011 Balázs Scheidler
  *
  * This library is free software; you can redistribute it and/or
@@ -46,8 +46,7 @@ yy_input_run_backtick_substitution(CfgLexer *self, gchar *buf, gsize buf_size)
       msg_error("Error performing backtick substitution in configuration file",
                 evt_tag_str("error", error->message),
                 evt_tag_str("filename", cur_lloc->level->name),
-                evt_tag_printf("line", "%d:%d", cur_lloc->first_line, cur_lloc->first_column),
-                NULL);
+                evt_tag_printf("line", "%d:%d", cur_lloc->first_line, cur_lloc->first_column));
       g_clear_error(&error);
       goto error;
     }
@@ -58,8 +57,7 @@ yy_input_run_backtick_substitution(CfgLexer *self, gchar *buf, gsize buf_size)
           msg_error("Error performing backtick substitution in configuration file",
                     evt_tag_str("error", "lexer buffer is too small to hold substituted result"),
                     evt_tag_str("filename", cur_lloc->level->name),
-                    evt_tag_printf("line", "%d:%d", cur_lloc->first_line, cur_lloc->first_column),
-                    NULL);
+                    evt_tag_printf("line", "%d:%d", cur_lloc->first_line, cur_lloc->first_column));
           goto error;
         }
       else
@@ -121,11 +119,12 @@ yy_input_run_backtick_substitution(CfgLexer *self, gchar *buf, gsize buf_size)
   
 #define YY_FATAL_ERROR(msg)						\
   do {									\
-    struct yyguts_t * yyg = (struct yyguts_t*) yyscanner;		\
+    struct yyguts_t * __yyg = (struct yyguts_t*) yyscanner;		\
+                                                                        \
     msg_error("Fatal error in configuration lexer, giving up",		\
               evt_tag_str("error", msg),				\
               NULL);							\
-    longjmp(yyextra->fatal_error, 1);					\
+    longjmp(__yyg->yyextra_r->fatal_error, 1);				\
   } while(0)
 
 
@@ -304,7 +303,13 @@ word	[^ \#'"\(\)\{\}\\;\r\n\t,|\.@:]
 
 <block_content>[^{}()\"\'\n\r]+   { g_string_append(yyextra->string_buffer, yytext); }
 
-<INITIAL><<EOF>>           { if (!cfg_lexer_start_next_include(yyextra)) yyterminate(); }
+<INITIAL><<EOF>>           {
+                             if (!cfg_lexer_start_next_include(yyextra))
+                               {
+                                 *yylloc = yyextra->include_stack[0].lloc;
+                                 yyterminate();
+                               }
+                           }
 
 %%
 
@@ -331,4 +336,4 @@ cfg_lexer_start_block_state(CfgLexer *self, gchar block_boundary[2])
 }
 
 /* avoid warnings of unused symbols */
-gpointer __dummy[] = { yy_top_state };
+gpointer __dummy[] = { yy_top_state, yy_fatal_error };

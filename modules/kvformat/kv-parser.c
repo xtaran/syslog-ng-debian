@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 BalaBit
+ * Copyright (c) 2015 Balabit
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 as published
@@ -49,10 +49,20 @@ kv_parser_set_prefix(LogParser *p, const gchar *prefix)
     }
 }
 
+void
+kv_parser_set_value_separator(LogParser *s, gchar value_separator)
+{
+  KVParser *self = (KVParser *) s;
+
+  kv_scanner_set_value_separator(self->kv_scanner, value_separator);
+}
+
 static const gchar *
 _get_formatted_key(KVParser *self, const gchar *key)
 {
-  if (self->formatted_key->len > 0)
+  if (!self->prefix)
+    return key;
+  else if (self->formatted_key->len > 0)
     g_string_truncate(self->formatted_key, self->prefix_len);
   else
     g_string_assign(self->formatted_key, self->prefix);
@@ -87,6 +97,7 @@ kv_parser_clone(LogPipe *s)
 
   cloned = kv_parser_new(s->cfg, kv_scanner_clone(self->kv_scanner));
   kv_parser_set_prefix(cloned, self->prefix);
+  log_parser_set_template(cloned, log_template_ref(self->super.template));
 
   return &cloned->super;
 }
@@ -102,6 +113,17 @@ kv_parser_free(LogPipe *s)
   log_parser_free_method(s);
 }
 
+static gboolean
+kv_parser_process_threaded(LogParser *s, LogMessage **pmsg, const LogPathOptions *path_options, const gchar *input, gsize input_len)
+{
+  LogParser *self = (LogParser *)log_pipe_clone(&s->super);
+
+  gboolean ok = kv_parser_process(self, pmsg, path_options, input, input_len);
+
+  log_pipe_unref(&self->super);
+  return ok;
+}
+
 LogParser *
 kv_parser_new(GlobalConfig *cfg, KVScanner *kv_scanner)
 {
@@ -110,7 +132,7 @@ kv_parser_new(GlobalConfig *cfg, KVScanner *kv_scanner)
   log_parser_init_instance(&self->super, cfg);
   self->super.super.free_fn = kv_parser_free;
   self->super.super.clone = kv_parser_clone;
-  self->super.process = kv_parser_process;
+  self->super.process = kv_parser_process_threaded;
 
   self->kv_scanner = kv_scanner;
   self->formatted_key = g_string_sized_new(32);

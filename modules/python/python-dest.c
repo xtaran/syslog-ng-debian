@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2015 BalaBit
+ * Copyright (c) 2014-2015 Balabit
  * Copyright (c) 2014 Gergely Nagy <algernon@balabit.hu>
  * Copyright (c) 2015 Balazs Scheidler <balazs.scheidler@balabit.com>
  *
@@ -29,7 +29,8 @@
 #include "python-helpers.h"
 #include "logthrdestdrv.h"
 #include "stats/stats.h"
-#include "misc.h"
+#include "string-list.h"
+#include "str-utils.h"
 
 #ifndef SCS_PYTHON
 #define SCS_PYTHON 0
@@ -79,8 +80,7 @@ python_dd_set_value_pairs(LogDriver *d, ValuePairs *vp)
 {
   PythonDestDriver *self = (PythonDestDriver *)d;
 
-  if (self->vp)
-    value_pairs_free(self->vp);
+  value_pairs_unref(self->vp);
   self->vp = vp;
 }
 
@@ -125,21 +125,25 @@ python_dd_format_stats_instance(LogThrDestDriver *d)
   PythonDestDriver *self = (PythonDestDriver *)d;
   static gchar persist_name[1024];
 
-  g_snprintf(persist_name, sizeof(persist_name),
-             "python,%s",
-             self->class);
+  if (d->super.super.super.persist_name)
+    g_snprintf(persist_name, sizeof(persist_name), "python,%s", d->super.super.super.persist_name);
+  else
+    g_snprintf(persist_name, sizeof(persist_name), "python,%s", self->class);
+
   return persist_name;
 }
 
-static gchar *
-python_dd_format_persist_name(LogThrDestDriver *d)
+static const gchar *
+python_dd_format_persist_name(const LogPipe *s)
 {
-  PythonDestDriver *self = (PythonDestDriver *)d;
+  const PythonDestDriver *self = (const PythonDestDriver *)s;
   static gchar persist_name[1024];
 
-  g_snprintf(persist_name, sizeof(persist_name),
-             "python(%s)",
-             self->class);
+  if (s->persist_name)
+    g_snprintf(persist_name, sizeof(persist_name), "python.%s", s->persist_name);
+  else
+    g_snprintf(persist_name, sizeof(persist_name), "python(%s)", self->class);
+
   return persist_name;
 }
 
@@ -158,8 +162,7 @@ _py_invoke_function(PythonDestDriver *self, PyObject *func, PyObject *arg)
                 evt_tag_str("driver", self->super.super.super.id),
                 evt_tag_str("script", self->class),
                 evt_tag_str("function", _py_get_callable_name(func, buf1, sizeof(buf1))),
-                evt_tag_str("exception", _py_format_exception_text(buf2, sizeof(buf2))),
-                NULL);
+                evt_tag_str("exception", _py_format_exception_text(buf2, sizeof(buf2))));
       return NULL;
     }
   return ret;
@@ -213,8 +216,7 @@ _py_get_method(PythonDestDriver *self, PyObject *o, const gchar *method_name)
       msg_error("Missing Python method in the driver class",
                 evt_tag_str("driver", self->super.super.super.id),
                 evt_tag_str("method", method_name),
-                evt_tag_str("exception", _py_format_exception_text(buf, sizeof(buf))),
-                NULL);
+                evt_tag_str("exception", _py_format_exception_text(buf, sizeof(buf))));
       return NULL;
     }
   return method;
@@ -301,8 +303,7 @@ _py_init_bindings(PythonDestDriver *self)
       msg_error("Error looking Python driver class",
                 evt_tag_str("driver", self->super.super.super.id),
                 evt_tag_str("class", self->class),
-                evt_tag_str("exception", _py_format_exception_text(buf, sizeof(buf))),
-                NULL);
+                evt_tag_str("exception", _py_format_exception_text(buf, sizeof(buf))));
       return FALSE;
     }
 
@@ -314,8 +315,7 @@ _py_init_bindings(PythonDestDriver *self)
       msg_error("Error instantiating Python driver class",
                 evt_tag_str("driver", self->super.super.super.id),
                 evt_tag_str("class", self->class),
-                evt_tag_str("exception", _py_format_exception_text(buf, sizeof(buf))),
-                NULL);
+                evt_tag_str("exception", _py_format_exception_text(buf, sizeof(buf))));
       return FALSE;
     }
 
@@ -326,8 +326,7 @@ _py_init_bindings(PythonDestDriver *self)
     {
       msg_error("Error initializing Python destination, class does not have a send() method",
                 evt_tag_str("driver", self->super.super.super.id),
-                evt_tag_str("class", self->class),
-                NULL);
+                evt_tag_str("class", self->class));
     }
   return self->py.send != NULL;
 }
@@ -348,8 +347,7 @@ _py_init_object(PythonDestDriver *self)
     {
       msg_error("Error initializing Python driver object, init() returned FALSE",
                 evt_tag_str("driver", self->super.super.super.id),
-                evt_tag_str("class", self->class),
-                NULL);
+                evt_tag_str("class", self->class));
       return FALSE;
     }
   return TRUE;
@@ -393,8 +391,7 @@ python_dd_insert(LogThrDestDriver *d, LogMessage *msg)
       msg_error("Python send() method returned failure, suspending destination for time_reopen()",
                 evt_tag_str("driver", self->super.super.super.id),
                 evt_tag_str("class", self->class),
-                evt_tag_int("time_reopen", self->super.time_reopen),
-                NULL);
+                evt_tag_int("time_reopen", self->super.time_reopen));
     }
   Py_DECREF(msg_object);
 
@@ -460,8 +457,7 @@ python_dd_init(LogPipe *d)
   if (!self->class)
     {
       msg_error("Error initializing Python destination: no script specified!",
-                evt_tag_str("driver", self->super.super.super.id),
-                NULL);
+                evt_tag_str("driver", self->super.super.super.id));
       return FALSE;
     }
 
@@ -482,8 +478,7 @@ python_dd_init(LogPipe *d)
 
   msg_verbose("Python destination initialized",
               evt_tag_str("driver", self->super.super.super.id),
-              evt_tag_str("class", self->class),
-              NULL);
+              evt_tag_str("class", self->class));
 
   return log_threaded_dest_driver_start(d);
 
@@ -519,8 +514,7 @@ python_dd_free(LogPipe *d)
 
   g_free(self->class);
 
-  if (self->vp)
-    value_pairs_free(self->vp);
+  value_pairs_unref(self->vp);
 
   if (self->options)
     g_hash_table_unref(self->options);
@@ -539,6 +533,7 @@ python_dd_new(GlobalConfig *cfg)
   self->super.super.super.super.init = python_dd_init;
   self->super.super.super.super.deinit = python_dd_deinit;
   self->super.super.super.super.free_fn = python_dd_free;
+  self->super.super.super.super.generate_persist_name = python_dd_format_persist_name;
 
   self->super.worker.thread_init = python_dd_worker_init;
   self->super.worker.thread_deinit = python_dd_worker_deinit;
@@ -546,7 +541,6 @@ python_dd_new(GlobalConfig *cfg)
   self->super.worker.insert = python_dd_insert;
 
   self->super.format.stats_instance = python_dd_format_stats_instance;
-  self->super.format.persist_name = python_dd_format_persist_name;
   self->super.stats_source = SCS_PYTHON;
 
   self->options = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_free);

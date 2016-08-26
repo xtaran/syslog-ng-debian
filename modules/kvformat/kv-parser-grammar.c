@@ -59,7 +59,7 @@
 #define YYPULL 1
 
 /* "%code top" blocks.  */
-#line 22 "kv-parser-grammar.y" /* yacc.c:316  */
+#line 22 "modules/kvformat/kv-parser-grammar.y" /* yacc.c:316  */
 
 #include "kv-parser-parser.h"
 
@@ -96,8 +96,8 @@
 
 /* In a future release of Bison, this section will be replaced
    by #include "y.tab.h".  */
-#ifndef YY_KV_PARSER_Y_TAB_H_INCLUDED
-# define YY_KV_PARSER_Y_TAB_H_INCLUDED
+#ifndef YY_KV_PARSER_MODULES_KVFORMAT_KV_PARSER_GRAMMAR_H_INCLUDED
+# define YY_KV_PARSER_MODULES_KVFORMAT_KV_PARSER_GRAMMAR_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -141,23 +141,6 @@ extern int kv_parser_debug;
     KW_CHANNEL = 10009,
     KW_INTERNAL = 10010,
     KW_FILE = 10011,
-    KW_SQL = 10030,
-    KW_TYPE = 10031,
-    KW_COLUMNS = 10032,
-    KW_INDEXES = 10033,
-    KW_VALUES = 10034,
-    KW_PASSWORD = 10035,
-    KW_DATABASE = 10036,
-    KW_USERNAME = 10037,
-    KW_TABLE = 10038,
-    KW_ENCODING = 10039,
-    KW_SESSION_STATEMENTS = 10040,
-    KW_DELIMITERS = 10050,
-    KW_QUOTES = 10051,
-    KW_QUOTE_PAIRS = 10052,
-    KW_NULL = 10053,
-    KW_CHARS = 10054,
-    KW_STRINGS = 10055,
     KW_SYSLOG = 10060,
     KW_MARK_FREQ = 10071,
     KW_STATS_FREQ = 10072,
@@ -170,6 +153,8 @@ extern int kv_parser_debug;
     KW_FILE_TEMPLATE = 10079,
     KW_PROTO_TEMPLATE = 10080,
     KW_MARK_MODE = 10081,
+    KW_ENCODING = 10082,
+    KW_TYPE = 10083,
     KW_CHAIN_HOSTNAMES = 10090,
     KW_NORMALIZE_HOSTNAMES = 10091,
     KW_KEEP_HOSTNAME = 10092,
@@ -199,6 +184,7 @@ extern int kv_parser_debug;
     KW_THROTTLE = 10170,
     KW_THREADED = 10171,
     KW_PASS_UNIX_CREDENTIALS = 10231,
+    KW_PERSIST_NAME = 10302,
     KW_FLAGS = 10190,
     KW_PAD_SIZE = 10200,
     KW_TIME_ZONE = 10201,
@@ -233,10 +219,7 @@ extern int kv_parser_debug;
     KW_NETMASK = 10355,
     KW_TAGS = 10356,
     KW_NETMASK6 = 10357,
-    KW_VALUE = 10361,
     KW_REWRITE = 10370,
-    KW_SET = 10371,
-    KW_SUBST = 10372,
     KW_YES = 10380,
     KW_NO = 10381,
     KW_IFDEF = 10410,
@@ -252,7 +235,6 @@ extern int kv_parser_debug;
     LL_EOL = 10428,
     LL_ERROR = 10429,
     KW_VALUE_PAIRS = 10500,
-    KW_SELECT = 10501,
     KW_EXCLUDE = 10502,
     KW_PAIR = 10503,
     KW_KEY = 10504,
@@ -265,7 +247,8 @@ extern int kv_parser_debug;
     KW_RETRIES = 10511,
     KW_KV_PARSER = 10513,
     KW_LINUX_AUDIT_PARSER = 10514,
-    KW_PREFIX = 10515
+    KW_PREFIX = 10515,
+    KW_VALUE_SEPARATOR = 10516
   };
 #endif
 /* Tokens.  */
@@ -299,23 +282,6 @@ extern int kv_parser_debug;
 #define KW_CHANNEL 10009
 #define KW_INTERNAL 10010
 #define KW_FILE 10011
-#define KW_SQL 10030
-#define KW_TYPE 10031
-#define KW_COLUMNS 10032
-#define KW_INDEXES 10033
-#define KW_VALUES 10034
-#define KW_PASSWORD 10035
-#define KW_DATABASE 10036
-#define KW_USERNAME 10037
-#define KW_TABLE 10038
-#define KW_ENCODING 10039
-#define KW_SESSION_STATEMENTS 10040
-#define KW_DELIMITERS 10050
-#define KW_QUOTES 10051
-#define KW_QUOTE_PAIRS 10052
-#define KW_NULL 10053
-#define KW_CHARS 10054
-#define KW_STRINGS 10055
 #define KW_SYSLOG 10060
 #define KW_MARK_FREQ 10071
 #define KW_STATS_FREQ 10072
@@ -328,6 +294,8 @@ extern int kv_parser_debug;
 #define KW_FILE_TEMPLATE 10079
 #define KW_PROTO_TEMPLATE 10080
 #define KW_MARK_MODE 10081
+#define KW_ENCODING 10082
+#define KW_TYPE 10083
 #define KW_CHAIN_HOSTNAMES 10090
 #define KW_NORMALIZE_HOSTNAMES 10091
 #define KW_KEEP_HOSTNAME 10092
@@ -357,6 +325,7 @@ extern int kv_parser_debug;
 #define KW_THROTTLE 10170
 #define KW_THREADED 10171
 #define KW_PASS_UNIX_CREDENTIALS 10231
+#define KW_PERSIST_NAME 10302
 #define KW_FLAGS 10190
 #define KW_PAD_SIZE 10200
 #define KW_TIME_ZONE 10201
@@ -391,10 +360,7 @@ extern int kv_parser_debug;
 #define KW_NETMASK 10355
 #define KW_TAGS 10356
 #define KW_NETMASK6 10357
-#define KW_VALUE 10361
 #define KW_REWRITE 10370
-#define KW_SET 10371
-#define KW_SUBST 10372
 #define KW_YES 10380
 #define KW_NO 10381
 #define KW_IFDEF 10410
@@ -410,7 +376,6 @@ extern int kv_parser_debug;
 #define LL_EOL 10428
 #define LL_ERROR 10429
 #define KW_VALUE_PAIRS 10500
-#define KW_SELECT 10501
 #define KW_EXCLUDE 10502
 #define KW_PAIR 10503
 #define KW_KEY 10504
@@ -424,6 +389,7 @@ extern int kv_parser_debug;
 #define KW_KV_PARSER 10513
 #define KW_LINUX_AUDIT_PARSER 10514
 #define KW_PREFIX 10515
+#define KW_VALUE_SEPARATOR 10516
 
 /* Value type.  */
 
@@ -445,23 +411,22 @@ struct YYLTYPE
 
 int kv_parser_parse (CfgLexer *lexer, LogParser **instance, gpointer arg);
 
-#endif /* !YY_KV_PARSER_Y_TAB_H_INCLUDED  */
+#endif /* !YY_KV_PARSER_MODULES_KVFORMAT_KV_PARSER_GRAMMAR_H_INCLUDED  */
 
 /* Copy the second part of user declarations.  */
 
-#line 453 "modules/kvformat/kv-parser-grammar.c" /* yacc.c:358  */
+#line 419 "modules/kvformat/kv-parser-grammar.c" /* yacc.c:358  */
 /* Unqualified %code blocks.  */
-#line 28 "kv-parser-grammar.y" /* yacc.c:359  */
+#line 28 "modules/kvformat/kv-parser-grammar.y" /* yacc.c:359  */
 
 
 #include "kv-parser.h"
 #include "linux-audit-scanner.h"
 #include "cfg-parser.h"
 #include "kv-parser-grammar.h"
+#include "cfg-grammar.h"
 
-extern LogParser *last_parser;
-
-#line 56 "kv-parser-grammar.y" /* yacc.c:359  */
+#line 55 "modules/kvformat/kv-parser-grammar.y" /* yacc.c:359  */
 
 
 # define YYLLOC_DEFAULT(Current, Rhs, N)                                \
@@ -522,7 +487,7 @@ extern LogParser *last_parser;
 
 
 
-#line 526 "modules/kvformat/kv-parser-grammar.c" /* yacc.c:359  */
+#line 491 "modules/kvformat/kv-parser-grammar.c" /* yacc.c:359  */
 
 #ifdef short
 # undef short
@@ -766,21 +731,21 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  6
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   47
+#define YYLAST   44
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  164
+#define YYNTOKENS  147
 /* YYNNTS -- Number of nonterminals.  */
 #define YYNNTS  9
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  13
+#define YYNRULES  14
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  28
+#define YYNSTATES  32
 
 /* YYTRANSLATE[YYX] -- Symbol number corresponding to YYX as returned
    by yylex, with out-of-bounds checking.  */
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   10515
+#define YYMAXUTOK   10516
 
 #define YYTRANSLATE(YYX)                                                \
   ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
@@ -793,15 +758,15 @@ static const yytype_uint8 yytranslate[] =
       12,    13,    14,    15,    16,    17,    18,    19,    20,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     158,   159,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,   163,   162,
+     141,   142,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,   146,   145,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,   160,     2,   161,     2,     2,     2,     2,
+       2,     2,     2,   143,     2,   144,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -1792,63 +1757,63 @@ static const yytype_uint8 yytranslate[] =
       21,    22,    23,    24,    25,    26,    27,    28,    29,    30,
       31,    32,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      33,    34,    35,    36,    37,    38,    39,    40,    41,    42,
-      43,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      44,    45,    46,    47,    48,    49,     2,     2,     2,     2,
-      50,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,    51,    52,    53,    54,    55,    56,    57,    58,    59,
-      60,    61,     2,     2,     2,     2,     2,     2,     2,     2,
-      62,    63,    64,    65,    66,     2,     2,     2,     2,     2,
-      67,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      68,    69,    70,     2,     2,     2,     2,     2,     2,     2,
-      71,    72,     2,     2,     2,     2,     2,     2,     2,     2,
-      73,    74,    75,     2,     2,     2,     2,     2,     2,     2,
-      76,    77,    78,     2,     2,     2,     2,     2,     2,     2,
-      79,    80,    81,     2,     2,     2,     2,     2,     2,     2,
-      82,     2,    83,    84,    85,    86,    87,     2,     2,     2,
-      88,    89,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      91,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      92,    93,    94,    95,    96,    97,     2,     2,     2,     2,
-      98,    99,   100,     2,     2,     2,     2,     2,     2,     2,
-     101,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     102,    90,     2,     2,     2,     2,     2,     2,     2,     2,
-     103,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     104,   105,   106,     2,     2,     2,     2,     2,     2,     2,
-     107,   108,   109,     2,     2,     2,     2,     2,     2,     2,
-     110,   111,   112,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     113,   114,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,   115,     2,     2,     2,     2,     2,     2,
+      33,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,    34,    35,    36,    37,    38,    39,    40,    41,    42,
+      43,    44,    45,    46,     2,     2,     2,     2,     2,     2,
+      47,    48,    49,    50,    51,     2,     2,     2,     2,     2,
+      52,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+      53,    54,    55,     2,     2,     2,     2,     2,     2,     2,
+      56,    57,     2,     2,     2,     2,     2,     2,     2,     2,
+      58,    59,    60,     2,     2,     2,     2,     2,     2,     2,
+      61,    62,    63,     2,     2,     2,     2,     2,     2,     2,
+      64,    65,    66,     2,     2,     2,     2,     2,     2,     2,
+      67,     2,    68,    69,    70,    71,    72,     2,     2,     2,
+      73,    74,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     116,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     117,   118,   119,   120,   121,   122,   123,   124,     2,     2,
-       2,   125,     2,     2,     2,     2,     2,     2,     2,     2,
-     126,   127,   128,     2,     2,     2,     2,     2,     2,     2,
-     129,   130,     2,     2,     2,     2,     2,     2,     2,     2,
+      77,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+      78,    79,    80,    81,    82,    83,     2,     2,     2,     2,
+      84,    85,    86,     2,     2,     2,     2,     2,     2,     2,
+      87,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+      88,    75,     2,     2,     2,     2,     2,     2,     2,     2,
+      89,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+      90,    91,    92,     2,     2,     2,     2,     2,     2,     2,
+      93,    94,    95,     2,     2,     2,     2,     2,     2,     2,
+      96,    97,    98,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     131,   132,     2,     2,     2,     2,     2,     2,     2,     2,
-     133,   134,   135,   136,   137,   138,   139,   140,   141,   142,
+      99,   100,    76,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,   101,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     102,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     103,   104,   105,   106,   107,   108,   109,   110,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     111,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     112,   113,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     114,   115,     2,     2,     2,     2,     2,     2,     2,     2,
+     116,   117,   118,   119,   120,   121,   122,   123,   124,   125,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     143,   144,   145,   146,   147,   148,   149,   150,   151,   152,
-     153,   154,     2,   155,   156,   157
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     126,     2,   127,   128,   129,   130,   131,   132,   133,   134,
+     135,   136,     2,   137,   138,   139,   140
 };
 
 #if YYDEBUG
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   383,   383,   389,   388,   395,   394,   403,   404,   408,
-     409,   633,   634,   692
+       0,   363,   363,   369,   368,   375,   374,   383,   384,   388,
+     389,   395,   619,   620,   678
 };
 #endif
 
@@ -1866,24 +1831,21 @@ static const char *const yytname[] =
   "LL_CONTEXT_INNER_SRC", "LL_CONTEXT_CLIENT_PROTO",
   "LL_CONTEXT_SERVER_PROTO", "KW_SOURCE", "KW_FILTER", "KW_PARSER",
   "KW_DESTINATION", "KW_LOG", "KW_OPTIONS", "KW_INCLUDE", "KW_BLOCK",
-  "KW_JUNCTION", "KW_CHANNEL", "KW_INTERNAL", "KW_FILE", "KW_SQL",
-  "KW_TYPE", "KW_COLUMNS", "KW_INDEXES", "KW_VALUES", "KW_PASSWORD",
-  "KW_DATABASE", "KW_USERNAME", "KW_TABLE", "KW_ENCODING",
-  "KW_SESSION_STATEMENTS", "KW_DELIMITERS", "KW_QUOTES", "KW_QUOTE_PAIRS",
-  "KW_NULL", "KW_CHARS", "KW_STRINGS", "KW_SYSLOG", "KW_MARK_FREQ",
-  "KW_STATS_FREQ", "KW_STATS_LEVEL", "KW_STATS_LIFETIME", "KW_FLUSH_LINES",
-  "KW_SUPPRESS", "KW_FLUSH_TIMEOUT", "KW_LOG_MSG_SIZE", "KW_FILE_TEMPLATE",
-  "KW_PROTO_TEMPLATE", "KW_MARK_MODE", "KW_CHAIN_HOSTNAMES",
-  "KW_NORMALIZE_HOSTNAMES", "KW_KEEP_HOSTNAME", "KW_CHECK_HOSTNAME",
-  "KW_BAD_HOSTNAME", "KW_KEEP_TIMESTAMP", "KW_USE_DNS", "KW_USE_FQDN",
-  "KW_CUSTOM_DOMAIN", "KW_DNS_CACHE", "KW_DNS_CACHE_SIZE",
-  "KW_DNS_CACHE_EXPIRE", "KW_DNS_CACHE_EXPIRE_FAILED",
-  "KW_DNS_CACHE_HOSTS", "KW_PERSIST_ONLY", "KW_USE_RCPTID",
-  "KW_USE_UNIQID", "KW_TZ_CONVERT", "KW_TS_FORMAT", "KW_FRAC_DIGITS",
-  "KW_LOG_FIFO_SIZE", "KW_LOG_FETCH_LIMIT", "KW_LOG_IW_SIZE",
-  "KW_LOG_PREFIX", "KW_PROGRAM_OVERRIDE", "KW_HOST_OVERRIDE",
-  "KW_THROTTLE", "KW_THREADED", "KW_PASS_UNIX_CREDENTIALS", "KW_FLAGS",
-  "KW_PAD_SIZE", "KW_TIME_ZONE", "KW_RECV_TIME_ZONE", "KW_SEND_TIME_ZONE",
+  "KW_JUNCTION", "KW_CHANNEL", "KW_INTERNAL", "KW_FILE", "KW_SYSLOG",
+  "KW_MARK_FREQ", "KW_STATS_FREQ", "KW_STATS_LEVEL", "KW_STATS_LIFETIME",
+  "KW_FLUSH_LINES", "KW_SUPPRESS", "KW_FLUSH_TIMEOUT", "KW_LOG_MSG_SIZE",
+  "KW_FILE_TEMPLATE", "KW_PROTO_TEMPLATE", "KW_MARK_MODE", "KW_ENCODING",
+  "KW_TYPE", "KW_CHAIN_HOSTNAMES", "KW_NORMALIZE_HOSTNAMES",
+  "KW_KEEP_HOSTNAME", "KW_CHECK_HOSTNAME", "KW_BAD_HOSTNAME",
+  "KW_KEEP_TIMESTAMP", "KW_USE_DNS", "KW_USE_FQDN", "KW_CUSTOM_DOMAIN",
+  "KW_DNS_CACHE", "KW_DNS_CACHE_SIZE", "KW_DNS_CACHE_EXPIRE",
+  "KW_DNS_CACHE_EXPIRE_FAILED", "KW_DNS_CACHE_HOSTS", "KW_PERSIST_ONLY",
+  "KW_USE_RCPTID", "KW_USE_UNIQID", "KW_TZ_CONVERT", "KW_TS_FORMAT",
+  "KW_FRAC_DIGITS", "KW_LOG_FIFO_SIZE", "KW_LOG_FETCH_LIMIT",
+  "KW_LOG_IW_SIZE", "KW_LOG_PREFIX", "KW_PROGRAM_OVERRIDE",
+  "KW_HOST_OVERRIDE", "KW_THROTTLE", "KW_THREADED",
+  "KW_PASS_UNIX_CREDENTIALS", "KW_PERSIST_NAME", "KW_FLAGS", "KW_PAD_SIZE",
+  "KW_TIME_ZONE", "KW_RECV_TIME_ZONE", "KW_SEND_TIME_ZONE",
   "KW_LOCAL_TIME_ZONE", "KW_FORMAT", "KW_TIME_REOPEN", "KW_TIME_REAP",
   "KW_TIME_SLEEP", "KW_TMPL_ESCAPE", "KW_OPTIONAL", "KW_CREATE_DIRS",
   "KW_OWNER", "KW_GROUP", "KW_PERM", "KW_DIR_OWNER", "KW_DIR_GROUP",
@@ -1891,15 +1853,15 @@ static const char *const yytname[] =
   "KW_TEMPLATE_FUNCTION", "KW_DEFAULT_FACILITY", "KW_DEFAULT_LEVEL",
   "KW_PORT", "KW_USE_TIME_RECVD", "KW_FACILITY", "KW_LEVEL", "KW_HOST",
   "KW_MATCH", "KW_MESSAGE", "KW_NETMASK", "KW_TAGS", "KW_NETMASK6",
-  "KW_VALUE", "KW_REWRITE", "KW_SET", "KW_SUBST", "KW_YES", "KW_NO",
-  "KW_IFDEF", "KW_ENDIF", "LL_DOTDOT", "LL_IDENTIFIER", "LL_NUMBER",
-  "LL_FLOAT", "LL_STRING", "LL_TOKEN", "LL_BLOCK", "LL_PRAGMA", "LL_EOL",
-  "LL_ERROR", "KW_VALUE_PAIRS", "KW_SELECT", "KW_EXCLUDE", "KW_PAIR",
-  "KW_KEY", "KW_SCOPE", "KW_SHIFT", "KW_REKEY", "KW_ADD_PREFIX",
-  "KW_REPLACE_PREFIX", "KW_ON_ERROR", "KW_RETRIES", "KW_KV_PARSER",
-  "KW_LINUX_AUDIT_PARSER", "KW_PREFIX", "'('", "')'", "'{'", "'}'", "';'",
-  "':'", "$accept", "start", "parser_expr_kv", "$@1", "$@2",
-  "parser_kv_opts", "parser_kv_opt", "string", "parser_opt", YY_NULLPTR
+  "KW_REWRITE", "KW_YES", "KW_NO", "KW_IFDEF", "KW_ENDIF", "LL_DOTDOT",
+  "LL_IDENTIFIER", "LL_NUMBER", "LL_FLOAT", "LL_STRING", "LL_TOKEN",
+  "LL_BLOCK", "LL_PRAGMA", "LL_EOL", "LL_ERROR", "KW_VALUE_PAIRS",
+  "KW_EXCLUDE", "KW_PAIR", "KW_KEY", "KW_SCOPE", "KW_SHIFT", "KW_REKEY",
+  "KW_ADD_PREFIX", "KW_REPLACE_PREFIX", "KW_ON_ERROR", "KW_RETRIES",
+  "KW_KV_PARSER", "KW_LINUX_AUDIT_PARSER", "KW_PREFIX",
+  "KW_VALUE_SEPARATOR", "'('", "')'", "'{'", "'}'", "';'", "':'",
+  "$accept", "start", "parser_expr_kv", "$@1", "$@2", "parser_kv_opts",
+  "parser_kv_opt", "string", "parser_opt", YY_NULLPTR
 };
 #endif
 
@@ -1911,27 +1873,25 @@ static const yytype_uint16 yytoknum[] =
        0,   256, 10512,     1,     2,     3,     4,     5,     6,     7,
        8,     9,    10,    11,    12,    13,    14,    15,    16,    17,
       18, 10000, 10001, 10002, 10003, 10004, 10005, 10006, 10007, 10008,
-   10009, 10010, 10011, 10030, 10031, 10032, 10033, 10034, 10035, 10036,
-   10037, 10038, 10039, 10040, 10050, 10051, 10052, 10053, 10054, 10055,
-   10060, 10071, 10072, 10073, 10074, 10075, 10076, 10077, 10078, 10079,
-   10080, 10081, 10090, 10091, 10092, 10093, 10094, 10100, 10110, 10111,
-   10112, 10120, 10121, 10130, 10131, 10132, 10140, 10141, 10142, 10150,
-   10151, 10152, 10160, 10162, 10163, 10164, 10165, 10166, 10170, 10171,
-   10231, 10190, 10200, 10201, 10202, 10203, 10204, 10205, 10210, 10211,
-   10212, 10220, 10230, 10240, 10250, 10251, 10252, 10260, 10261, 10262,
-   10270, 10271, 10272, 10300, 10301, 10323, 10340, 10350, 10351, 10352,
-   10353, 10354, 10355, 10356, 10357, 10361, 10370, 10371, 10372, 10380,
-   10381, 10410, 10411, 10420, 10421, 10422, 10423, 10424, 10425, 10426,
-   10427, 10428, 10429, 10500, 10501, 10502, 10503, 10504, 10505, 10506,
-   10507, 10508, 10509, 10510, 10511, 10513, 10514, 10515,    40,    41,
-     123,   125,    59,    58
+   10009, 10010, 10011, 10060, 10071, 10072, 10073, 10074, 10075, 10076,
+   10077, 10078, 10079, 10080, 10081, 10082, 10083, 10090, 10091, 10092,
+   10093, 10094, 10100, 10110, 10111, 10112, 10120, 10121, 10130, 10131,
+   10132, 10140, 10141, 10142, 10150, 10151, 10152, 10160, 10162, 10163,
+   10164, 10165, 10166, 10170, 10171, 10231, 10302, 10190, 10200, 10201,
+   10202, 10203, 10204, 10205, 10210, 10211, 10212, 10220, 10230, 10240,
+   10250, 10251, 10252, 10260, 10261, 10262, 10270, 10271, 10272, 10300,
+   10301, 10323, 10340, 10350, 10351, 10352, 10353, 10354, 10355, 10356,
+   10357, 10370, 10380, 10381, 10410, 10411, 10420, 10421, 10422, 10423,
+   10424, 10425, 10426, 10427, 10428, 10429, 10500, 10502, 10503, 10504,
+   10505, 10506, 10507, 10508, 10509, 10510, 10511, 10513, 10514, 10515,
+   10516,    40,    41,   123,   125,    59,    58
 };
 # endif
 
-#define YYPACT_NINF -150
+#define YYPACT_NINF -135
 
 #define yypact_value_is_default(Yystate) \
-  (!!((Yystate) == (-150)))
+  (!!((Yystate) == (-135)))
 
 #define YYTABLE_NINF -1
 
@@ -1942,9 +1902,10 @@ static const yytype_uint16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int16 yypact[] =
 {
-      -4,  -148,     4,  -149,  -147,  -150,  -150,  -150,  -150,  -110,
-    -110,  -146,  -145,  -144,  -110,  -150,  -143,  -131,  -131,  -150,
-    -150,  -150,  -150,  -150,  -142,  -141,  -150,  -150
+       3,  -134,    10,  -130,  -129,  -135,  -135,  -135,  -135,   -96,
+     -96,  -128,  -127,  -126,  -125,   -96,  -135,  -124,  -115,  -115,
+    -115,  -135,  -135,  -135,  -135,  -135,  -123,  -122,  -121,  -135,
+    -135,  -135
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -1953,20 +1914,21 @@ static const yytype_int16 yypact[] =
 static const yytype_uint8 yydefact[] =
 {
        0,     0,     0,     0,     0,     2,     1,     3,     5,     8,
-       8,     0,     0,     0,     8,    10,     0,     0,     0,     4,
-       7,     6,    11,    12,     0,     0,    13,     9
+       8,     0,     0,     0,     0,     8,    11,     0,     0,     0,
+       0,     4,     7,     6,    12,    13,     0,     0,     0,    14,
+       9,    10
 };
 
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int16 yypgoto[] =
 {
-    -150,  -150,  -150,  -150,  -150,    -9,  -150,    -8,  -150
+    -135,  -135,  -135,  -135,  -135,    -9,  -135,   -12,  -135
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-      -1,     2,     5,     9,    10,    13,    14,    24,    15
+      -1,     2,     5,     9,    10,    14,    15,    26,    16
 };
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -1974,43 +1936,44 @@ static const yytype_int8 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_uint8 yytable[] =
 {
-      11,    16,     1,    22,     6,    20,    23,     3,     4,     7,
-      25,     8,    17,    18,     0,    19,    21,    26,    27,     0,
+      11,    17,    24,     3,     4,    25,    22,    27,    28,     1,
+       6,     7,     8,    18,    19,    20,     0,    21,    23,    29,
+      30,    31,     0,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,    12
+       0,     0,     0,    12,    13
 };
 
 static const yytype_int16 yycheck[] =
 {
-     110,    10,     6,   134,     0,    14,   137,   155,   156,   158,
-      18,   158,   158,   158,    -1,   159,   159,   159,   159,    -1,
+      96,    10,   117,   137,   138,   120,    15,    19,    20,     6,
+       0,   141,   141,   141,   141,   141,    -1,   142,   142,   142,
+     142,   142,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
       -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
-      -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
-      -1,    -1,    -1,    -1,    -1,    -1,    -1,   157
+      -1,    -1,    -1,   139,   140
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
      symbol of state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
-       0,     6,   165,   155,   156,   166,     0,   158,   158,   167,
-     168,   110,   157,   169,   170,   172,   169,   158,   158,   159,
-     169,   159,   134,   137,   171,   171,   159,   159
+       0,     6,   148,   137,   138,   149,     0,   141,   141,   150,
+     151,    96,   139,   140,   152,   153,   155,   152,   141,   141,
+     141,   142,   152,   142,   117,   120,   154,   154,   154,   142,
+     142,   142
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
-       0,   164,   165,   167,   166,   168,   166,   169,   169,   170,
-     170,   171,   171,   172
+       0,   147,   148,   150,   149,   151,   149,   152,   152,   153,
+     153,   153,   154,   154,   155
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
 static const yytype_uint8 yyr2[] =
 {
        0,     2,     2,     0,     5,     0,     5,     2,     0,     4,
-       1,     1,     1,     4
+       4,     1,     1,     1,     4
 };
 
 
@@ -2506,7 +2469,36 @@ yydestruct (const char *yymsg, int yytype, YYSTYPE *yyvaluep, YYLTYPE *yylocatio
   YY_SYMBOL_PRINT (yymsg, yytype, yyvaluep, yylocationp);
 
   YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN
-  YYUSE (yytype);
+  switch (yytype)
+    {
+          case 117: /* LL_IDENTIFIER  */
+#line 289 "modules/kvformat/kv-parser-grammar.y" /* yacc.c:1257  */
+      { free(((*yyvaluep).cptr)); }
+#line 2478 "modules/kvformat/kv-parser-grammar.c" /* yacc.c:1257  */
+        break;
+
+    case 120: /* LL_STRING  */
+#line 289 "modules/kvformat/kv-parser-grammar.y" /* yacc.c:1257  */
+      { free(((*yyvaluep).cptr)); }
+#line 2484 "modules/kvformat/kv-parser-grammar.c" /* yacc.c:1257  */
+        break;
+
+    case 122: /* LL_BLOCK  */
+#line 289 "modules/kvformat/kv-parser-grammar.y" /* yacc.c:1257  */
+      { free(((*yyvaluep).cptr)); }
+#line 2490 "modules/kvformat/kv-parser-grammar.c" /* yacc.c:1257  */
+        break;
+
+    case 154: /* string  */
+#line 289 "modules/kvformat/kv-parser-grammar.y" /* yacc.c:1257  */
+      { free(((*yyvaluep).cptr)); }
+#line 2496 "modules/kvformat/kv-parser-grammar.c" /* yacc.c:1257  */
+        break;
+
+
+      default:
+        break;
+    }
   YY_IGNORE_MAYBE_UNINITIALIZED_END
 }
 
@@ -2792,47 +2784,57 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 383 "kv-parser-grammar.y" /* yacc.c:1646  */
+#line 363 "modules/kvformat/kv-parser-grammar.y" /* yacc.c:1646  */
     { YYACCEPT; }
-#line 2798 "modules/kvformat/kv-parser-grammar.c" /* yacc.c:1646  */
+#line 2790 "modules/kvformat/kv-parser-grammar.c" /* yacc.c:1646  */
     break;
 
   case 3:
-#line 389 "kv-parser-grammar.y" /* yacc.c:1646  */
+#line 369 "modules/kvformat/kv-parser-grammar.y" /* yacc.c:1646  */
     {
 	    last_parser = *instance = (LogParser *) kv_parser_new(configuration, kv_scanner_new());
 	  }
-#line 2806 "modules/kvformat/kv-parser-grammar.c" /* yacc.c:1646  */
+#line 2798 "modules/kvformat/kv-parser-grammar.c" /* yacc.c:1646  */
     break;
 
   case 4:
-#line 393 "kv-parser-grammar.y" /* yacc.c:1646  */
+#line 373 "modules/kvformat/kv-parser-grammar.y" /* yacc.c:1646  */
     { (yyval.ptr) = last_parser; }
-#line 2812 "modules/kvformat/kv-parser-grammar.c" /* yacc.c:1646  */
+#line 2804 "modules/kvformat/kv-parser-grammar.c" /* yacc.c:1646  */
     break;
 
   case 5:
-#line 395 "kv-parser-grammar.y" /* yacc.c:1646  */
+#line 375 "modules/kvformat/kv-parser-grammar.y" /* yacc.c:1646  */
     {
 	    last_parser = *instance = (LogParser *) kv_parser_new(configuration, linux_audit_scanner_new());
 	  }
-#line 2820 "modules/kvformat/kv-parser-grammar.c" /* yacc.c:1646  */
+#line 2812 "modules/kvformat/kv-parser-grammar.c" /* yacc.c:1646  */
     break;
 
   case 6:
-#line 399 "kv-parser-grammar.y" /* yacc.c:1646  */
+#line 379 "modules/kvformat/kv-parser-grammar.y" /* yacc.c:1646  */
     { (yyval.ptr) = last_parser; }
-#line 2826 "modules/kvformat/kv-parser-grammar.c" /* yacc.c:1646  */
+#line 2818 "modules/kvformat/kv-parser-grammar.c" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 408 "kv-parser-grammar.y" /* yacc.c:1646  */
+#line 388 "modules/kvformat/kv-parser-grammar.y" /* yacc.c:1646  */
     { kv_parser_set_prefix(last_parser, (yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 2832 "modules/kvformat/kv-parser-grammar.c" /* yacc.c:1646  */
+#line 2824 "modules/kvformat/kv-parser-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 13:
-#line 692 "kv-parser-grammar.y" /* yacc.c:1646  */
+  case 10:
+#line 390 "modules/kvformat/kv-parser-grammar.y" /* yacc.c:1646  */
+    {
+	    CHECK_ERROR((strlen((yyvsp[-1].cptr)) == 1), (yylsp[-1]), "kv-parser() only supports single-character values for value-separator()");
+            kv_parser_set_value_separator(last_parser, (yyvsp[-1].cptr)[0]);
+            free((yyvsp[-1].cptr));
+          }
+#line 2834 "modules/kvformat/kv-parser-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 14:
+#line 678 "modules/kvformat/kv-parser-grammar.y" /* yacc.c:1646  */
     {
                                                   LogTemplate *template;
                                                   GError *error = NULL;
@@ -2842,11 +2844,11 @@ yyreduce:
                                                   log_parser_set_template(last_parser, template);
                                                   free((yyvsp[-1].cptr));
                                                 }
-#line 2846 "modules/kvformat/kv-parser-grammar.c" /* yacc.c:1646  */
+#line 2848 "modules/kvformat/kv-parser-grammar.c" /* yacc.c:1646  */
     break;
 
 
-#line 2850 "modules/kvformat/kv-parser-grammar.c" /* yacc.c:1646  */
+#line 2852 "modules/kvformat/kv-parser-grammar.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -3081,5 +3083,5 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 944 "kv-parser-grammar.y" /* yacc.c:1906  */
+#line 938 "modules/kvformat/kv-parser-grammar.y" /* yacc.c:1906  */
 

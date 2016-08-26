@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2013 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2002-2013 Balabit
  * Copyright (c) 1998-2013 Balázs Scheidler
  *
  * This library is free software; you can redistribute it and/or
@@ -79,6 +79,7 @@ enum
   SCS_RIEMANN        = 33,
   SCS_JOURNALD       = 34,
   SCS_JAVA           = 35,
+  SCS_HTTP           = 36,
   SCS_MAX,
   SCS_SOURCE_MASK    = 0xff
 };

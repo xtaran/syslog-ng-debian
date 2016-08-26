@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 BalaBit
+ * Copyright (c) 2015 Balabit
  * Copyright (c) 2015 Balazs Scheidler <balazs.scheidler@balabit.com>
  *
  * This library is free software; you can redistribute it and/or
@@ -26,7 +26,7 @@
 #include "python-helpers.h"
 #include "messages.h"
 #include "debugger/debugger.h"
-#include "logmsg.h"
+#include "logmsg/logmsg.h"
 
 static void
 _add_nv_keys_to_list(gpointer key, gpointer value, gpointer user_data)
@@ -116,16 +116,14 @@ python_fetch_debugger_command(void)
 
       msg_error("Error calling debugger fetch_command",
                 evt_tag_str("function", DEBUGGER_FETCH_COMMAND),
-                evt_tag_str("exception", _py_format_exception_text(buf, sizeof(buf))),
-                NULL);
+                evt_tag_str("exception", _py_format_exception_text(buf, sizeof(buf))));
       goto exit;
     }
   if (!PyBytes_Check(ret))
     {
       msg_error("Return value from debugger fetch_command is not a string",
                 evt_tag_str("function", DEBUGGER_FETCH_COMMAND),
-                evt_tag_str("type", ret->ob_type->tp_name),
-                NULL);
+                evt_tag_str("type", ret->ob_type->tp_name));
       Py_DECREF(ret);
       goto exit;
     }

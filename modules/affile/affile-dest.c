@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2013 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2002-2013 Balabit
  * Copyright (c) 1998-2012 Balázs Scheidler
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -24,7 +24,6 @@
 #include "affile-dest.h"
 #include "driver.h"
 #include "messages.h"
-#include "misc.h"
 #include "serialize.h"
 #include "gprocess.h"
 #include "stats/stats-registry.h"
@@ -139,8 +138,7 @@ affile_dw_reap(gpointer s)
       g_static_mutex_unlock(&self->lock);
       msg_verbose("Destination timed out, reaping",
                   evt_tag_str("template", self->owner->filename_template->template),
-                  evt_tag_str("filename", self->filename),
-                  NULL);
+                  evt_tag_str("filename", self->filename));
       affile_dd_reap_writer(self->owner, self);
     }
   else
@@ -170,8 +168,7 @@ affile_dw_reopen(AFFileDestWriter *self)
 
    msg_verbose("Initializing destination file writer",
               evt_tag_str("template", self->owner->filename_template->template),
-              evt_tag_str("filename", self->filename),
-              NULL);
+              evt_tag_str("filename", self->filename));
 
   self->last_open_stamp = self->last_msg_stamp;
   if (self->owner->overwrite_if_older > 0 && 
@@ -180,8 +177,7 @@ affile_dw_reopen(AFFileDestWriter *self)
     {
       msg_info("Destination file is older than overwrite_if_older(), overwriting",
                  evt_tag_str("filename", self->filename),
-                 evt_tag_int("overwrite_if_older", self->owner->overwrite_if_older),
-                 NULL);
+                 evt_tag_int("overwrite_if_older", self->owner->overwrite_if_older));
       unlink(self->filename);
     }
 
@@ -199,8 +195,7 @@ affile_dw_reopen(AFFileDestWriter *self)
     {
       msg_error("Error opening file for writing",
                 evt_tag_str("filename", self->filename),
-                evt_tag_errno(EVT_TAG_OSERROR, errno),
-                NULL);
+                evt_tag_errno(EVT_TAG_OSERROR, errno));
     }
 
   log_writer_reopen(self->writer, proto);
@@ -234,7 +229,7 @@ affile_dw_init(LogPipe *s)
 
   if (!log_pipe_init((LogPipe *) self->writer))
     {
-      msg_error("Error initializing log writer", NULL);
+      msg_error("Error initializing log writer");
       log_pipe_unref((LogPipe *) self->writer);
       self->writer = NULL;
       return FALSE;
@@ -387,19 +382,25 @@ affile_dd_set_overwrite_if_older(LogDriver *s, gint overwrite_if_older)
 }
 
 void 
-affile_dd_set_fsync(LogDriver *s, gboolean fsync)
+affile_dd_set_fsync(LogDriver *s, gboolean use_fsync)
 {
   AFFileDestDriver *self = (AFFileDestDriver *) s;
 
-  self->use_fsync = fsync;
+  self->use_fsync = use_fsync;
 }
 
-static inline gchar *
-affile_dd_format_persist_name(AFFileDestDriver *self)
+static inline const gchar *
+affile_dd_format_persist_name(const LogPipe *s)
 {
+  const AFFileDestDriver *self = (const AFFileDestDriver *)s;
   static gchar persist_name[1024];
 
-  g_snprintf(persist_name, sizeof(persist_name), "affile_dd_writers(%s)", self->filename_template->template);
+  if (s->persist_name)
+    g_snprintf(persist_name, sizeof(persist_name), "affile_dd.%s.writers", s->persist_name);
+  else
+    g_snprintf(persist_name, sizeof(persist_name), "affile_dd_writers(%s)",
+               self->filename_template->template);
+
   return persist_name;
 }
 
@@ -470,18 +471,18 @@ affile_dd_init(LogPipe *s)
   if (self->time_reap == -1)
     self->time_reap = cfg->time_reap;
   
-  file_perm_options_init(&self->file_perm_options, cfg);
+  file_perm_options_inherit_from(&self->file_perm_options, &cfg->file_perm_options);
   log_writer_options_init(&self->writer_options, cfg, 0);
               
   if (self->filename_is_a_template)
     {
-      self->writer_hash = cfg_persist_config_fetch(cfg, affile_dd_format_persist_name(self));
+      self->writer_hash = cfg_persist_config_fetch(cfg, affile_dd_format_persist_name(s));
       if (self->writer_hash)
         g_hash_table_foreach(self->writer_hash, affile_dd_reuse_writer, self);
     }
   else
     {
-      self->single_writer = cfg_persist_config_fetch(cfg, affile_dd_format_persist_name(self));
+      self->single_writer = cfg_persist_config_fetch(cfg, affile_dd_format_persist_name(s));
       if (self->single_writer)
         {
           affile_dw_set_owner(self->single_writer, self);
@@ -555,7 +556,8 @@ affile_dd_deinit(LogPipe *s)
       g_assert(self->writer_hash == NULL);
 
       log_pipe_deinit(&self->single_writer->super);
-      cfg_persist_config_add(cfg, affile_dd_format_persist_name(self), self->single_writer, affile_dd_destroy_writer, FALSE);
+      cfg_persist_config_add(cfg, affile_dd_format_persist_name(s), self->single_writer,
+                             affile_dd_destroy_writer, FALSE);
       self->single_writer = NULL;
     }
   else if (self->writer_hash)
@@ -563,7 +565,8 @@ affile_dd_deinit(LogPipe *s)
       g_assert(self->single_writer == NULL);
       
       g_hash_table_foreach(self->writer_hash, affile_dd_deinit_writer, NULL);
-      cfg_persist_config_add(cfg, affile_dd_format_persist_name(self), self->writer_hash, affile_dd_destroy_writer_hash, FALSE);
+      cfg_persist_config_add(cfg, affile_dd_format_persist_name(s), self->writer_hash,
+                             affile_dd_destroy_writer_hash, FALSE);
       self->writer_hash = NULL;
     }
 
@@ -748,6 +751,7 @@ affile_dd_new_instance(gchar *filename, GlobalConfig *cfg)
   self->super.super.super.deinit = affile_dd_deinit;
   self->super.super.super.queue = affile_dd_queue;
   self->super.super.super.free_fn = affile_dd_free;
+  self->super.super.super.generate_persist_name = affile_dd_format_persist_name;
   self->filename_template = log_template_new(cfg, NULL);
   log_template_compile(self->filename_template, filename, NULL);
   log_writer_options_defaults(&self->writer_options);

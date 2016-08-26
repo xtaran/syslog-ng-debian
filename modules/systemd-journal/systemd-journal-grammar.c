@@ -59,7 +59,7 @@
 #define YYPULL 1
 
 /* "%code top" blocks.  */
-#line 24 "systemd-journal-grammar.y" /* yacc.c:316  */
+#line 24 "modules/systemd-journal/systemd-journal-grammar.y" /* yacc.c:316  */
 
 #include "systemd-journal-parser.h"
 
@@ -96,8 +96,8 @@
 
 /* In a future release of Bison, this section will be replaced
    by #include "y.tab.h".  */
-#ifndef YY_SYSTEMD_JOURNAL_Y_TAB_H_INCLUDED
-# define YY_SYSTEMD_JOURNAL_Y_TAB_H_INCLUDED
+#ifndef YY_SYSTEMD_JOURNAL_MODULES_SYSTEMD_JOURNAL_SYSTEMD_JOURNAL_GRAMMAR_H_INCLUDED
+# define YY_SYSTEMD_JOURNAL_MODULES_SYSTEMD_JOURNAL_SYSTEMD_JOURNAL_GRAMMAR_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -141,23 +141,6 @@ extern int systemd_journal_debug;
     KW_CHANNEL = 10009,
     KW_INTERNAL = 10010,
     KW_FILE = 10011,
-    KW_SQL = 10030,
-    KW_TYPE = 10031,
-    KW_COLUMNS = 10032,
-    KW_INDEXES = 10033,
-    KW_VALUES = 10034,
-    KW_PASSWORD = 10035,
-    KW_DATABASE = 10036,
-    KW_USERNAME = 10037,
-    KW_TABLE = 10038,
-    KW_ENCODING = 10039,
-    KW_SESSION_STATEMENTS = 10040,
-    KW_DELIMITERS = 10050,
-    KW_QUOTES = 10051,
-    KW_QUOTE_PAIRS = 10052,
-    KW_NULL = 10053,
-    KW_CHARS = 10054,
-    KW_STRINGS = 10055,
     KW_SYSLOG = 10060,
     KW_MARK_FREQ = 10071,
     KW_STATS_FREQ = 10072,
@@ -170,6 +153,8 @@ extern int systemd_journal_debug;
     KW_FILE_TEMPLATE = 10079,
     KW_PROTO_TEMPLATE = 10080,
     KW_MARK_MODE = 10081,
+    KW_ENCODING = 10082,
+    KW_TYPE = 10083,
     KW_CHAIN_HOSTNAMES = 10090,
     KW_NORMALIZE_HOSTNAMES = 10091,
     KW_KEEP_HOSTNAME = 10092,
@@ -199,6 +184,7 @@ extern int systemd_journal_debug;
     KW_THROTTLE = 10170,
     KW_THREADED = 10171,
     KW_PASS_UNIX_CREDENTIALS = 10231,
+    KW_PERSIST_NAME = 10302,
     KW_FLAGS = 10190,
     KW_PAD_SIZE = 10200,
     KW_TIME_ZONE = 10201,
@@ -233,10 +219,7 @@ extern int systemd_journal_debug;
     KW_NETMASK = 10355,
     KW_TAGS = 10356,
     KW_NETMASK6 = 10357,
-    KW_VALUE = 10361,
     KW_REWRITE = 10370,
-    KW_SET = 10371,
-    KW_SUBST = 10372,
     KW_YES = 10380,
     KW_NO = 10381,
     KW_IFDEF = 10410,
@@ -252,7 +235,6 @@ extern int systemd_journal_debug;
     LL_EOL = 10428,
     LL_ERROR = 10429,
     KW_VALUE_PAIRS = 10500,
-    KW_SELECT = 10501,
     KW_EXCLUDE = 10502,
     KW_PAIR = 10503,
     KW_KEY = 10504,
@@ -299,23 +281,6 @@ extern int systemd_journal_debug;
 #define KW_CHANNEL 10009
 #define KW_INTERNAL 10010
 #define KW_FILE 10011
-#define KW_SQL 10030
-#define KW_TYPE 10031
-#define KW_COLUMNS 10032
-#define KW_INDEXES 10033
-#define KW_VALUES 10034
-#define KW_PASSWORD 10035
-#define KW_DATABASE 10036
-#define KW_USERNAME 10037
-#define KW_TABLE 10038
-#define KW_ENCODING 10039
-#define KW_SESSION_STATEMENTS 10040
-#define KW_DELIMITERS 10050
-#define KW_QUOTES 10051
-#define KW_QUOTE_PAIRS 10052
-#define KW_NULL 10053
-#define KW_CHARS 10054
-#define KW_STRINGS 10055
 #define KW_SYSLOG 10060
 #define KW_MARK_FREQ 10071
 #define KW_STATS_FREQ 10072
@@ -328,6 +293,8 @@ extern int systemd_journal_debug;
 #define KW_FILE_TEMPLATE 10079
 #define KW_PROTO_TEMPLATE 10080
 #define KW_MARK_MODE 10081
+#define KW_ENCODING 10082
+#define KW_TYPE 10083
 #define KW_CHAIN_HOSTNAMES 10090
 #define KW_NORMALIZE_HOSTNAMES 10091
 #define KW_KEEP_HOSTNAME 10092
@@ -357,6 +324,7 @@ extern int systemd_journal_debug;
 #define KW_THROTTLE 10170
 #define KW_THREADED 10171
 #define KW_PASS_UNIX_CREDENTIALS 10231
+#define KW_PERSIST_NAME 10302
 #define KW_FLAGS 10190
 #define KW_PAD_SIZE 10200
 #define KW_TIME_ZONE 10201
@@ -391,10 +359,7 @@ extern int systemd_journal_debug;
 #define KW_NETMASK 10355
 #define KW_TAGS 10356
 #define KW_NETMASK6 10357
-#define KW_VALUE 10361
 #define KW_REWRITE 10370
-#define KW_SET 10371
-#define KW_SUBST 10372
 #define KW_YES 10380
 #define KW_NO 10381
 #define KW_IFDEF 10410
@@ -410,7 +375,6 @@ extern int systemd_journal_debug;
 #define LL_EOL 10428
 #define LL_ERROR 10429
 #define KW_VALUE_PAIRS 10500
-#define KW_SELECT 10501
 #define KW_EXCLUDE 10502
 #define KW_PAIR 10503
 #define KW_KEY 10504
@@ -445,13 +409,13 @@ struct YYLTYPE
 
 int systemd_journal_parse (CfgLexer *lexer, LogDriver **instance, gpointer arg);
 
-#endif /* !YY_SYSTEMD_JOURNAL_Y_TAB_H_INCLUDED  */
+#endif /* !YY_SYSTEMD_JOURNAL_MODULES_SYSTEMD_JOURNAL_SYSTEMD_JOURNAL_GRAMMAR_H_INCLUDED  */
 
 /* Copy the second part of user declarations.  */
 
-#line 453 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:358  */
+#line 417 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:358  */
 /* Unqualified %code blocks.  */
-#line 29 "systemd-journal-grammar.y" /* yacc.c:359  */
+#line 29 "modules/systemd-journal/systemd-journal-grammar.y" /* yacc.c:359  */
 
 
 #include "systemd-journal.h"
@@ -466,7 +430,7 @@ int systemd_journal_parse (CfgLexer *lexer, LogDriver **instance, gpointer arg);
 
 JournalReaderOptions *last_journal_reader_options;
 
-#line 62 "systemd-journal-grammar.y" /* yacc.c:359  */
+#line 62 "modules/systemd-journal/systemd-journal-grammar.y" /* yacc.c:359  */
 
 
 # define YYLLOC_DEFAULT(Current, Rhs, N)                                \
@@ -527,7 +491,7 @@ JournalReaderOptions *last_journal_reader_options;
 
 
 
-#line 531 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:359  */
+#line 495 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:359  */
 
 #ifdef short
 # undef short
@@ -771,16 +735,16 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  5
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   97
+#define YYLAST   96
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  164
+#define YYNTOKENS  146
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  17
+#define YYNNTS  18
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  41
+#define YYNRULES  43
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  101
+#define YYNSTATES  106
 
 /* YYTRANSLATE[YYX] -- Symbol number corresponding to YYX as returned
    by yylex, with out-of-bounds checking.  */
@@ -798,15 +762,15 @@ static const yytype_uint8 yytranslate[] =
       12,    13,    14,    15,    16,    17,    18,    19,    20,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     158,   159,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,   163,   162,
+     140,   141,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,   145,   144,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,   160,     2,   161,     2,     2,     2,     2,
+       2,     2,     2,   142,     2,   143,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -1797,66 +1761,66 @@ static const yytype_uint8 yytranslate[] =
       21,    22,    23,    24,    25,    26,    27,    28,    29,    30,
       31,    32,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      33,    34,    35,    36,    37,    38,    39,    40,    41,    42,
-      43,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      44,    45,    46,    47,    48,    49,     2,     2,     2,     2,
-      50,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,    51,    52,    53,    54,    55,    56,    57,    58,    59,
-      60,    61,     2,     2,     2,     2,     2,     2,     2,     2,
-      62,    63,    64,    65,    66,     2,     2,     2,     2,     2,
-      67,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      68,    69,    70,     2,     2,     2,     2,     2,     2,     2,
-      71,    72,     2,     2,     2,     2,     2,     2,     2,     2,
-      73,    74,    75,     2,     2,     2,     2,     2,     2,     2,
-      76,    77,    78,     2,     2,     2,     2,     2,     2,     2,
-      79,    80,    81,     2,     2,     2,     2,     2,     2,     2,
-      82,     2,    83,    84,    85,    86,    87,     2,     2,     2,
-      88,    89,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      91,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      92,    93,    94,    95,    96,    97,     2,     2,     2,     2,
-      98,    99,   100,     2,     2,     2,     2,     2,     2,     2,
-     101,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     102,    90,     2,     2,     2,     2,     2,     2,     2,     2,
-     103,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     104,   105,   106,     2,     2,     2,     2,     2,     2,     2,
-     107,   108,   109,     2,     2,     2,     2,     2,     2,     2,
-     110,   111,   112,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     113,   114,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,   115,     2,     2,     2,     2,     2,     2,
+      33,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,    34,    35,    36,    37,    38,    39,    40,    41,    42,
+      43,    44,    45,    46,     2,     2,     2,     2,     2,     2,
+      47,    48,    49,    50,    51,     2,     2,     2,     2,     2,
+      52,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+      53,    54,    55,     2,     2,     2,     2,     2,     2,     2,
+      56,    57,     2,     2,     2,     2,     2,     2,     2,     2,
+      58,    59,    60,     2,     2,     2,     2,     2,     2,     2,
+      61,    62,    63,     2,     2,     2,     2,     2,     2,     2,
+      64,    65,    66,     2,     2,     2,     2,     2,     2,     2,
+      67,     2,    68,    69,    70,    71,    72,     2,     2,     2,
+      73,    74,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     116,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     117,   118,   119,   120,   121,   122,   123,   124,     2,     2,
-       2,   125,     2,     2,     2,     2,     2,     2,     2,     2,
-     126,   127,   128,     2,     2,     2,     2,     2,     2,     2,
-     129,   130,     2,     2,     2,     2,     2,     2,     2,     2,
+      77,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+      78,    79,    80,    81,    82,    83,     2,     2,     2,     2,
+      84,    85,    86,     2,     2,     2,     2,     2,     2,     2,
+      87,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+      88,    75,     2,     2,     2,     2,     2,     2,     2,     2,
+      89,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+      90,    91,    92,     2,     2,     2,     2,     2,     2,     2,
+      93,    94,    95,     2,     2,     2,     2,     2,     2,     2,
+      96,    97,    98,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     131,   132,     2,     2,     2,     2,     2,     2,     2,     2,
-     133,   134,   135,   136,   137,   138,   139,   140,   141,   142,
+      99,   100,    76,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,   101,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     102,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     103,   104,   105,   106,   107,   108,   109,   110,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     111,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     112,   113,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     114,   115,     2,     2,     2,     2,     2,     2,     2,     2,
+     116,   117,   118,   119,   120,   121,   122,   123,   124,   125,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     143,   144,   145,   146,   147,   148,   149,   150,   151,   152,
-     153,   154,     2,   155,   156,   157
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     126,     2,   127,   128,   129,   130,   131,   132,   133,   134,
+     135,   136,     2,   137,   138,   139
 };
 
 #if YYDEBUG
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   390,   390,   394,   399,   399,   408,   409,   413,   419,
-     425,   433,   440,   444,   448,   673,   674,   678,   679,   680,
-     684,   685,   695,   699,   700,   709,   720,   728,   746,   747,
-     748,   749,   750,   751,   752,   753,   754,   754,   767,   768,
-     769,   770
+       0,   370,   370,   374,   379,   379,   388,   389,   393,   399,
+     405,   413,   420,   424,   428,   653,   654,   658,   659,   660,
+     664,   665,   675,   679,   680,   689,   700,   708,   726,   727,
+     728,   729,   730,   731,   732,   733,   734,   734,   735,   754,
+     755,   756,   757,   797
 };
 #endif
 
@@ -1874,24 +1838,21 @@ static const char *const yytname[] =
   "LL_CONTEXT_INNER_SRC", "LL_CONTEXT_CLIENT_PROTO",
   "LL_CONTEXT_SERVER_PROTO", "KW_SOURCE", "KW_FILTER", "KW_PARSER",
   "KW_DESTINATION", "KW_LOG", "KW_OPTIONS", "KW_INCLUDE", "KW_BLOCK",
-  "KW_JUNCTION", "KW_CHANNEL", "KW_INTERNAL", "KW_FILE", "KW_SQL",
-  "KW_TYPE", "KW_COLUMNS", "KW_INDEXES", "KW_VALUES", "KW_PASSWORD",
-  "KW_DATABASE", "KW_USERNAME", "KW_TABLE", "KW_ENCODING",
-  "KW_SESSION_STATEMENTS", "KW_DELIMITERS", "KW_QUOTES", "KW_QUOTE_PAIRS",
-  "KW_NULL", "KW_CHARS", "KW_STRINGS", "KW_SYSLOG", "KW_MARK_FREQ",
-  "KW_STATS_FREQ", "KW_STATS_LEVEL", "KW_STATS_LIFETIME", "KW_FLUSH_LINES",
-  "KW_SUPPRESS", "KW_FLUSH_TIMEOUT", "KW_LOG_MSG_SIZE", "KW_FILE_TEMPLATE",
-  "KW_PROTO_TEMPLATE", "KW_MARK_MODE", "KW_CHAIN_HOSTNAMES",
-  "KW_NORMALIZE_HOSTNAMES", "KW_KEEP_HOSTNAME", "KW_CHECK_HOSTNAME",
-  "KW_BAD_HOSTNAME", "KW_KEEP_TIMESTAMP", "KW_USE_DNS", "KW_USE_FQDN",
-  "KW_CUSTOM_DOMAIN", "KW_DNS_CACHE", "KW_DNS_CACHE_SIZE",
-  "KW_DNS_CACHE_EXPIRE", "KW_DNS_CACHE_EXPIRE_FAILED",
-  "KW_DNS_CACHE_HOSTS", "KW_PERSIST_ONLY", "KW_USE_RCPTID",
-  "KW_USE_UNIQID", "KW_TZ_CONVERT", "KW_TS_FORMAT", "KW_FRAC_DIGITS",
-  "KW_LOG_FIFO_SIZE", "KW_LOG_FETCH_LIMIT", "KW_LOG_IW_SIZE",
-  "KW_LOG_PREFIX", "KW_PROGRAM_OVERRIDE", "KW_HOST_OVERRIDE",
-  "KW_THROTTLE", "KW_THREADED", "KW_PASS_UNIX_CREDENTIALS", "KW_FLAGS",
-  "KW_PAD_SIZE", "KW_TIME_ZONE", "KW_RECV_TIME_ZONE", "KW_SEND_TIME_ZONE",
+  "KW_JUNCTION", "KW_CHANNEL", "KW_INTERNAL", "KW_FILE", "KW_SYSLOG",
+  "KW_MARK_FREQ", "KW_STATS_FREQ", "KW_STATS_LEVEL", "KW_STATS_LIFETIME",
+  "KW_FLUSH_LINES", "KW_SUPPRESS", "KW_FLUSH_TIMEOUT", "KW_LOG_MSG_SIZE",
+  "KW_FILE_TEMPLATE", "KW_PROTO_TEMPLATE", "KW_MARK_MODE", "KW_ENCODING",
+  "KW_TYPE", "KW_CHAIN_HOSTNAMES", "KW_NORMALIZE_HOSTNAMES",
+  "KW_KEEP_HOSTNAME", "KW_CHECK_HOSTNAME", "KW_BAD_HOSTNAME",
+  "KW_KEEP_TIMESTAMP", "KW_USE_DNS", "KW_USE_FQDN", "KW_CUSTOM_DOMAIN",
+  "KW_DNS_CACHE", "KW_DNS_CACHE_SIZE", "KW_DNS_CACHE_EXPIRE",
+  "KW_DNS_CACHE_EXPIRE_FAILED", "KW_DNS_CACHE_HOSTS", "KW_PERSIST_ONLY",
+  "KW_USE_RCPTID", "KW_USE_UNIQID", "KW_TZ_CONVERT", "KW_TS_FORMAT",
+  "KW_FRAC_DIGITS", "KW_LOG_FIFO_SIZE", "KW_LOG_FETCH_LIMIT",
+  "KW_LOG_IW_SIZE", "KW_LOG_PREFIX", "KW_PROGRAM_OVERRIDE",
+  "KW_HOST_OVERRIDE", "KW_THROTTLE", "KW_THREADED",
+  "KW_PASS_UNIX_CREDENTIALS", "KW_PERSIST_NAME", "KW_FLAGS", "KW_PAD_SIZE",
+  "KW_TIME_ZONE", "KW_RECV_TIME_ZONE", "KW_SEND_TIME_ZONE",
   "KW_LOCAL_TIME_ZONE", "KW_FORMAT", "KW_TIME_REOPEN", "KW_TIME_REAP",
   "KW_TIME_SLEEP", "KW_TMPL_ESCAPE", "KW_OPTIONAL", "KW_CREATE_DIRS",
   "KW_OWNER", "KW_GROUP", "KW_PERM", "KW_DIR_OWNER", "KW_DIR_GROUP",
@@ -1899,18 +1860,17 @@ static const char *const yytname[] =
   "KW_TEMPLATE_FUNCTION", "KW_DEFAULT_FACILITY", "KW_DEFAULT_LEVEL",
   "KW_PORT", "KW_USE_TIME_RECVD", "KW_FACILITY", "KW_LEVEL", "KW_HOST",
   "KW_MATCH", "KW_MESSAGE", "KW_NETMASK", "KW_TAGS", "KW_NETMASK6",
-  "KW_VALUE", "KW_REWRITE", "KW_SET", "KW_SUBST", "KW_YES", "KW_NO",
-  "KW_IFDEF", "KW_ENDIF", "LL_DOTDOT", "LL_IDENTIFIER", "LL_NUMBER",
-  "LL_FLOAT", "LL_STRING", "LL_TOKEN", "LL_BLOCK", "LL_PRAGMA", "LL_EOL",
-  "LL_ERROR", "KW_VALUE_PAIRS", "KW_SELECT", "KW_EXCLUDE", "KW_PAIR",
-  "KW_KEY", "KW_SCOPE", "KW_SHIFT", "KW_REKEY", "KW_ADD_PREFIX",
-  "KW_REPLACE_PREFIX", "KW_ON_ERROR", "KW_RETRIES", "KW_SYSTEMD_JOURNAL",
-  "KW_PREFIX", "KW_MAX_FIELD_SIZE", "'('", "')'", "'{'", "'}'", "';'",
-  "':'", "$accept", "start", "source_systemd_journal",
+  "KW_REWRITE", "KW_YES", "KW_NO", "KW_IFDEF", "KW_ENDIF", "LL_DOTDOT",
+  "LL_IDENTIFIER", "LL_NUMBER", "LL_FLOAT", "LL_STRING", "LL_TOKEN",
+  "LL_BLOCK", "LL_PRAGMA", "LL_EOL", "LL_ERROR", "KW_VALUE_PAIRS",
+  "KW_EXCLUDE", "KW_PAIR", "KW_KEY", "KW_SCOPE", "KW_SHIFT", "KW_REKEY",
+  "KW_ADD_PREFIX", "KW_REPLACE_PREFIX", "KW_ON_ERROR", "KW_RETRIES",
+  "KW_SYSTEMD_JOURNAL", "KW_PREFIX", "KW_MAX_FIELD_SIZE", "'('", "')'",
+  "'{'", "'}'", "';'", "':'", "$accept", "start", "source_systemd_journal",
   "source_systemd_journal_params", "$@1", "source_systemd_journal_options",
   "source_systemd_journal_option", "string", "yesno", "dnsmode",
   "string_list", "string_list_build", "level_string", "facility_string",
-  "source_option", "$@8", "host_resolve_option", YY_NULLPTR
+  "source_option", "$@8", "host_resolve_option", "driver_option", YY_NULLPTR
 };
 #endif
 
@@ -1922,27 +1882,25 @@ static const yytype_uint16 yytoknum[] =
        0,   256, 10512,     1,     2,     3,     4,     5,     6,     7,
        8,     9,    10,    11,    12,    13,    14,    15,    16,    17,
       18, 10000, 10001, 10002, 10003, 10004, 10005, 10006, 10007, 10008,
-   10009, 10010, 10011, 10030, 10031, 10032, 10033, 10034, 10035, 10036,
-   10037, 10038, 10039, 10040, 10050, 10051, 10052, 10053, 10054, 10055,
-   10060, 10071, 10072, 10073, 10074, 10075, 10076, 10077, 10078, 10079,
-   10080, 10081, 10090, 10091, 10092, 10093, 10094, 10100, 10110, 10111,
-   10112, 10120, 10121, 10130, 10131, 10132, 10140, 10141, 10142, 10150,
-   10151, 10152, 10160, 10162, 10163, 10164, 10165, 10166, 10170, 10171,
-   10231, 10190, 10200, 10201, 10202, 10203, 10204, 10205, 10210, 10211,
-   10212, 10220, 10230, 10240, 10250, 10251, 10252, 10260, 10261, 10262,
-   10270, 10271, 10272, 10300, 10301, 10323, 10340, 10350, 10351, 10352,
-   10353, 10354, 10355, 10356, 10357, 10361, 10370, 10371, 10372, 10380,
-   10381, 10410, 10411, 10420, 10421, 10422, 10423, 10424, 10425, 10426,
-   10427, 10428, 10429, 10500, 10501, 10502, 10503, 10504, 10505, 10506,
-   10507, 10508, 10509, 10510, 10511, 10513, 10514, 10515,    40,    41,
-     123,   125,    59,    58
+   10009, 10010, 10011, 10060, 10071, 10072, 10073, 10074, 10075, 10076,
+   10077, 10078, 10079, 10080, 10081, 10082, 10083, 10090, 10091, 10092,
+   10093, 10094, 10100, 10110, 10111, 10112, 10120, 10121, 10130, 10131,
+   10132, 10140, 10141, 10142, 10150, 10151, 10152, 10160, 10162, 10163,
+   10164, 10165, 10166, 10170, 10171, 10231, 10302, 10190, 10200, 10201,
+   10202, 10203, 10204, 10205, 10210, 10211, 10212, 10220, 10230, 10240,
+   10250, 10251, 10252, 10260, 10261, 10262, 10270, 10271, 10272, 10300,
+   10301, 10323, 10340, 10350, 10351, 10352, 10353, 10354, 10355, 10356,
+   10357, 10370, 10380, 10381, 10410, 10411, 10420, 10421, 10422, 10423,
+   10424, 10425, 10426, 10427, 10428, 10429, 10500, 10502, 10503, 10504,
+   10505, 10506, 10507, 10508, 10509, 10510, 10511, 10513, 10514, 10515,
+      40,    41,   123,   125,    59,    58
 };
 # endif
 
-#define YYPACT_NINF -149
+#define YYPACT_NINF -122
 
 #define yypact_value_is_default(Yystate) \
-  (!!((Yystate) == (-149)))
+  (!!((Yystate) == (-122)))
 
 #define YYTABLE_NINF -8
 
@@ -1951,19 +1909,19 @@ static const yytype_uint16 yytoknum[] =
 
   /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
      STATE-NUM.  */
-static const yytype_int16 yypact[] =
+static const yytype_int8 yypact[] =
 {
-       1,  -148,    19,  -128,  -149,  -149,  -149,  -127,   -62,  -149,
-    -125,  -123,  -122,  -121,  -120,  -119,  -118,  -117,  -116,  -115,
-    -114,  -113,  -112,  -111,  -149,   -62,  -149,   -59,  -101,  -101,
-    -101,   -87,   -86,  -126,  -126,  -126,  -126,   -49,  -126,  -126,
-    -126,   -85,  -149,  -105,  -104,  -103,  -100,  -149,  -149,  -149,
-    -149,   -99,   -96,   -95,   -94,   -93,  -149,  -149,   -92,   -91,
-     -84,   -83,  -149,  -149,   -82,  -149,   -81,  -126,   -80,  -149,
-     -79,   -78,  -101,   -73,  -101,  -101,  -149,  -149,  -149,  -149,
-    -149,  -149,  -149,  -149,  -149,  -149,  -149,  -149,  -149,  -149,
-    -149,   -77,  -149,  -149,   -76,   -75,   -72,  -149,  -149,  -149,
-    -149
+       1,  -120,    18,  -121,  -122,  -122,  -122,  -115,   -47,  -122,
+    -112,  -110,  -109,  -100,   -98,   -97,   -96,   -95,   -94,   -93,
+     -92,   -91,   -90,   -89,   -79,  -122,   -47,  -122,   -40,  -122,
+    -103,  -103,  -103,   -55,   -54,  -113,  -113,  -113,  -113,  -113,
+     -32,  -113,  -113,  -113,   -53,  -122,   -74,   -73,   -72,   -71,
+    -122,  -122,  -122,  -122,  -114,   -70,   -69,   -68,   -67,  -122,
+    -122,   -66,   -65,   -64,   -63,   -62,  -122,  -122,   -61,  -122,
+     -60,  -113,   -59,  -122,   -57,   -52,  -103,   -58,  -103,  -103,
+    -122,  -122,  -122,  -122,  -122,  -122,  -122,  -122,  -122,  -122,
+    -122,  -122,  -122,  -122,  -122,  -122,   -51,  -122,  -122,   -48,
+     -46,   -45,  -122,  -122,  -122,  -122
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -1973,29 +1931,29 @@ static const yytype_uint8 yydefact[] =
 {
        0,     0,     0,     0,     2,     1,     4,     0,    36,     3,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     5,    36,    14,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,    24,
-       0,     0,     6,     0,     0,     0,     0,    37,    17,    18,
-      19,     0,     0,     0,     0,     0,    15,    16,     0,     0,
-       0,     0,    27,    26,     0,    25,     0,    24,     0,    22,
-       0,     0,     0,     0,     0,     0,    29,    30,    34,    13,
-      28,    33,    31,    32,    10,     9,     8,    23,    35,    11,
-      12,     0,    21,    20,     0,     0,     0,    41,    39,    38,
-      40
+       0,     0,     0,     0,     0,     5,    36,    14,     0,    38,
+       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+       0,     0,    24,     0,     0,     6,     0,     0,     0,     0,
+      37,    17,    18,    19,     0,     0,     0,     0,     0,    15,
+      16,     0,     0,     0,     0,     0,    27,    26,     0,    25,
+       0,    24,     0,    22,     0,     0,     0,     0,     0,     0,
+      29,    30,    34,    13,    28,    33,    31,    32,    43,    10,
+       9,     8,    23,    35,    11,    12,     0,    21,    20,     0,
+       0,     0,    42,    40,    39,    41
 };
 
   /* YYPGOTO[NTERM-NUM].  */
-static const yytype_int16 yypgoto[] =
+static const yytype_int8 yypgoto[] =
 {
-    -149,  -149,  -149,  -149,  -149,    34,  -149,   -20,    -3,  -149,
-    -149,     6,  -149,  -149,  -149,  -149,  -149
+    -122,  -122,  -122,  -122,  -122,    -6,  -122,    -2,   -20,  -122,
+    -122,    -1,  -122,  -122,  -122,  -122,  -122,  -122
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-      -1,     2,     4,     7,     8,    24,    25,    67,    51,    94,
-      68,    69,    66,    64,    26,    27,    47
+      -1,     2,     4,     7,     8,    25,    26,    71,    54,    99,
+      72,    73,    70,    68,    27,    28,    50,    29
 };
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -2003,57 +1961,57 @@ static const yytype_int8 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int8 yytable[] =
 {
-      10,    62,    11,    92,    43,    12,     1,     3,    56,    44,
-      45,    57,    46,    58,    59,    60,    61,    63,    65,     5,
-      70,    13,    14,    15,    16,    17,    52,    53,    48,    49,
-       6,    18,     9,    28,    50,    29,    30,    31,    32,    33,
-      34,    35,    36,    37,    38,    39,    40,    41,    54,    55,
-      71,    19,    20,    72,    73,    74,    48,    49,    75,    42,
-      76,    21,    50,    77,    78,    79,    80,    81,    82,    91,
-      93,    95,    96,    87,     0,    83,    84,    85,    86,    88,
-      89,    90,    97,    98,    99,    56,     0,   100,    57,     0,
-       0,     0,     0,     0,    22,    23,     0,    -7
+      10,    66,    11,    97,    59,    12,     1,    60,    46,    51,
+      52,    55,    56,    47,    48,    53,    49,     3,     5,     6,
+      45,    13,    14,    15,    16,    17,     9,    80,    30,    18,
+      31,    32,    19,    61,    62,    63,    64,    65,    67,    69,
+      33,    74,    34,    35,    36,    37,    38,    39,    40,    41,
+      42,    43,    20,    21,    51,    52,    96,    98,   100,   101,
+      53,    44,    22,    57,    58,    75,    76,    77,    78,    79,
+      92,    81,    82,    83,    84,    85,    86,    87,    88,    89,
+      90,    91,    93,     0,    94,    59,     0,     0,    60,    95,
+     102,    23,    24,   103,    -7,   104,   105
 };
 
 static const yytype_int16 yycheck[] =
 {
-      62,    50,    64,    76,    63,    67,     5,   155,   134,    68,
-      69,   137,    71,    33,    34,    35,    36,    37,    38,     0,
-      40,    83,    84,    85,    86,    87,    29,    30,   129,   130,
-     158,    93,   159,   158,   135,   158,   158,   158,   158,   158,
-     158,   158,   158,   158,   158,   158,   158,   158,   135,   135,
-     135,   113,   114,   158,   158,   158,   129,   130,   158,    25,
-     159,   123,   135,   159,   159,   159,   159,   159,   159,    72,
-      73,    74,    75,    67,    -1,   159,   159,   159,   159,   159,
-     159,   159,   159,   159,   159,   134,    -1,   159,   137,    -1,
-      -1,    -1,    -1,    -1,   156,   157,    -1,   159
+      47,    33,    49,    61,   117,    52,     5,   120,    48,   112,
+     113,    31,    32,    53,    54,   118,    56,   137,     0,   140,
+      26,    68,    69,    70,    71,    72,   141,   141,   140,    76,
+     140,   140,    79,    35,    36,    37,    38,    39,    40,    41,
+     140,    43,   140,   140,   140,   140,   140,   140,   140,   140,
+     140,   140,    99,   100,   112,   113,    76,    77,    78,    79,
+     118,   140,   109,   118,   118,   118,   140,   140,   140,   140,
+      71,   141,   141,   141,   141,   141,   141,   141,   141,   141,
+     141,   141,   141,    -1,   141,   117,    -1,    -1,   120,   141,
+     141,   138,   139,   141,   141,   141,   141
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
      symbol of state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
-       0,     5,   165,   155,   166,     0,   158,   167,   168,   159,
-      62,    64,    67,    83,    84,    85,    86,    87,    93,   113,
-     114,   123,   156,   157,   169,   170,   178,   179,   158,   158,
-     158,   158,   158,   158,   158,   158,   158,   158,   158,   158,
-     158,   158,   169,    63,    68,    69,    71,   180,   129,   130,
-     135,   172,   172,   172,   135,   135,   134,   137,   171,   171,
-     171,   171,    50,   171,   177,   171,   176,   171,   174,   175,
-     171,   135,   158,   158,   158,   158,   159,   159,   159,   159,
-     159,   159,   159,   159,   159,   159,   159,   175,   159,   159,
-     159,   172,    76,   172,   173,   172,   172,   159,   159,   159,
-     159
+       0,     5,   147,   137,   148,     0,   140,   149,   150,   141,
+      47,    49,    52,    68,    69,    70,    71,    72,    76,    79,
+      99,   100,   109,   138,   139,   151,   152,   160,   161,   163,
+     140,   140,   140,   140,   140,   140,   140,   140,   140,   140,
+     140,   140,   140,   140,   140,   151,    48,    53,    54,    56,
+     162,   112,   113,   118,   154,   154,   154,   118,   118,   117,
+     120,   153,   153,   153,   153,   153,    33,   153,   159,   153,
+     158,   153,   156,   157,   153,   118,   140,   140,   140,   140,
+     141,   141,   141,   141,   141,   141,   141,   141,   141,   141,
+     141,   141,   157,   141,   141,   141,   154,    61,   154,   155,
+     154,   154,   141,   141,   141,   141
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
-       0,   164,   165,   166,   168,   167,   169,   169,   170,   170,
-     170,   170,   170,   170,   170,   171,   171,   172,   172,   172,
-     173,   173,   174,   175,   175,   176,   177,   177,   178,   178,
-     178,   178,   178,   178,   178,   178,   179,   178,   180,   180,
-     180,   180
+       0,   146,   147,   148,   150,   149,   151,   151,   152,   152,
+     152,   152,   152,   152,   152,   153,   153,   154,   154,   154,
+     155,   155,   156,   157,   157,   158,   159,   159,   160,   160,
+     160,   160,   160,   160,   160,   160,   161,   160,   160,   162,
+     162,   162,   162,   163
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
@@ -2062,8 +2020,8 @@ static const yytype_uint8 yyr2[] =
        0,     2,     2,     4,     0,     2,     2,     0,     4,     4,
        4,     4,     4,     4,     1,     1,     1,     1,     1,     1,
        1,     1,     1,     2,     0,     1,     1,     1,     4,     4,
-       4,     4,     4,     4,     4,     4,     0,     2,     4,     4,
-       4,     4
+       4,     4,     4,     4,     4,     4,     0,     2,     1,     4,
+       4,     4,     4,     4
 };
 
 
@@ -2559,7 +2517,36 @@ yydestruct (const char *yymsg, int yytype, YYSTYPE *yyvaluep, YYLTYPE *yylocatio
   YY_SYMBOL_PRINT (yymsg, yytype, yyvaluep, yylocationp);
 
   YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN
-  YYUSE (yytype);
+  switch (yytype)
+    {
+          case 117: /* LL_IDENTIFIER  */
+#line 296 "modules/systemd-journal/systemd-journal-grammar.y" /* yacc.c:1257  */
+      { free(((*yyvaluep).cptr)); }
+#line 2526 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1257  */
+        break;
+
+    case 120: /* LL_STRING  */
+#line 296 "modules/systemd-journal/systemd-journal-grammar.y" /* yacc.c:1257  */
+      { free(((*yyvaluep).cptr)); }
+#line 2532 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1257  */
+        break;
+
+    case 122: /* LL_BLOCK  */
+#line 296 "modules/systemd-journal/systemd-journal-grammar.y" /* yacc.c:1257  */
+      { free(((*yyvaluep).cptr)); }
+#line 2538 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1257  */
+        break;
+
+    case 153: /* string  */
+#line 296 "modules/systemd-journal/systemd-journal-grammar.y" /* yacc.c:1257  */
+      { free(((*yyvaluep).cptr)); }
+#line 2544 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1257  */
+        break;
+
+
+      default:
+        break;
+    }
   YY_IGNORE_MAYBE_UNINITIALIZED_END
 }
 
@@ -2845,141 +2832,141 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 390 "systemd-journal-grammar.y" /* yacc.c:1646  */
+#line 370 "modules/systemd-journal/systemd-journal-grammar.y" /* yacc.c:1646  */
     { YYACCEPT; }
-#line 2851 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
+#line 2838 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
     break;
 
   case 3:
-#line 394 "systemd-journal-grammar.y" /* yacc.c:1646  */
+#line 374 "modules/systemd-journal/systemd-journal-grammar.y" /* yacc.c:1646  */
     { (yyval.ptr) = (yyvsp[-1].ptr); }
-#line 2857 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
+#line 2844 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
     break;
 
   case 4:
-#line 399 "systemd-journal-grammar.y" /* yacc.c:1646  */
+#line 379 "modules/systemd-journal/systemd-journal-grammar.y" /* yacc.c:1646  */
     {
 	    last_driver = *instance = systemd_journal_sd_new(configuration);
       last_journal_reader_options = systemd_journal_get_reader_options(last_driver);
 	    last_source_options = &last_journal_reader_options->super;
 	  }
-#line 2867 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
+#line 2854 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
     break;
 
   case 5:
-#line 404 "systemd-journal-grammar.y" /* yacc.c:1646  */
+#line 384 "modules/systemd-journal/systemd-journal-grammar.y" /* yacc.c:1646  */
     { (yyval.ptr) = last_driver; }
-#line 2873 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
+#line 2860 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
     break;
 
   case 8:
-#line 414 "systemd-journal-grammar.y" /* yacc.c:1646  */
+#line 394 "modules/systemd-journal/systemd-journal-grammar.y" /* yacc.c:1646  */
     {
       if (last_journal_reader_options->default_pri == 0xFFFF)
         last_journal_reader_options->default_pri = LOG_USER;
       last_journal_reader_options->default_pri = (last_journal_reader_options->default_pri & ~7) | (yyvsp[-1].num);
     }
-#line 2883 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
+#line 2870 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 420 "systemd-journal-grammar.y" /* yacc.c:1646  */
+#line 400 "modules/systemd-journal/systemd-journal-grammar.y" /* yacc.c:1646  */
     {
       if (last_journal_reader_options->default_pri == 0xFFFF)
         last_journal_reader_options->default_pri = LOG_NOTICE;
       last_journal_reader_options->default_pri = (last_journal_reader_options->default_pri & 7) | (yyvsp[-1].num);
     }
-#line 2893 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
+#line 2880 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 426 "systemd-journal-grammar.y" /* yacc.c:1646  */
+#line 406 "modules/systemd-journal/systemd-journal-grammar.y" /* yacc.c:1646  */
     {
-      if (last_journal_reader_options->recv_time_zone);
+      if (last_journal_reader_options->recv_time_zone)
         free(last_journal_reader_options->recv_time_zone);
       last_journal_reader_options->recv_time_zone = strdup((yyvsp[-1].cptr));
       free((yyvsp[-1].cptr));
     }
-#line 2904 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
+#line 2891 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
     break;
 
   case 11:
-#line 434 "systemd-journal-grammar.y" /* yacc.c:1646  */
+#line 414 "modules/systemd-journal/systemd-journal-grammar.y" /* yacc.c:1646  */
     {
       if (last_journal_reader_options->prefix)
         free(last_journal_reader_options->prefix);
       last_journal_reader_options->prefix = strdup((yyvsp[-1].cptr));
       free((yyvsp[-1].cptr));
     }
-#line 2915 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
+#line 2902 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
     break;
 
   case 12:
-#line 441 "systemd-journal-grammar.y" /* yacc.c:1646  */
+#line 421 "modules/systemd-journal/systemd-journal-grammar.y" /* yacc.c:1646  */
     {
       last_journal_reader_options->max_field_size = (yyvsp[-1].num);
     }
-#line 2923 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
+#line 2910 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
     break;
 
   case 13:
-#line 445 "systemd-journal-grammar.y" /* yacc.c:1646  */
+#line 425 "modules/systemd-journal/systemd-journal-grammar.y" /* yacc.c:1646  */
     {
       last_journal_reader_options->fetch_limit = (yyvsp[-1].num);
     }
-#line 2931 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
+#line 2918 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
     break;
 
   case 17:
-#line 678 "systemd-journal-grammar.y" /* yacc.c:1646  */
+#line 658 "modules/systemd-journal/systemd-journal-grammar.y" /* yacc.c:1646  */
     { (yyval.num) = 1; }
-#line 2937 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
+#line 2924 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
     break;
 
   case 18:
-#line 679 "systemd-journal-grammar.y" /* yacc.c:1646  */
+#line 659 "modules/systemd-journal/systemd-journal-grammar.y" /* yacc.c:1646  */
     { (yyval.num) = 0; }
-#line 2943 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
+#line 2930 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
     break;
 
   case 19:
-#line 680 "systemd-journal-grammar.y" /* yacc.c:1646  */
+#line 660 "modules/systemd-journal/systemd-journal-grammar.y" /* yacc.c:1646  */
     { (yyval.num) = (yyvsp[0].num); }
-#line 2949 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
+#line 2936 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
     break;
 
   case 20:
-#line 684 "systemd-journal-grammar.y" /* yacc.c:1646  */
+#line 664 "modules/systemd-journal/systemd-journal-grammar.y" /* yacc.c:1646  */
     { (yyval.num) = (yyvsp[0].num); }
-#line 2955 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
+#line 2942 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
     break;
 
   case 21:
-#line 685 "systemd-journal-grammar.y" /* yacc.c:1646  */
+#line 665 "modules/systemd-journal/systemd-journal-grammar.y" /* yacc.c:1646  */
     { (yyval.num) = 2; }
-#line 2961 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
+#line 2948 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
     break;
 
   case 22:
-#line 695 "systemd-journal-grammar.y" /* yacc.c:1646  */
+#line 675 "modules/systemd-journal/systemd-journal-grammar.y" /* yacc.c:1646  */
     { (yyval.ptr) = g_list_reverse((yyvsp[0].ptr)); }
-#line 2967 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
+#line 2954 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
     break;
 
   case 23:
-#line 699 "systemd-journal-grammar.y" /* yacc.c:1646  */
+#line 679 "modules/systemd-journal/systemd-journal-grammar.y" /* yacc.c:1646  */
     { (yyval.ptr) = g_list_append((yyvsp[0].ptr), g_strdup((yyvsp[-1].cptr))); free((yyvsp[-1].cptr)); }
-#line 2973 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
+#line 2960 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
     break;
 
   case 24:
-#line 700 "systemd-journal-grammar.y" /* yacc.c:1646  */
+#line 680 "modules/systemd-journal/systemd-journal-grammar.y" /* yacc.c:1646  */
     { (yyval.ptr) = NULL; }
-#line 2979 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
+#line 2966 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
     break;
 
   case 25:
-#line 710 "systemd-journal-grammar.y" /* yacc.c:1646  */
+#line 690 "modules/systemd-journal/systemd-journal-grammar.y" /* yacc.c:1646  */
     {
 	    /* return the numeric value of the "level" */
 	    int n = syslog_name_lookup_level_by_name((yyvsp[0].cptr));
@@ -2987,11 +2974,11 @@ yyreduce:
 	    free((yyvsp[0].cptr));
             (yyval.num) = n;
 	  }
-#line 2991 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
+#line 2978 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
     break;
 
   case 26:
-#line 721 "systemd-journal-grammar.y" /* yacc.c:1646  */
+#line 701 "modules/systemd-journal/systemd-journal-grammar.y" /* yacc.c:1646  */
     {
             /* return the numeric value of facility */
 	    int n = syslog_name_lookup_facility_by_name((yyvsp[0].cptr));
@@ -2999,95 +2986,101 @@ yyreduce:
 	    free((yyvsp[0].cptr));
 	    (yyval.num) = n;
 	  }
-#line 3003 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
+#line 2990 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
     break;
 
   case 27:
-#line 728 "systemd-journal-grammar.y" /* yacc.c:1646  */
+#line 708 "modules/systemd-journal/systemd-journal-grammar.y" /* yacc.c:1646  */
     { (yyval.num) = LOG_SYSLOG; }
-#line 3009 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
+#line 2996 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
     break;
 
   case 28:
-#line 746 "systemd-journal-grammar.y" /* yacc.c:1646  */
+#line 726 "modules/systemd-journal/systemd-journal-grammar.y" /* yacc.c:1646  */
     { last_source_options->init_window_size = (yyvsp[-1].num); }
-#line 3015 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
+#line 3002 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
     break;
 
   case 29:
-#line 747 "systemd-journal-grammar.y" /* yacc.c:1646  */
+#line 727 "modules/systemd-journal/systemd-journal-grammar.y" /* yacc.c:1646  */
     { last_source_options->chain_hostnames = (yyvsp[-1].num); }
-#line 3021 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
+#line 3008 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
     break;
 
   case 30:
-#line 748 "systemd-journal-grammar.y" /* yacc.c:1646  */
+#line 728 "modules/systemd-journal/systemd-journal-grammar.y" /* yacc.c:1646  */
     { last_source_options->keep_hostname = (yyvsp[-1].num); }
-#line 3027 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
+#line 3014 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
     break;
 
   case 31:
-#line 749 "systemd-journal-grammar.y" /* yacc.c:1646  */
+#line 729 "modules/systemd-journal/systemd-journal-grammar.y" /* yacc.c:1646  */
     { last_source_options->program_override = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 3033 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
+#line 3020 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
     break;
 
   case 32:
-#line 750 "systemd-journal-grammar.y" /* yacc.c:1646  */
+#line 730 "modules/systemd-journal/systemd-journal-grammar.y" /* yacc.c:1646  */
     { last_source_options->host_override = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 3039 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
+#line 3026 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
     break;
 
   case 33:
-#line 751 "systemd-journal-grammar.y" /* yacc.c:1646  */
+#line 731 "modules/systemd-journal/systemd-journal-grammar.y" /* yacc.c:1646  */
     { gchar *p = strrchr((yyvsp[-1].cptr), ':'); if (p) *p = 0; last_source_options->program_override = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 3045 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
+#line 3032 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
     break;
 
   case 34:
-#line 752 "systemd-journal-grammar.y" /* yacc.c:1646  */
+#line 732 "modules/systemd-journal/systemd-journal-grammar.y" /* yacc.c:1646  */
     { last_source_options->keep_timestamp = (yyvsp[-1].num); }
-#line 3051 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
+#line 3038 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
     break;
 
   case 35:
-#line 753 "systemd-journal-grammar.y" /* yacc.c:1646  */
+#line 733 "modules/systemd-journal/systemd-journal-grammar.y" /* yacc.c:1646  */
     { log_source_options_set_tags(last_source_options, (yyvsp[-1].ptr)); }
-#line 3057 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
+#line 3044 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
     break;
 
   case 36:
-#line 754 "systemd-journal-grammar.y" /* yacc.c:1646  */
+#line 734 "modules/systemd-journal/systemd-journal-grammar.y" /* yacc.c:1646  */
     { last_host_resolve_options = &last_source_options->host_resolve_options; }
-#line 3063 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 38:
-#line 767 "systemd-journal-grammar.y" /* yacc.c:1646  */
-    { last_host_resolve_options->use_fqdn = (yyvsp[-1].num); }
-#line 3069 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
+#line 3050 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
     break;
 
   case 39:
-#line 768 "systemd-journal-grammar.y" /* yacc.c:1646  */
-    { last_host_resolve_options->use_dns = (yyvsp[-1].num); }
-#line 3075 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
+#line 754 "modules/systemd-journal/systemd-journal-grammar.y" /* yacc.c:1646  */
+    { last_host_resolve_options->use_fqdn = (yyvsp[-1].num); }
+#line 3056 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
     break;
 
   case 40:
-#line 769 "systemd-journal-grammar.y" /* yacc.c:1646  */
-    { last_host_resolve_options->use_dns_cache = (yyvsp[-1].num); }
-#line 3081 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
+#line 755 "modules/systemd-journal/systemd-journal-grammar.y" /* yacc.c:1646  */
+    { last_host_resolve_options->use_dns = (yyvsp[-1].num); }
+#line 3062 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
     break;
 
   case 41:
-#line 770 "systemd-journal-grammar.y" /* yacc.c:1646  */
+#line 756 "modules/systemd-journal/systemd-journal-grammar.y" /* yacc.c:1646  */
+    { last_host_resolve_options->use_dns_cache = (yyvsp[-1].num); }
+#line 3068 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 42:
+#line 757 "modules/systemd-journal/systemd-journal-grammar.y" /* yacc.c:1646  */
     { last_host_resolve_options->normalize_hostnames = (yyvsp[-1].num); }
-#line 3087 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
+#line 3074 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 43:
+#line 797 "modules/systemd-journal/systemd-journal-grammar.y" /* yacc.c:1646  */
+    { log_pipe_set_persist_name(&last_driver->super, g_strdup((yyvsp[-1].cptr))); free((yyvsp[-1].cptr)); }
+#line 3080 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
     break;
 
 
-#line 3091 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
+#line 3084 "modules/systemd-journal/systemd-journal-grammar.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -3322,5 +3315,5 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 984 "systemd-journal-grammar.y" /* yacc.c:1906  */
+#line 972 "modules/systemd-journal/systemd-journal-grammar.y" /* yacc.c:1906  */
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2012 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2002-2012 Balabit
  * Copyright (c) 1998-2012 Balázs Scheidler
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -56,7 +56,7 @@ struct _AFSocketDestDriver
 
   LogWriter *(*construct_writer)(AFSocketDestDriver *self);
   gboolean (*setup_addresses)(AFSocketDestDriver *s);
-  const gchar *(*get_dest_name)(AFSocketDestDriver *s);
+  const gchar *(*get_dest_name)(const AFSocketDestDriver *s);
 };
 
 static inline LogWriter *
@@ -72,7 +72,7 @@ afsocket_dd_setup_addresses(AFSocketDestDriver *s)
 }
 
 static inline const gchar *
-afsocket_dd_get_dest_name(AFSocketDestDriver *s)
+afsocket_dd_get_dest_name(const AFSocketDestDriver *s)
 {
   return s->get_dest_name(s);
 }

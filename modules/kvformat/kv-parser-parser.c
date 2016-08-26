@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 BalaBit
+ * Copyright (c) 2015 Balabit
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 as published
@@ -32,12 +32,13 @@ static CfgLexerKeyword kv_parser_keywords[] =
   { "kv_parser",          KW_KV_PARSER,  },
   { "linux_audit_parser", KW_LINUX_AUDIT_PARSER,  },
   { "prefix",             KW_PREFIX,  },
+  { "value_separator",    KW_VALUE_SEPARATOR,  },
   { NULL }
 };
 
 CfgParser kv_parser_parser =
 {
-#if ENABLE_DEBUG
+#if SYSLOG_NG_ENABLE_DEBUG
   .debug_flag = &kv_parser_debug,
 #endif
   .name = "kv-parser",

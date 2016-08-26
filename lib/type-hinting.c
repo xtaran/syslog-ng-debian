@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2014 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2012-2014 Balabit
  * Copyright (c) 2012-2014 Gergely Nagy <algernon@balabit.hu>
  *
  * This library is free software; you can redistribute it and/or
@@ -80,8 +80,7 @@ type_cast_drop_helper(gint drop_flags, const gchar *value,
     {
       msg_error("Casting error",
                 evt_tag_str("value", value),
-                evt_tag_str("type-hint", type_hint),
-                NULL);
+                evt_tag_str("type-hint", type_hint));
     }
   return drop_flags & ON_ERROR_DROP_MESSAGE;
 }

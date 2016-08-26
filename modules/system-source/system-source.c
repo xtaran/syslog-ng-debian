@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2014      BalaBit S.a.r.l., Luxembourg, Luxembourg
- * Copyright (c) 2012-2014 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2012-2014 Balabit
  * Copyright (c) 2012-2014 Gergely Nagy <algernon@balabit.hu>
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -67,7 +66,7 @@ system_sysblock_add_unix_dgram(GString *sysblock, const gchar *path,
   g_string_append_printf(sysblock, 
 "channel {\n"
 "    source { %s };\n"
-"    rewrite { set(\"${.unix.pid}\" value(\"PID\") condition(\"${.unix.pid}\" != \"\")); };\n"
+"    rewrite { set(\"${.unix.pid}\" value(\"PID\") condition(\"${.unix.pid}\" ne \"\")); };\n"
 "};\n", unix_driver->str);
 
   g_string_free(unix_driver, TRUE);
@@ -210,8 +209,7 @@ system_sysblock_add_linux_kmsg(GString *sysblock)
       msg_warning("system(): The kernel message buffer is not readable, "
                   "please check permissions if this is unintentional.",
                   evt_tag_str("device", kmsg),
-                  evt_tag_errno("error", errno),
-                  NULL);
+                  evt_tag_errno("error", errno));
     }
   else
     system_sysblock_add_file(sysblock, kmsg, -1,
@@ -264,8 +262,7 @@ system_generate_system_transports(GString *sysblock)
   if (uname(&u) < 0)
     {
       msg_error("system(): Cannot get information about the running kernel",
-                evt_tag_errno("error", errno),
-                NULL);
+                evt_tag_errno("error", errno));
       return FALSE;
     }
 
@@ -312,8 +309,7 @@ system_generate_system_transports(GString *sysblock)
       msg_error("system(): Error detecting platform, unable to define the system() source. "
                 "Please send your system information to the developers!",
                 evt_tag_str("sysname", u.sysname),
-                evt_tag_str("release", u.release),
-                NULL);
+                evt_tag_str("release", u.release));
       return FALSE;
     }
   g_string_append(sysblock, "\n");
@@ -331,15 +327,13 @@ system_generate_cim_parser(GlobalConfig *cfg, GString *sysblock)
 {
   if (cfg_is_config_version_older(cfg, 0x0306))
     {
-      msg_warning_once("WARNING: Starting with " VERSION_3_6 ", the system() source performs JSON parsing of messages starting with the '@cim:' prefix. No additional action is needed",
-                       NULL);
+      msg_warning_once("WARNING: Starting with " VERSION_3_6 ", the system() source performs JSON parsing of messages starting with the '@cim:' prefix. No additional action is needed");
       return;
     }
 
   if (!_is_json_parser_available(cfg))
     {
-      msg_debug("system(): json-parser() is missing, skipping the automatic JSON parsing of messages submitted via syslog(3), Please install the json module",
-                NULL);
+      msg_debug("system(): json-parser() is missing, skipping the automatic JSON parsing of messages submitted via syslog(3), Please install the json module");
       return;
     }
 
@@ -402,9 +396,9 @@ system_source_module_init(GlobalConfig *cfg, CfgArgs *args)
 const ModuleInfo module_info =
 {
   .canonical_name = "system-source",
-  .version = VERSION,
+  .version = SYSLOG_NG_VERSION,
   .description = "The system-source module provides support for determining the system log sources at run time.",
-  .core_revision = SOURCE_REVISION,
+  .core_revision = SYSLOG_NG_SOURCE_REVISION,
   .plugins = NULL,
   .plugins_len = 0,
 };

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2014 Balabit
  * Copyright (c) 2014 Balázs Scheidler
  *
  * This library is free software; you can redistribute it and/or
@@ -23,7 +23,7 @@
  */
 
 #include "template/function.h"
-#include "plugin-types.h"
+#include "plugin.h"
 
 typedef struct _UserTemplateFunction
 {
@@ -75,7 +75,7 @@ user_template_function_new(const gchar *name, LogTemplate *template)
   self->super.prepare = user_template_function_prepare;
   self->super.call = user_template_function_call;
   self->super.free_fn = user_template_function_free;
-  self->template = template;
+  self->template = log_template_ref(template);
   self->name = g_strdup(name);
   return &self->super;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 BalaBit
+ * Copyright (c) 2015 Balabit
  * Copyright (c) 2015 Balazs Scheidler <balazs.scheidler@balabit.com>
  *
  * This library is free software; you can redistribute it and/or
@@ -22,7 +22,6 @@
  *
  */
 #include "python-tf.h"
-#include "python-module.h"
 #include "python-helpers.h"
 #include "python-main.h"
 #include "template/simple-function.h"
@@ -56,8 +55,7 @@ _py_invoke_template_function(const gchar *function_name, LogMessage *msg, gint a
     {
       msg_error("$(python): Error looking up Python function",
                 evt_tag_str("function", function_name),
-                evt_tag_str("exception", _py_format_exception_text(buf, sizeof(buf))),
-                NULL);
+                evt_tag_str("exception", _py_format_exception_text(buf, sizeof(buf))));
       return NULL;
     }
 
@@ -70,8 +68,7 @@ _py_invoke_template_function(const gchar *function_name, LogMessage *msg, gint a
     {
       msg_error("$(python): Error invoking Python function",
                 evt_tag_str("function", function_name),
-                evt_tag_str("exception", _py_format_exception_text(buf, sizeof(buf))),
-                NULL);
+                evt_tag_str("exception", _py_format_exception_text(buf, sizeof(buf))));
       return NULL;
     }
   return ret;
@@ -85,8 +82,7 @@ _py_convert_return_value_to_result(const gchar *function_name, PyObject *ret, GS
     {
       msg_error("$(python): The return value is not a string",
                 evt_tag_str("function", function_name),
-                evt_tag_str("type", ret->ob_type->tp_name),
-                NULL);
+                evt_tag_str("type", ret->ob_type->tp_name));
       Py_DECREF(ret);
       return FALSE;
     }

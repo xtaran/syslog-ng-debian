@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 BalaBit
+ * Copyright (c) 2015 Balabit
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 as published
@@ -24,6 +24,7 @@
 #define WELF_FORMAT_WELF_H_INCLUDED
 
 #include "template/simple-function.h"
+#include "plugin.h"
 
 TEMPLATE_FUNCTION_DECLARE(tf_format_welf);
 

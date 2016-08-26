@@ -1,18 +1,19 @@
 /*
- * Copyright (c) 2014 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2014 Balabit
  * Copyright (c) 2014 Viktor Juhasz <viktor.juhasz@balabit.com>
  *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published
- * by the Free Software Foundation, or (at your option) any later version.
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * As an additional exemption you are allowed to compile & link against the
@@ -26,6 +27,9 @@
 #include "syslog-ng.h"
 #include "messages.h"
 #include "atomic.h"
+#include "lib/reloc.h"
+#include "plugin.h"
+#include "resolved-configurable-paths.h"
 
 struct _JavaVMSingleton
 {
@@ -41,7 +45,7 @@ struct _JavaVMSingleton
 static JavaVMSingleton *g_jvm_s;
 
 JavaVMSingleton *
-java_machine_ref()
+java_machine_ref(void)
 {
   if (g_jvm_s)
     {
@@ -52,7 +56,7 @@ java_machine_ref()
       g_jvm_s = g_new0(JavaVMSingleton, 1);
       g_atomic_counter_set(&g_jvm_s->ref_cnt, 1);
 
-      g_jvm_s->class_path = g_string_new(java_module_path);
+      g_jvm_s->class_path = g_string_new(get_installation_path_for(SYSLOG_NG_JAVA_MODULE_PATH));
       g_string_append(g_jvm_s->class_path, "/syslog-ng-core.jar");
     }
   return g_jvm_s;
@@ -61,7 +65,7 @@ java_machine_ref()
 static void inline
 __jvm_free(JavaVMSingleton *self)
 {
-  msg_debug("Java machine free", NULL);
+  msg_debug("Java machine free");
   g_string_free(self->class_path, TRUE);
   if (self->jvm)
     {
@@ -99,7 +103,7 @@ java_machine_start(JavaVMSingleton* self)
           "-Djava.class.path=%s", self->class_path->str);
 
       self->options[1].optionString = g_strdup_printf(
-          "-Djava.library.path=%s", module_path);
+          "-Djava.library.path=%s", resolvedConfigurablePaths.initial_module_path);
 
       self->options[2].optionString = g_strdup("-Xrs");
 
@@ -138,7 +142,7 @@ java_machine_attach_thread(JavaVMSingleton* self, JNIEnv **penv)
 }
 
 void
-java_machine_detach_thread()
+java_machine_detach_thread(void)
 {
   (*(g_jvm_s->jvm))->DetachCurrentThread(g_jvm_s->jvm);
 }

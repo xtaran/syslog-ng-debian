@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2013, 2015 BalaBit
+ * Copyright (c) 2002-2013, 2015 Balabit
  * Copyright (c) 1998-2013, 2015 Balázs Scheidler
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -21,11 +21,57 @@
  *
  */
 #include "synthetic-message.h"
-
+#include "pdb-error.h"
 #include "template/templates.h"
-#include "tags.h"
-#include "logmsg.h"
+#include "logmsg/logmsg.h"
 #include "logpipe.h"
+
+void
+synthetic_message_set_inherit_mode(SyntheticMessage *self, SyntheticMessageInheritMode inherit_mode)
+{
+  self->inherit_mode = inherit_mode;
+}
+
+gboolean
+synthetic_message_set_inherit_mode_string(SyntheticMessage *self, const gchar *inherit_mode_name, GError **error)
+{
+  gint inherit_mode = synthetic_message_lookup_inherit_mode(inherit_mode_name);
+
+  if (inherit_mode < 0)
+    {
+      g_set_error(error, PDB_ERROR, PDB_ERROR_FAILED, "Unknown inherit mode %s", inherit_mode_name);
+      return FALSE;
+    }
+  synthetic_message_set_inherit_mode(self, inherit_mode);
+  return TRUE;
+}
+
+void
+synthetic_message_set_inherit_properties_string(SyntheticMessage *self, const gchar *inherit_properties, GError **error)
+{
+  SyntheticMessageInheritMode inherit_mode;
+
+  if (strcasecmp(inherit_properties, "context") == 0)
+    {
+      inherit_mode = RAC_MSG_INHERIT_CONTEXT;
+    }
+  else if (inherit_properties[0] == 'T' || inherit_properties[0] == 't' ||
+      inherit_properties[0] == '1')
+    {
+      inherit_mode = RAC_MSG_INHERIT_LAST_MESSAGE;
+    }
+  else if (inherit_properties[0] == 'F' || inherit_properties[0] == 'f' ||
+           inherit_properties[0] == '0')
+    {
+      inherit_mode = RAC_MSG_INHERIT_NONE;
+    }
+  else
+    {
+      g_set_error(error, PDB_ERROR, PDB_ERROR_FAILED, "Unknown inherit-properties: %s", inherit_properties);
+      return;
+    }
+  synthetic_message_set_inherit_mode(self, inherit_mode);
+}
 
 void
 synthetic_message_add_tag(SyntheticMessage *self, const gchar *text)
@@ -39,22 +85,31 @@ synthetic_message_add_tag(SyntheticMessage *self, const gchar *text)
 }
 
 gboolean
-synthetic_message_add_value_template(SyntheticMessage *self, GlobalConfig *cfg, const gchar *name, const gchar *value, GError **error)
+synthetic_message_add_value_template_string(SyntheticMessage *self, GlobalConfig *cfg, const gchar *name, const gchar *value, GError **error)
 {
   LogTemplate *value_template;
+  gboolean result = FALSE;
 
+  /* NOTE: we shouldn't use the name property for LogTemplate structs, see the comment at log_template_set_name() */
+  value_template = log_template_new(cfg, name);
+  if (log_template_compile(value_template, value, error))
+    {
+      synthetic_message_add_value_template(self, name, value_template);
+      result = TRUE;
+    }
+  log_template_unref(value_template);
+  return result;
+}
+
+void
+synthetic_message_add_value_template(SyntheticMessage *self, const gchar *name, LogTemplate *value)
+{
   if (!self->values)
     self->values = g_ptr_array_new();
 
-  value_template = log_template_new(cfg, name);
-  if (!log_template_compile(value_template, value, error))
-    {
-      log_template_unref(value_template);
-      return FALSE;
-    }
-  else
-    g_ptr_array_add(self->values, value_template);
-  return TRUE;
+  /* NOTE: we shouldn't use the name property for LogTemplate structs, see the comment at log_template_set_name() */
+  log_template_set_name(value, name);
+  g_ptr_array_add(self->values, log_template_ref(value));
 }
 
 void
@@ -97,10 +152,8 @@ _generate_message_inheriting_properties_from_the_last_message(LogMessage *msg)
 static LogMessage *
 _generate_new_message_with_timestamp_of_the_triggering_message(LogStamp *msgstamp)
 {
-  LogMessage *genmsg;
+  LogMessage *genmsg = log_msg_new_local();
 
-  genmsg = log_msg_new_empty();
-  genmsg->flags |= LF_LOCAL;
   genmsg->timestamps[LM_TS_STAMP] = *msgstamp;
   return genmsg;
 }
@@ -115,7 +168,7 @@ _generate_message_inheriting_properties_from_the_entire_context(CorrellationCont
 }
 
 static LogMessage *
-_generate_default_message(gint inherit_mode, LogMessage *triggering_msg)
+_generate_default_message(SyntheticMessageInheritMode inherit_mode, LogMessage *triggering_msg)
 {
   switch (inherit_mode)
     {
@@ -130,7 +183,7 @@ _generate_default_message(gint inherit_mode, LogMessage *triggering_msg)
 }
 
 static LogMessage *
-_generate_default_message_from_context(gint inherit_mode, CorrellationContext *context)
+_generate_default_message_from_context(SyntheticMessageInheritMode inherit_mode, CorrellationContext *context)
 {
   LogMessage *triggering_msg = correllation_context_get_last_message(context);
 
@@ -141,11 +194,11 @@ _generate_default_message_from_context(gint inherit_mode, CorrellationContext *c
 }
 
 LogMessage *
-synthetic_message_generate_with_context(SyntheticMessage *self, gint inherit_mode, CorrellationContext *context, GString *buffer)
+synthetic_message_generate_with_context(SyntheticMessage *self, CorrellationContext *context, GString *buffer)
 {
   LogMessage *genmsg;
 
-  genmsg = _generate_default_message_from_context(inherit_mode, context);
+  genmsg = _generate_default_message_from_context(self->inherit_mode, context);
   switch (context->key.scope)
     {
       case RCS_PROCESS:
@@ -167,11 +220,11 @@ synthetic_message_generate_with_context(SyntheticMessage *self, gint inherit_mod
 }
 
 LogMessage *
-synthetic_message_generate_without_context(SyntheticMessage *self, gint inherit_mode, LogMessage *msg, GString *buffer)
+synthetic_message_generate_without_context(SyntheticMessage *self, LogMessage *msg, GString *buffer)
 {
   LogMessage *genmsg;
 
-  genmsg = _generate_default_message(inherit_mode, msg);
+  genmsg = _generate_default_message(self->inherit_mode, msg);
 
   /* no context, which means no correllation. The action
    * rule contains the generated message at @0 and the one
@@ -217,6 +270,7 @@ synthetic_message_new(void)
 {
   SyntheticMessage *self = g_new0(SyntheticMessage, 1);
 
+  self->inherit_mode = RAC_MSG_INHERIT_CONTEXT;
   return self;
 }
 
@@ -225,4 +279,16 @@ synthetic_message_free(SyntheticMessage *self)
 {
   synthetic_message_deinit(self);
   g_free(self);
+}
+
+gint
+synthetic_message_lookup_inherit_mode(const gchar *inherit_mode)
+{
+  if (strcasecmp(inherit_mode, "none") == 0)
+    return RAC_MSG_INHERIT_NONE;
+  else if (strcasecmp(inherit_mode, "last-message") == 0)
+    return RAC_MSG_INHERIT_LAST_MESSAGE;
+  else if (strcasecmp(inherit_mode, "context") == 0)
+    return RAC_MSG_INHERIT_CONTEXT;
+  return -1;
 }

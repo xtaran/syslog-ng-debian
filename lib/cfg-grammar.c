@@ -89,8 +89,8 @@
 
 /* In a future release of Bison, this section will be replaced
    by #include "y.tab.h".  */
-#ifndef YY_MAIN_Y_TAB_H_INCLUDED
-# define YY_MAIN_Y_TAB_H_INCLUDED
+#ifndef YY_MAIN_LIB_CFG_GRAMMAR_H_INCLUDED
+# define YY_MAIN_LIB_CFG_GRAMMAR_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -99,7 +99,7 @@
 extern int main_debug;
 #endif
 /* "%code requires" blocks.  */
-#line 25 "cfg-grammar.y" /* yacc.c:355  */
+#line 25 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:355  */
 
 
 /* this block is inserted into cfg-grammar.h, so it is included
@@ -177,23 +177,6 @@ extern struct _StatsOptions *last_stats_options;
     KW_CHANNEL = 10009,
     KW_INTERNAL = 10010,
     KW_FILE = 10011,
-    KW_SQL = 10030,
-    KW_TYPE = 10031,
-    KW_COLUMNS = 10032,
-    KW_INDEXES = 10033,
-    KW_VALUES = 10034,
-    KW_PASSWORD = 10035,
-    KW_DATABASE = 10036,
-    KW_USERNAME = 10037,
-    KW_TABLE = 10038,
-    KW_ENCODING = 10039,
-    KW_SESSION_STATEMENTS = 10040,
-    KW_DELIMITERS = 10050,
-    KW_QUOTES = 10051,
-    KW_QUOTE_PAIRS = 10052,
-    KW_NULL = 10053,
-    KW_CHARS = 10054,
-    KW_STRINGS = 10055,
     KW_SYSLOG = 10060,
     KW_MARK_FREQ = 10071,
     KW_STATS_FREQ = 10072,
@@ -206,6 +189,8 @@ extern struct _StatsOptions *last_stats_options;
     KW_FILE_TEMPLATE = 10079,
     KW_PROTO_TEMPLATE = 10080,
     KW_MARK_MODE = 10081,
+    KW_ENCODING = 10082,
+    KW_TYPE = 10083,
     KW_CHAIN_HOSTNAMES = 10090,
     KW_NORMALIZE_HOSTNAMES = 10091,
     KW_KEEP_HOSTNAME = 10092,
@@ -235,6 +220,7 @@ extern struct _StatsOptions *last_stats_options;
     KW_THROTTLE = 10170,
     KW_THREADED = 10171,
     KW_PASS_UNIX_CREDENTIALS = 10231,
+    KW_PERSIST_NAME = 10302,
     KW_FLAGS = 10190,
     KW_PAD_SIZE = 10200,
     KW_TIME_ZONE = 10201,
@@ -269,10 +255,7 @@ extern struct _StatsOptions *last_stats_options;
     KW_NETMASK = 10355,
     KW_TAGS = 10356,
     KW_NETMASK6 = 10357,
-    KW_VALUE = 10361,
     KW_REWRITE = 10370,
-    KW_SET = 10371,
-    KW_SUBST = 10372,
     KW_YES = 10380,
     KW_NO = 10381,
     KW_IFDEF = 10410,
@@ -288,7 +271,6 @@ extern struct _StatsOptions *last_stats_options;
     LL_EOL = 10428,
     LL_ERROR = 10429,
     KW_VALUE_PAIRS = 10500,
-    KW_SELECT = 10501,
     KW_EXCLUDE = 10502,
     KW_PAIR = 10503,
     KW_KEY = 10504,
@@ -332,23 +314,6 @@ extern struct _StatsOptions *last_stats_options;
 #define KW_CHANNEL 10009
 #define KW_INTERNAL 10010
 #define KW_FILE 10011
-#define KW_SQL 10030
-#define KW_TYPE 10031
-#define KW_COLUMNS 10032
-#define KW_INDEXES 10033
-#define KW_VALUES 10034
-#define KW_PASSWORD 10035
-#define KW_DATABASE 10036
-#define KW_USERNAME 10037
-#define KW_TABLE 10038
-#define KW_ENCODING 10039
-#define KW_SESSION_STATEMENTS 10040
-#define KW_DELIMITERS 10050
-#define KW_QUOTES 10051
-#define KW_QUOTE_PAIRS 10052
-#define KW_NULL 10053
-#define KW_CHARS 10054
-#define KW_STRINGS 10055
 #define KW_SYSLOG 10060
 #define KW_MARK_FREQ 10071
 #define KW_STATS_FREQ 10072
@@ -361,6 +326,8 @@ extern struct _StatsOptions *last_stats_options;
 #define KW_FILE_TEMPLATE 10079
 #define KW_PROTO_TEMPLATE 10080
 #define KW_MARK_MODE 10081
+#define KW_ENCODING 10082
+#define KW_TYPE 10083
 #define KW_CHAIN_HOSTNAMES 10090
 #define KW_NORMALIZE_HOSTNAMES 10091
 #define KW_KEEP_HOSTNAME 10092
@@ -390,6 +357,7 @@ extern struct _StatsOptions *last_stats_options;
 #define KW_THROTTLE 10170
 #define KW_THREADED 10171
 #define KW_PASS_UNIX_CREDENTIALS 10231
+#define KW_PERSIST_NAME 10302
 #define KW_FLAGS 10190
 #define KW_PAD_SIZE 10200
 #define KW_TIME_ZONE 10201
@@ -424,10 +392,7 @@ extern struct _StatsOptions *last_stats_options;
 #define KW_NETMASK 10355
 #define KW_TAGS 10356
 #define KW_NETMASK6 10357
-#define KW_VALUE 10361
 #define KW_REWRITE 10370
-#define KW_SET 10371
-#define KW_SUBST 10372
 #define KW_YES 10380
 #define KW_NO 10381
 #define KW_IFDEF 10410
@@ -443,7 +408,6 @@ extern struct _StatsOptions *last_stats_options;
 #define LL_EOL 10428
 #define LL_ERROR 10429
 #define KW_VALUE_PAIRS 10500
-#define KW_SELECT 10501
 #define KW_EXCLUDE 10502
 #define KW_PAIR 10503
 #define KW_KEY 10504
@@ -475,13 +439,13 @@ struct YYLTYPE
 
 int main_parse (CfgLexer *lexer, gpointer *dummy, gpointer arg);
 
-#endif /* !YY_MAIN_Y_TAB_H_INCLUDED  */
+#endif /* !YY_MAIN_LIB_CFG_GRAMMAR_H_INCLUDED  */
 
 /* Copy the second part of user declarations.  */
 
-#line 483 "lib/cfg-grammar.c" /* yacc.c:358  */
+#line 447 "lib/cfg-grammar.c" /* yacc.c:358  */
 /* Unqualified %code blocks.  */
-#line 80 "cfg-grammar.y" /* yacc.c:359  */
+#line 80 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:359  */
 
 
 # define YYLLOC_DEFAULT(Current, Rhs, N)                                \
@@ -541,7 +505,7 @@ int main_parse (CfgLexer *lexer, gpointer *dummy, gpointer arg);
 #define YYMAXDEPTH 20000
 
 
-#line 353 "cfg-grammar.y" /* yacc.c:359  */
+#line 333 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:359  */
 
 
 #include "cfg-parser.h"
@@ -550,12 +514,12 @@ int main_parse (CfgLexer *lexer, gpointer *dummy, gpointer arg);
 #include "template/templates.h"
 #include "template/user-function.h"
 #include "logreader.h"
+#include "logpipe.h"
 #include "parser/parser-expr.h"
 #include "rewrite/rewrite-expr.h"
 #include "rewrite/rewrite-expr-parser.h"
 #include "filter/filter-expr-parser.h"
-#include "value-pairs.h"
-#include "vptransform.h"
+#include "value-pairs/value-pairs.h"
 #include "file-perms.h"
 #include "block-ref-parser.h"
 #include "plugin.h"
@@ -587,9 +551,10 @@ ValuePairsTransformSet *last_vp_transset;
 LogMatcherOptions *last_matcher_options;
 HostResolveOptions *last_host_resolve_options;
 StatsOptions *last_stats_options;
+DNSCacheOptions *last_dns_cache_options;
 
 
-#line 593 "lib/cfg-grammar.c" /* yacc.c:359  */
+#line 558 "lib/cfg-grammar.c" /* yacc.c:359  */
 
 #ifdef short
 # undef short
@@ -833,16 +798,16 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  42
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   445
+#define YYLAST   453
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  161
+#define YYNTOKENS  143
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  79
+#define YYNNTS  84
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  188
+#define YYNRULES  194
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  460
+#define YYNSTATES  469
 
 /* YYTRANSLATE[YYX] -- Symbol number corresponding to YYX as returned
    by yylex, with out-of-bounds checking.  */
@@ -860,15 +825,15 @@ static const yytype_uint8 yytranslate[] =
       12,    13,    14,    15,    16,    17,    18,    19,    20,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     158,   159,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,   160,   155,
+     140,   141,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,   142,   137,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,   156,     2,   157,     2,     2,     2,     2,
+       2,     2,     2,   138,     2,   139,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -1859,80 +1824,81 @@ static const yytype_uint8 yytranslate[] =
       21,    22,    23,    24,    25,    26,    27,    28,    29,    30,
       31,    32,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      33,    34,    35,    36,    37,    38,    39,    40,    41,    42,
-      43,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      44,    45,    46,    47,    48,    49,     2,     2,     2,     2,
-      50,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,    51,    52,    53,    54,    55,    56,    57,    58,    59,
-      60,    61,     2,     2,     2,     2,     2,     2,     2,     2,
-      62,    63,    64,    65,    66,     2,     2,     2,     2,     2,
-      67,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      68,    69,    70,     2,     2,     2,     2,     2,     2,     2,
-      71,    72,     2,     2,     2,     2,     2,     2,     2,     2,
-      73,    74,    75,     2,     2,     2,     2,     2,     2,     2,
-      76,    77,    78,     2,     2,     2,     2,     2,     2,     2,
-      79,    80,    81,     2,     2,     2,     2,     2,     2,     2,
-      82,     2,    83,    84,    85,    86,    87,     2,     2,     2,
-      88,    89,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      91,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      92,    93,    94,    95,    96,    97,     2,     2,     2,     2,
-      98,    99,   100,     2,     2,     2,     2,     2,     2,     2,
-     101,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     102,    90,     2,     2,     2,     2,     2,     2,     2,     2,
-     103,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     104,   105,   106,     2,     2,     2,     2,     2,     2,     2,
-     107,   108,   109,     2,     2,     2,     2,     2,     2,     2,
-     110,   111,   112,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     113,   114,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,   115,     2,     2,     2,     2,     2,     2,
+      33,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,    34,    35,    36,    37,    38,    39,    40,    41,    42,
+      43,    44,    45,    46,     2,     2,     2,     2,     2,     2,
+      47,    48,    49,    50,    51,     2,     2,     2,     2,     2,
+      52,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+      53,    54,    55,     2,     2,     2,     2,     2,     2,     2,
+      56,    57,     2,     2,     2,     2,     2,     2,     2,     2,
+      58,    59,    60,     2,     2,     2,     2,     2,     2,     2,
+      61,    62,    63,     2,     2,     2,     2,     2,     2,     2,
+      64,    65,    66,     2,     2,     2,     2,     2,     2,     2,
+      67,     2,    68,    69,    70,    71,    72,     2,     2,     2,
+      73,    74,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     116,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     117,   118,   119,   120,   121,   122,   123,   124,     2,     2,
-       2,   125,     2,     2,     2,     2,     2,     2,     2,     2,
-     126,   127,   128,     2,     2,     2,     2,     2,     2,     2,
-     129,   130,     2,     2,     2,     2,     2,     2,     2,     2,
+      77,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+      78,    79,    80,    81,    82,    83,     2,     2,     2,     2,
+      84,    85,    86,     2,     2,     2,     2,     2,     2,     2,
+      87,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+      88,    75,     2,     2,     2,     2,     2,     2,     2,     2,
+      89,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+      90,    91,    92,     2,     2,     2,     2,     2,     2,     2,
+      93,    94,    95,     2,     2,     2,     2,     2,     2,     2,
+      96,    97,    98,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     131,   132,     2,     2,     2,     2,     2,     2,     2,     2,
-     133,   134,   135,   136,   137,   138,   139,   140,   141,   142,
+      99,   100,    76,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,   101,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     102,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     103,   104,   105,   106,   107,   108,   109,   110,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     111,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     112,   113,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     114,   115,     2,     2,     2,     2,     2,     2,     2,     2,
+     116,   117,   118,   119,   120,   121,   122,   123,   124,   125,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     143,   144,   145,   146,   147,   148,   149,   150,   151,   152,
-     153,   154,     2
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     126,     2,   127,   128,   129,   130,   131,   132,   133,   134,
+     135,   136,     2
 };
 
 #if YYDEBUG
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   468,   468,   472,   473,   477,   481,   482,   483,   484,
-     488,   489,   490,   491,   492,   493,   497,   504,   513,   530,
-     538,   546,   548,   545,   557,   577,   579,   577,   586,   587,
-     588,   592,   593,   597,   616,   620,   620,   628,   629,   633,
-     638,   649,   659,   668,   670,   668,   679,   680,   681,   685,
-     689,   708,   709,   713,   714,   715,   716,   717,   718,   719,
-     720,   721,   722,   723,   727,   739,   744,   745,   749,   750,
-     754,   758,   759,   763,   764,   770,   774,   778,   787,   788,
-     793,   792,   802,   801,   811,   810,   819,   820,   826,   833,
-     852,   853,   859,   861,   862,   858,   882,   883,   888,   887,
-     899,   900,   904,   905,   906,   907,   913,   914,   915,   916,
-     917,   918,   919,   920,   921,   922,   923,   924,   925,   926,
-     927,   928,   929,   930,   931,   932,   933,   934,   935,   936,
-     937,   938,   939,   940,   941,   942,   943,   944,   945,   946,
-     947,   949,   950,   951,   952,   953,   953,   954,   954,   955,
-     955,   959,   960,   961,   968,   969,   973,   974,   975,   979,
-     980,   984,   985,   986,   990,   994,   995,   999,  1000,  1041,
-    1042,  1043,  1044,  1045,  1046,  1047,  1048,  1049,  1049,  1062,
-    1063,  1064,  1065,  1192,  1193,  1194,  1195,  1196,  1197
+       0,   449,   449,   453,   454,   458,   462,   463,   464,   465,
+     469,   470,   471,   472,   473,   474,   478,   485,   494,   511,
+     519,   527,   529,   526,   538,   558,   560,   558,   567,   568,
+     569,   573,   574,   578,   597,   601,   601,   609,   610,   614,
+     619,   630,   640,   649,   651,   649,   660,   661,   662,   666,
+     670,   689,   690,   694,   695,   696,   697,   698,   699,   700,
+     701,   702,   703,   704,   708,   720,   725,   726,   730,   731,
+     735,   739,   740,   744,   745,   751,   755,   759,   768,   769,
+     774,   773,   782,   781,   790,   789,   797,   798,   804,   811,
+     830,   831,   837,   839,   840,   836,   860,   861,   866,   865,
+     877,   878,   882,   883,   884,   885,   891,   892,   893,   894,
+     895,   896,   897,   898,   899,   900,   901,   902,   903,   904,
+     905,   906,   907,   908,   909,   910,   911,   912,   913,   914,
+     914,   915,   915,   916,   916,   917,   917,   918,   918,   922,
+     923,   924,   928,   929,   930,   932,   940,   941,   945,   946,
+     947,   951,   952,   956,   957,   958,   962,   966,   967,   971,
+     972,  1013,  1014,  1015,  1016,  1017,  1018,  1019,  1020,  1021,
+    1021,  1022,  1041,  1042,  1043,  1044,  1084,  1157,  1158,  1159,
+    1160,  1161,  1162,  1163,  1164,  1165,  1166,  1167,  1168,  1172,
+    1173,  1174,  1175,  1176,  1177
 };
 #endif
 
@@ -1950,24 +1916,21 @@ static const char *const yytname[] =
   "LL_CONTEXT_INNER_SRC", "LL_CONTEXT_CLIENT_PROTO",
   "LL_CONTEXT_SERVER_PROTO", "KW_SOURCE", "KW_FILTER", "KW_PARSER",
   "KW_DESTINATION", "KW_LOG", "KW_OPTIONS", "KW_INCLUDE", "KW_BLOCK",
-  "KW_JUNCTION", "KW_CHANNEL", "KW_INTERNAL", "KW_FILE", "KW_SQL",
-  "KW_TYPE", "KW_COLUMNS", "KW_INDEXES", "KW_VALUES", "KW_PASSWORD",
-  "KW_DATABASE", "KW_USERNAME", "KW_TABLE", "KW_ENCODING",
-  "KW_SESSION_STATEMENTS", "KW_DELIMITERS", "KW_QUOTES", "KW_QUOTE_PAIRS",
-  "KW_NULL", "KW_CHARS", "KW_STRINGS", "KW_SYSLOG", "KW_MARK_FREQ",
-  "KW_STATS_FREQ", "KW_STATS_LEVEL", "KW_STATS_LIFETIME", "KW_FLUSH_LINES",
-  "KW_SUPPRESS", "KW_FLUSH_TIMEOUT", "KW_LOG_MSG_SIZE", "KW_FILE_TEMPLATE",
-  "KW_PROTO_TEMPLATE", "KW_MARK_MODE", "KW_CHAIN_HOSTNAMES",
-  "KW_NORMALIZE_HOSTNAMES", "KW_KEEP_HOSTNAME", "KW_CHECK_HOSTNAME",
-  "KW_BAD_HOSTNAME", "KW_KEEP_TIMESTAMP", "KW_USE_DNS", "KW_USE_FQDN",
-  "KW_CUSTOM_DOMAIN", "KW_DNS_CACHE", "KW_DNS_CACHE_SIZE",
-  "KW_DNS_CACHE_EXPIRE", "KW_DNS_CACHE_EXPIRE_FAILED",
-  "KW_DNS_CACHE_HOSTS", "KW_PERSIST_ONLY", "KW_USE_RCPTID",
-  "KW_USE_UNIQID", "KW_TZ_CONVERT", "KW_TS_FORMAT", "KW_FRAC_DIGITS",
-  "KW_LOG_FIFO_SIZE", "KW_LOG_FETCH_LIMIT", "KW_LOG_IW_SIZE",
-  "KW_LOG_PREFIX", "KW_PROGRAM_OVERRIDE", "KW_HOST_OVERRIDE",
-  "KW_THROTTLE", "KW_THREADED", "KW_PASS_UNIX_CREDENTIALS", "KW_FLAGS",
-  "KW_PAD_SIZE", "KW_TIME_ZONE", "KW_RECV_TIME_ZONE", "KW_SEND_TIME_ZONE",
+  "KW_JUNCTION", "KW_CHANNEL", "KW_INTERNAL", "KW_FILE", "KW_SYSLOG",
+  "KW_MARK_FREQ", "KW_STATS_FREQ", "KW_STATS_LEVEL", "KW_STATS_LIFETIME",
+  "KW_FLUSH_LINES", "KW_SUPPRESS", "KW_FLUSH_TIMEOUT", "KW_LOG_MSG_SIZE",
+  "KW_FILE_TEMPLATE", "KW_PROTO_TEMPLATE", "KW_MARK_MODE", "KW_ENCODING",
+  "KW_TYPE", "KW_CHAIN_HOSTNAMES", "KW_NORMALIZE_HOSTNAMES",
+  "KW_KEEP_HOSTNAME", "KW_CHECK_HOSTNAME", "KW_BAD_HOSTNAME",
+  "KW_KEEP_TIMESTAMP", "KW_USE_DNS", "KW_USE_FQDN", "KW_CUSTOM_DOMAIN",
+  "KW_DNS_CACHE", "KW_DNS_CACHE_SIZE", "KW_DNS_CACHE_EXPIRE",
+  "KW_DNS_CACHE_EXPIRE_FAILED", "KW_DNS_CACHE_HOSTS", "KW_PERSIST_ONLY",
+  "KW_USE_RCPTID", "KW_USE_UNIQID", "KW_TZ_CONVERT", "KW_TS_FORMAT",
+  "KW_FRAC_DIGITS", "KW_LOG_FIFO_SIZE", "KW_LOG_FETCH_LIMIT",
+  "KW_LOG_IW_SIZE", "KW_LOG_PREFIX", "KW_PROGRAM_OVERRIDE",
+  "KW_HOST_OVERRIDE", "KW_THROTTLE", "KW_THREADED",
+  "KW_PASS_UNIX_CREDENTIALS", "KW_PERSIST_NAME", "KW_FLAGS", "KW_PAD_SIZE",
+  "KW_TIME_ZONE", "KW_RECV_TIME_ZONE", "KW_SEND_TIME_ZONE",
   "KW_LOCAL_TIME_ZONE", "KW_FORMAT", "KW_TIME_REOPEN", "KW_TIME_REAP",
   "KW_TIME_SLEEP", "KW_TMPL_ESCAPE", "KW_OPTIONAL", "KW_CREATE_DIRS",
   "KW_OWNER", "KW_GROUP", "KW_PERM", "KW_DIR_OWNER", "KW_DIR_GROUP",
@@ -1975,29 +1938,30 @@ static const char *const yytname[] =
   "KW_TEMPLATE_FUNCTION", "KW_DEFAULT_FACILITY", "KW_DEFAULT_LEVEL",
   "KW_PORT", "KW_USE_TIME_RECVD", "KW_FACILITY", "KW_LEVEL", "KW_HOST",
   "KW_MATCH", "KW_MESSAGE", "KW_NETMASK", "KW_TAGS", "KW_NETMASK6",
-  "KW_VALUE", "KW_REWRITE", "KW_SET", "KW_SUBST", "KW_YES", "KW_NO",
-  "KW_IFDEF", "KW_ENDIF", "LL_DOTDOT", "LL_IDENTIFIER", "LL_NUMBER",
-  "LL_FLOAT", "LL_STRING", "LL_TOKEN", "LL_BLOCK", "LL_PRAGMA", "LL_EOL",
-  "LL_ERROR", "KW_VALUE_PAIRS", "KW_SELECT", "KW_EXCLUDE", "KW_PAIR",
-  "KW_KEY", "KW_SCOPE", "KW_SHIFT", "KW_REKEY", "KW_ADD_PREFIX",
-  "KW_REPLACE_PREFIX", "KW_ON_ERROR", "KW_RETRIES", "';'", "'{'", "'}'",
-  "'('", "')'", "':'", "$accept", "start", "stmts", "stmt", "expr_stmt",
-  "source_stmt", "dest_stmt", "filter_stmt", "parser_stmt", "rewrite_stmt",
-  "log_stmt", "$@1", "$@2", "plugin_stmt", "source_content", "$@3", "$@4",
-  "source_items", "source_item", "source_plugin", "source_afinter",
-  "source_afinter_params", "$@5", "source_afinter_options",
-  "source_afinter_option", "filter_content", "parser_content",
-  "rewrite_content", "dest_content", "$@6", "$@7", "dest_items",
-  "dest_item", "dest_plugin", "log_items", "log_item", "log_junction",
-  "log_last_junction", "log_forks", "log_fork", "log_content", "log_flags",
-  "log_flags_items", "options_stmt", "template_stmt", "template_def",
-  "template_block", "$@8", "template_simple", "$@9", "template_fn", "$@10",
-  "template_items", "template_content_inner", "template_item",
-  "block_stmt", "$@12", "$@13", "$@14", "block_args", "block_arg", "$@15",
-  "options_items", "options_item", "$@16", "$@17", "$@18", "stat_option",
-  "string", "yesno", "dnsmode", "string_or_number", "string_list",
-  "string_list_build", "semicolons", "source_option", "$@19",
-  "host_resolve_option", "template_option", YY_NULLPTR
+  "KW_REWRITE", "KW_YES", "KW_NO", "KW_IFDEF", "KW_ENDIF", "LL_DOTDOT",
+  "LL_IDENTIFIER", "LL_NUMBER", "LL_FLOAT", "LL_STRING", "LL_TOKEN",
+  "LL_BLOCK", "LL_PRAGMA", "LL_EOL", "LL_ERROR", "KW_VALUE_PAIRS",
+  "KW_EXCLUDE", "KW_PAIR", "KW_KEY", "KW_SCOPE", "KW_SHIFT", "KW_REKEY",
+  "KW_ADD_PREFIX", "KW_REPLACE_PREFIX", "KW_ON_ERROR", "KW_RETRIES", "';'",
+  "'{'", "'}'", "'('", "')'", "':'", "$accept", "start", "stmts", "stmt",
+  "expr_stmt", "source_stmt", "dest_stmt", "filter_stmt", "parser_stmt",
+  "rewrite_stmt", "log_stmt", "$@1", "$@2", "plugin_stmt",
+  "source_content", "$@3", "$@4", "source_items", "source_item",
+  "source_plugin", "source_afinter", "source_afinter_params", "$@5",
+  "source_afinter_options", "source_afinter_option", "filter_content",
+  "parser_content", "rewrite_content", "dest_content", "$@6", "$@7",
+  "dest_items", "dest_item", "dest_plugin", "log_items", "log_item",
+  "log_junction", "log_last_junction", "log_forks", "log_fork",
+  "log_content", "log_flags", "log_flags_items", "options_stmt",
+  "template_stmt", "template_def", "template_block", "$@8",
+  "template_simple", "$@9", "template_fn", "$@10", "template_items",
+  "template_content_inner", "template_item", "block_stmt", "$@12", "$@13",
+  "$@14", "block_args", "block_arg", "$@15", "options_items",
+  "options_item", "$@16", "$@17", "$@18", "$@19", "$@20", "stat_option",
+  "dns_cache_option", "string", "yesno", "dnsmode", "string_or_number",
+  "string_list", "string_list_build", "semicolons", "source_option",
+  "$@21", "host_resolve_option", "driver_option", "file_perm_option",
+  "template_option", YY_NULLPTR
 };
 #endif
 
@@ -2009,29 +1973,27 @@ static const yytype_uint16 yytoknum[] =
        0,   256, 10512,     1,     2,     3,     4,     5,     6,     7,
        8,     9,    10,    11,    12,    13,    14,    15,    16,    17,
       18, 10000, 10001, 10002, 10003, 10004, 10005, 10006, 10007, 10008,
-   10009, 10010, 10011, 10030, 10031, 10032, 10033, 10034, 10035, 10036,
-   10037, 10038, 10039, 10040, 10050, 10051, 10052, 10053, 10054, 10055,
-   10060, 10071, 10072, 10073, 10074, 10075, 10076, 10077, 10078, 10079,
-   10080, 10081, 10090, 10091, 10092, 10093, 10094, 10100, 10110, 10111,
-   10112, 10120, 10121, 10130, 10131, 10132, 10140, 10141, 10142, 10150,
-   10151, 10152, 10160, 10162, 10163, 10164, 10165, 10166, 10170, 10171,
-   10231, 10190, 10200, 10201, 10202, 10203, 10204, 10205, 10210, 10211,
-   10212, 10220, 10230, 10240, 10250, 10251, 10252, 10260, 10261, 10262,
-   10270, 10271, 10272, 10300, 10301, 10323, 10340, 10350, 10351, 10352,
-   10353, 10354, 10355, 10356, 10357, 10361, 10370, 10371, 10372, 10380,
-   10381, 10410, 10411, 10420, 10421, 10422, 10423, 10424, 10425, 10426,
-   10427, 10428, 10429, 10500, 10501, 10502, 10503, 10504, 10505, 10506,
-   10507, 10508, 10509, 10510, 10511,    59,   123,   125,    40,    41,
-      58
+   10009, 10010, 10011, 10060, 10071, 10072, 10073, 10074, 10075, 10076,
+   10077, 10078, 10079, 10080, 10081, 10082, 10083, 10090, 10091, 10092,
+   10093, 10094, 10100, 10110, 10111, 10112, 10120, 10121, 10130, 10131,
+   10132, 10140, 10141, 10142, 10150, 10151, 10152, 10160, 10162, 10163,
+   10164, 10165, 10166, 10170, 10171, 10231, 10302, 10190, 10200, 10201,
+   10202, 10203, 10204, 10205, 10210, 10211, 10212, 10220, 10230, 10240,
+   10250, 10251, 10252, 10260, 10261, 10262, 10270, 10271, 10272, 10300,
+   10301, 10323, 10340, 10350, 10351, 10352, 10353, 10354, 10355, 10356,
+   10357, 10370, 10380, 10381, 10410, 10411, 10420, 10421, 10422, 10423,
+   10424, 10425, 10426, 10427, 10428, 10429, 10500, 10502, 10503, 10504,
+   10505, 10506, 10507, 10508, 10509, 10510, 10511,    59,   123,   125,
+      40,    41,    58
 };
 # endif
 
-#define YYPACT_NINF -242
+#define YYPACT_NINF -216
 
 #define yypact_value_is_default(Yystate) \
-  (!!((Yystate) == (-242)))
+  (!!((Yystate) == (-216)))
 
-#define YYTABLE_NINF -150
+#define YYTABLE_NINF -138
 
 #define yytable_value_is_error(Yytable_value) \
   0
@@ -2040,52 +2002,53 @@ static const yytype_uint16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int16 yypact[] =
 {
-      11,   -52,   -52,   -52,   -52,  -242,   -54,  -242,   -52,   -52,
-     -52,  -242,   108,  -242,   -35,  -242,  -242,  -242,  -242,  -242,
-    -242,  -242,  -242,  -242,  -242,  -242,  -242,  -242,  -242,  -242,
-    -242,  -242,   -37,   -24,    -4,    12,    22,     6,    14,    23,
-    -242,    42,  -242,    11,  -242,  -242,  -242,  -242,    24,   -18,
-      38,    43,    44,    54,    55,    56,    57,    58,    59,    60,
-      61,    62,    63,    64,    65,    66,    67,    68,    69,    71,
-      73,    74,    75,    76,    78,    79,    82,    83,    84,    85,
-      86,    87,    88,    90,    91,    81,    95,    77,    70,   154,
-      94,    96,     9,     9,  -242,  -242,    97,    -8,    98,    99,
-     101,     1,  -104,    -7,    13,    36,   107,    53,    26,   109,
-    -242,   110,   100,   116,   118,   130,   131,   -52,   -52,    -3,
-     -80,   -80,   -80,   -52,   -80,   -52,   134,   135,   136,   -52,
-     -80,   -80,   137,   138,   141,   -80,   -80,   -52,   142,   143,
-     144,   -80,    25,    40,  -121,    46,    51,   -34,  -242,     6,
-     122,   123,   124,   125,   126,   127,  -242,   128,   129,   132,
-     133,  -242,   139,   140,   145,  -242,   146,   -95,   147,  -242,
-    -242,  -242,   149,  -242,   151,   152,   153,  -242,  -242,   109,
-    -242,  -242,   109,  -242,  -242,  -242,  -242,  -242,   109,  -242,
-     109,  -242,   -52,  -242,   -52,  -242,   -52,  -242,   -52,    26,
-    -242,   -52,   197,  -242,   109,   109,    24,  -242,   150,   158,
-     159,   160,   161,   162,   163,   164,   165,  -242,  -242,  -242,
-     166,   167,   168,   169,   170,   171,   172,   173,   174,   175,
-     176,   177,   178,   179,   180,   181,   182,   183,   184,   185,
-     186,   187,  -242,  -242,  -242,  -242,   188,  -242,   189,   190,
-    -242,  -242,   191,  -242,   192,   193,  -242,  -242,   -52,   157,
-     -52,   -52,   -52,   -52,   -80,   -36,   -80,   -80,   218,   219,
-     220,  -242,   155,   199,   201,   204,   -52,  -242,    24,    24,
-    -242,  -242,    -8,    -8,  -242,     1,     1,   203,   202,   205,
-     206,   207,   208,   209,   210,   211,   213,   212,   214,  -242,
-      26,  -242,  -242,  -242,  -242,  -242,  -242,  -242,  -242,  -242,
-    -242,  -242,  -242,  -242,  -242,  -242,  -242,  -242,  -242,  -242,
-    -242,  -242,  -242,  -242,  -242,  -242,  -242,  -242,  -242,  -242,
-    -242,  -242,  -242,  -242,  -242,  -242,  -242,  -242,  -242,  -242,
-    -242,   215,   216,   217,   222,   223,   224,   225,  -242,  -242,
-     226,   227,   228,   229,   230,   231,   239,     9,   -80,  -242,
-     -95,   232,   221,   235,   234,    80,  -242,  -242,  -242,  -242,
-    -242,  -242,  -242,  -242,  -242,  -242,  -242,  -242,  -242,  -242,
-    -242,   -52,  -242,  -242,  -242,  -242,  -242,  -242,  -242,  -242,
-    -242,  -242,  -242,  -242,  -242,  -242,  -242,   236,   239,   237,
-     238,  -242,  -242,  -242,  -242,  -242,   240,   241,   242,   243,
-     244,   245,   246,   247,  -242,    80,  -242,    70,   248,   -52,
-     156,  -242,  -242,  -242,  -242,   -80,   -80,   -80,   259,   -52,
-     -52,   -52,   -52,  -242,  -242,   109,  -242,  -242,   267,   249,
-     250,   251,   252,   253,   254,   255,   -52,   256,  -242,  -242,
-    -242,  -242,  -242,  -242,  -242,  -242,  -242,  -242,  -242,  -242
+       8,    42,    42,    42,    42,  -216,  -132,  -216,    42,    42,
+      42,  -216,    18,  -216,   -64,  -216,  -216,  -216,  -216,  -216,
+    -216,  -216,  -216,  -216,  -216,  -216,  -216,  -216,  -216,  -216,
+    -216,  -216,   -48,   -35,   -31,   -21,   -12,     7,   -22,    32,
+    -216,    41,  -216,     8,  -216,  -216,  -216,  -216,   127,    60,
+      63,    82,    83,    84,    85,    86,    87,    88,    89,    90,
+      91,    93,    99,   100,   101,   102,   103,   104,   105,   106,
+     107,   110,   111,   112,   113,    72,   117,    79,   148,   182,
+      75,   115,   138,   118,    64,    64,  -216,  -216,   119,    47,
+     120,   122,   123,    -6,   -52,   -25,    15,    25,   125,    48,
+      -3,   128,  -216,   129,   139,   146,   149,   151,   153,    42,
+      42,    37,    80,    80,    80,    42,    80,    42,    80,    80,
+     154,   155,   156,    80,    80,    42,   157,   158,   159,    80,
+    -216,     7,   126,   140,   141,   142,   144,   145,  -216,   147,
+     150,   152,   160,  -216,   161,   162,   163,  -216,   164,   165,
+     166,   167,  -216,   168,   169,   170,   171,   172,   173,  -216,
+     174,   -59,   175,  -216,  -216,  -216,   177,  -216,   179,   180,
+     181,  -216,  -216,   128,  -216,  -216,   128,  -216,  -216,  -216,
+    -216,  -216,   128,  -216,   128,  -216,    42,  -216,    42,  -216,
+      42,  -216,    42,    -3,  -216,    42,   201,  -216,   128,   128,
+     127,  -216,   178,   183,   184,   185,   186,   190,   191,   192,
+     193,  -216,  -216,  -216,   194,   195,   196,   197,   198,   199,
+     200,   202,   203,   204,   205,   206,   207,   208,   210,   211,
+     212,   213,  -216,    42,   176,    42,    42,    42,    42,    80,
+     -33,    80,    80,   224,   237,   238,   239,   240,   241,    42,
+      11,    49,   -47,    54,    58,   -29,  -216,   220,   221,   223,
+     226,    42,  -216,   127,   127,  -216,  -216,    47,    47,  -216,
+      -6,    -6,   225,   227,   228,   229,   230,   231,   232,   234,
+     242,   243,   235,   233,  -216,    -3,  -216,  -216,  -216,  -216,
+    -216,  -216,  -216,  -216,  -216,  -216,  -216,  -216,  -216,  -216,
+    -216,  -216,  -216,  -216,  -216,  -216,  -216,  -216,  -216,  -216,
+    -216,  -216,  -216,  -216,  -216,  -216,   236,   244,   245,   246,
+     247,   248,   249,  -216,  -216,   250,   251,   252,   253,   254,
+     255,   256,   257,   258,   259,  -216,  -216,  -216,  -216,   260,
+    -216,   261,   262,  -216,  -216,   263,  -216,   264,   265,  -216,
+     266,    64,    80,  -216,   -59,   267,   268,   270,   269,    71,
+    -216,  -216,  -216,  -216,  -216,  -216,  -216,  -216,  -216,  -216,
+    -216,  -216,  -216,  -216,  -216,    42,  -216,  -216,  -216,  -216,
+    -216,  -216,  -216,  -216,  -216,  -216,  -216,  -216,  -216,  -216,
+    -216,  -216,  -216,  -216,  -216,  -216,  -216,  -216,  -216,  -216,
+    -216,   271,   266,   272,   273,  -216,  -216,  -216,  -216,  -216,
+     275,   276,   277,   278,   279,   280,   281,   282,   283,  -216,
+      71,  -216,   148,  -216,   284,    42,   289,  -216,  -216,  -216,
+    -216,    80,    80,    80,   308,    42,    42,    42,    42,    42,
+    -216,  -216,   128,  -216,  -216,   305,   287,   288,   290,   291,
+     292,   298,   299,   300,    42,   301,  -216,  -216,  -216,  -216,
+    -216,  -216,  -216,  -216,  -216,  -216,  -216,  -216,  -216
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -2096,75 +2059,78 @@ static const yytype_uint8 yydefact[] =
        4,     0,     0,     0,     0,    21,     0,    92,     0,     0,
        0,    24,     0,     2,     0,     5,    10,    11,    12,    13,
       14,    15,     9,     7,     6,    76,    78,    79,    77,     8,
-     154,   155,     0,     0,     0,     0,     0,   145,     0,    82,
+     146,   147,     0,     0,     0,     0,     0,   129,     0,    82,
       84,     0,     1,     4,    25,    40,    41,    43,    52,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,    42,     3,     0,    30,     0,     0,
-       0,    48,     0,     0,     0,     0,     0,     0,    67,     0,
-      63,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,    75,   145,
-       0,     0,     0,     0,     0,     0,   146,     0,     0,     0,
-       0,   148,     0,     0,     0,   150,     0,    87,   154,    83,
-      88,    85,     0,    16,     0,     0,     0,    33,    26,     0,
-      32,    31,     0,    18,    19,    17,    50,    44,     0,    49,
-       0,    25,     0,    40,     0,    41,     0,    43,     0,    67,
-      42,     0,    72,    65,     0,   167,    52,    22,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,   156,   157,   158,
+       0,     0,     0,     0,     0,     0,    42,     3,     0,    30,
+       0,     0,     0,    48,     0,     0,     0,     0,     0,     0,
+      67,     0,    63,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,   162,   163,   126,   161,     0,   128,     0,     0,
-     130,   132,     0,   134,     0,     0,   136,   100,     0,     0,
+      75,   129,     0,     0,     0,     0,     0,     0,   130,     0,
+       0,     0,     0,   132,     0,     0,     0,   134,     0,     0,
+       0,     0,   136,     0,     0,     0,     0,     0,     0,   138,
+       0,    87,   146,    83,    88,    85,     0,    16,     0,     0,
+       0,    33,    26,     0,    32,    31,     0,    18,    19,    17,
+      50,    44,     0,    49,     0,    25,     0,    40,     0,    41,
+       0,    43,     0,    67,    42,     0,    72,    65,     0,   159,
+      52,    22,     0,     0,     0,     0,     0,     0,     0,     0,
+       0,   148,   149,   150,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,    93,     0,     0,     0,     0,     0,    20,    52,    52,
-      35,    27,    30,    30,    45,    48,    48,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,    70,
-      67,   168,    51,    23,   102,   103,   114,   106,   122,   142,
-     143,   104,   105,   107,   108,   109,   110,   123,   137,   138,
-     139,   140,   141,   117,   118,   119,   121,   120,   115,   116,
-     144,   111,   112,   113,   124,   125,   127,   129,   131,   133,
-     135,     0,     0,     0,     0,     0,     0,     0,   160,   159,
-       0,     0,     0,     0,     0,     0,    97,     0,     0,    81,
-      87,     0,     0,     0,     0,   177,    28,    29,    46,    47,
-      54,    53,    56,    55,    58,    57,    62,    61,    64,    60,
-      59,    74,    66,   183,   184,   185,   186,   187,   188,   182,
-     180,   179,   181,   151,   152,   153,    98,     0,    97,     0,
-       0,    86,    89,    68,    69,    34,     0,     0,     0,     0,
-       0,     0,     0,     0,    36,   177,    39,     0,     0,    74,
-       0,    94,    96,    90,    91,     0,     0,     0,     0,     0,
-       0,     0,   166,    37,   178,     0,    73,    99,     0,     0,
-       0,     0,     0,     0,     0,     0,   166,     0,   164,    71,
-      95,   170,   171,   175,   169,   174,   172,   173,   165,   176
+       0,     0,   100,     0,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,    93,     0,     0,     0,
+       0,     0,    20,    52,    52,    35,    27,    30,    30,    45,
+      48,    48,     0,     0,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,    70,    67,   160,    51,    23,   102,
+     103,   114,   106,   122,   126,   127,   104,   105,   107,   108,
+     109,   110,   123,   125,   117,   118,   119,   121,   120,   115,
+     116,   128,   111,   112,   113,   124,     0,     0,     0,     0,
+       0,     0,     0,   152,   151,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,   154,   155,   178,   153,     0,
+     180,     0,     0,   182,   184,     0,   186,     0,     0,   188,
+      97,     0,     0,    81,    87,     0,     0,     0,     0,   169,
+      28,    29,    46,    47,    54,    53,    56,    55,    58,    57,
+      62,    61,    64,    60,    59,    74,    66,   189,   190,   191,
+     192,   193,   194,   175,   173,   172,   174,   139,   140,   141,
+     142,   143,   144,   145,   177,   179,   181,   183,   185,   187,
+      98,     0,    97,     0,     0,    86,    89,    68,    69,    34,
+       0,     0,     0,     0,     0,     0,     0,     0,     0,    36,
+     169,    39,     0,   171,     0,    74,     0,    94,    96,    90,
+      91,     0,     0,     0,     0,     0,     0,     0,     0,   158,
+      37,   170,     0,    73,    99,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,   158,     0,   156,    71,    95,   162,
+     163,   167,   161,   166,   164,   165,   176,   157,   168
 };
 
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int16 yypgoto[] =
 {
-    -242,  -242,   257,  -242,  -242,  -242,  -242,  -242,  -242,  -242,
-    -242,  -242,  -242,  -242,   102,  -242,  -242,  -241,  -242,  -242,
-    -242,  -242,  -242,  -126,  -242,   103,   104,   112,   105,  -242,
-    -242,  -199,  -242,  -242,   233,  -242,  -242,  -242,  -193,   -96,
-    -181,  -242,  -125,  -242,  -242,  -242,  -242,  -242,  -242,  -242,
-    -242,  -242,   -59,   -89,  -242,  -242,  -242,  -242,  -242,   -88,
-    -242,  -242,   268,  -242,  -242,  -242,  -242,  -242,    -1,  -111,
-    -242,   -16,  -242,   -83,  -161,  -242,  -242,   -40,  -242
+    -216,  -216,   322,  -216,  -216,  -216,  -216,  -216,  -216,  -216,
+    -216,  -216,  -216,  -216,    94,  -216,  -216,  -215,  -216,  -216,
+    -216,  -216,  -216,  -134,  -216,   108,   109,    95,    97,  -216,
+    -216,  -149,  -216,  -216,    96,  -216,  -216,  -216,  -158,   -88,
+     -43,  -216,  -128,  -216,  -216,  -216,  -216,  -216,  -216,  -216,
+    -216,  -216,   -63,   -81,  -216,  -216,  -216,  -216,  -216,  -109,
+    -216,  -216,   189,  -216,  -216,  -216,  -216,  -216,  -216,  -216,
+    -216,    -1,  -103,  -216,   -38,  -216,  -155,  -159,  -216,  -216,
+    -100,  -216,  -216,  -216
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int16 yydefgoto[] =
 {
       -1,    12,    13,    14,    15,    16,    17,    18,    19,    20,
-      21,    36,   303,    22,    96,    97,   281,   178,   179,   180,
-     181,   364,   365,   414,   415,    98,    99,   172,   100,   101,
-     284,   187,   188,   189,   108,   109,   110,   202,   203,   182,
-     111,   299,   418,    23,    24,    25,    26,    91,    27,    92,
-      28,    93,   274,   169,   275,    29,    38,   356,   438,   397,
-     398,   420,    85,    86,    87,    88,    89,   165,   245,   220,
-     350,   246,   447,   448,   206,   416,   417,   161,   156
+      21,    36,   288,    22,    88,    89,   266,   172,   173,   174,
+     175,   358,   359,   419,   420,    90,    91,   166,    92,    93,
+     269,   181,   182,   183,   100,   101,   102,   196,   197,   176,
+     103,   284,   424,    23,    24,    25,    26,    83,    27,    84,
+      28,    85,   259,   163,   260,    29,    38,   350,   445,   401,
+     402,   426,    75,    76,    77,    78,    79,    80,    81,   147,
+     152,   338,   214,   325,   339,   455,   456,   200,   421,   422,
+     143,   423,   159,   138
 };
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -2172,176 +2138,180 @@ static const yytype_int16 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int16 yytable[] =
 {
-      32,    33,    34,    35,   171,   190,   295,    39,    40,    41,
-     221,   222,   204,   224,   249,   272,   273,   174,   282,   230,
-     231,   283,   175,   176,   235,   236,   174,   285,   215,   286,
-     241,   175,     1,     2,     3,     4,     5,     6,   250,     7,
-     348,   366,   367,   300,   301,   102,   103,   104,   105,   217,
-     218,   174,   191,   106,   192,   219,   175,    49,  -149,  -149,
-    -149,    50,    51,    52,    53,    54,    55,    56,    57,  -147,
-      58,    59,    60,    61,  -147,  -147,    62,  -147,    63,    64,
-      65,    66,    30,    67,    68,    31,   368,   369,    69,    70,
-      71,   170,   170,   217,   218,    72,    73,   362,   363,   219,
-      74,   255,    37,   204,    75,    76,    77,   382,    42,    78,
-      79,    80,    81,    82,    83,    84,   213,   214,   216,    44,
-      43,     8,   223,     9,   225,   256,   177,   248,   229,   252,
-     254,    30,    45,   157,    31,   186,   237,    10,   158,   159,
-     112,   160,   406,   168,   407,    11,    31,   408,    90,   193,
-     107,   194,    46,   347,   349,   351,   352,   150,   151,    30,
-     242,   243,    31,  -101,   409,   410,   411,   412,    47,   195,
-     152,   196,   153,   154,    30,   242,   243,    31,    48,   -80,
-      30,   242,   243,    31,   244,    30,   242,   243,    31,   190,
-     190,   288,   197,   290,   198,   292,   113,   294,    94,   247,
-     297,   114,   115,   413,   204,   251,   162,   163,   164,   200,
-     253,   201,   116,   117,   118,   119,   120,   121,   122,   123,
-     124,   125,   126,   127,   128,   129,   130,   131,   166,   132,
-     155,   133,   134,   135,   136,   208,   137,   138,   148,   -38,
-     139,   140,   141,   142,   143,   144,   145,   400,   146,   147,
-     149,   209,   167,   210,   173,   183,   184,   341,   185,   343,
-     344,   345,   346,   199,   205,   211,   212,   207,   399,   226,
-     227,   228,   232,   233,   449,   361,   234,   238,   239,   240,
-     258,   259,   260,   261,   262,   263,   264,   265,   298,   433,
-     266,   267,   342,   287,   436,   437,   289,   268,   269,   291,
-      95,   401,   293,   270,   271,   276,   277,   278,   279,   304,
-     422,   280,   296,   357,   439,   440,   441,   305,   306,   307,
-     308,   309,   310,   311,   312,   313,   314,   315,   316,   317,
-     318,   319,   320,   321,   322,   323,   324,   325,   326,   327,
-     328,   329,   330,   331,   332,   333,   334,   335,   336,   337,
-     338,   339,   340,   353,   354,   355,   170,   358,   359,   360,
-     370,   371,   372,   458,   374,   373,   376,   375,   378,   377,
-     379,   380,   381,   396,   383,   384,   385,   434,   403,     0,
-     419,   386,   387,   388,   389,   390,   391,   392,   393,   394,
-     395,   402,   404,   405,   442,   421,   423,   424,   425,   426,
-     427,   428,   429,   430,   431,   432,   450,   435,   451,   452,
-     453,   454,   455,   456,   457,   459,     0,   257,   419,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,   443,   444,
-     445,   446,     0,     0,     0,     0,     0,     0,     0,   302,
-       0,     0,     0,     0,     0,   446
+      32,    33,    34,    35,   165,   184,    37,    39,    40,    41,
+     215,   216,   198,   218,   267,   220,   221,   268,    42,   168,
+     225,   226,   168,   270,   169,   271,   231,   169,   323,     1,
+       2,     3,     4,     5,     6,   280,     7,   257,   258,   285,
+     286,    49,  -133,  -133,  -133,    50,    51,    52,    53,    54,
+      55,    56,   360,   361,    57,  -131,    58,    59,    60,    61,
+    -131,  -131,    62,  -131,  -135,  -135,  -135,  -135,   209,    63,
+      64,   342,   168,    43,    65,    66,    67,   169,   170,   211,
+     212,    68,    69,   164,   164,   213,   185,    70,   186,   348,
+      44,    71,    72,    73,   343,    82,    74,  -137,  -137,  -137,
+    -137,  -137,  -137,    45,     8,   198,     9,    46,   207,   208,
+     210,   180,   349,   187,   217,   188,   219,    47,   410,    10,
+     411,   362,   363,   412,   227,    11,    48,   376,    30,   335,
+     336,    31,   148,   149,   150,   151,   322,   324,   326,   327,
+     413,   414,   415,   416,   132,   133,  -101,   417,    94,    95,
+      96,    97,   337,   189,    30,   190,    98,    31,   134,    30,
+     135,   136,    31,   191,   171,   192,    30,   335,   336,    31,
+     -80,    30,   335,   336,    31,    30,   335,   336,    31,    86,
+     418,   162,   184,   184,    31,   273,   194,   275,   195,   277,
+     340,   279,   211,   212,   282,   344,   139,   198,   213,   346,
+     104,   140,   141,   105,   142,   153,   154,   155,   156,   157,
+     158,   130,   -38,   341,   137,   345,   347,   144,   145,   146,
+     356,   357,   106,   107,   108,   109,   110,   111,   112,   113,
+     114,   115,   316,   116,   318,   319,   320,   321,    99,   117,
+     118,   119,   120,   121,   122,   123,   124,   125,   334,   404,
+     126,   127,   128,   129,   131,   160,   161,   202,   167,   177,
+     355,   178,   179,   193,   203,   199,   233,   204,   201,   205,
+     403,   206,   222,   223,   224,   228,   229,   230,   283,   272,
+     234,   235,   236,   457,   237,   238,   440,   239,   278,   281,
+     240,   405,   241,   428,   317,   274,   287,   443,   276,   467,
+     242,   243,   244,   245,   246,   247,   248,   249,   250,   251,
+     252,   253,   254,   255,   256,   261,   262,   263,   264,   289,
+     232,   265,   441,     0,   290,   291,   292,   293,   446,   447,
+     448,   294,   295,   296,   297,   298,   299,   300,   301,   302,
+     303,   304,   328,   305,   306,   307,   308,   309,   310,   311,
+     164,   312,   313,   314,   315,   329,   330,   331,   332,   333,
+     351,   352,   353,   354,   364,    87,     0,   366,   365,   368,
+     367,   370,   369,   375,   425,   371,   374,   377,     0,     0,
+       0,   372,   373,   400,     0,   378,   379,   380,   381,   382,
+     383,   384,   385,   386,   387,   388,   389,   390,   391,   392,
+     393,   394,   395,   396,   397,   398,   399,   407,   406,   408,
+     409,   444,   427,   429,   430,   431,   432,   433,   434,   435,
+     436,   437,   438,   439,   425,   442,   449,   458,   459,   460,
+       0,   461,   462,   463,   450,   451,   452,   453,   454,   464,
+     465,   466,   468,     0,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,   454
 };
 
 static const yytype_int16 yycheck[] =
 {
-       1,     2,     3,     4,    93,   101,   199,     8,     9,    10,
-     121,   122,   108,   124,   135,   110,   111,    25,   179,   130,
-     131,   182,    30,    31,   135,   136,    25,   188,    31,   190,
-     141,    30,    21,    22,    23,    24,    25,    26,   159,    28,
-      76,   282,   283,   204,   205,    21,    22,    23,    24,   129,
-     130,    25,   156,    29,   158,   135,    30,    51,    52,    53,
-      54,    55,    56,    57,    58,    59,    60,    61,    62,    63,
-      64,    65,    66,    67,    68,    69,    70,    71,    72,    73,
-      74,    75,   134,    77,    78,   137,   285,   286,    82,    83,
-      84,    92,    93,   129,   130,    89,    90,   278,   279,   135,
-      94,   135,   156,   199,    98,    99,   100,   300,     0,   103,
-     104,   105,   106,   107,   108,   109,   117,   118,   119,   156,
-     155,   110,   123,   112,   125,   159,   134,   143,   129,   145,
-     146,   134,   156,    63,   137,   134,   137,   126,    68,    69,
-     158,    71,    62,   134,    64,   134,   137,    67,   134,   156,
-     126,   158,   156,   264,   265,   266,   267,    80,    81,   134,
-     135,   136,   137,   157,    84,    85,    86,    87,   156,   156,
-      93,   158,    95,    96,   134,   135,   136,   137,   156,   156,
-     134,   135,   136,   137,   159,   134,   135,   136,   137,   285,
-     286,   192,   156,   194,   158,   196,   158,   198,   156,   159,
-     201,   158,   158,   123,   300,   159,    52,    53,    54,   156,
-     159,   158,   158,   158,   158,   158,   158,   158,   158,   158,
-     158,   158,   158,   158,   158,   158,   158,   158,   134,   158,
-     153,   158,   158,   158,   158,   135,   158,   158,   157,   159,
-     158,   158,   158,   158,   158,   158,   158,   358,   158,   158,
-     155,   135,   156,   135,   157,   157,   157,   258,   157,   260,
-     261,   262,   263,   156,   155,   135,   135,   157,   357,   135,
-     135,   135,   135,   135,   435,   276,   135,   135,   135,   135,
-     158,   158,   158,   158,   158,   158,   158,   158,    91,   415,
-     158,   158,   135,   191,   419,   139,   193,   158,   158,   195,
-      43,   360,   197,   158,   158,   158,   157,   156,   156,   159,
-     398,   158,   200,   158,   425,   426,   427,   159,   159,   159,
-     159,   159,   159,   159,   159,   159,   159,   159,   159,   159,
-     159,   159,   159,   159,   159,   159,   159,   159,   159,   159,
-     159,   159,   159,   159,   159,   159,   159,   159,   159,   159,
-     159,   159,   159,   135,   135,   135,   357,   158,   157,   155,
-     157,   159,   157,   446,   157,   159,   157,   159,   157,   159,
-     157,   159,   158,   134,   159,   159,   159,   417,   157,    -1,
-     381,   159,   159,   159,   159,   159,   159,   159,   159,   159,
-     159,   159,   157,   159,   135,   159,   159,   159,   158,   158,
-     158,   158,   158,   158,   158,   158,   139,   159,   159,   159,
-     159,   159,   159,   159,   159,   159,    -1,   149,   419,    -1,
-      -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,   429,   430,
-     431,   432,    -1,    -1,    -1,    -1,    -1,    -1,    -1,   206,
-      -1,    -1,    -1,    -1,    -1,   446
+       1,     2,     3,     4,    85,    93,   138,     8,     9,    10,
+     113,   114,   100,   116,   173,   118,   119,   176,     0,    25,
+     123,   124,    25,   182,    30,   184,   129,    30,    61,    21,
+      22,    23,    24,    25,    26,   193,    28,    96,    97,   198,
+     199,    34,    35,    36,    37,    38,    39,    40,    41,    42,
+      43,    44,   267,   268,    47,    48,    49,    50,    51,    52,
+      53,    54,    55,    56,    57,    58,    59,    60,    31,    62,
+      63,   118,    25,   137,    67,    68,    69,    30,    31,   112,
+     113,    74,    75,    84,    85,   118,   138,    80,   140,   118,
+     138,    84,    85,    86,   141,   117,    89,    90,    91,    92,
+      93,    94,    95,   138,    96,   193,    98,   138,   109,   110,
+     111,   117,   141,   138,   115,   140,   117,   138,    47,   111,
+      49,   270,   271,    52,   125,   117,   138,   285,   117,   118,
+     119,   120,    57,    58,    59,    60,   239,   240,   241,   242,
+      69,    70,    71,    72,    65,    66,   139,    76,    21,    22,
+      23,    24,   141,   138,   117,   140,    29,   120,    79,   117,
+      81,    82,   120,   138,   117,   140,   117,   118,   119,   120,
+     138,   117,   118,   119,   120,   117,   118,   119,   120,   138,
+     109,   117,   270,   271,   120,   186,   138,   188,   140,   190,
+     141,   192,   112,   113,   195,   141,    48,   285,   118,   141,
+     140,    53,    54,   140,    56,    90,    91,    92,    93,    94,
+      95,   139,   141,   251,   135,   253,   254,    35,    36,    37,
+     263,   264,   140,   140,   140,   140,   140,   140,   140,   140,
+     140,   140,   233,   140,   235,   236,   237,   238,   111,   140,
+     140,   140,   140,   140,   140,   140,   140,   140,   249,   352,
+     140,   140,   140,   140,   137,   117,   138,   118,   139,   139,
+     261,   139,   139,   138,   118,   137,   140,   118,   139,   118,
+     351,   118,   118,   118,   118,   118,   118,   118,    77,   185,
+     140,   140,   140,   442,   140,   140,   420,   140,   191,   194,
+     140,   354,   140,   402,   118,   187,   200,   425,   189,   454,
+     140,   140,   140,   140,   140,   140,   140,   140,   140,   140,
+     140,   140,   140,   140,   140,   140,   139,   138,   138,   141,
+     131,   140,   422,    -1,   141,   141,   141,   141,   431,   432,
+     433,   141,   141,   141,   141,   141,   141,   141,   141,   141,
+     141,   141,   118,   141,   141,   141,   141,   141,   141,   141,
+     351,   141,   141,   141,   141,   118,   118,   118,   118,   118,
+     140,   140,   139,   137,   139,    43,    -1,   139,   141,   139,
+     141,   139,   141,   140,   375,   141,   141,   141,    -1,    -1,
+      -1,   139,   139,   117,    -1,   141,   141,   141,   141,   141,
+     141,   141,   141,   141,   141,   141,   141,   141,   141,   141,
+     141,   141,   141,   141,   141,   141,   141,   139,   141,   139,
+     141,   122,   141,   141,   141,   140,   140,   140,   140,   140,
+     140,   140,   140,   140,   425,   141,   118,   122,   141,   141,
+      -1,   141,   141,   141,   435,   436,   437,   438,   439,   141,
+     141,   141,   141,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
+      -1,    -1,    -1,   454
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
      symbol of state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
-       0,    21,    22,    23,    24,    25,    26,    28,   110,   112,
-     126,   134,   162,   163,   164,   165,   166,   167,   168,   169,
-     170,   171,   174,   204,   205,   206,   207,   209,   211,   216,
-     134,   137,   229,   229,   229,   229,   172,   156,   217,   229,
-     229,   229,     0,   155,   156,   156,   156,   156,   156,    51,
-      55,    56,    57,    58,    59,    60,    61,    62,    64,    65,
-      66,    67,    70,    72,    73,    74,    75,    77,    78,    82,
-      83,    84,    89,    90,    94,    98,    99,   100,   103,   104,
-     105,   106,   107,   108,   109,   223,   224,   225,   226,   227,
-     134,   208,   210,   212,   156,   163,   175,   176,   186,   187,
-     189,   190,    21,    22,    23,    24,    29,   126,   195,   196,
-     197,   201,   158,   158,   158,   158,   158,   158,   158,   158,
-     158,   158,   158,   158,   158,   158,   158,   158,   158,   158,
-     158,   158,   158,   158,   158,   158,   158,   158,   158,   158,
-     158,   158,   158,   158,   158,   158,   158,   158,   157,   155,
-      80,    81,    93,    95,    96,   153,   239,    63,    68,    69,
-      71,   238,    52,    53,    54,   228,   134,   156,   134,   214,
-     229,   214,   188,   157,    25,    30,    31,   134,   178,   179,
-     180,   181,   200,   157,   157,   157,   134,   192,   193,   194,
-     200,   156,   158,   156,   158,   156,   158,   156,   158,   156,
-     156,   158,   198,   199,   200,   155,   235,   157,   135,   135,
-     135,   135,   135,   229,   229,    31,   229,   129,   130,   135,
-     230,   230,   230,   229,   230,   229,   135,   135,   135,   229,
-     230,   230,   135,   135,   135,   230,   230,   229,   135,   135,
-     135,   230,   135,   136,   159,   229,   232,   159,   232,   135,
-     159,   159,   232,   159,   232,   135,   159,   223,   158,   158,
-     158,   158,   158,   158,   158,   158,   158,   158,   158,   158,
-     158,   158,   110,   111,   213,   215,   158,   157,   156,   156,
-     158,   177,   235,   235,   191,   235,   235,   175,   229,   186,
-     229,   187,   229,   189,   229,   199,   188,   229,    91,   202,
-     235,   235,   195,   173,   159,   159,   159,   159,   159,   159,
-     159,   159,   159,   159,   159,   159,   159,   159,   159,   159,
-     159,   159,   159,   159,   159,   159,   159,   159,   159,   159,
-     159,   159,   159,   159,   159,   159,   159,   159,   159,   159,
-     159,   229,   135,   229,   229,   229,   229,   230,    76,   230,
-     231,   230,   230,   135,   135,   135,   218,   158,   158,   157,
-     155,   229,   201,   201,   182,   183,   178,   178,   192,   192,
-     157,   159,   157,   159,   157,   159,   157,   159,   157,   157,
-     159,   158,   199,   159,   159,   159,   159,   159,   159,   159,
-     159,   159,   159,   159,   159,   159,   134,   220,   221,   214,
-     230,   213,   159,   157,   157,   159,    62,    64,    67,    84,
-      85,    86,    87,   123,   184,   185,   236,   237,   203,   229,
-     222,   159,   220,   159,   159,   158,   158,   158,   158,   158,
-     158,   158,   158,   184,   238,   159,   203,   139,   219,   230,
-     230,   230,   135,   229,   229,   229,   229,   233,   234,   235,
-     139,   159,   159,   159,   159,   159,   159,   159,   234,   159
+       0,    21,    22,    23,    24,    25,    26,    28,    96,    98,
+     111,   117,   144,   145,   146,   147,   148,   149,   150,   151,
+     152,   153,   156,   186,   187,   188,   189,   191,   193,   198,
+     117,   120,   214,   214,   214,   214,   154,   138,   199,   214,
+     214,   214,     0,   137,   138,   138,   138,   138,   138,    34,
+      38,    39,    40,    41,    42,    43,    44,    47,    49,    50,
+      51,    52,    55,    62,    63,    67,    68,    69,    74,    75,
+      80,    84,    85,    86,    89,   205,   206,   207,   208,   209,
+     210,   211,   117,   190,   192,   194,   138,   145,   157,   158,
+     168,   169,   171,   172,    21,    22,    23,    24,    29,   111,
+     177,   178,   179,   183,   140,   140,   140,   140,   140,   140,
+     140,   140,   140,   140,   140,   140,   140,   140,   140,   140,
+     140,   140,   140,   140,   140,   140,   140,   140,   140,   140,
+     139,   137,    65,    66,    79,    81,    82,   135,   226,    48,
+      53,    54,    56,   223,    35,    36,    37,   212,    57,    58,
+      59,    60,   213,    90,    91,    92,    93,    94,    95,   225,
+     117,   138,   117,   196,   214,   196,   170,   139,    25,    30,
+      31,   117,   160,   161,   162,   163,   182,   139,   139,   139,
+     117,   174,   175,   176,   182,   138,   140,   138,   140,   138,
+     140,   138,   140,   138,   138,   140,   180,   181,   182,   137,
+     220,   139,   118,   118,   118,   118,   118,   214,   214,    31,
+     214,   112,   113,   118,   215,   215,   215,   214,   215,   214,
+     215,   215,   118,   118,   118,   215,   215,   214,   118,   118,
+     118,   215,   205,   140,   140,   140,   140,   140,   140,   140,
+     140,   140,   140,   140,   140,   140,   140,   140,   140,   140,
+     140,   140,   140,   140,   140,   140,   140,    96,    97,   195,
+     197,   140,   139,   138,   138,   140,   159,   220,   220,   173,
+     220,   220,   157,   214,   168,   214,   169,   214,   171,   214,
+     181,   170,   214,    77,   184,   220,   220,   177,   155,   141,
+     141,   141,   141,   141,   141,   141,   141,   141,   141,   141,
+     141,   141,   141,   141,   141,   141,   141,   141,   141,   141,
+     141,   141,   141,   141,   141,   141,   214,   118,   214,   214,
+     214,   214,   215,    61,   215,   216,   215,   215,   118,   118,
+     118,   118,   118,   118,   214,   118,   119,   141,   214,   217,
+     141,   217,   118,   141,   141,   217,   141,   217,   118,   141,
+     200,   140,   140,   139,   137,   214,   183,   183,   164,   165,
+     160,   160,   174,   174,   139,   141,   139,   141,   139,   141,
+     139,   141,   139,   139,   141,   140,   181,   141,   141,   141,
+     141,   141,   141,   141,   141,   141,   141,   141,   141,   141,
+     141,   141,   141,   141,   141,   141,   141,   141,   141,   141,
+     117,   202,   203,   196,   215,   195,   141,   139,   139,   141,
+      47,    49,    52,    69,    70,    71,    72,    76,   109,   166,
+     167,   221,   222,   224,   185,   214,   204,   141,   202,   141,
+     141,   140,   140,   140,   140,   140,   140,   140,   140,   140,
+     166,   223,   141,   185,   122,   201,   215,   215,   215,   118,
+     214,   214,   214,   214,   214,   218,   219,   220,   122,   141,
+     141,   141,   141,   141,   141,   141,   141,   219,   141
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
-       0,   161,   162,   163,   163,   164,   164,   164,   164,   164,
-     165,   165,   165,   165,   165,   165,   166,   167,   168,   169,
-     170,   172,   173,   171,   174,   176,   177,   175,   178,   178,
-     178,   179,   179,   180,   181,   183,   182,   184,   184,   185,
-     186,   187,   188,   190,   191,   189,   192,   192,   192,   193,
-     194,   195,   195,   196,   196,   196,   196,   196,   196,   196,
-     196,   196,   196,   196,   197,   198,   199,   199,   200,   200,
-     201,   202,   202,   203,   203,   204,   205,   205,   206,   206,
-     208,   207,   210,   209,   212,   211,   213,   213,   214,   214,
-     215,   215,   217,   218,   219,   216,   220,   220,   222,   221,
-     223,   223,   224,   224,   224,   224,   224,   224,   224,   224,
-     224,   224,   224,   224,   224,   224,   224,   224,   224,   224,
-     224,   224,   224,   224,   224,   224,   224,   224,   224,   224,
-     224,   224,   224,   224,   224,   224,   224,   224,   224,   224,
-     224,   224,   224,   224,   224,   225,   224,   226,   224,   227,
-     224,   228,   228,   228,   229,   229,   230,   230,   230,   231,
-     231,   232,   232,   232,   233,   234,   234,   235,   235,   236,
-     236,   236,   236,   236,   236,   236,   236,   237,   236,   238,
-     238,   238,   238,   239,   239,   239,   239,   239,   239
+       0,   143,   144,   145,   145,   146,   146,   146,   146,   146,
+     147,   147,   147,   147,   147,   147,   148,   149,   150,   151,
+     152,   154,   155,   153,   156,   158,   159,   157,   160,   160,
+     160,   161,   161,   162,   163,   165,   164,   166,   166,   167,
+     168,   169,   170,   172,   173,   171,   174,   174,   174,   175,
+     176,   177,   177,   178,   178,   178,   178,   178,   178,   178,
+     178,   178,   178,   178,   179,   180,   181,   181,   182,   182,
+     183,   184,   184,   185,   185,   186,   187,   187,   188,   188,
+     190,   189,   192,   191,   194,   193,   195,   195,   196,   196,
+     197,   197,   199,   200,   201,   198,   202,   202,   204,   203,
+     205,   205,   206,   206,   206,   206,   206,   206,   206,   206,
+     206,   206,   206,   206,   206,   206,   206,   206,   206,   206,
+     206,   206,   206,   206,   206,   206,   206,   206,   206,   207,
+     206,   208,   206,   209,   206,   210,   206,   211,   206,   212,
+     212,   212,   213,   213,   213,   213,   214,   214,   215,   215,
+     215,   216,   216,   217,   217,   217,   218,   219,   219,   220,
+     220,   221,   221,   221,   221,   221,   221,   221,   221,   222,
+     221,   221,   223,   223,   223,   223,   224,   225,   225,   225,
+     225,   225,   225,   225,   225,   225,   225,   225,   225,   226,
+     226,   226,   226,   226,   226
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
@@ -2359,13 +2329,14 @@ static const yytype_uint8 yyr2[] =
        4,     4,     0,     0,     0,    10,     2,     0,     0,     3,
        3,     0,     4,     4,     4,     4,     4,     4,     4,     4,
        4,     4,     4,     4,     4,     4,     4,     4,     4,     4,
-       4,     4,     4,     4,     4,     4,     3,     4,     3,     4,
-       3,     4,     3,     4,     3,     4,     3,     4,     4,     4,
-       4,     4,     4,     4,     4,     0,     2,     0,     2,     0,
-       2,     4,     4,     4,     1,     1,     1,     1,     1,     1,
-       1,     1,     1,     1,     1,     2,     0,     1,     2,     4,
-       4,     4,     4,     4,     4,     4,     4,     0,     2,     4,
-       4,     4,     4,     4,     4,     4,     4,     4,     4
+       4,     4,     4,     4,     4,     4,     4,     4,     4,     0,
+       2,     0,     2,     0,     2,     0,     2,     0,     2,     4,
+       4,     4,     4,     4,     4,     4,     1,     1,     1,     1,
+       1,     1,     1,     1,     1,     1,     1,     2,     0,     1,
+       2,     4,     4,     4,     4,     4,     4,     4,     4,     0,
+       2,     1,     4,     4,     4,     4,     4,     4,     3,     4,
+       3,     4,     3,     4,     3,     4,     3,     4,     3,     4,
+       4,     4,     4,     4,     4
 };
 
 
@@ -2861,7 +2832,42 @@ yydestruct (const char *yymsg, int yytype, YYSTYPE *yyvaluep, YYLTYPE *yylocatio
   YY_SYMBOL_PRINT (yymsg, yytype, yyvaluep, yylocationp);
 
   YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN
-  YYUSE (yytype);
+  switch (yytype)
+    {
+          case 117: /* LL_IDENTIFIER  */
+#line 314 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1257  */
+      { free(((*yyvaluep).cptr)); }
+#line 2841 "lib/cfg-grammar.c" /* yacc.c:1257  */
+        break;
+
+    case 120: /* LL_STRING  */
+#line 314 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1257  */
+      { free(((*yyvaluep).cptr)); }
+#line 2847 "lib/cfg-grammar.c" /* yacc.c:1257  */
+        break;
+
+    case 122: /* LL_BLOCK  */
+#line 314 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1257  */
+      { free(((*yyvaluep).cptr)); }
+#line 2853 "lib/cfg-grammar.c" /* yacc.c:1257  */
+        break;
+
+    case 214: /* string  */
+#line 314 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1257  */
+      { free(((*yyvaluep).cptr)); }
+#line 2859 "lib/cfg-grammar.c" /* yacc.c:1257  */
+        break;
+
+    case 217: /* string_or_number  */
+#line 314 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1257  */
+      { free(((*yyvaluep).cptr)); }
+#line 2865 "lib/cfg-grammar.c" /* yacc.c:1257  */
+        break;
+
+
+      default:
+        break;
+    }
   YY_IGNORE_MAYBE_UNINITIALIZED_END
 }
 
@@ -3147,33 +3153,33 @@ yyreduce:
   switch (yyn)
     {
         case 5:
-#line 478 "cfg-grammar.y" /* yacc.c:1646  */
+#line 459 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
     {
             CHECK_ERROR(cfg_tree_add_object(&configuration->tree, (yyvsp[0].ptr)) || cfg_allow_config_dups(configuration), (yylsp[0]), "duplicate %s definition", log_expr_node_get_content_name(((LogExprNode *) (yyvsp[0].ptr))->content));
           }
-#line 3155 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 3161 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 16:
-#line 498 "cfg-grammar.y" /* yacc.c:1646  */
+#line 479 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
     {
             (yyval.ptr) = log_expr_node_new_source((yyvsp[-3].cptr), (yyvsp[-1].ptr), &(yylsp[-4]));
             free((yyvsp[-3].cptr));
           }
-#line 3164 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 3170 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 17:
-#line 505 "cfg-grammar.y" /* yacc.c:1646  */
+#line 486 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
     {
             (yyval.ptr) = log_expr_node_new_destination((yyvsp[-3].cptr), (yyvsp[-1].ptr), &(yylsp[-4]));
             free((yyvsp[-3].cptr));
           }
-#line 3173 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 3179 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 18:
-#line 514 "cfg-grammar.y" /* yacc.c:1646  */
+#line 495 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
     {
             /* NOTE: the filter() subexpression (e.g. the one that invokes
              * one filter expression from another) depends on the layout
@@ -3187,49 +3193,49 @@ yyreduce:
             (yyval.ptr) = log_expr_node_new_filter((yyvsp[-3].cptr), (yyvsp[-1].ptr), &(yylsp[-4]));
             free((yyvsp[-3].cptr));
           }
-#line 3191 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 3197 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 19:
-#line 531 "cfg-grammar.y" /* yacc.c:1646  */
+#line 512 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
     {
             (yyval.ptr) = log_expr_node_new_parser((yyvsp[-3].cptr), (yyvsp[-1].ptr), &(yylsp[-4]));
             free((yyvsp[-3].cptr));
           }
-#line 3200 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 3206 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 20:
-#line 539 "cfg-grammar.y" /* yacc.c:1646  */
+#line 520 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
     {
             (yyval.ptr) = log_expr_node_new_rewrite((yyvsp[-3].cptr), (yyvsp[-1].ptr), &(yylsp[-4]));
             free((yyvsp[-3].cptr));
           }
-#line 3209 "lib/cfg-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 21:
-#line 546 "cfg-grammar.y" /* yacc.c:1646  */
-    { cfg_lexer_push_context(lexer, LL_CONTEXT_LOG, NULL, "log"); }
 #line 3215 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 22:
-#line 548 "cfg-grammar.y" /* yacc.c:1646  */
-    { cfg_lexer_pop_context(lexer); }
+  case 21:
+#line 527 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { cfg_lexer_push_context(lexer, LL_CONTEXT_LOG, NULL, "log"); }
 #line 3221 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
+  case 22:
+#line 529 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { cfg_lexer_pop_context(lexer); }
+#line 3227 "lib/cfg-grammar.c" /* yacc.c:1646  */
+    break;
+
   case 23:
-#line 549 "cfg-grammar.y" /* yacc.c:1646  */
+#line 530 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
     {
             (yyval.ptr) = (yyvsp[-2].ptr);
           }
-#line 3229 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 3235 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 24:
-#line 558 "cfg-grammar.y" /* yacc.c:1646  */
+#line 539 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
     {
             Plugin *p;
             gint context = LL_CONTEXT_ROOT;
@@ -3244,61 +3250,61 @@ yyreduce:
               YYERROR;
             (yyval.ptr) = NULL;
           }
-#line 3248 "lib/cfg-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 25:
-#line 577 "cfg-grammar.y" /* yacc.c:1646  */
-    { cfg_lexer_push_context(lexer, LL_CONTEXT_SOURCE, NULL, "source"); }
 #line 3254 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 26:
-#line 579 "cfg-grammar.y" /* yacc.c:1646  */
-    { cfg_lexer_pop_context(lexer); }
+  case 25:
+#line 558 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { cfg_lexer_push_context(lexer, LL_CONTEXT_SOURCE, NULL, "source"); }
 #line 3260 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
+  case 26:
+#line 560 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { cfg_lexer_pop_context(lexer); }
+#line 3266 "lib/cfg-grammar.c" /* yacc.c:1646  */
+    break;
+
   case 27:
-#line 580 "cfg-grammar.y" /* yacc.c:1646  */
+#line 561 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
     {
             (yyval.ptr) = log_expr_node_new_junction((yyvsp[-1].ptr), &(yyloc));
           }
-#line 3268 "lib/cfg-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 28:
-#line 586 "cfg-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = log_expr_node_append_tail(log_expr_node_new_pipe((yyvsp[-2].ptr), &(yylsp[-2])), (yyvsp[0].ptr)); }
 #line 3274 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 29:
-#line 587 "cfg-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = log_expr_node_append_tail((yyvsp[-2].ptr),  (yyvsp[0].ptr)); }
+  case 28:
+#line 567 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = log_expr_node_append_tail(log_expr_node_new_pipe((yyvsp[-2].ptr), &(yylsp[-2])), (yyvsp[0].ptr)); }
 #line 3280 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 30:
-#line 588 "cfg-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = NULL; }
+  case 29:
+#line 568 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = log_expr_node_append_tail((yyvsp[-2].ptr),  (yyvsp[0].ptr)); }
 #line 3286 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 31:
-#line 592 "cfg-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = (yyvsp[0].ptr); }
+  case 30:
+#line 569 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = NULL; }
 #line 3292 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 32:
-#line 593 "cfg-grammar.y" /* yacc.c:1646  */
+  case 31:
+#line 573 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
     { (yyval.ptr) = (yyvsp[0].ptr); }
 #line 3298 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
+  case 32:
+#line 574 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = (yyvsp[0].ptr); }
+#line 3304 "lib/cfg-grammar.c" /* yacc.c:1646  */
+    break;
+
   case 33:
-#line 598 "cfg-grammar.y" /* yacc.c:1646  */
+#line 579 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
     {
             Plugin *p;
             gint context = LL_CONTEXT_SOURCE;
@@ -3314,32 +3320,32 @@ yyreduce:
               }
             (yyval.ptr) = last_driver;
           }
-#line 3318 "lib/cfg-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 34:
-#line 616 "cfg-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = (yyvsp[-1].ptr); }
 #line 3324 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
+  case 34:
+#line 597 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = (yyvsp[-1].ptr); }
+#line 3330 "lib/cfg-grammar.c" /* yacc.c:1646  */
+    break;
+
   case 35:
-#line 620 "cfg-grammar.y" /* yacc.c:1646  */
+#line 601 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
     {
             last_driver = afinter_sd_new(configuration);
             last_source_options = &((AFInterSourceDriver *) last_driver)->source_options;
           }
-#line 3333 "lib/cfg-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 36:
-#line 624 "cfg-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = last_driver; }
 #line 3339 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
+  case 36:
+#line 605 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = last_driver; }
+#line 3345 "lib/cfg-grammar.c" /* yacc.c:1646  */
+    break;
+
   case 40:
-#line 638 "cfg-grammar.y" /* yacc.c:1646  */
+#line 619 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
     {
             FilterExprNode *last_filter_expr = NULL;
 
@@ -3347,77 +3353,77 @@ yyreduce:
 
             (yyval.ptr) = log_expr_node_new_pipe(log_filter_pipe_new(last_filter_expr, configuration), &(yyloc));
 	  }
-#line 3351 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 3357 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 41:
-#line 649 "cfg-grammar.y" /* yacc.c:1646  */
+#line 630 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
     {
             LogExprNode *last_parser_expr = NULL;
 
             CHECK_ERROR_WITHOUT_MESSAGE(cfg_parser_parse(&parser_expr_parser, lexer, (gpointer *) &last_parser_expr, NULL), (yyloc));
             (yyval.ptr) = last_parser_expr;
           }
-#line 3362 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 3368 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 42:
-#line 659 "cfg-grammar.y" /* yacc.c:1646  */
+#line 640 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
     {
             LogExprNode *last_rewrite_expr = NULL;
 
             CHECK_ERROR_WITHOUT_MESSAGE(cfg_parser_parse(&rewrite_expr_parser, lexer, (gpointer *) &last_rewrite_expr, NULL), (yyloc));
             (yyval.ptr) = last_rewrite_expr;
           }
-#line 3373 "lib/cfg-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 43:
-#line 668 "cfg-grammar.y" /* yacc.c:1646  */
-    { cfg_lexer_push_context(lexer, LL_CONTEXT_DESTINATION, NULL, "destination"); }
 #line 3379 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 44:
-#line 670 "cfg-grammar.y" /* yacc.c:1646  */
-    { cfg_lexer_pop_context(lexer); }
+  case 43:
+#line 649 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { cfg_lexer_push_context(lexer, LL_CONTEXT_DESTINATION, NULL, "destination"); }
 #line 3385 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
+  case 44:
+#line 651 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { cfg_lexer_pop_context(lexer); }
+#line 3391 "lib/cfg-grammar.c" /* yacc.c:1646  */
+    break;
+
   case 45:
-#line 671 "cfg-grammar.y" /* yacc.c:1646  */
+#line 652 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
     {
              (yyval.ptr) = log_expr_node_new_junction((yyvsp[-1].ptr), &(yyloc));
            }
-#line 3393 "lib/cfg-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 46:
-#line 679 "cfg-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = log_expr_node_append_tail(log_expr_node_new_pipe((yyvsp[-2].ptr), &(yylsp[-2])), (yyvsp[0].ptr)); }
 #line 3399 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 47:
-#line 680 "cfg-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = log_expr_node_append_tail((yyvsp[-2].ptr),  (yyvsp[0].ptr)); }
+  case 46:
+#line 660 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = log_expr_node_append_tail(log_expr_node_new_pipe((yyvsp[-2].ptr), &(yylsp[-2])), (yyvsp[0].ptr)); }
 #line 3405 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 48:
-#line 681 "cfg-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = NULL; }
+  case 47:
+#line 661 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = log_expr_node_append_tail((yyvsp[-2].ptr),  (yyvsp[0].ptr)); }
 #line 3411 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 49:
-#line 685 "cfg-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = (yyvsp[0].ptr); }
+  case 48:
+#line 662 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = NULL; }
 #line 3417 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
+  case 49:
+#line 666 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = (yyvsp[0].ptr); }
+#line 3423 "lib/cfg-grammar.c" /* yacc.c:1646  */
+    break;
+
   case 50:
-#line 690 "cfg-grammar.y" /* yacc.c:1646  */
+#line 671 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
     {
             Plugin *p;
             gint context = LL_CONTEXT_DESTINATION;
@@ -3433,229 +3439,226 @@ yyreduce:
               }
             (yyval.ptr) = last_driver;
           }
-#line 3437 "lib/cfg-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 51:
-#line 708 "cfg-grammar.y" /* yacc.c:1646  */
-    { log_expr_node_append_tail((yyvsp[-2].ptr), (yyvsp[0].ptr)); (yyval.ptr) = (yyvsp[-2].ptr); }
 #line 3443 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 52:
-#line 709 "cfg-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = NULL; }
+  case 51:
+#line 689 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { log_expr_node_append_tail((yyvsp[-2].ptr), (yyvsp[0].ptr)); (yyval.ptr) = (yyvsp[-2].ptr); }
 #line 3449 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 53:
-#line 713 "cfg-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = log_expr_node_new_source_reference((yyvsp[-1].cptr), &(yyloc)); free((yyvsp[-1].cptr)); }
+  case 52:
+#line 690 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = NULL; }
 #line 3455 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 54:
-#line 714 "cfg-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = log_expr_node_new_source(NULL, (yyvsp[-1].ptr), &(yyloc)); }
+  case 53:
+#line 694 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = log_expr_node_new_source_reference((yyvsp[-1].cptr), &(yyloc)); free((yyvsp[-1].cptr)); }
 #line 3461 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 55:
-#line 715 "cfg-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = log_expr_node_new_filter_reference((yyvsp[-1].cptr), &(yyloc)); free((yyvsp[-1].cptr)); }
+  case 54:
+#line 695 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = log_expr_node_new_source(NULL, (yyvsp[-1].ptr), &(yyloc)); }
 #line 3467 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 56:
-#line 716 "cfg-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = log_expr_node_new_filter(NULL, (yyvsp[-1].ptr), &(yyloc)); }
+  case 55:
+#line 696 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = log_expr_node_new_filter_reference((yyvsp[-1].cptr), &(yyloc)); free((yyvsp[-1].cptr)); }
 #line 3473 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 57:
-#line 717 "cfg-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = log_expr_node_new_parser_reference((yyvsp[-1].cptr), &(yyloc)); free((yyvsp[-1].cptr)); }
+  case 56:
+#line 697 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = log_expr_node_new_filter(NULL, (yyvsp[-1].ptr), &(yyloc)); }
 #line 3479 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 58:
-#line 718 "cfg-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = log_expr_node_new_parser(NULL, (yyvsp[-1].ptr), &(yyloc)); }
+  case 57:
+#line 698 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = log_expr_node_new_parser_reference((yyvsp[-1].cptr), &(yyloc)); free((yyvsp[-1].cptr)); }
 #line 3485 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 59:
-#line 719 "cfg-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = log_expr_node_new_rewrite_reference((yyvsp[-1].cptr), &(yyloc)); free((yyvsp[-1].cptr)); }
+  case 58:
+#line 699 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = log_expr_node_new_parser(NULL, (yyvsp[-1].ptr), &(yyloc)); }
 #line 3491 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 60:
-#line 720 "cfg-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = log_expr_node_new_rewrite(NULL, (yyvsp[-1].ptr), &(yyloc)); }
+  case 59:
+#line 700 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = log_expr_node_new_rewrite_reference((yyvsp[-1].cptr), &(yyloc)); free((yyvsp[-1].cptr)); }
 #line 3497 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 61:
-#line 721 "cfg-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = log_expr_node_new_destination_reference((yyvsp[-1].cptr), &(yyloc)); free((yyvsp[-1].cptr)); }
+  case 60:
+#line 701 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = log_expr_node_new_rewrite(NULL, (yyvsp[-1].ptr), &(yyloc)); }
 #line 3503 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 62:
-#line 722 "cfg-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = log_expr_node_new_destination(NULL, (yyvsp[-1].ptr), &(yyloc)); }
+  case 61:
+#line 702 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = log_expr_node_new_destination_reference((yyvsp[-1].cptr), &(yyloc)); free((yyvsp[-1].cptr)); }
 #line 3509 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 63:
-#line 723 "cfg-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = (yyvsp[0].ptr); }
+  case 62:
+#line 703 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = log_expr_node_new_destination(NULL, (yyvsp[-1].ptr), &(yyloc)); }
 #line 3515 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 64:
-#line 727 "cfg-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = log_expr_node_new_junction((yyvsp[-1].ptr), &(yyloc)); }
+  case 63:
+#line 704 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = (yyvsp[0].ptr); }
 #line 3521 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 65:
-#line 739 "cfg-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = (yyvsp[0].ptr) ? log_expr_node_new_junction((yyvsp[0].ptr), &(yylsp[0])) :  NULL; }
+  case 64:
+#line 708 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = log_expr_node_new_junction((yyvsp[-1].ptr), &(yyloc)); }
 #line 3527 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 66:
-#line 744 "cfg-grammar.y" /* yacc.c:1646  */
-    { log_expr_node_append_tail((yyvsp[-2].ptr), (yyvsp[0].ptr)); (yyval.ptr) = (yyvsp[-2].ptr); }
+  case 65:
+#line 720 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = (yyvsp[0].ptr) ? log_expr_node_new_junction((yyvsp[0].ptr), &(yylsp[0])) :  NULL; }
 #line 3533 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 67:
-#line 745 "cfg-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = NULL; }
+  case 66:
+#line 725 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { log_expr_node_append_tail((yyvsp[-2].ptr), (yyvsp[0].ptr)); (yyval.ptr) = (yyvsp[-2].ptr); }
 #line 3539 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 68:
-#line 749 "cfg-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = (yyvsp[-1].ptr); }
+  case 67:
+#line 726 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = NULL; }
 #line 3545 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 69:
-#line 750 "cfg-grammar.y" /* yacc.c:1646  */
+  case 68:
+#line 730 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
     { (yyval.ptr) = (yyvsp[-1].ptr); }
 #line 3551 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 70:
-#line 754 "cfg-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = log_expr_node_new_log(log_expr_node_append_tail((yyvsp[-2].ptr), (yyvsp[-1].ptr)), (yyvsp[0].num), &(yyloc)); }
+  case 69:
+#line 731 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = (yyvsp[-1].ptr); }
 #line 3557 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 71:
-#line 758 "cfg-grammar.y" /* yacc.c:1646  */
-    { (yyval.num) = (yyvsp[-2].num); }
+  case 70:
+#line 735 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = log_expr_node_new_log(log_expr_node_append_tail((yyvsp[-2].ptr), (yyvsp[-1].ptr)), (yyvsp[0].num), &(yyloc)); }
 #line 3563 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 72:
-#line 759 "cfg-grammar.y" /* yacc.c:1646  */
-    { (yyval.num) = 0; }
+  case 71:
+#line 739 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { (yyval.num) = (yyvsp[-2].num); }
 #line 3569 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 73:
-#line 763 "cfg-grammar.y" /* yacc.c:1646  */
-    { (yyval.num) = log_expr_node_lookup_flag((yyvsp[-1].cptr)) | (yyvsp[0].num); free((yyvsp[-1].cptr)); }
+  case 72:
+#line 740 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { (yyval.num) = 0; }
 #line 3575 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 74:
-#line 764 "cfg-grammar.y" /* yacc.c:1646  */
-    { (yyval.num) = 0; }
+  case 73:
+#line 744 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { (yyval.num) = log_expr_node_lookup_flag((yyvsp[-1].cptr)) | (yyvsp[0].num); free((yyvsp[-1].cptr)); }
 #line 3581 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
+  case 74:
+#line 745 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { (yyval.num) = 0; }
+#line 3587 "lib/cfg-grammar.c" /* yacc.c:1646  */
+    break;
+
   case 76:
-#line 775 "cfg-grammar.y" /* yacc.c:1646  */
+#line 756 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
     {
             CHECK_ERROR(cfg_tree_add_template(&configuration->tree, (yyvsp[0].ptr)) || cfg_allow_config_dups(configuration), (yylsp[0]), "duplicate template");
           }
-#line 3589 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 3595 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 77:
-#line 779 "cfg-grammar.y" /* yacc.c:1646  */
+#line 760 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
     {
             user_template_function_register(configuration, last_template->name, last_template);
             log_template_unref(last_template);
             last_template = NULL;
           }
-#line 3599 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 3605 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 80:
-#line 793 "cfg-grammar.y" /* yacc.c:1646  */
+#line 774 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
     {
 	    last_template = log_template_new(configuration, (yyvsp[0].cptr));
-	    free((yyvsp[0].cptr));
 	  }
-#line 3608 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 3613 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 81:
-#line 797 "cfg-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = last_template; }
-#line 3614 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 777 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = last_template; free((yyvsp[-4].cptr)); }
+#line 3619 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 82:
-#line 802 "cfg-grammar.y" /* yacc.c:1646  */
+#line 782 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
     {
 	    last_template = log_template_new(configuration, (yyvsp[0].cptr));
-	    free((yyvsp[0].cptr));
           }
-#line 3623 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 3627 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 83:
-#line 806 "cfg-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = last_template; }
-#line 3629 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 785 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = last_template; free((yyvsp[-2].cptr)); }
+#line 3633 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 84:
-#line 811 "cfg-grammar.y" /* yacc.c:1646  */
+#line 790 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
     {
 	    last_template = log_template_new(configuration, (yyvsp[0].cptr));
-	    free((yyvsp[0].cptr));
           }
-#line 3638 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 3641 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 85:
-#line 815 "cfg-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = last_template; }
-#line 3644 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 793 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = last_template; free((yyvsp[-2].cptr)); }
+#line 3647 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 88:
-#line 827 "cfg-grammar.y" /* yacc.c:1646  */
+#line 805 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
     {
           GError *error = NULL;
 
           CHECK_ERROR(log_template_compile(last_template, (yyvsp[0].cptr), &error), (yylsp[0]), "Error compiling template (%s)", error->message);
           free((yyvsp[0].cptr));
         }
-#line 3655 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 3658 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 89:
-#line 834 "cfg-grammar.y" /* yacc.c:1646  */
+#line 812 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
     {
           GError *error = NULL;
 
@@ -3665,35 +3668,35 @@ yyreduce:
           CHECK_ERROR(log_template_set_type_hint(last_template, (yyvsp[-3].cptr), &error), (yylsp[-3]), "Error setting the template type-hint (%s)", error->message);
           free((yyvsp[-3].cptr));
         }
-#line 3669 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 3672 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 91:
-#line 853 "cfg-grammar.y" /* yacc.c:1646  */
+#line 831 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
     { log_template_set_escape(last_template, (yyvsp[-1].num)); }
-#line 3675 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 3678 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 92:
-#line 859 "cfg-grammar.y" /* yacc.c:1646  */
+#line 837 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
     { cfg_lexer_push_context(lexer, LL_CONTEXT_BLOCK_DEF, block_def_keywords, "block definition"); }
-#line 3681 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 3684 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 93:
-#line 861 "cfg-grammar.y" /* yacc.c:1646  */
+#line 839 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
     { last_block_args = cfg_args_new(); }
-#line 3687 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 3690 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 94:
-#line 862 "cfg-grammar.y" /* yacc.c:1646  */
+#line 840 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
     { cfg_lexer_push_context(lexer, LL_CONTEXT_BLOCK_CONTENT, NULL, "block content"); }
-#line 3693 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 3696 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 95:
-#line 864 "cfg-grammar.y" /* yacc.c:1646  */
+#line 842 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
     {
             CfgBlock *block;
 
@@ -3709,500 +3712,518 @@ yyreduce:
             free((yyvsp[0].cptr));
             last_block_args = NULL;
           }
-#line 3713 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 3716 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 98:
-#line 888 "cfg-grammar.y" /* yacc.c:1646  */
+#line 866 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
     {
             cfg_lexer_push_context(lexer, LL_CONTEXT_BLOCK_ARG, NULL, "block argument");
           }
-#line 3721 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 3724 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 99:
-#line 892 "cfg-grammar.y" /* yacc.c:1646  */
+#line 870 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
     {
             cfg_lexer_pop_context(lexer);
             cfg_args_set(last_block_args, (yyvsp[-2].cptr), (yyvsp[0].cptr)); free((yyvsp[-2].cptr)); free((yyvsp[0].cptr));
           }
-#line 3730 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 3733 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 102:
-#line 904 "cfg-grammar.y" /* yacc.c:1646  */
+#line 882 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
     { configuration->mark_freq = (yyvsp[-1].num); }
-#line 3736 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 3739 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 103:
-#line 905 "cfg-grammar.y" /* yacc.c:1646  */
+#line 883 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
     { configuration->flush_lines = (yyvsp[-1].num); }
-#line 3742 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 3745 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 104:
-#line 906 "cfg-grammar.y" /* yacc.c:1646  */
+#line 884 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
     { cfg_set_mark_mode(configuration, "internal"); }
-#line 3748 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 3751 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 105:
-#line 908 "cfg-grammar.y" /* yacc.c:1646  */
+#line 886 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
     {
             CHECK_ERROR(cfg_lookup_mark_mode((yyvsp[-1].cptr)) > 0 && cfg_lookup_mark_mode((yyvsp[-1].cptr)) != MM_GLOBAL, (yylsp[-1]), "illegal global mark-mode");
             cfg_set_mark_mode(configuration, (yyvsp[-1].cptr));
             free((yyvsp[-1].cptr));
           }
-#line 3758 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 3761 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 106:
-#line 913 "cfg-grammar.y" /* yacc.c:1646  */
+#line 891 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
     { configuration->flush_timeout = (yyvsp[-1].num); }
-#line 3764 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 3767 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 107:
-#line 914 "cfg-grammar.y" /* yacc.c:1646  */
+#line 892 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
     { configuration->chain_hostnames = (yyvsp[-1].num); }
-#line 3770 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 3773 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 108:
-#line 915 "cfg-grammar.y" /* yacc.c:1646  */
+#line 893 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
     { configuration->keep_hostname = (yyvsp[-1].num); }
-#line 3776 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 3779 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 109:
-#line 916 "cfg-grammar.y" /* yacc.c:1646  */
+#line 894 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
     { configuration->check_hostname = (yyvsp[-1].num); }
-#line 3782 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 3785 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 110:
-#line 917 "cfg-grammar.y" /* yacc.c:1646  */
+#line 895 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
     { cfg_bad_hostname_set(configuration, (yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 3788 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 3791 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 111:
-#line 918 "cfg-grammar.y" /* yacc.c:1646  */
+#line 896 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
     { configuration->time_reopen = (yyvsp[-1].num); }
-#line 3794 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 3797 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 112:
-#line 919 "cfg-grammar.y" /* yacc.c:1646  */
+#line 897 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
     { configuration->time_reap = (yyvsp[-1].num); }
-#line 3800 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 3803 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 113:
-#line 920 "cfg-grammar.y" /* yacc.c:1646  */
+#line 898 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
     {}
-#line 3806 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 3809 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 114:
-#line 921 "cfg-grammar.y" /* yacc.c:1646  */
+#line 899 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
     { configuration->suppress = (yyvsp[-1].num); }
-#line 3812 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 3815 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 115:
-#line 922 "cfg-grammar.y" /* yacc.c:1646  */
+#line 900 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
     { configuration->threaded = (yyvsp[-1].num); }
-#line 3818 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 3821 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 116:
-#line 923 "cfg-grammar.y" /* yacc.c:1646  */
+#line 901 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
     { configuration->pass_unix_credentials = (yyvsp[-1].num); }
-#line 3824 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 3827 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 117:
-#line 924 "cfg-grammar.y" /* yacc.c:1646  */
+#line 902 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
     { cfg_set_use_uniqid((yyvsp[-1].num)); }
-#line 3830 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 3833 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 118:
-#line 925 "cfg-grammar.y" /* yacc.c:1646  */
+#line 903 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
     { cfg_set_use_uniqid((yyvsp[-1].num)); }
-#line 3836 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 3839 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 119:
-#line 926 "cfg-grammar.y" /* yacc.c:1646  */
+#line 904 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
     { configuration->log_fifo_size = (yyvsp[-1].num); }
-#line 3842 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 3845 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 120:
-#line 927 "cfg-grammar.y" /* yacc.c:1646  */
-    { msg_error("Using a global log-iw-size() option was removed, please use a per-source log-iw-size()", NULL); }
-#line 3848 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 905 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { msg_error("Using a global log-iw-size() option was removed, please use a per-source log-iw-size()"); }
+#line 3851 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 121:
-#line 928 "cfg-grammar.y" /* yacc.c:1646  */
-    { msg_error("Using a global log-fetch-limit() option was removed, please use a per-source log-fetch-limit()", NULL); }
-#line 3854 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 906 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { msg_error("Using a global log-fetch-limit() option was removed, please use a per-source log-fetch-limit()"); }
+#line 3857 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 122:
-#line 929 "cfg-grammar.y" /* yacc.c:1646  */
+#line 907 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
     { configuration->log_msg_size = (yyvsp[-1].num); }
-#line 3860 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 3863 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 123:
-#line 930 "cfg-grammar.y" /* yacc.c:1646  */
+#line 908 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
     { configuration->keep_timestamp = (yyvsp[-1].num); }
-#line 3866 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 3869 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 124:
-#line 931 "cfg-grammar.y" /* yacc.c:1646  */
+#line 909 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
     { configuration->create_dirs = (yyvsp[-1].num); }
-#line 3872 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 3875 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 125:
-#line 932 "cfg-grammar.y" /* yacc.c:1646  */
-    { cfg_file_owner_set(configuration, (yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 3878 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 910 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { configuration->custom_domain = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
+#line 3881 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 126:
-#line 933 "cfg-grammar.y" /* yacc.c:1646  */
-    { cfg_file_owner_set(configuration, "-2"); }
-#line 3884 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 911 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { configuration->file_template_name = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
+#line 3887 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 127:
-#line 934 "cfg-grammar.y" /* yacc.c:1646  */
-    { cfg_file_group_set(configuration, (yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 3890 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 912 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { configuration->proto_template_name = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
+#line 3893 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 128:
-#line 935 "cfg-grammar.y" /* yacc.c:1646  */
-    { cfg_file_group_set(configuration, "-2"); }
-#line 3896 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 913 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { configuration->recv_time_zone = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
+#line 3899 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 129:
-#line 936 "cfg-grammar.y" /* yacc.c:1646  */
-    { cfg_file_perm_set(configuration, (yyvsp[-1].num)); }
-#line 3902 "lib/cfg-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 130:
-#line 937 "cfg-grammar.y" /* yacc.c:1646  */
-    { cfg_file_perm_set(configuration, -2); }
-#line 3908 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 914 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { last_template_options = &configuration->template_options; }
+#line 3905 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 131:
-#line 938 "cfg-grammar.y" /* yacc.c:1646  */
-    { cfg_dir_owner_set(configuration, (yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 3914 "lib/cfg-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 132:
-#line 939 "cfg-grammar.y" /* yacc.c:1646  */
-    { cfg_dir_owner_set(configuration, "-2"); }
-#line 3920 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 915 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { last_host_resolve_options = &configuration->host_resolve_options; }
+#line 3911 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 133:
-#line 940 "cfg-grammar.y" /* yacc.c:1646  */
-    { cfg_dir_group_set(configuration, (yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 3926 "lib/cfg-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 134:
-#line 941 "cfg-grammar.y" /* yacc.c:1646  */
-    { cfg_dir_group_set(configuration, "-2"); }
-#line 3932 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 916 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { last_stats_options = &configuration->stats_options; }
+#line 3917 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 135:
-#line 942 "cfg-grammar.y" /* yacc.c:1646  */
-    { cfg_dir_perm_set(configuration, (yyvsp[-1].num)); }
-#line 3938 "lib/cfg-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 136:
-#line 943 "cfg-grammar.y" /* yacc.c:1646  */
-    { cfg_dir_perm_set(configuration, -2); }
-#line 3944 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 917 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { last_dns_cache_options = &configuration->dns_cache_options; }
+#line 3923 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 137:
-#line 944 "cfg-grammar.y" /* yacc.c:1646  */
-    { configuration->custom_domain = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 3950 "lib/cfg-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 138:
-#line 945 "cfg-grammar.y" /* yacc.c:1646  */
-    { configuration->dns_cache_size = (yyvsp[-1].num); }
-#line 3956 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 918 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { last_file_perm_options = &configuration->file_perm_options; }
+#line 3929 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 139:
-#line 946 "cfg-grammar.y" /* yacc.c:1646  */
-    { configuration->dns_cache_expire = (yyvsp[-1].num); }
-#line 3962 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 922 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { last_stats_options->log_freq = (yyvsp[-1].num); }
+#line 3935 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 140:
-#line 948 "cfg-grammar.y" /* yacc.c:1646  */
-    { configuration->dns_cache_expire_failed = (yyvsp[-1].num); }
-#line 3968 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 923 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { last_stats_options->level = (yyvsp[-1].num); }
+#line 3941 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 141:
-#line 949 "cfg-grammar.y" /* yacc.c:1646  */
-    { configuration->dns_cache_hosts = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 3974 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 924 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { last_stats_options->lifetime = (yyvsp[-1].num); }
+#line 3947 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 142:
-#line 950 "cfg-grammar.y" /* yacc.c:1646  */
-    { configuration->file_template_name = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 3980 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 928 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { last_dns_cache_options->cache_size = (yyvsp[-1].num); }
+#line 3953 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 143:
-#line 951 "cfg-grammar.y" /* yacc.c:1646  */
-    { configuration->proto_template_name = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 3986 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 929 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { last_dns_cache_options->expire = (yyvsp[-1].num); }
+#line 3959 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 144:
-#line 952 "cfg-grammar.y" /* yacc.c:1646  */
-    { configuration->recv_time_zone = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 3992 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 931 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { last_dns_cache_options->expire_failed = (yyvsp[-1].num); }
+#line 3965 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 145:
-#line 953 "cfg-grammar.y" /* yacc.c:1646  */
-    { last_template_options = &configuration->template_options; }
-#line 3998 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 932 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { last_dns_cache_options->hosts = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
+#line 3971 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 147:
-#line 954 "cfg-grammar.y" /* yacc.c:1646  */
-    { last_host_resolve_options = &configuration->host_resolve_options; }
-#line 4004 "lib/cfg-grammar.c" /* yacc.c:1646  */
+  case 148:
+#line 945 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { (yyval.num) = 1; }
+#line 3977 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 149:
-#line 955 "cfg-grammar.y" /* yacc.c:1646  */
-    { last_stats_options = &configuration->stats_options; }
-#line 4010 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 946 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { (yyval.num) = 0; }
+#line 3983 "lib/cfg-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 150:
+#line 947 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { (yyval.num) = (yyvsp[0].num); }
+#line 3989 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 151:
-#line 959 "cfg-grammar.y" /* yacc.c:1646  */
-    { last_stats_options->log_freq = (yyvsp[-1].num); }
-#line 4016 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 951 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { (yyval.num) = (yyvsp[0].num); }
+#line 3995 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 152:
-#line 960 "cfg-grammar.y" /* yacc.c:1646  */
-    { last_stats_options->level = (yyvsp[-1].num); }
-#line 4022 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 952 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { (yyval.num) = 2; }
+#line 4001 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 153:
-#line 961 "cfg-grammar.y" /* yacc.c:1646  */
-    { last_stats_options->lifetime = (yyvsp[-1].num); }
-#line 4028 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 956 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { (yyval.cptr) = (yyvsp[0].cptr); }
+#line 4007 "lib/cfg-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 154:
+#line 957 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { (yyval.cptr) = strdup(lexer->token_text->str); }
+#line 4013 "lib/cfg-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 155:
+#line 958 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { (yyval.cptr) = strdup(lexer->token_text->str); }
+#line 4019 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 156:
-#line 973 "cfg-grammar.y" /* yacc.c:1646  */
-    { (yyval.num) = 1; }
-#line 4034 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 962 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = g_list_reverse((yyvsp[0].ptr)); }
+#line 4025 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 157:
-#line 974 "cfg-grammar.y" /* yacc.c:1646  */
-    { (yyval.num) = 0; }
-#line 4040 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 966 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = g_list_append((yyvsp[0].ptr), g_strdup((yyvsp[-1].cptr))); free((yyvsp[-1].cptr)); }
+#line 4031 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 158:
-#line 975 "cfg-grammar.y" /* yacc.c:1646  */
-    { (yyval.num) = (yyvsp[0].num); }
-#line 4046 "lib/cfg-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 159:
-#line 979 "cfg-grammar.y" /* yacc.c:1646  */
-    { (yyval.num) = (yyvsp[0].num); }
-#line 4052 "lib/cfg-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 160:
-#line 980 "cfg-grammar.y" /* yacc.c:1646  */
-    { (yyval.num) = 2; }
-#line 4058 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 967 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = NULL; }
+#line 4037 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 161:
-#line 984 "cfg-grammar.y" /* yacc.c:1646  */
-    { (yyval.cptr) = (yyvsp[0].cptr); }
-#line 4064 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 1013 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { last_source_options->init_window_size = (yyvsp[-1].num); }
+#line 4043 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 162:
-#line 985 "cfg-grammar.y" /* yacc.c:1646  */
-    { (yyval.cptr) = strdup(lexer->token_text->str); }
-#line 4070 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 1014 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { last_source_options->chain_hostnames = (yyvsp[-1].num); }
+#line 4049 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 163:
-#line 986 "cfg-grammar.y" /* yacc.c:1646  */
-    { (yyval.cptr) = strdup(lexer->token_text->str); }
-#line 4076 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 1015 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { last_source_options->keep_hostname = (yyvsp[-1].num); }
+#line 4055 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 164:
-#line 990 "cfg-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = g_list_reverse((yyvsp[0].ptr)); }
-#line 4082 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 1016 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { last_source_options->program_override = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
+#line 4061 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 165:
-#line 994 "cfg-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = g_list_append((yyvsp[0].ptr), g_strdup((yyvsp[-1].cptr))); free((yyvsp[-1].cptr)); }
-#line 4088 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 1017 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { last_source_options->host_override = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
+#line 4067 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 166:
-#line 995 "cfg-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = NULL; }
-#line 4094 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 1018 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { gchar *p = strrchr((yyvsp[-1].cptr), ':'); if (p) *p = 0; last_source_options->program_override = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
+#line 4073 "lib/cfg-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 167:
+#line 1019 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { last_source_options->keep_timestamp = (yyvsp[-1].num); }
+#line 4079 "lib/cfg-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 168:
+#line 1020 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { log_source_options_set_tags(last_source_options, (yyvsp[-1].ptr)); }
+#line 4085 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 169:
-#line 1041 "cfg-grammar.y" /* yacc.c:1646  */
-    { last_source_options->init_window_size = (yyvsp[-1].num); }
-#line 4100 "lib/cfg-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 170:
-#line 1042 "cfg-grammar.y" /* yacc.c:1646  */
-    { last_source_options->chain_hostnames = (yyvsp[-1].num); }
-#line 4106 "lib/cfg-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 171:
-#line 1043 "cfg-grammar.y" /* yacc.c:1646  */
-    { last_source_options->keep_hostname = (yyvsp[-1].num); }
-#line 4112 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 1021 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { last_host_resolve_options = &last_source_options->host_resolve_options; }
+#line 4091 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 172:
-#line 1044 "cfg-grammar.y" /* yacc.c:1646  */
-    { last_source_options->program_override = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 4118 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 1041 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { last_host_resolve_options->use_fqdn = (yyvsp[-1].num); }
+#line 4097 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 173:
-#line 1045 "cfg-grammar.y" /* yacc.c:1646  */
-    { last_source_options->host_override = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 4124 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 1042 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { last_host_resolve_options->use_dns = (yyvsp[-1].num); }
+#line 4103 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 174:
-#line 1046 "cfg-grammar.y" /* yacc.c:1646  */
-    { gchar *p = strrchr((yyvsp[-1].cptr), ':'); if (p) *p = 0; last_source_options->program_override = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 4130 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 1043 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { last_host_resolve_options->use_dns_cache = (yyvsp[-1].num); }
+#line 4109 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 175:
-#line 1047 "cfg-grammar.y" /* yacc.c:1646  */
-    { last_source_options->keep_timestamp = (yyvsp[-1].num); }
-#line 4136 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 1044 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { last_host_resolve_options->normalize_hostnames = (yyvsp[-1].num); }
+#line 4115 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 176:
-#line 1048 "cfg-grammar.y" /* yacc.c:1646  */
-    { log_source_options_set_tags(last_source_options, (yyvsp[-1].ptr)); }
-#line 4142 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 1084 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { log_pipe_set_persist_name(&last_driver->super, g_strdup((yyvsp[-1].cptr))); free((yyvsp[-1].cptr)); }
+#line 4121 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 177:
-#line 1049 "cfg-grammar.y" /* yacc.c:1646  */
-    { last_host_resolve_options = &last_source_options->host_resolve_options; }
-#line 4148 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 1157 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { file_perm_options_set_file_uid(last_file_perm_options, (yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
+#line 4127 "lib/cfg-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 178:
+#line 1158 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { file_perm_options_dont_change_file_uid(last_file_perm_options); }
+#line 4133 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 179:
-#line 1062 "cfg-grammar.y" /* yacc.c:1646  */
-    { last_host_resolve_options->use_fqdn = (yyvsp[-1].num); }
-#line 4154 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 1159 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { file_perm_options_set_file_gid(last_file_perm_options, (yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
+#line 4139 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 180:
-#line 1063 "cfg-grammar.y" /* yacc.c:1646  */
-    { last_host_resolve_options->use_dns = (yyvsp[-1].num); }
-#line 4160 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 1160 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { file_perm_options_dont_change_file_gid(last_file_perm_options); }
+#line 4145 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 181:
-#line 1064 "cfg-grammar.y" /* yacc.c:1646  */
-    { last_host_resolve_options->use_dns_cache = (yyvsp[-1].num); }
-#line 4166 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 1161 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { file_perm_options_set_file_perm(last_file_perm_options, (yyvsp[-1].num)); }
+#line 4151 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 182:
-#line 1065 "cfg-grammar.y" /* yacc.c:1646  */
-    { last_host_resolve_options->normalize_hostnames = (yyvsp[-1].num); }
-#line 4172 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 1162 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { file_perm_options_dont_change_file_perm(last_file_perm_options); }
+#line 4157 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 183:
-#line 1192 "cfg-grammar.y" /* yacc.c:1646  */
-    { last_template_options->ts_format = cfg_ts_format_value((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 4178 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 1163 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { file_perm_options_set_dir_uid(last_file_perm_options, (yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
+#line 4163 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 184:
-#line 1193 "cfg-grammar.y" /* yacc.c:1646  */
-    { last_template_options->frac_digits = (yyvsp[-1].num); }
-#line 4184 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 1164 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { file_perm_options_dont_change_dir_uid(last_file_perm_options); }
+#line 4169 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 185:
-#line 1194 "cfg-grammar.y" /* yacc.c:1646  */
-    { last_template_options->time_zone[LTZ_SEND] = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 4190 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 1165 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { file_perm_options_set_dir_gid(last_file_perm_options, (yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
+#line 4175 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 186:
-#line 1195 "cfg-grammar.y" /* yacc.c:1646  */
-    { last_template_options->time_zone[LTZ_SEND] = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 4196 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 1166 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { file_perm_options_dont_change_dir_gid(last_file_perm_options); }
+#line 4181 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 187:
-#line 1196 "cfg-grammar.y" /* yacc.c:1646  */
-    { last_template_options->time_zone[LTZ_LOCAL] = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 4202 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 1167 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { file_perm_options_set_dir_perm(last_file_perm_options, (yyvsp[-1].num)); }
+#line 4187 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
   case 188:
-#line 1198 "cfg-grammar.y" /* yacc.c:1646  */
+#line 1168 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { file_perm_options_dont_change_dir_perm(last_file_perm_options); }
+#line 4193 "lib/cfg-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 189:
+#line 1172 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { last_template_options->ts_format = cfg_ts_format_value((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
+#line 4199 "lib/cfg-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 190:
+#line 1173 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { last_template_options->frac_digits = (yyvsp[-1].num); }
+#line 4205 "lib/cfg-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 191:
+#line 1174 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { last_template_options->time_zone[LTZ_SEND] = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
+#line 4211 "lib/cfg-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 192:
+#line 1175 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { last_template_options->time_zone[LTZ_SEND] = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
+#line 4217 "lib/cfg-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 193:
+#line 1176 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
+    { last_template_options->time_zone[LTZ_LOCAL] = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
+#line 4223 "lib/cfg-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 194:
+#line 1178 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1646  */
     {
           gint on_error;
 
@@ -4211,11 +4232,11 @@ yyreduce:
 
           log_template_options_set_on_error(last_template_options, on_error);
         }
-#line 4215 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 4236 "lib/cfg-grammar.c" /* yacc.c:1646  */
     break;
 
 
-#line 4219 "lib/cfg-grammar.c" /* yacc.c:1646  */
+#line 4240 "lib/cfg-grammar.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -4450,6 +4471,6 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 1281 "cfg-grammar.y" /* yacc.c:1906  */
+#line 1261 "../syslog-ng/lib/cfg-grammar.y" /* yacc.c:1906  */
 
 

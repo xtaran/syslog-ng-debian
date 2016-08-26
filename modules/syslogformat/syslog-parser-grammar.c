@@ -59,7 +59,7 @@
 #define YYPULL 1
 
 /* "%code top" blocks.  */
-#line 24 "syslog-parser-grammar.y" /* yacc.c:316  */
+#line 24 "modules/syslogformat/syslog-parser-grammar.y" /* yacc.c:316  */
 
 #include "syslog-parser-parser.h"
 
@@ -96,8 +96,8 @@
 
 /* In a future release of Bison, this section will be replaced
    by #include "y.tab.h".  */
-#ifndef YY_SYSLOG_PARSER_Y_TAB_H_INCLUDED
-# define YY_SYSLOG_PARSER_Y_TAB_H_INCLUDED
+#ifndef YY_SYSLOG_PARSER_MODULES_SYSLOGFORMAT_SYSLOG_PARSER_GRAMMAR_H_INCLUDED
+# define YY_SYSLOG_PARSER_MODULES_SYSLOGFORMAT_SYSLOG_PARSER_GRAMMAR_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -141,23 +141,6 @@ extern int syslog_parser_debug;
     KW_CHANNEL = 10009,
     KW_INTERNAL = 10010,
     KW_FILE = 10011,
-    KW_SQL = 10030,
-    KW_TYPE = 10031,
-    KW_COLUMNS = 10032,
-    KW_INDEXES = 10033,
-    KW_VALUES = 10034,
-    KW_PASSWORD = 10035,
-    KW_DATABASE = 10036,
-    KW_USERNAME = 10037,
-    KW_TABLE = 10038,
-    KW_ENCODING = 10039,
-    KW_SESSION_STATEMENTS = 10040,
-    KW_DELIMITERS = 10050,
-    KW_QUOTES = 10051,
-    KW_QUOTE_PAIRS = 10052,
-    KW_NULL = 10053,
-    KW_CHARS = 10054,
-    KW_STRINGS = 10055,
     KW_SYSLOG = 10060,
     KW_MARK_FREQ = 10071,
     KW_STATS_FREQ = 10072,
@@ -170,6 +153,8 @@ extern int syslog_parser_debug;
     KW_FILE_TEMPLATE = 10079,
     KW_PROTO_TEMPLATE = 10080,
     KW_MARK_MODE = 10081,
+    KW_ENCODING = 10082,
+    KW_TYPE = 10083,
     KW_CHAIN_HOSTNAMES = 10090,
     KW_NORMALIZE_HOSTNAMES = 10091,
     KW_KEEP_HOSTNAME = 10092,
@@ -199,6 +184,7 @@ extern int syslog_parser_debug;
     KW_THROTTLE = 10170,
     KW_THREADED = 10171,
     KW_PASS_UNIX_CREDENTIALS = 10231,
+    KW_PERSIST_NAME = 10302,
     KW_FLAGS = 10190,
     KW_PAD_SIZE = 10200,
     KW_TIME_ZONE = 10201,
@@ -233,10 +219,7 @@ extern int syslog_parser_debug;
     KW_NETMASK = 10355,
     KW_TAGS = 10356,
     KW_NETMASK6 = 10357,
-    KW_VALUE = 10361,
     KW_REWRITE = 10370,
-    KW_SET = 10371,
-    KW_SUBST = 10372,
     KW_YES = 10380,
     KW_NO = 10381,
     KW_IFDEF = 10410,
@@ -252,7 +235,6 @@ extern int syslog_parser_debug;
     LL_EOL = 10428,
     LL_ERROR = 10429,
     KW_VALUE_PAIRS = 10500,
-    KW_SELECT = 10501,
     KW_EXCLUDE = 10502,
     KW_PAIR = 10503,
     KW_KEY = 10504,
@@ -297,23 +279,6 @@ extern int syslog_parser_debug;
 #define KW_CHANNEL 10009
 #define KW_INTERNAL 10010
 #define KW_FILE 10011
-#define KW_SQL 10030
-#define KW_TYPE 10031
-#define KW_COLUMNS 10032
-#define KW_INDEXES 10033
-#define KW_VALUES 10034
-#define KW_PASSWORD 10035
-#define KW_DATABASE 10036
-#define KW_USERNAME 10037
-#define KW_TABLE 10038
-#define KW_ENCODING 10039
-#define KW_SESSION_STATEMENTS 10040
-#define KW_DELIMITERS 10050
-#define KW_QUOTES 10051
-#define KW_QUOTE_PAIRS 10052
-#define KW_NULL 10053
-#define KW_CHARS 10054
-#define KW_STRINGS 10055
 #define KW_SYSLOG 10060
 #define KW_MARK_FREQ 10071
 #define KW_STATS_FREQ 10072
@@ -326,6 +291,8 @@ extern int syslog_parser_debug;
 #define KW_FILE_TEMPLATE 10079
 #define KW_PROTO_TEMPLATE 10080
 #define KW_MARK_MODE 10081
+#define KW_ENCODING 10082
+#define KW_TYPE 10083
 #define KW_CHAIN_HOSTNAMES 10090
 #define KW_NORMALIZE_HOSTNAMES 10091
 #define KW_KEEP_HOSTNAME 10092
@@ -355,6 +322,7 @@ extern int syslog_parser_debug;
 #define KW_THROTTLE 10170
 #define KW_THREADED 10171
 #define KW_PASS_UNIX_CREDENTIALS 10231
+#define KW_PERSIST_NAME 10302
 #define KW_FLAGS 10190
 #define KW_PAD_SIZE 10200
 #define KW_TIME_ZONE 10201
@@ -389,10 +357,7 @@ extern int syslog_parser_debug;
 #define KW_NETMASK 10355
 #define KW_TAGS 10356
 #define KW_NETMASK6 10357
-#define KW_VALUE 10361
 #define KW_REWRITE 10370
-#define KW_SET 10371
-#define KW_SUBST 10372
 #define KW_YES 10380
 #define KW_NO 10381
 #define KW_IFDEF 10410
@@ -408,7 +373,6 @@ extern int syslog_parser_debug;
 #define LL_EOL 10428
 #define LL_ERROR 10429
 #define KW_VALUE_PAIRS 10500
-#define KW_SELECT 10501
 #define KW_EXCLUDE 10502
 #define KW_PAIR 10503
 #define KW_KEY 10504
@@ -441,20 +405,20 @@ struct YYLTYPE
 
 int syslog_parser_parse (CfgLexer *lexer, LogParser **instance, gpointer arg);
 
-#endif /* !YY_SYSLOG_PARSER_Y_TAB_H_INCLUDED  */
+#endif /* !YY_SYSLOG_PARSER_MODULES_SYSLOGFORMAT_SYSLOG_PARSER_GRAMMAR_H_INCLUDED  */
 
 /* Copy the second part of user declarations.  */
 
-#line 449 "modules/syslogformat/syslog-parser-grammar.c" /* yacc.c:358  */
+#line 413 "modules/syslogformat/syslog-parser-grammar.c" /* yacc.c:358  */
 /* Unqualified %code blocks.  */
-#line 30 "syslog-parser-grammar.y" /* yacc.c:359  */
+#line 30 "modules/syslogformat/syslog-parser-grammar.y" /* yacc.c:359  */
 
 
 #include "syslog-parser.h"
 #include "syslog-names.h"
 #include "cfg-grammar.h"
 
-#line 55 "syslog-parser-grammar.y" /* yacc.c:359  */
+#line 55 "modules/syslogformat/syslog-parser-grammar.y" /* yacc.c:359  */
 
 
 # define YYLLOC_DEFAULT(Current, Rhs, N)                                \
@@ -515,7 +479,7 @@ int syslog_parser_parse (CfgLexer *lexer, LogParser **instance, gpointer arg);
 
 
 
-#line 519 "modules/syslogformat/syslog-parser-grammar.c" /* yacc.c:359  */
+#line 483 "modules/syslogformat/syslog-parser-grammar.c" /* yacc.c:359  */
 
 #ifdef short
 # undef short
@@ -762,7 +726,7 @@ union yyalloc
 #define YYLAST   87
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  162
+#define YYNTOKENS  144
 /* YYNNTS -- Number of nonterminals.  */
 #define YYNNTS  13
 /* YYNRULES -- Number of rules.  */
@@ -786,15 +750,15 @@ static const yytype_uint8 yytranslate[] =
       12,    13,    14,    15,    16,    17,    18,    19,    20,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     156,   157,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,   161,   160,
+     138,   139,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,   143,   142,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,   158,     2,   159,     2,     2,     2,     2,
+       2,     2,     2,   140,     2,   141,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -1785,64 +1749,64 @@ static const yytype_uint8 yytranslate[] =
       21,    22,    23,    24,    25,    26,    27,    28,    29,    30,
       31,    32,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      33,    34,    35,    36,    37,    38,    39,    40,    41,    42,
-      43,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      44,    45,    46,    47,    48,    49,     2,     2,     2,     2,
-      50,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,    51,    52,    53,    54,    55,    56,    57,    58,    59,
-      60,    61,     2,     2,     2,     2,     2,     2,     2,     2,
-      62,    63,    64,    65,    66,     2,     2,     2,     2,     2,
-      67,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      68,    69,    70,     2,     2,     2,     2,     2,     2,     2,
-      71,    72,     2,     2,     2,     2,     2,     2,     2,     2,
-      73,    74,    75,     2,     2,     2,     2,     2,     2,     2,
-      76,    77,    78,     2,     2,     2,     2,     2,     2,     2,
-      79,    80,    81,     2,     2,     2,     2,     2,     2,     2,
-      82,     2,    83,    84,    85,    86,    87,     2,     2,     2,
-      88,    89,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      91,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      92,    93,    94,    95,    96,    97,     2,     2,     2,     2,
-      98,    99,   100,     2,     2,     2,     2,     2,     2,     2,
-     101,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     102,    90,     2,     2,     2,     2,     2,     2,     2,     2,
-     103,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     104,   105,   106,     2,     2,     2,     2,     2,     2,     2,
-     107,   108,   109,     2,     2,     2,     2,     2,     2,     2,
-     110,   111,   112,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     113,   114,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,   115,     2,     2,     2,     2,     2,     2,
+      33,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,    34,    35,    36,    37,    38,    39,    40,    41,    42,
+      43,    44,    45,    46,     2,     2,     2,     2,     2,     2,
+      47,    48,    49,    50,    51,     2,     2,     2,     2,     2,
+      52,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+      53,    54,    55,     2,     2,     2,     2,     2,     2,     2,
+      56,    57,     2,     2,     2,     2,     2,     2,     2,     2,
+      58,    59,    60,     2,     2,     2,     2,     2,     2,     2,
+      61,    62,    63,     2,     2,     2,     2,     2,     2,     2,
+      64,    65,    66,     2,     2,     2,     2,     2,     2,     2,
+      67,     2,    68,    69,    70,    71,    72,     2,     2,     2,
+      73,    74,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     116,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     117,   118,   119,   120,   121,   122,   123,   124,     2,     2,
-       2,   125,     2,     2,     2,     2,     2,     2,     2,     2,
-     126,   127,   128,     2,     2,     2,     2,     2,     2,     2,
-     129,   130,     2,     2,     2,     2,     2,     2,     2,     2,
+      77,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+      78,    79,    80,    81,    82,    83,     2,     2,     2,     2,
+      84,    85,    86,     2,     2,     2,     2,     2,     2,     2,
+      87,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+      88,    75,     2,     2,     2,     2,     2,     2,     2,     2,
+      89,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+      90,    91,    92,     2,     2,     2,     2,     2,     2,     2,
+      93,    94,    95,     2,     2,     2,     2,     2,     2,     2,
+      96,    97,    98,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     131,   132,     2,     2,     2,     2,     2,     2,     2,     2,
-     133,   134,   135,   136,   137,   138,   139,   140,   141,   142,
+      99,   100,    76,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,   101,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     102,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     103,   104,   105,   106,   107,   108,   109,   110,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     111,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     112,   113,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     114,   115,     2,     2,     2,     2,     2,     2,     2,     2,
+     116,   117,   118,   119,   120,   121,   122,   123,   124,   125,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     143,   144,   145,   146,   147,   148,   149,   150,   151,   152,
-     153,   154,     2,   155
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     126,     2,   127,   128,   129,   130,   131,   132,   133,   134,
+     135,   136,     2,   137
 };
 
 #if YYDEBUG
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   381,   381,   387,   386,   396,   397,   401,   402,   403,
-     403,   407,   408,   632,   633,   668,   679,   687,   691,   733,
-     734,   740
+       0,   361,   361,   367,   366,   376,   377,   381,   382,   383,
+     383,   387,   388,   612,   613,   648,   659,   667,   671,   720,
+     721,   727
 };
 #endif
 
@@ -1860,24 +1824,21 @@ static const char *const yytname[] =
   "LL_CONTEXT_INNER_SRC", "LL_CONTEXT_CLIENT_PROTO",
   "LL_CONTEXT_SERVER_PROTO", "KW_SOURCE", "KW_FILTER", "KW_PARSER",
   "KW_DESTINATION", "KW_LOG", "KW_OPTIONS", "KW_INCLUDE", "KW_BLOCK",
-  "KW_JUNCTION", "KW_CHANNEL", "KW_INTERNAL", "KW_FILE", "KW_SQL",
-  "KW_TYPE", "KW_COLUMNS", "KW_INDEXES", "KW_VALUES", "KW_PASSWORD",
-  "KW_DATABASE", "KW_USERNAME", "KW_TABLE", "KW_ENCODING",
-  "KW_SESSION_STATEMENTS", "KW_DELIMITERS", "KW_QUOTES", "KW_QUOTE_PAIRS",
-  "KW_NULL", "KW_CHARS", "KW_STRINGS", "KW_SYSLOG", "KW_MARK_FREQ",
-  "KW_STATS_FREQ", "KW_STATS_LEVEL", "KW_STATS_LIFETIME", "KW_FLUSH_LINES",
-  "KW_SUPPRESS", "KW_FLUSH_TIMEOUT", "KW_LOG_MSG_SIZE", "KW_FILE_TEMPLATE",
-  "KW_PROTO_TEMPLATE", "KW_MARK_MODE", "KW_CHAIN_HOSTNAMES",
-  "KW_NORMALIZE_HOSTNAMES", "KW_KEEP_HOSTNAME", "KW_CHECK_HOSTNAME",
-  "KW_BAD_HOSTNAME", "KW_KEEP_TIMESTAMP", "KW_USE_DNS", "KW_USE_FQDN",
-  "KW_CUSTOM_DOMAIN", "KW_DNS_CACHE", "KW_DNS_CACHE_SIZE",
-  "KW_DNS_CACHE_EXPIRE", "KW_DNS_CACHE_EXPIRE_FAILED",
-  "KW_DNS_CACHE_HOSTS", "KW_PERSIST_ONLY", "KW_USE_RCPTID",
-  "KW_USE_UNIQID", "KW_TZ_CONVERT", "KW_TS_FORMAT", "KW_FRAC_DIGITS",
-  "KW_LOG_FIFO_SIZE", "KW_LOG_FETCH_LIMIT", "KW_LOG_IW_SIZE",
-  "KW_LOG_PREFIX", "KW_PROGRAM_OVERRIDE", "KW_HOST_OVERRIDE",
-  "KW_THROTTLE", "KW_THREADED", "KW_PASS_UNIX_CREDENTIALS", "KW_FLAGS",
-  "KW_PAD_SIZE", "KW_TIME_ZONE", "KW_RECV_TIME_ZONE", "KW_SEND_TIME_ZONE",
+  "KW_JUNCTION", "KW_CHANNEL", "KW_INTERNAL", "KW_FILE", "KW_SYSLOG",
+  "KW_MARK_FREQ", "KW_STATS_FREQ", "KW_STATS_LEVEL", "KW_STATS_LIFETIME",
+  "KW_FLUSH_LINES", "KW_SUPPRESS", "KW_FLUSH_TIMEOUT", "KW_LOG_MSG_SIZE",
+  "KW_FILE_TEMPLATE", "KW_PROTO_TEMPLATE", "KW_MARK_MODE", "KW_ENCODING",
+  "KW_TYPE", "KW_CHAIN_HOSTNAMES", "KW_NORMALIZE_HOSTNAMES",
+  "KW_KEEP_HOSTNAME", "KW_CHECK_HOSTNAME", "KW_BAD_HOSTNAME",
+  "KW_KEEP_TIMESTAMP", "KW_USE_DNS", "KW_USE_FQDN", "KW_CUSTOM_DOMAIN",
+  "KW_DNS_CACHE", "KW_DNS_CACHE_SIZE", "KW_DNS_CACHE_EXPIRE",
+  "KW_DNS_CACHE_EXPIRE_FAILED", "KW_DNS_CACHE_HOSTS", "KW_PERSIST_ONLY",
+  "KW_USE_RCPTID", "KW_USE_UNIQID", "KW_TZ_CONVERT", "KW_TS_FORMAT",
+  "KW_FRAC_DIGITS", "KW_LOG_FIFO_SIZE", "KW_LOG_FETCH_LIMIT",
+  "KW_LOG_IW_SIZE", "KW_LOG_PREFIX", "KW_PROGRAM_OVERRIDE",
+  "KW_HOST_OVERRIDE", "KW_THROTTLE", "KW_THREADED",
+  "KW_PASS_UNIX_CREDENTIALS", "KW_PERSIST_NAME", "KW_FLAGS", "KW_PAD_SIZE",
+  "KW_TIME_ZONE", "KW_RECV_TIME_ZONE", "KW_SEND_TIME_ZONE",
   "KW_LOCAL_TIME_ZONE", "KW_FORMAT", "KW_TIME_REOPEN", "KW_TIME_REAP",
   "KW_TIME_SLEEP", "KW_TMPL_ESCAPE", "KW_OPTIONAL", "KW_CREATE_DIRS",
   "KW_OWNER", "KW_GROUP", "KW_PERM", "KW_DIR_OWNER", "KW_DIR_GROUP",
@@ -1885,16 +1846,15 @@ static const char *const yytname[] =
   "KW_TEMPLATE_FUNCTION", "KW_DEFAULT_FACILITY", "KW_DEFAULT_LEVEL",
   "KW_PORT", "KW_USE_TIME_RECVD", "KW_FACILITY", "KW_LEVEL", "KW_HOST",
   "KW_MATCH", "KW_MESSAGE", "KW_NETMASK", "KW_TAGS", "KW_NETMASK6",
-  "KW_VALUE", "KW_REWRITE", "KW_SET", "KW_SUBST", "KW_YES", "KW_NO",
-  "KW_IFDEF", "KW_ENDIF", "LL_DOTDOT", "LL_IDENTIFIER", "LL_NUMBER",
-  "LL_FLOAT", "LL_STRING", "LL_TOKEN", "LL_BLOCK", "LL_PRAGMA", "LL_EOL",
-  "LL_ERROR", "KW_VALUE_PAIRS", "KW_SELECT", "KW_EXCLUDE", "KW_PAIR",
-  "KW_KEY", "KW_SCOPE", "KW_SHIFT", "KW_REKEY", "KW_ADD_PREFIX",
-  "KW_REPLACE_PREFIX", "KW_ON_ERROR", "KW_RETRIES", "KW_SYSLOG_PARSER",
-  "'('", "')'", "'{'", "'}'", "';'", "':'", "$accept", "start",
-  "parser_expr_syslog", "$@1", "parser_syslog_opts", "parser_syslog_opt",
-  "$@2", "parser_syslog_opt_flags", "string", "level_string",
-  "facility_string", "parser_opt", "msg_format_option", YY_NULLPTR
+  "KW_REWRITE", "KW_YES", "KW_NO", "KW_IFDEF", "KW_ENDIF", "LL_DOTDOT",
+  "LL_IDENTIFIER", "LL_NUMBER", "LL_FLOAT", "LL_STRING", "LL_TOKEN",
+  "LL_BLOCK", "LL_PRAGMA", "LL_EOL", "LL_ERROR", "KW_VALUE_PAIRS",
+  "KW_EXCLUDE", "KW_PAIR", "KW_KEY", "KW_SCOPE", "KW_SHIFT", "KW_REKEY",
+  "KW_ADD_PREFIX", "KW_REPLACE_PREFIX", "KW_ON_ERROR", "KW_RETRIES",
+  "KW_SYSLOG_PARSER", "'('", "')'", "'{'", "'}'", "';'", "':'", "$accept",
+  "start", "parser_expr_syslog", "$@1", "parser_syslog_opts",
+  "parser_syslog_opt", "$@2", "parser_syslog_opt_flags", "string",
+  "level_string", "facility_string", "parser_opt", "msg_format_option", YY_NULLPTR
 };
 #endif
 
@@ -1906,27 +1866,25 @@ static const yytype_uint16 yytoknum[] =
        0,   256, 10512,     1,     2,     3,     4,     5,     6,     7,
        8,     9,    10,    11,    12,    13,    14,    15,    16,    17,
       18, 10000, 10001, 10002, 10003, 10004, 10005, 10006, 10007, 10008,
-   10009, 10010, 10011, 10030, 10031, 10032, 10033, 10034, 10035, 10036,
-   10037, 10038, 10039, 10040, 10050, 10051, 10052, 10053, 10054, 10055,
-   10060, 10071, 10072, 10073, 10074, 10075, 10076, 10077, 10078, 10079,
-   10080, 10081, 10090, 10091, 10092, 10093, 10094, 10100, 10110, 10111,
-   10112, 10120, 10121, 10130, 10131, 10132, 10140, 10141, 10142, 10150,
-   10151, 10152, 10160, 10162, 10163, 10164, 10165, 10166, 10170, 10171,
-   10231, 10190, 10200, 10201, 10202, 10203, 10204, 10205, 10210, 10211,
-   10212, 10220, 10230, 10240, 10250, 10251, 10252, 10260, 10261, 10262,
-   10270, 10271, 10272, 10300, 10301, 10323, 10340, 10350, 10351, 10352,
-   10353, 10354, 10355, 10356, 10357, 10361, 10370, 10371, 10372, 10380,
-   10381, 10410, 10411, 10420, 10421, 10422, 10423, 10424, 10425, 10426,
-   10427, 10428, 10429, 10500, 10501, 10502, 10503, 10504, 10505, 10506,
-   10507, 10508, 10509, 10510, 10511, 10513,    40,    41,   123,   125,
-      59,    58
+   10009, 10010, 10011, 10060, 10071, 10072, 10073, 10074, 10075, 10076,
+   10077, 10078, 10079, 10080, 10081, 10082, 10083, 10090, 10091, 10092,
+   10093, 10094, 10100, 10110, 10111, 10112, 10120, 10121, 10130, 10131,
+   10132, 10140, 10141, 10142, 10150, 10151, 10152, 10160, 10162, 10163,
+   10164, 10165, 10166, 10170, 10171, 10231, 10302, 10190, 10200, 10201,
+   10202, 10203, 10204, 10205, 10210, 10211, 10212, 10220, 10230, 10240,
+   10250, 10251, 10252, 10260, 10261, 10262, 10270, 10271, 10272, 10300,
+   10301, 10323, 10340, 10350, 10351, 10352, 10353, 10354, 10355, 10356,
+   10357, 10370, 10380, 10381, 10410, 10411, 10420, 10421, 10422, 10423,
+   10424, 10425, 10426, 10427, 10428, 10429, 10500, 10502, 10503, 10504,
+   10505, 10506, 10507, 10508, 10509, 10510, 10511, 10513,    40,    41,
+     123,   125,    59,    58
 };
 # endif
 
-#define YYPACT_NINF -150
+#define YYPACT_NINF -132
 
 #define yypact_value_is_default(Yystate) \
-  (!!((Yystate) == (-150)))
+  (!!((Yystate) == (-132)))
 
 #define YYTABLE_NINF -7
 
@@ -1937,11 +1895,11 @@ static const yytype_uint16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int16 yypact[] =
 {
-      -1,  -149,     8,  -147,  -150,  -150,  -150,   -90,  -146,  -145,
-    -144,   -90,   -91,  -150,  -130,  -130,  -150,  -150,  -142,  -138,
-    -137,  -150,  -150,  -150,  -136,  -130,  -133,  -130,   -50,  -130,
-    -150,  -150,  -150,  -132,  -150,  -150,  -131,  -150,  -129,  -150,
-    -150,  -150
+      -1,  -131,     8,  -129,  -132,  -132,  -132,   -76,  -128,  -127,
+    -126,   -76,   -77,  -132,  -113,  -113,  -132,  -132,  -124,  -120,
+    -119,  -132,  -132,  -132,  -118,  -113,  -115,  -113,   -33,  -113,
+    -132,  -132,  -132,  -114,  -132,  -132,  -112,  -132,  -111,  -132,
+    -132,  -132
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -1959,8 +1917,8 @@ static const yytype_uint8 yydefact[] =
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int16 yypgoto[] =
 {
-    -150,  -150,  -150,  -150,     1,  -150,  -150,     2,   -12,  -150,
-    -150,  -150,  -150
+    -132,  -132,  -132,  -132,     1,  -132,  -132,     4,   -12,  -132,
+    -132,  -132,  -132
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
@@ -1977,45 +1935,45 @@ static const yytype_int8 yytable[] =
 {
       34,     8,    18,    26,    22,     1,     3,    23,     5,     6,
       14,    15,    17,    16,    27,    33,    35,    37,    28,    29,
-       9,    30,    19,    20,    32,    39,    40,    31,    41,     0,
+       9,    30,    19,    20,    32,    39,     0,    40,    41,    31,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,    -6,     0,     0,
+       0,     0,     0,    -6,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,    22,     0,     0,    23
 };
 
 static const yytype_int16 yycheck[] =
 {
-      50,    91,    93,    15,   134,     6,   155,   137,     0,   156,
-     156,   156,    11,   157,   156,    27,    28,    29,   156,   156,
-     110,   157,   113,   114,   157,   157,   157,    25,   157,    -1,
+      33,    77,    79,    15,   117,     6,   137,   120,     0,   138,
+     138,   138,    11,   139,   138,    27,    28,    29,   138,   138,
+      96,   139,    99,   100,   139,   139,    -1,   139,   139,    25,
       -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
       -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
       -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
-      -1,    -1,    -1,    -1,    -1,    -1,    -1,   157,    -1,    -1,
+      -1,    -1,    -1,   139,    -1,    -1,    -1,    -1,    -1,    -1,
       -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
-      -1,    -1,    -1,    -1,   134,    -1,    -1,   137
+      -1,    -1,    -1,    -1,   117,    -1,    -1,   120
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
      symbol of state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
-       0,     6,   163,   155,   164,     0,   156,   165,    91,   110,
-     166,   167,   168,   173,   156,   156,   157,   166,    93,   113,
-     114,   174,   134,   137,   169,   170,   170,   156,   156,   156,
-     157,   169,   157,   170,    50,   170,   172,   170,   171,   157,
-     157,   157
+       0,     6,   145,   137,   146,     0,   138,   147,    77,    96,
+     148,   149,   150,   155,   138,   138,   139,   148,    79,    99,
+     100,   156,   117,   120,   151,   152,   152,   138,   138,   138,
+     139,   151,   139,   152,    33,   152,   154,   152,   153,   139,
+     139,   139
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
-       0,   162,   163,   165,   164,   166,   166,   167,   167,   168,
-     167,   169,   169,   170,   170,   171,   172,   172,   173,   174,
-     174,   174
+       0,   144,   145,   147,   146,   148,   148,   149,   149,   150,
+     149,   151,   151,   152,   152,   153,   154,   154,   155,   156,
+     156,   156
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
@@ -2519,7 +2477,36 @@ yydestruct (const char *yymsg, int yytype, YYSTYPE *yyvaluep, YYLTYPE *yylocatio
   YY_SYMBOL_PRINT (yymsg, yytype, yyvaluep, yylocationp);
 
   YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN
-  YYUSE (yytype);
+  switch (yytype)
+    {
+          case 117: /* LL_IDENTIFIER  */
+#line 289 "modules/syslogformat/syslog-parser-grammar.y" /* yacc.c:1257  */
+      { free(((*yyvaluep).cptr)); }
+#line 2486 "modules/syslogformat/syslog-parser-grammar.c" /* yacc.c:1257  */
+        break;
+
+    case 120: /* LL_STRING  */
+#line 289 "modules/syslogformat/syslog-parser-grammar.y" /* yacc.c:1257  */
+      { free(((*yyvaluep).cptr)); }
+#line 2492 "modules/syslogformat/syslog-parser-grammar.c" /* yacc.c:1257  */
+        break;
+
+    case 122: /* LL_BLOCK  */
+#line 289 "modules/syslogformat/syslog-parser-grammar.y" /* yacc.c:1257  */
+      { free(((*yyvaluep).cptr)); }
+#line 2498 "modules/syslogformat/syslog-parser-grammar.c" /* yacc.c:1257  */
+        break;
+
+    case 152: /* string  */
+#line 289 "modules/syslogformat/syslog-parser-grammar.y" /* yacc.c:1257  */
+      { free(((*yyvaluep).cptr)); }
+#line 2504 "modules/syslogformat/syslog-parser-grammar.c" /* yacc.c:1257  */
+        break;
+
+
+      default:
+        break;
+    }
   YY_IGNORE_MAYBE_UNINITIALIZED_END
 }
 
@@ -2805,39 +2792,39 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 381 "syslog-parser-grammar.y" /* yacc.c:1646  */
+#line 361 "modules/syslogformat/syslog-parser-grammar.y" /* yacc.c:1646  */
     { YYACCEPT; }
-#line 2811 "modules/syslogformat/syslog-parser-grammar.c" /* yacc.c:1646  */
+#line 2798 "modules/syslogformat/syslog-parser-grammar.c" /* yacc.c:1646  */
     break;
 
   case 3:
-#line 387 "syslog-parser-grammar.y" /* yacc.c:1646  */
+#line 367 "modules/syslogformat/syslog-parser-grammar.y" /* yacc.c:1646  */
     {
             last_parser = *instance = syslog_parser_new(configuration);
           }
-#line 2819 "modules/syslogformat/syslog-parser-grammar.c" /* yacc.c:1646  */
+#line 2806 "modules/syslogformat/syslog-parser-grammar.c" /* yacc.c:1646  */
     break;
 
   case 4:
-#line 391 "syslog-parser-grammar.y" /* yacc.c:1646  */
+#line 371 "modules/syslogformat/syslog-parser-grammar.y" /* yacc.c:1646  */
     { (yyval.ptr) = last_parser; }
-#line 2825 "modules/syslogformat/syslog-parser-grammar.c" /* yacc.c:1646  */
+#line 2812 "modules/syslogformat/syslog-parser-grammar.c" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 403 "syslog-parser-grammar.y" /* yacc.c:1646  */
+#line 383 "modules/syslogformat/syslog-parser-grammar.y" /* yacc.c:1646  */
     { last_msg_format_options = &((SyslogParser *) last_parser)->parse_options; }
-#line 2831 "modules/syslogformat/syslog-parser-grammar.c" /* yacc.c:1646  */
+#line 2818 "modules/syslogformat/syslog-parser-grammar.c" /* yacc.c:1646  */
     break;
 
   case 11:
-#line 407 "syslog-parser-grammar.y" /* yacc.c:1646  */
+#line 387 "modules/syslogformat/syslog-parser-grammar.y" /* yacc.c:1646  */
     { CHECK_ERROR(msg_format_options_process_flag(&((SyslogParser *) last_parser)->parse_options, (yyvsp[-1].cptr)), (yylsp[-1]), "Unknown flag %s", (yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 2837 "modules/syslogformat/syslog-parser-grammar.c" /* yacc.c:1646  */
+#line 2824 "modules/syslogformat/syslog-parser-grammar.c" /* yacc.c:1646  */
     break;
 
   case 15:
-#line 669 "syslog-parser-grammar.y" /* yacc.c:1646  */
+#line 649 "modules/syslogformat/syslog-parser-grammar.y" /* yacc.c:1646  */
     {
 	    /* return the numeric value of the "level" */
 	    int n = syslog_name_lookup_level_by_name((yyvsp[0].cptr));
@@ -2845,11 +2832,11 @@ yyreduce:
 	    free((yyvsp[0].cptr));
             (yyval.num) = n;
 	  }
-#line 2849 "modules/syslogformat/syslog-parser-grammar.c" /* yacc.c:1646  */
+#line 2836 "modules/syslogformat/syslog-parser-grammar.c" /* yacc.c:1646  */
     break;
 
   case 16:
-#line 680 "syslog-parser-grammar.y" /* yacc.c:1646  */
+#line 660 "modules/syslogformat/syslog-parser-grammar.y" /* yacc.c:1646  */
     {
             /* return the numeric value of facility */
 	    int n = syslog_name_lookup_facility_by_name((yyvsp[0].cptr));
@@ -2857,17 +2844,17 @@ yyreduce:
 	    free((yyvsp[0].cptr));
 	    (yyval.num) = n;
 	  }
-#line 2861 "modules/syslogformat/syslog-parser-grammar.c" /* yacc.c:1646  */
+#line 2848 "modules/syslogformat/syslog-parser-grammar.c" /* yacc.c:1646  */
     break;
 
   case 17:
-#line 687 "syslog-parser-grammar.y" /* yacc.c:1646  */
+#line 667 "modules/syslogformat/syslog-parser-grammar.y" /* yacc.c:1646  */
     { (yyval.num) = LOG_SYSLOG; }
-#line 2867 "modules/syslogformat/syslog-parser-grammar.c" /* yacc.c:1646  */
+#line 2854 "modules/syslogformat/syslog-parser-grammar.c" /* yacc.c:1646  */
     break;
 
   case 18:
-#line 691 "syslog-parser-grammar.y" /* yacc.c:1646  */
+#line 671 "modules/syslogformat/syslog-parser-grammar.y" /* yacc.c:1646  */
     {
                                                   LogTemplate *template;
                                                   GError *error = NULL;
@@ -2877,37 +2864,37 @@ yyreduce:
                                                   log_parser_set_template(last_parser, template);
                                                   free((yyvsp[-1].cptr));
                                                 }
-#line 2881 "modules/syslogformat/syslog-parser-grammar.c" /* yacc.c:1646  */
+#line 2868 "modules/syslogformat/syslog-parser-grammar.c" /* yacc.c:1646  */
     break;
 
   case 19:
-#line 733 "syslog-parser-grammar.y" /* yacc.c:1646  */
+#line 720 "modules/syslogformat/syslog-parser-grammar.y" /* yacc.c:1646  */
     { last_msg_format_options->recv_time_zone = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 2887 "modules/syslogformat/syslog-parser-grammar.c" /* yacc.c:1646  */
+#line 2874 "modules/syslogformat/syslog-parser-grammar.c" /* yacc.c:1646  */
     break;
 
   case 20:
-#line 735 "syslog-parser-grammar.y" /* yacc.c:1646  */
+#line 722 "modules/syslogformat/syslog-parser-grammar.y" /* yacc.c:1646  */
     {
 	    if (last_msg_format_options->default_pri == 0xFFFF)
 	      last_msg_format_options->default_pri = LOG_USER;
 	    last_msg_format_options->default_pri = (last_msg_format_options->default_pri & ~7) | (yyvsp[-1].num);
           }
-#line 2897 "modules/syslogformat/syslog-parser-grammar.c" /* yacc.c:1646  */
+#line 2884 "modules/syslogformat/syslog-parser-grammar.c" /* yacc.c:1646  */
     break;
 
   case 21:
-#line 741 "syslog-parser-grammar.y" /* yacc.c:1646  */
+#line 728 "modules/syslogformat/syslog-parser-grammar.y" /* yacc.c:1646  */
     {
 	    if (last_msg_format_options->default_pri == 0xFFFF)
 	      last_msg_format_options->default_pri = LOG_NOTICE;
 	    last_msg_format_options->default_pri = (last_msg_format_options->default_pri & 7) | (yyvsp[-1].num);
           }
-#line 2907 "modules/syslogformat/syslog-parser-grammar.c" /* yacc.c:1646  */
+#line 2894 "modules/syslogformat/syslog-parser-grammar.c" /* yacc.c:1646  */
     break;
 
 
-#line 2911 "modules/syslogformat/syslog-parser-grammar.c" /* yacc.c:1646  */
+#line 2898 "modules/syslogformat/syslog-parser-grammar.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -3142,5 +3129,5 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 943 "syslog-parser-grammar.y" /* yacc.c:1906  */
+#line 931 "modules/syslogformat/syslog-parser-grammar.y" /* yacc.c:1906  */
 

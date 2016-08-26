@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2012 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2002-2012 Balabit
  * Copyright (c) 1998-2012 Balázs Scheidler
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -56,7 +56,7 @@ static TransportMapper *last_transport_mapper;
 TLSContext *last_tls_context;
 
 
-#if ! ENABLE_IPV6
+#if ! SYSLOG_NG_ENABLE_IPV6
 #undef AF_INET6
 #define AF_INET6 0; g_assert_not_reached()
 
@@ -146,7 +146,6 @@ systemd_syslog_grammar_set_source_driver(SystemDSyslogSourceDriver *sd)
 %token KW_TCP_KEEPALIVE_PROBES
 %token KW_TCP_KEEPALIVE_INTVL
 %token KW_SPOOF_SOURCE
-%token KW_PASS_UNIX_CREDENTIALS
 
 %token KW_KEEP_ALIVE
 %token KW_MAX_CONNECTIONS
@@ -273,26 +272,6 @@ systemd_syslog_grammar_set_source_driver(SystemDSyslogSourceDriver *sd)
 /* source & destination items */
 %token KW_INTERNAL                    10010
 %token KW_FILE                        10011
-
-%token KW_SQL                         10030
-%token KW_TYPE                        10031
-%token KW_COLUMNS                     10032
-%token KW_INDEXES                     10033
-%token KW_VALUES                      10034
-%token KW_PASSWORD                    10035
-%token KW_DATABASE                    10036
-%token KW_USERNAME                    10037
-%token KW_TABLE                       10038
-%token KW_ENCODING                    10039
-%token KW_SESSION_STATEMENTS          10040
-
-%token KW_DELIMITERS                  10050
-%token KW_QUOTES                      10051
-%token KW_QUOTE_PAIRS                 10052
-%token KW_NULL                        10053
-%token KW_CHARS                       10054
-%token KW_STRINGS                     10055
-
 %token KW_SYSLOG                      10060
 
 /* option items */
@@ -307,6 +286,8 @@ systemd_syslog_grammar_set_source_driver(SystemDSyslogSourceDriver *sd)
 %token KW_FILE_TEMPLATE               10079
 %token KW_PROTO_TEMPLATE              10080
 %token KW_MARK_MODE                   10081
+%token KW_ENCODING                    10082
+%token KW_TYPE                        10083
 
 %token KW_CHAIN_HOSTNAMES             10090
 %token KW_NORMALIZE_HOSTNAMES         10091
@@ -345,6 +326,8 @@ systemd_syslog_grammar_set_source_driver(SystemDSyslogSourceDriver *sd)
 %token KW_THROTTLE                    10170
 %token KW_THREADED                    10171
 %token KW_PASS_UNIX_CREDENTIALS       10231
+
+%token KW_PERSIST_NAME                10302
 
 /* log statement options */
 %token KW_FLAGS                       10190
@@ -403,13 +386,8 @@ systemd_syslog_grammar_set_source_driver(SystemDSyslogSourceDriver *sd)
 
 /* parser items */
 
-%token KW_VALUE                       10361
-
 /* rewrite items */
-
 %token KW_REWRITE                     10370
-%token KW_SET                         10371
-%token KW_SUBST                       10372
 
 /* yes/no switches */
 
@@ -431,9 +409,10 @@ systemd_syslog_grammar_set_source_driver(SystemDSyslogSourceDriver *sd)
 %token LL_EOL                         10428
 %token LL_ERROR                       10429
 
+%destructor { free($$); } <cptr>
+
 /* value pairs */
 %token KW_VALUE_PAIRS                 10500
-%token KW_SELECT                      10501
 %token KW_EXCLUDE                     10502
 %token KW_PAIR                        10503
 %token KW_KEY                         10504
@@ -559,20 +538,17 @@ source_afunix
 source_afunix_dgram_params
 	: string
 	  {
-        create_and_set_unix_dgram_or_systemd_syslog_source($1, configuration);
-
-	    free($1);
+      create_and_set_unix_dgram_or_systemd_syslog_source($1, configuration);
 	  }
-	  source_afunix_options			{ $$ = last_driver; }
+	  source_afunix_options			{ $$ = last_driver; free($1); }
 	;
 
 source_afunix_stream_params
 	: string
 	  {
       create_and_set_unix_stream_or_systemd_syslog_source($1, configuration);
-	    free($1);
 	  }
-	  source_afunix_options			{ $$ = last_driver; }
+	  source_afunix_options			{ $$ = last_driver; free($1); }
 	;
 
 /* options are common between dgram & stream */
@@ -582,7 +558,7 @@ source_afunix_options
 	;
 
 source_afunix_option
-        : file_dir_perm_option
+        : file_perm_option
 	| source_afsocket_stream_params		{}
 	| source_reader_option			{}
 	| socket_option				{}
@@ -757,11 +733,10 @@ source_systemd_syslog
 
 source_systemd_syslog_params
 	: {
-#if ! ENABLE_SYSTEMD
+#if ! SYSLOG_NG_ENABLE_SYSTEMD
             msg_error("systemd-syslog() source cannot be enabled and it is not"
                       " functioning. Please compile your syslog-ng with --enable-systemd"
-                      " flag",
-                      NULL);
+                      " flag");
             YYERROR;
 #else
             SystemDSyslogSourceDriver *d = systemd_syslog_sd_new(configuration, FALSE);
@@ -791,10 +766,9 @@ dest_afunix_dgram_params
 	  {
 	    AFUnixDestDriver *d = afunix_dd_new_dgram($1, configuration);
 
-            afunix_grammar_set_dest_driver(d);
-	    free($1);
+      afunix_grammar_set_dest_driver(d);
 	  }
-	  dest_afunix_options			{ $$ = last_driver; }
+	  dest_afunix_options			{ $$ = last_driver; free($1); }
 	;
 
 dest_afunix_stream_params
@@ -802,10 +776,9 @@ dest_afunix_stream_params
 	  {
 	    AFUnixDestDriver *d = afunix_dd_new_stream($1, configuration);
 
-            afunix_grammar_set_dest_driver(d);
-	    free($1);
+      afunix_grammar_set_dest_driver(d);
 	  }
-	  dest_afunix_options			{ $$ = last_driver; }
+	  dest_afunix_options			{ $$ = last_driver; free($1); }
 	;
 
 dest_afunix_options
@@ -832,10 +805,9 @@ dest_afinet_udp_params
 	  {
 	    AFInetDestDriver *d = afinet_dd_new_udp($1, configuration);
 
-            afinet_grammar_set_dest_driver(d);
-	    free($1);
+      afinet_grammar_set_dest_driver(d);
 	  }
-	  dest_afinet_udp_options		{ $$ = last_driver; }
+	  dest_afinet_udp_options		{ $$ = last_driver; free($1); }
 	;
 
 dest_afinet_udp6_params
@@ -844,9 +816,8 @@ dest_afinet_udp6_params
 	    AFInetDestDriver *d = afinet_dd_new_udp6($1, configuration);
 
 	    afinet_grammar_set_dest_driver(d);
-	    free($1);
 	  }
-	  dest_afinet_udp_options		{ $$ = last_driver; }
+	  dest_afinet_udp_options		{ $$ = last_driver; free($1); }
 	;
 
 
@@ -878,10 +849,9 @@ dest_afinet_tcp_params
 	  {
 	    AFInetDestDriver *d = afinet_dd_new_tcp($1, configuration);
 
-            afinet_grammar_set_dest_driver(d);
-	    free($1);
+      afinet_grammar_set_dest_driver(d);
 	  }
-	  dest_afinet_tcp_options		{ $$ = last_driver; }
+	  dest_afinet_tcp_options		{ $$ = last_driver; free($1); }
 	;
 
 dest_afinet_tcp6_params
@@ -890,9 +860,8 @@ dest_afinet_tcp6_params
 	    AFInetDestDriver *d = afinet_dd_new_tcp6($1, configuration);
 
 	    afinet_grammar_set_dest_driver(d);
-	    free($1);
 	  }
-	  dest_afinet_tcp_options		{ $$ = last_driver; }
+	  dest_afinet_tcp_options		{ $$ = last_driver; free($1); }
 	;
 
 dest_afinet_tcp_options
@@ -926,9 +895,8 @@ dest_afsyslog_params
             AFInetDestDriver *d = afinet_dd_new_syslog($1, configuration);
 
             afinet_grammar_set_dest_driver(d);
-	    free($1);
 	  }
-	  dest_afsyslog_options			{ $$ = last_driver; }
+	  dest_afsyslog_options			{ $$ = last_driver; free($1); }
         ;
 
 
@@ -952,9 +920,8 @@ dest_afnetwork_params
             AFInetDestDriver *d = afinet_dd_new_network($1, configuration);
 
             afinet_grammar_set_dest_driver(d);
-	    free($1);
 	  }
-	  dest_afnetwork_options			{ $$ = last_driver; }
+	  dest_afnetwork_options			{ $$ = last_driver; free($1); }
         ;
 
 dest_afnetwork_options
@@ -1380,10 +1347,17 @@ source_option
 	| KW_KEEP_TIMESTAMP '(' yesno ')'	{ last_source_options->keep_timestamp = $3; }
         | KW_TAGS '(' string_list ')'		{ log_source_options_set_tags(last_source_options, $3); }
         | { last_host_resolve_options = &last_source_options->host_resolve_options; } host_resolve_option
+        | driver_option
         ;
 
 source_proto_option
-        : KW_ENCODING '(' string ')'		{ last_proto_server_options->encoding = g_strdup($3); free($3); }
+        : KW_ENCODING '(' string ')'
+          {
+            CHECK_ERROR(log_proto_server_options_set_encoding(last_proto_server_options, $3),
+                        @3,
+                        "unknown encoding %s", $3);
+            free($3);
+          }
 	| KW_LOG_MSG_SIZE '(' LL_NUMBER ')'	{ last_proto_server_options->max_msg_size = $3; }
         ;
 
@@ -1434,6 +1408,10 @@ source_reader_option_flags
 	|
 	;
 
+driver_option
+    : KW_PERSIST_NAME '(' string ')' { log_pipe_set_persist_name(&last_driver->super, g_strdup($3)); free($3); }
+    ;
+
 threaded_dest_driver_option
 	: KW_RETRIES '(' LL_NUMBER ')'
         {
@@ -1463,6 +1441,7 @@ dest_driver_option
               }
             log_driver_add_plugin(last_driver, (LogDriverPlugin *) value);
           }
+    | driver_option
         ;
 
 dest_writer_options
@@ -1504,21 +1483,17 @@ dest_writer_options_flags
 
 file_perm_option
 	: KW_OWNER '(' string_or_number ')'	{ file_perm_options_set_file_uid(last_file_perm_options, $3); free($3); }
-	| KW_OWNER '(' ')'	                { file_perm_options_set_file_uid(last_file_perm_options, "-2"); }
+	| KW_OWNER '(' ')'	                { file_perm_options_dont_change_file_uid(last_file_perm_options); }
 	| KW_GROUP '(' string_or_number ')'	{ file_perm_options_set_file_gid(last_file_perm_options, $3); free($3); }
-	| KW_GROUP '(' ')'	                { file_perm_options_set_file_gid(last_file_perm_options, "-2"); }
+	| KW_GROUP '(' ')'	                { file_perm_options_dont_change_file_gid(last_file_perm_options); }
 	| KW_PERM '(' LL_NUMBER ')'		{ file_perm_options_set_file_perm(last_file_perm_options, $3); }
-	| KW_PERM '(' ')'		        { file_perm_options_set_file_perm(last_file_perm_options, -2); }
-        ;
-
-file_dir_perm_option
-        : file_perm_option
+	| KW_PERM '(' ')'		        { file_perm_options_dont_change_file_perm(last_file_perm_options); }
         | KW_DIR_OWNER '(' string_or_number ')'	{ file_perm_options_set_dir_uid(last_file_perm_options, $3); free($3); }
-	| KW_DIR_OWNER '(' ')'	                { file_perm_options_set_dir_uid(last_file_perm_options, "-2"); }
+	| KW_DIR_OWNER '(' ')'	                { file_perm_options_dont_change_dir_uid(last_file_perm_options); }
 	| KW_DIR_GROUP '(' string_or_number ')'	{ file_perm_options_set_dir_gid(last_file_perm_options, $3); free($3); }
-	| KW_DIR_GROUP '(' ')'	                { file_perm_options_set_dir_gid(last_file_perm_options, "-2"); }
+	| KW_DIR_GROUP '(' ')'	                { file_perm_options_dont_change_dir_gid(last_file_perm_options); }
 	| KW_DIR_PERM '(' LL_NUMBER ')'		{ file_perm_options_set_dir_perm(last_file_perm_options, $3); }
-	| KW_DIR_PERM '(' ')'		        { file_perm_options_set_dir_perm(last_file_perm_options, -2); }
+	| KW_DIR_PERM '(' ')'		        { file_perm_options_dont_change_dir_perm(last_file_perm_options); }
         ;
 
 template_option

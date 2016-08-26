@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2013 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2002-2013 Balabit
  * Copyright (c) 1998-2013 Balázs Scheidler
  *
  * This library is free software; you can redistribute it and/or
@@ -26,7 +26,6 @@
 
 #include "mainloop.h"
 
-#include <iv.h>
 #include <iv_list.h>
 
 #define MAIN_LOOP_MIN_WORKER_THREADS 2

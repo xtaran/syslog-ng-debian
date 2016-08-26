@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2013, 2015 BalaBit
+ * Copyright (c) 2002-2013, 2015 Balabit
  * Copyright (c) 1998-2013, 2015 Balázs Scheidler
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -21,6 +21,7 @@
  *
  */
 #include "pdb-rule.h"
+#include "pdb-error.h"
 
 void
 pdb_rule_set_class(PDBRule *self, const gchar *class)
@@ -49,35 +50,6 @@ pdb_rule_set_rule_id(PDBRule *self, const gchar *rule_id)
 }
 
 void
-pdb_rule_set_context_id_template(PDBRule *self, LogTemplate *context_id_template)
-{
-  if (self->context_id_template)
-    log_template_unref(self->context_id_template);
-  self->context_id_template = context_id_template;
-}
-
-void
-pdb_rule_set_context_timeout(PDBRule *self, gint timeout)
-{
-  self->context_timeout = timeout;
-}
-
-void
-pdb_rule_set_context_scope(PDBRule *self, const gchar *scope, GError **error)
-{
-  if (strcmp(scope, "global") ==  0)
-    self->context_scope = RCS_GLOBAL;
-  else if (strcmp(scope, "host") == 0)
-    self->context_scope = RCS_HOST;
-  else if (strcmp(scope, "program") == 0)
-    self->context_scope = RCS_PROGRAM;
-  else if (strcmp(scope, "process") == 0)
-    self->context_scope = RCS_PROCESS;
-  else
-    g_set_error(error, 0, 1, "Unknown context scope: %s", scope);
-}
-
-void
 pdb_rule_add_action(PDBRule *self, PDBAction *action)
 {
   if (!self->actions)
@@ -100,7 +72,8 @@ pdb_rule_new(void)
   PDBRule *self = g_new0(PDBRule, 1);
 
   g_atomic_counter_set(&self->ref_cnt, 1);
-  self->context_scope = RCS_PROCESS;
+  synthetic_context_init(&self->context);
+  synthetic_message_init(&self->msg);
   return self;
 }
 
@@ -116,8 +89,6 @@ pdb_rule_unref(PDBRule *self)
 {
   if (g_atomic_counter_dec_and_test(&self->ref_cnt))
     {
-      if (self->context_id_template)
-        log_template_unref(self->context_id_template);
 
       if (self->actions)
         {
@@ -131,6 +102,7 @@ pdb_rule_unref(PDBRule *self)
       if (self->class)
         g_free(self->class);
 
+      synthetic_context_deinit(&self->context);
       synthetic_message_deinit(&self->msg);
       g_free(self);
     }

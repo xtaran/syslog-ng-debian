@@ -89,8 +89,8 @@
 
 /* In a future release of Bison, this section will be replaced
    by #include "y.tab.h".  */
-#ifndef YY_RIEMANN_Y_TAB_H_INCLUDED
-# define YY_RIEMANN_Y_TAB_H_INCLUDED
+#ifndef YY_RIEMANN_MODULES_RIEMANN_RIEMANN_GRAMMAR_H_INCLUDED
+# define YY_RIEMANN_MODULES_RIEMANN_RIEMANN_GRAMMAR_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -99,15 +99,14 @@
 extern int riemann_debug;
 #endif
 /* "%code requires" blocks.  */
-#line 24 "riemann-grammar.y" /* yacc.c:355  */
+#line 24 "modules/riemann/riemann-grammar.y" /* yacc.c:355  */
 
 
 #include "riemann-parser.h"
-#include "value-pairs.h"
-#include "vptransform.h"
+#include "value-pairs/value-pairs.h"
 
 
-#line 111 "modules/riemann/riemann-grammar.c" /* yacc.c:355  */
+#line 110 "modules/riemann/riemann-grammar.c" /* yacc.c:355  */
 
 /* Token type.  */
 #ifndef YYTOKENTYPE
@@ -144,23 +143,6 @@ extern int riemann_debug;
     KW_CHANNEL = 10009,
     KW_INTERNAL = 10010,
     KW_FILE = 10011,
-    KW_SQL = 10030,
-    KW_TYPE = 10031,
-    KW_COLUMNS = 10032,
-    KW_INDEXES = 10033,
-    KW_VALUES = 10034,
-    KW_PASSWORD = 10035,
-    KW_DATABASE = 10036,
-    KW_USERNAME = 10037,
-    KW_TABLE = 10038,
-    KW_ENCODING = 10039,
-    KW_SESSION_STATEMENTS = 10040,
-    KW_DELIMITERS = 10050,
-    KW_QUOTES = 10051,
-    KW_QUOTE_PAIRS = 10052,
-    KW_NULL = 10053,
-    KW_CHARS = 10054,
-    KW_STRINGS = 10055,
     KW_SYSLOG = 10060,
     KW_MARK_FREQ = 10071,
     KW_STATS_FREQ = 10072,
@@ -173,6 +155,8 @@ extern int riemann_debug;
     KW_FILE_TEMPLATE = 10079,
     KW_PROTO_TEMPLATE = 10080,
     KW_MARK_MODE = 10081,
+    KW_ENCODING = 10082,
+    KW_TYPE = 10083,
     KW_CHAIN_HOSTNAMES = 10090,
     KW_NORMALIZE_HOSTNAMES = 10091,
     KW_KEEP_HOSTNAME = 10092,
@@ -202,6 +186,7 @@ extern int riemann_debug;
     KW_THROTTLE = 10170,
     KW_THREADED = 10171,
     KW_PASS_UNIX_CREDENTIALS = 10231,
+    KW_PERSIST_NAME = 10302,
     KW_FLAGS = 10190,
     KW_PAD_SIZE = 10200,
     KW_TIME_ZONE = 10201,
@@ -236,10 +221,7 @@ extern int riemann_debug;
     KW_NETMASK = 10355,
     KW_TAGS = 10356,
     KW_NETMASK6 = 10357,
-    KW_VALUE = 10361,
     KW_REWRITE = 10370,
-    KW_SET = 10371,
-    KW_SUBST = 10372,
     KW_YES = 10380,
     KW_NO = 10381,
     KW_IFDEF = 10410,
@@ -255,7 +237,6 @@ extern int riemann_debug;
     LL_EOL = 10428,
     LL_ERROR = 10429,
     KW_VALUE_PAIRS = 10500,
-    KW_SELECT = 10501,
     KW_EXCLUDE = 10502,
     KW_PAIR = 10503,
     KW_KEY = 10504,
@@ -275,8 +256,9 @@ extern int riemann_debug;
     KW_TTL = 10519,
     KW_ATTRIBUTES = 10520,
     KW_TIMEOUT = 10521,
-    KW_CACERT = 10522,
-    KW_CERT = 10523
+    KW_CA_FILE = 10522,
+    KW_CERT_FILE = 10523,
+    KW_KEY_FILE = 10524
   };
 #endif
 /* Tokens.  */
@@ -310,23 +292,6 @@ extern int riemann_debug;
 #define KW_CHANNEL 10009
 #define KW_INTERNAL 10010
 #define KW_FILE 10011
-#define KW_SQL 10030
-#define KW_TYPE 10031
-#define KW_COLUMNS 10032
-#define KW_INDEXES 10033
-#define KW_VALUES 10034
-#define KW_PASSWORD 10035
-#define KW_DATABASE 10036
-#define KW_USERNAME 10037
-#define KW_TABLE 10038
-#define KW_ENCODING 10039
-#define KW_SESSION_STATEMENTS 10040
-#define KW_DELIMITERS 10050
-#define KW_QUOTES 10051
-#define KW_QUOTE_PAIRS 10052
-#define KW_NULL 10053
-#define KW_CHARS 10054
-#define KW_STRINGS 10055
 #define KW_SYSLOG 10060
 #define KW_MARK_FREQ 10071
 #define KW_STATS_FREQ 10072
@@ -339,6 +304,8 @@ extern int riemann_debug;
 #define KW_FILE_TEMPLATE 10079
 #define KW_PROTO_TEMPLATE 10080
 #define KW_MARK_MODE 10081
+#define KW_ENCODING 10082
+#define KW_TYPE 10083
 #define KW_CHAIN_HOSTNAMES 10090
 #define KW_NORMALIZE_HOSTNAMES 10091
 #define KW_KEEP_HOSTNAME 10092
@@ -368,6 +335,7 @@ extern int riemann_debug;
 #define KW_THROTTLE 10170
 #define KW_THREADED 10171
 #define KW_PASS_UNIX_CREDENTIALS 10231
+#define KW_PERSIST_NAME 10302
 #define KW_FLAGS 10190
 #define KW_PAD_SIZE 10200
 #define KW_TIME_ZONE 10201
@@ -402,10 +370,7 @@ extern int riemann_debug;
 #define KW_NETMASK 10355
 #define KW_TAGS 10356
 #define KW_NETMASK6 10357
-#define KW_VALUE 10361
 #define KW_REWRITE 10370
-#define KW_SET 10371
-#define KW_SUBST 10372
 #define KW_YES 10380
 #define KW_NO 10381
 #define KW_IFDEF 10410
@@ -421,7 +386,6 @@ extern int riemann_debug;
 #define LL_EOL 10428
 #define LL_ERROR 10429
 #define KW_VALUE_PAIRS 10500
-#define KW_SELECT 10501
 #define KW_EXCLUDE 10502
 #define KW_PAIR 10503
 #define KW_KEY 10504
@@ -441,8 +405,9 @@ extern int riemann_debug;
 #define KW_TTL 10519
 #define KW_ATTRIBUTES 10520
 #define KW_TIMEOUT 10521
-#define KW_CACERT 10522
-#define KW_CERT 10523
+#define KW_CA_FILE 10522
+#define KW_CERT_FILE 10523
+#define KW_KEY_FILE 10524
 
 /* Value type.  */
 
@@ -464,19 +429,19 @@ struct YYLTYPE
 
 int riemann_parse (CfgLexer *lexer, LogDriver **instance, gpointer arg);
 
-#endif /* !YY_RIEMANN_Y_TAB_H_INCLUDED  */
+#endif /* !YY_RIEMANN_MODULES_RIEMANN_RIEMANN_GRAMMAR_H_INCLUDED  */
 
 /* Copy the second part of user declarations.  */
 
-#line 472 "modules/riemann/riemann-grammar.c" /* yacc.c:358  */
+#line 437 "modules/riemann/riemann-grammar.c" /* yacc.c:358  */
 /* Unqualified %code blocks.  */
-#line 32 "riemann-grammar.y" /* yacc.c:359  */
+#line 31 "modules/riemann/riemann-grammar.y" /* yacc.c:359  */
 
 
 #include "cfg-grammar.h"
 #include "cfg-parser.h"
 #include "plugin.h"
-#line 52 "riemann-grammar.y" /* yacc.c:359  */
+#line 51 "modules/riemann/riemann-grammar.y" /* yacc.c:359  */
 
 
 # define YYLLOC_DEFAULT(Current, Rhs, N)                                \
@@ -537,7 +502,7 @@ int riemann_parse (CfgLexer *lexer, LogDriver **instance, gpointer arg);
 
 
 
-#line 541 "modules/riemann/riemann-grammar.c" /* yacc.c:359  */
+#line 506 "modules/riemann/riemann-grammar.c" /* yacc.c:359  */
 
 #ifdef short
 # undef short
@@ -781,21 +746,21 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  4
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   177
+#define YYLAST   178
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  172
+#define YYNTOKENS  155
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  27
+#define YYNNTS  28
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  69
+#define YYNRULES  71
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  193
+#define YYNSTATES  198
 
 /* YYTRANSLATE[YYX] -- Symbol number corresponding to YYX as returned
    by yylex, with out-of-bounds checking.  */
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   10523
+#define YYMAXUTOK   10524
 
 #define YYTRANSLATE(YYX)                                                \
   ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
@@ -808,15 +773,15 @@ static const yytype_uint8 yytranslate[] =
       12,    13,    14,    15,    16,    17,    18,    19,    20,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     166,   167,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,   171,   170,
+     149,   150,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,   154,   153,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,   168,     2,   169,     2,     2,     2,     2,
+       2,     2,     2,   151,     2,   152,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -1807,69 +1772,70 @@ static const yytype_uint8 yytranslate[] =
       21,    22,    23,    24,    25,    26,    27,    28,    29,    30,
       31,    32,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      33,    34,    35,    36,    37,    38,    39,    40,    41,    42,
-      43,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      44,    45,    46,    47,    48,    49,     2,     2,     2,     2,
-      50,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,    51,    52,    53,    54,    55,    56,    57,    58,    59,
-      60,    61,     2,     2,     2,     2,     2,     2,     2,     2,
-      62,    63,    64,    65,    66,     2,     2,     2,     2,     2,
-      67,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      68,    69,    70,     2,     2,     2,     2,     2,     2,     2,
-      71,    72,     2,     2,     2,     2,     2,     2,     2,     2,
-      73,    74,    75,     2,     2,     2,     2,     2,     2,     2,
-      76,    77,    78,     2,     2,     2,     2,     2,     2,     2,
-      79,    80,    81,     2,     2,     2,     2,     2,     2,     2,
-      82,     2,    83,    84,    85,    86,    87,     2,     2,     2,
-      88,    89,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      91,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      92,    93,    94,    95,    96,    97,     2,     2,     2,     2,
-      98,    99,   100,     2,     2,     2,     2,     2,     2,     2,
-     101,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     102,    90,     2,     2,     2,     2,     2,     2,     2,     2,
-     103,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     104,   105,   106,     2,     2,     2,     2,     2,     2,     2,
-     107,   108,   109,     2,     2,     2,     2,     2,     2,     2,
-     110,   111,   112,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     113,   114,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,   115,     2,     2,     2,     2,     2,     2,
+      33,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,    34,    35,    36,    37,    38,    39,    40,    41,    42,
+      43,    44,    45,    46,     2,     2,     2,     2,     2,     2,
+      47,    48,    49,    50,    51,     2,     2,     2,     2,     2,
+      52,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+      53,    54,    55,     2,     2,     2,     2,     2,     2,     2,
+      56,    57,     2,     2,     2,     2,     2,     2,     2,     2,
+      58,    59,    60,     2,     2,     2,     2,     2,     2,     2,
+      61,    62,    63,     2,     2,     2,     2,     2,     2,     2,
+      64,    65,    66,     2,     2,     2,     2,     2,     2,     2,
+      67,     2,    68,    69,    70,    71,    72,     2,     2,     2,
+      73,    74,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     116,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     117,   118,   119,   120,   121,   122,   123,   124,     2,     2,
-       2,   125,     2,     2,     2,     2,     2,     2,     2,     2,
-     126,   127,   128,     2,     2,     2,     2,     2,     2,     2,
-     129,   130,     2,     2,     2,     2,     2,     2,     2,     2,
+      77,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+      78,    79,    80,    81,    82,    83,     2,     2,     2,     2,
+      84,    85,    86,     2,     2,     2,     2,     2,     2,     2,
+      87,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+      88,    75,     2,     2,     2,     2,     2,     2,     2,     2,
+      89,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+      90,    91,    92,     2,     2,     2,     2,     2,     2,     2,
+      93,    94,    95,     2,     2,     2,     2,     2,     2,     2,
+      96,    97,    98,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     131,   132,     2,     2,     2,     2,     2,     2,     2,     2,
-     133,   134,   135,   136,   137,   138,   139,   140,   141,   142,
+      99,   100,    76,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,   101,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     102,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     103,   104,   105,   106,   107,   108,   109,   110,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     111,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     112,   113,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     114,   115,     2,     2,     2,     2,     2,     2,     2,     2,
+     116,   117,   118,   119,   120,   121,   122,   123,   124,   125,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     143,   144,   145,   146,   147,   148,   149,   150,   151,   152,
-     153,   154,     2,   155,   156,   157,   158,   159,   160,   161,
-     162,   163,   164,   165
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     126,     2,   127,   128,   129,   130,   131,   132,   133,   134,
+     135,   136,     2,   137,   138,   139,   140,   141,   142,   143,
+     144,   145,   146,   147,   148
 };
 
 #if YYDEBUG
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   387,   387,   386,   394,   395,   399,   404,   408,   412,
-     416,   420,   424,   428,   432,   436,   442,   448,   453,   452,
-     460,   464,   465,   466,   466,   470,   471,   475,   480,   484,
-     485,   489,   490,   491,   689,   696,   709,   709,   715,   716,
-     737,   741,   742,   852,   860,   861,   862,   939,   940,   941,
-     942,   943,   944,   980,   985,   991,   997,   990,   998,  1000,
-     999,  1005,  1006,  1010,  1011,  1015,  1016,  1020,  1021,  1022
+       0,   366,   366,   365,   373,   374,   378,   383,   387,   391,
+     395,   399,   403,   407,   411,   415,   421,   427,   432,   431,
+     439,   443,   444,   445,   445,   449,   450,   454,   459,   463,
+     464,   468,   469,   470,   668,   675,   688,   688,   694,   695,
+     716,   720,   721,   838,   842,   850,   851,   852,   870,   926,
+     927,   928,   929,   930,   931,   967,   972,   978,   984,   977,
+     985,   987,   986,   992,   993,   997,   998,  1002,  1003,  1007,
+    1008,  1009
 };
 #endif
 
@@ -1887,24 +1853,21 @@ static const char *const yytname[] =
   "LL_CONTEXT_INNER_SRC", "LL_CONTEXT_CLIENT_PROTO",
   "LL_CONTEXT_SERVER_PROTO", "KW_SOURCE", "KW_FILTER", "KW_PARSER",
   "KW_DESTINATION", "KW_LOG", "KW_OPTIONS", "KW_INCLUDE", "KW_BLOCK",
-  "KW_JUNCTION", "KW_CHANNEL", "KW_INTERNAL", "KW_FILE", "KW_SQL",
-  "KW_TYPE", "KW_COLUMNS", "KW_INDEXES", "KW_VALUES", "KW_PASSWORD",
-  "KW_DATABASE", "KW_USERNAME", "KW_TABLE", "KW_ENCODING",
-  "KW_SESSION_STATEMENTS", "KW_DELIMITERS", "KW_QUOTES", "KW_QUOTE_PAIRS",
-  "KW_NULL", "KW_CHARS", "KW_STRINGS", "KW_SYSLOG", "KW_MARK_FREQ",
-  "KW_STATS_FREQ", "KW_STATS_LEVEL", "KW_STATS_LIFETIME", "KW_FLUSH_LINES",
-  "KW_SUPPRESS", "KW_FLUSH_TIMEOUT", "KW_LOG_MSG_SIZE", "KW_FILE_TEMPLATE",
-  "KW_PROTO_TEMPLATE", "KW_MARK_MODE", "KW_CHAIN_HOSTNAMES",
-  "KW_NORMALIZE_HOSTNAMES", "KW_KEEP_HOSTNAME", "KW_CHECK_HOSTNAME",
-  "KW_BAD_HOSTNAME", "KW_KEEP_TIMESTAMP", "KW_USE_DNS", "KW_USE_FQDN",
-  "KW_CUSTOM_DOMAIN", "KW_DNS_CACHE", "KW_DNS_CACHE_SIZE",
-  "KW_DNS_CACHE_EXPIRE", "KW_DNS_CACHE_EXPIRE_FAILED",
-  "KW_DNS_CACHE_HOSTS", "KW_PERSIST_ONLY", "KW_USE_RCPTID",
-  "KW_USE_UNIQID", "KW_TZ_CONVERT", "KW_TS_FORMAT", "KW_FRAC_DIGITS",
-  "KW_LOG_FIFO_SIZE", "KW_LOG_FETCH_LIMIT", "KW_LOG_IW_SIZE",
-  "KW_LOG_PREFIX", "KW_PROGRAM_OVERRIDE", "KW_HOST_OVERRIDE",
-  "KW_THROTTLE", "KW_THREADED", "KW_PASS_UNIX_CREDENTIALS", "KW_FLAGS",
-  "KW_PAD_SIZE", "KW_TIME_ZONE", "KW_RECV_TIME_ZONE", "KW_SEND_TIME_ZONE",
+  "KW_JUNCTION", "KW_CHANNEL", "KW_INTERNAL", "KW_FILE", "KW_SYSLOG",
+  "KW_MARK_FREQ", "KW_STATS_FREQ", "KW_STATS_LEVEL", "KW_STATS_LIFETIME",
+  "KW_FLUSH_LINES", "KW_SUPPRESS", "KW_FLUSH_TIMEOUT", "KW_LOG_MSG_SIZE",
+  "KW_FILE_TEMPLATE", "KW_PROTO_TEMPLATE", "KW_MARK_MODE", "KW_ENCODING",
+  "KW_TYPE", "KW_CHAIN_HOSTNAMES", "KW_NORMALIZE_HOSTNAMES",
+  "KW_KEEP_HOSTNAME", "KW_CHECK_HOSTNAME", "KW_BAD_HOSTNAME",
+  "KW_KEEP_TIMESTAMP", "KW_USE_DNS", "KW_USE_FQDN", "KW_CUSTOM_DOMAIN",
+  "KW_DNS_CACHE", "KW_DNS_CACHE_SIZE", "KW_DNS_CACHE_EXPIRE",
+  "KW_DNS_CACHE_EXPIRE_FAILED", "KW_DNS_CACHE_HOSTS", "KW_PERSIST_ONLY",
+  "KW_USE_RCPTID", "KW_USE_UNIQID", "KW_TZ_CONVERT", "KW_TS_FORMAT",
+  "KW_FRAC_DIGITS", "KW_LOG_FIFO_SIZE", "KW_LOG_FETCH_LIMIT",
+  "KW_LOG_IW_SIZE", "KW_LOG_PREFIX", "KW_PROGRAM_OVERRIDE",
+  "KW_HOST_OVERRIDE", "KW_THROTTLE", "KW_THREADED",
+  "KW_PASS_UNIX_CREDENTIALS", "KW_PERSIST_NAME", "KW_FLAGS", "KW_PAD_SIZE",
+  "KW_TIME_ZONE", "KW_RECV_TIME_ZONE", "KW_SEND_TIME_ZONE",
   "KW_LOCAL_TIME_ZONE", "KW_FORMAT", "KW_TIME_REOPEN", "KW_TIME_REAP",
   "KW_TIME_SLEEP", "KW_TMPL_ESCAPE", "KW_OPTIONAL", "KW_CREATE_DIRS",
   "KW_OWNER", "KW_GROUP", "KW_PERM", "KW_DIR_OWNER", "KW_DIR_GROUP",
@@ -1912,21 +1875,21 @@ static const char *const yytname[] =
   "KW_TEMPLATE_FUNCTION", "KW_DEFAULT_FACILITY", "KW_DEFAULT_LEVEL",
   "KW_PORT", "KW_USE_TIME_RECVD", "KW_FACILITY", "KW_LEVEL", "KW_HOST",
   "KW_MATCH", "KW_MESSAGE", "KW_NETMASK", "KW_TAGS", "KW_NETMASK6",
-  "KW_VALUE", "KW_REWRITE", "KW_SET", "KW_SUBST", "KW_YES", "KW_NO",
-  "KW_IFDEF", "KW_ENDIF", "LL_DOTDOT", "LL_IDENTIFIER", "LL_NUMBER",
-  "LL_FLOAT", "LL_STRING", "LL_TOKEN", "LL_BLOCK", "LL_PRAGMA", "LL_EOL",
-  "LL_ERROR", "KW_VALUE_PAIRS", "KW_SELECT", "KW_EXCLUDE", "KW_PAIR",
-  "KW_KEY", "KW_SCOPE", "KW_SHIFT", "KW_REKEY", "KW_ADD_PREFIX",
-  "KW_REPLACE_PREFIX", "KW_ON_ERROR", "KW_RETRIES", "KW_RIEMANN",
-  "KW_SERVER", "KW_STATE", "KW_SERVICE", "KW_DESCRIPTION", "KW_METRIC",
-  "KW_TTL", "KW_ATTRIBUTES", "KW_TIMEOUT", "KW_CACERT", "KW_CERT", "'('",
-  "')'", "'{'", "'}'", "';'", "':'", "$accept", "start", "$@1",
-  "riemann_options", "riemann_option", "$@2", "$@3", "attribute_options",
-  "attribute_option", "riemann_type_options", "riemann_type_option",
-  "template_content_inner", "template_content", "$@9", "string",
-  "string_list", "string_list_build", "threaded_dest_driver_option",
-  "dest_driver_option", "template_option", "vp_option", "$@16", "$@17",
-  "$@18", "vp_scope_list", "vp_rekey_options", "vp_rekey_option", YY_NULLPTR
+  "KW_REWRITE", "KW_YES", "KW_NO", "KW_IFDEF", "KW_ENDIF", "LL_DOTDOT",
+  "LL_IDENTIFIER", "LL_NUMBER", "LL_FLOAT", "LL_STRING", "LL_TOKEN",
+  "LL_BLOCK", "LL_PRAGMA", "LL_EOL", "LL_ERROR", "KW_VALUE_PAIRS",
+  "KW_EXCLUDE", "KW_PAIR", "KW_KEY", "KW_SCOPE", "KW_SHIFT", "KW_REKEY",
+  "KW_ADD_PREFIX", "KW_REPLACE_PREFIX", "KW_ON_ERROR", "KW_RETRIES",
+  "KW_RIEMANN", "KW_SERVER", "KW_STATE", "KW_SERVICE", "KW_DESCRIPTION",
+  "KW_METRIC", "KW_TTL", "KW_ATTRIBUTES", "KW_TIMEOUT", "KW_CA_FILE",
+  "KW_CERT_FILE", "KW_KEY_FILE", "'('", "')'", "'{'", "'}'", "';'", "':'",
+  "$accept", "start", "$@1", "riemann_options", "riemann_option", "$@2",
+  "$@3", "attribute_options", "attribute_option", "riemann_type_options",
+  "riemann_type_option", "template_content_inner", "template_content",
+  "$@9", "string", "string_list", "string_list_build", "driver_option",
+  "threaded_dest_driver_option", "dest_driver_option", "template_option",
+  "vp_option", "$@16", "$@17", "$@18", "vp_scope_list", "vp_rekey_options",
+  "vp_rekey_option", YY_NULLPTR
 };
 #endif
 
@@ -1938,28 +1901,26 @@ static const yytype_uint16 yytoknum[] =
        0,   256, 10512,     1,     2,     3,     4,     5,     6,     7,
        8,     9,    10,    11,    12,    13,    14,    15,    16,    17,
       18, 10000, 10001, 10002, 10003, 10004, 10005, 10006, 10007, 10008,
-   10009, 10010, 10011, 10030, 10031, 10032, 10033, 10034, 10035, 10036,
-   10037, 10038, 10039, 10040, 10050, 10051, 10052, 10053, 10054, 10055,
-   10060, 10071, 10072, 10073, 10074, 10075, 10076, 10077, 10078, 10079,
-   10080, 10081, 10090, 10091, 10092, 10093, 10094, 10100, 10110, 10111,
-   10112, 10120, 10121, 10130, 10131, 10132, 10140, 10141, 10142, 10150,
-   10151, 10152, 10160, 10162, 10163, 10164, 10165, 10166, 10170, 10171,
-   10231, 10190, 10200, 10201, 10202, 10203, 10204, 10205, 10210, 10211,
-   10212, 10220, 10230, 10240, 10250, 10251, 10252, 10260, 10261, 10262,
-   10270, 10271, 10272, 10300, 10301, 10323, 10340, 10350, 10351, 10352,
-   10353, 10354, 10355, 10356, 10357, 10361, 10370, 10371, 10372, 10380,
-   10381, 10410, 10411, 10420, 10421, 10422, 10423, 10424, 10425, 10426,
-   10427, 10428, 10429, 10500, 10501, 10502, 10503, 10504, 10505, 10506,
-   10507, 10508, 10509, 10510, 10511, 10513, 10514, 10515, 10516, 10517,
-   10518, 10519, 10520, 10521, 10522, 10523,    40,    41,   123,   125,
-      59,    58
+   10009, 10010, 10011, 10060, 10071, 10072, 10073, 10074, 10075, 10076,
+   10077, 10078, 10079, 10080, 10081, 10082, 10083, 10090, 10091, 10092,
+   10093, 10094, 10100, 10110, 10111, 10112, 10120, 10121, 10130, 10131,
+   10132, 10140, 10141, 10142, 10150, 10151, 10152, 10160, 10162, 10163,
+   10164, 10165, 10166, 10170, 10171, 10231, 10302, 10190, 10200, 10201,
+   10202, 10203, 10204, 10205, 10210, 10211, 10212, 10220, 10230, 10240,
+   10250, 10251, 10252, 10260, 10261, 10262, 10270, 10271, 10272, 10300,
+   10301, 10323, 10340, 10350, 10351, 10352, 10353, 10354, 10355, 10356,
+   10357, 10370, 10380, 10381, 10410, 10411, 10420, 10421, 10422, 10423,
+   10424, 10425, 10426, 10427, 10428, 10429, 10500, 10502, 10503, 10504,
+   10505, 10506, 10507, 10508, 10509, 10510, 10511, 10513, 10514, 10515,
+   10516, 10517, 10518, 10519, 10520, 10521, 10522, 10523, 10524,    40,
+      41,   123,   125,    59,    58
 };
 # endif
 
-#define YYPACT_NINF -140
+#define YYPACT_NINF -126
 
 #define yypact_value_is_default(Yystate) \
-  (!!((Yystate) == (-140)))
+  (!!((Yystate) == (-126)))
 
 #define YYTABLE_NINF -6
 
@@ -1968,28 +1929,28 @@ static const yytype_uint16 yytoknum[] =
 
   /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
      STATE-NUM.  */
-static const yytype_int16 yypact[] =
+static const yytype_int8 yypact[] =
 {
-       3,  -134,    16,  -140,  -140,  -138,   -32,  -120,  -114,  -111,
-    -109,  -108,  -107,  -106,  -140,  -105,  -104,  -103,  -102,  -101,
-    -100,   -99,  -140,   -98,  -113,   -32,   -76,  -140,  -140,  -128,
-     -66,   -65,   -64,   -63,  -140,   -97,   -62,   -97,  -140,  -140,
-    -140,  -140,  -140,   -92,   -60,  -140,  -140,   -90,   -88,   -87,
-     -86,   -85,   -84,  -140,  -139,  -139,   -78,   -75,   -70,   -69,
-     -68,   -89,  -140,  -140,   -97,   -59,  -140,   -58,   -57,   -56,
-     -55,   -52,   -51,   -50,  -112,   -49,   -97,   -34,   -97,   -97,
-     -97,   -97,   -53,   -47,   -45,   -44,  -139,   -33,  -140,  -140,
-    -140,  -140,  -140,   -30,  -140,  -140,  -140,  -140,  -140,  -140,
-    -140,  -140,  -140,  -140,  -140,   -29,   -27,   -26,   -23,   -22,
-     -21,   -20,  -112,  -140,  -140,   -18,   -17,   -16,   -15,   -14,
-     -13,   -97,   -97,   -97,  -140,  -140,  -140,   -97,  -140,   -97,
-     -97,   -97,   -97,   -97,  -140,  -140,  -140,  -140,  -140,  -140,
-    -140,  -140,   -12,   -11,   -10,    -9,    -8,    -7,   -67,  -119,
-      -6,   -97,    -5,  -140,  -140,  -140,  -140,  -140,  -140,  -140,
-    -140,    -4,    -2,  -140,  -140,  -140,  -122,    -1,  -140,  -140,
-       1,     2,     4,     5,  -122,  -140,  -122,    11,   -97,   -97,
-    -140,  -140,     6,     7,     8,   -97,  -140,  -140,  -140,     9,
-      10,  -140,  -140
+      17,  -103,    38,  -126,  -126,  -107,   -32,   -92,   -90,   -88,
+     -86,   -85,   -84,   -83,   -82,  -126,   -81,   -79,   -78,   -75,
+     -74,   -73,   -71,  -126,   -70,  -104,   -32,   -63,  -126,  -126,
+    -126,   -60,  -100,   -58,   -56,   -91,   -38,  -126,   -91,   -37,
+     -91,  -126,  -126,  -126,  -126,  -126,   -66,   -36,  -126,  -126,
+     -65,   -61,   -59,   -54,   -53,   -51,  -126,   -64,   -95,   -95,
+     -45,   -33,  -126,  -126,   -30,   -28,   -27,   -87,   -91,   -26,
+    -126,   -25,   -24,   -23,   -22,   -21,   -20,   -18,  -105,   -17,
+     -91,   -29,   -91,   -91,   -91,   -91,  -126,   -15,   -14,   -13,
+     -12,   -95,   -11,  -126,  -126,  -126,  -126,  -126,    -9,  -126,
+    -126,  -126,  -126,  -126,  -126,  -126,  -126,  -126,  -126,  -126,
+      -8,    -7,    -6,    -5,    -4,    -3,     0,  -105,  -126,  -126,
+       1,     2,     3,     4,     6,     7,   -91,   -91,   -91,  -126,
+    -126,  -126,   -91,  -126,   -91,   -91,   -91,   -91,   -91,  -126,
+    -126,  -126,  -126,  -126,  -126,  -126,  -126,     8,     9,    10,
+      11,    12,    13,   -99,   -89,    14,   -91,    15,  -126,  -126,
+    -126,  -126,  -126,  -126,  -126,  -126,    16,    -2,  -126,  -126,
+    -126,   -94,    18,  -126,  -126,    20,    21,    22,    23,   -94,
+    -126,   -94,    19,   -91,   -91,  -126,  -126,    24,    25,    26,
+     -91,  -126,  -126,  -126,    27,    28,  -126,  -126
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -1998,41 +1959,41 @@ static const yytype_int16 yypact[] =
 static const yytype_uint8 yydefact[] =
 {
        0,     0,     0,     2,     1,     0,    23,     0,     0,     0,
-       0,     0,     0,     0,    46,     0,     0,     0,     0,     0,
-       0,     0,    18,     0,     0,    23,     0,    22,    21,     0,
-       0,     0,     0,     0,    36,    42,     0,     0,    36,    36,
-      36,    36,    36,     0,     0,     3,     4,     0,     0,     0,
-       0,     0,     0,    24,    30,    30,     0,     0,     0,     0,
-       0,     0,    38,    39,    42,     0,    40,     0,     0,     0,
-       0,     0,     0,     0,    26,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,    30,     0,    20,    44,
-      45,     7,     8,    38,    37,    34,    41,    14,    43,     6,
-      10,     9,    11,    13,    12,     0,     0,     0,     0,     0,
-       0,     0,    26,    28,    17,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,    15,    29,    16,     0,    36,    42,
-       0,    42,    64,     0,    19,    25,    47,    48,    49,    50,
-      51,    52,     0,     0,     0,     0,     0,     0,    36,    42,
-       0,    64,     0,    59,    33,    31,    32,    35,    27,    61,
-      36,     0,     0,    58,    63,    62,    66,     0,    54,    55,
-       0,     0,     0,     0,    66,    53,    66,     0,     0,     0,
-      60,    65,     0,     0,     0,     0,    56,    67,    68,     0,
-       0,    69,    57
+       0,     0,     0,     0,     0,    47,     0,     0,     0,     0,
+       0,     0,     0,    18,     0,     0,    23,     0,    48,    22,
+      21,     0,     0,     0,     0,     0,     0,    36,    42,     0,
+       0,    36,    36,    36,    36,    36,     0,     0,     3,     4,
+       0,     0,     0,     0,     0,     0,    24,     0,    30,    30,
+       0,     0,    38,    39,     0,     0,     0,     0,    42,     0,
+      40,     0,     0,     0,     0,     0,     0,     0,    26,     0,
+       0,     0,     0,     0,     0,     0,    20,     0,     0,     0,
+       0,    30,     0,    45,    46,    43,     7,     8,    38,    37,
+      34,    41,    14,    44,     6,    10,     9,    11,    13,    12,
+       0,     0,     0,     0,     0,     0,     0,    26,    28,    17,
+       0,     0,     0,     0,     0,     0,     0,     0,     0,    15,
+      29,    16,     0,    36,    42,     0,    42,    66,     0,    19,
+      25,    49,    50,    51,    52,    53,    54,     0,     0,     0,
+       0,     0,     0,    36,    42,     0,    66,     0,    61,    31,
+      32,    33,    35,    27,    63,    36,     0,     0,    60,    65,
+      64,    68,     0,    56,    57,     0,     0,     0,     0,    68,
+      55,    68,     0,     0,     0,    62,    67,     0,     0,     0,
+       0,    58,    69,    70,     0,     0,    71,    59
 };
 
   /* YYPGOTO[NTERM-NUM].  */
-static const yytype_int16 yypgoto[] =
+static const yytype_int8 yypgoto[] =
 {
-    -140,  -140,  -140,    78,  -140,  -140,  -140,    21,  -140,   -54,
-    -140,  -140,   -28,  -140,   -37,   -82,   -61,  -140,  -140,  -140,
-    -140,  -140,  -140,  -140,   -46,  -123,  -140
+    -126,  -126,  -126,    68,  -126,  -126,  -126,    -1,  -126,   -55,
+    -126,  -126,   -34,  -126,   -35,  -121,   -67,  -126,  -126,  -126,
+    -126,  -126,  -126,  -126,  -126,   -42,  -125,  -126
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int16 yydefgoto[] =
 {
-      -1,     2,     5,    24,    25,    43,    26,   111,   112,    85,
-      86,    94,    60,    61,    64,    65,    66,    27,    28,    53,
-     113,   176,   190,   166,   152,   173,   174
+      -1,     2,     5,    25,    26,    46,    27,   116,   117,    90,
+      91,    99,    66,    67,    68,    69,    70,    28,    29,    30,
+      56,   118,   181,   195,   171,   157,   178,   179
 };
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -2040,84 +2001,85 @@ static const yytype_int16 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int16 yytable[] =
 {
-      68,    87,     7,    96,    47,    48,    54,     1,    82,    55,
-      69,    70,    71,    72,    73,    62,     4,    49,    63,    50,
-      51,     3,   105,     8,    95,    83,    84,   170,     6,   171,
-     172,   162,   125,   106,   107,   108,   109,    62,   110,   115,
-      63,   117,   118,   119,   120,    93,    29,   147,    63,   150,
-       9,   181,    30,   182,    45,    31,    10,    32,    33,    34,
-      35,    36,    37,    38,    39,    40,    41,    42,    44,    56,
-      57,    58,    59,    67,    74,    75,    76,    52,    77,    78,
-      79,    80,    81,    11,   142,   143,   144,    12,    96,    88,
-     145,    13,    89,   148,   149,   151,   153,    90,    91,    92,
-     146,   116,    14,    46,   160,   164,     0,     0,    97,    98,
-      99,   100,   101,   121,   151,   102,   103,   104,   114,   122,
-     161,   123,    15,   124,    16,    17,    18,    19,    20,    21,
-      22,    23,   167,   135,   126,    -5,   127,   128,     0,   129,
-     130,   184,   185,   131,   132,   133,   183,   134,   189,   136,
-     137,   138,   139,   140,   141,   154,   155,   156,   157,   158,
-     159,   163,   165,   168,   169,     0,   175,   177,   178,     0,
-     179,     0,   180,   186,   187,   188,   191,   192
+      64,   101,    50,    51,    92,    72,     7,    73,    74,    75,
+      76,    77,   110,   152,     8,   155,    52,    58,    53,    54,
+      59,     1,   111,   112,   113,   114,    62,   115,    62,    63,
+      98,    63,   100,    63,     3,     9,   130,   175,     4,   176,
+     177,    10,     6,   167,    11,   120,    48,   122,   123,   124,
+     125,    87,    88,    89,   186,   165,   187,    31,    57,    32,
+      60,    33,    61,    34,    35,    36,    37,    38,    39,    12,
+      40,    41,    55,    13,    42,    43,    44,    14,    45,    47,
+      65,    71,    79,    78,    80,    15,    86,   101,    81,   121,
+      82,   147,   148,   149,    49,    83,    84,   150,    85,   151,
+     153,   154,   156,   158,    16,    93,    17,    18,    19,    20,
+      21,    22,    23,    24,   169,     0,   140,    94,    -5,   166,
+      95,   156,    96,    97,   102,   103,   104,   105,   106,   107,
+     108,   172,   109,   119,   126,   127,   128,   188,   129,   131,
+     132,   133,   134,   135,   136,   137,   138,   174,   189,   190,
+     139,   141,   142,   143,   144,   194,   145,   146,   159,   160,
+     161,   162,   163,   164,   168,   170,   173,     0,   180,   182,
+     183,   184,     0,   185,   191,   192,   193,   196,   197
 };
 
 static const yytype_int16 yycheck[] =
 {
-      37,    55,    34,    64,    80,    81,   134,     4,   147,   137,
-      38,    39,    40,    41,    42,   134,     0,    93,   137,    95,
-      96,   155,   134,    55,    61,   164,   165,   149,   166,   151,
-     152,   150,    86,   145,   146,   147,   148,   134,   150,    76,
-     137,    78,    79,    80,    81,   134,   166,   129,   137,   131,
-      82,   174,   166,   176,   167,   166,    88,   166,   166,   166,
-     166,   166,   166,   166,   166,   166,   166,   166,   166,   135,
-     135,   135,   135,   135,   166,   135,   166,   153,   166,   166,
-     166,   166,   166,   115,   121,   122,   123,   119,   149,   167,
-     127,   123,   167,   130,   131,   132,   133,   167,   167,   167,
-     128,   135,   134,    25,   171,   151,    -1,    -1,   167,   167,
-     167,   167,   167,   166,   151,   167,   167,   167,   167,   166,
-     148,   166,   154,   167,   156,   157,   158,   159,   160,   161,
-     162,   163,   160,   112,   167,   167,   166,   166,    -1,   166,
-     166,   178,   179,   166,   166,   166,   135,   167,   185,   167,
-     167,   167,   167,   167,   167,   167,   167,   167,   167,   167,
-     167,   167,   167,   167,   166,    -1,   167,   166,   166,    -1,
-     166,    -1,   167,   167,   167,   167,   167,   167
+      35,    68,    65,    66,    59,    40,    38,    41,    42,    43,
+      44,    45,   117,   134,    46,   136,    79,   117,    81,    82,
+     120,     4,   127,   128,   129,   130,   117,   132,   117,   120,
+     117,   120,    67,   120,   137,    67,    91,   131,     0,   133,
+     134,    73,   149,   132,    76,    80,   150,    82,    83,    84,
+      85,   146,   147,   148,   179,   154,   181,   149,   118,   149,
+     118,   149,   118,   149,   149,   149,   149,   149,   149,   101,
+     149,   149,   135,   105,   149,   149,   149,   109,   149,   149,
+     118,   118,   118,   149,   149,   117,   150,   154,   149,   118,
+     149,   126,   127,   128,    26,   149,   149,   132,   149,   133,
+     135,   136,   137,   138,   136,   150,   138,   139,   140,   141,
+     142,   143,   144,   145,   156,    -1,   117,   150,   150,   153,
+     150,   156,   150,   150,   150,   150,   150,   150,   150,   150,
+     150,   165,   150,   150,   149,   149,   149,   118,   150,   150,
+     149,   149,   149,   149,   149,   149,   149,   149,   183,   184,
+     150,   150,   150,   150,   150,   190,   150,   150,   150,   150,
+     150,   150,   150,   150,   150,   150,   150,    -1,   150,   149,
+     149,   149,    -1,   150,   150,   150,   150,   150,   150
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
      symbol of state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
-       0,     4,   173,   155,     0,   174,   166,    34,    55,    82,
-      88,   115,   119,   123,   134,   154,   156,   157,   158,   159,
-     160,   161,   162,   163,   175,   176,   178,   189,   190,   166,
-     166,   166,   166,   166,   166,   166,   166,   166,   166,   166,
-     166,   166,   166,   177,   166,   167,   175,    80,    81,    93,
-      95,    96,   153,   191,   134,   137,   135,   135,   135,   135,
-     184,   185,   134,   137,   186,   187,   188,   135,   186,   184,
-     184,   184,   184,   184,   166,   135,   166,   166,   166,   166,
-     166,   166,   147,   164,   165,   181,   182,   181,   167,   167,
-     167,   167,   167,   134,   183,   186,   188,   167,   167,   167,
-     167,   167,   167,   167,   167,   134,   145,   146,   147,   148,
-     150,   179,   180,   192,   167,   186,   135,   186,   186,   186,
-     186,   166,   166,   166,   167,   181,   167,   166,   166,   166,
-     166,   166,   166,   166,   167,   179,   167,   167,   167,   167,
-     167,   167,   186,   186,   186,   186,   184,   187,   186,   186,
-     187,   186,   196,   186,   167,   167,   167,   167,   167,   167,
-     171,   184,   150,   167,   196,   167,   195,   184,   167,   166,
-     149,   151,   152,   197,   198,   167,   193,   166,   166,   166,
-     167,   197,   197,   135,   186,   186,   167,   167,   167,   186,
-     194,   167,   167
+       0,     4,   156,   137,     0,   157,   149,    38,    46,    67,
+      73,    76,   101,   105,   109,   117,   136,   138,   139,   140,
+     141,   142,   143,   144,   145,   158,   159,   161,   172,   173,
+     174,   149,   149,   149,   149,   149,   149,   149,   149,   149,
+     149,   149,   149,   149,   149,   149,   160,   149,   150,   158,
+      65,    66,    79,    81,    82,   135,   175,   118,   117,   120,
+     118,   118,   117,   120,   169,   118,   167,   168,   169,   170,
+     171,   118,   169,   167,   167,   167,   167,   167,   149,   118,
+     149,   149,   149,   149,   149,   149,   150,   146,   147,   148,
+     164,   165,   164,   150,   150,   150,   150,   150,   117,   166,
+     169,   171,   150,   150,   150,   150,   150,   150,   150,   150,
+     117,   127,   128,   129,   130,   132,   162,   163,   176,   150,
+     169,   118,   169,   169,   169,   169,   149,   149,   149,   150,
+     164,   150,   149,   149,   149,   149,   149,   149,   149,   150,
+     162,   150,   150,   150,   150,   150,   150,   169,   169,   169,
+     169,   167,   170,   169,   169,   170,   169,   180,   169,   150,
+     150,   150,   150,   150,   150,   154,   167,   132,   150,   180,
+     150,   179,   167,   150,   149,   131,   133,   134,   181,   182,
+     150,   177,   149,   149,   149,   150,   181,   181,   118,   169,
+     169,   150,   150,   150,   169,   178,   150,   150
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
-       0,   172,   174,   173,   175,   175,   176,   176,   176,   176,
-     176,   176,   176,   176,   176,   176,   176,   176,   177,   176,
-     176,   176,   176,   178,   176,   179,   179,   180,   180,   181,
-     181,   182,   182,   182,   183,   183,   185,   184,   186,   186,
-     187,   188,   188,   189,   190,   190,   190,   191,   191,   191,
-     191,   191,   191,   192,   192,   193,   194,   192,   192,   195,
-     192,   192,   192,   196,   196,   197,   197,   198,   198,   198
+       0,   155,   157,   156,   158,   158,   159,   159,   159,   159,
+     159,   159,   159,   159,   159,   159,   159,   159,   160,   159,
+     159,   159,   159,   161,   159,   162,   162,   163,   163,   164,
+     164,   165,   165,   165,   166,   166,   168,   167,   169,   169,
+     170,   171,   171,   172,   173,   174,   174,   174,   174,   175,
+     175,   175,   175,   175,   175,   176,   176,   177,   178,   176,
+     176,   179,   176,   176,   176,   180,   180,   181,   181,   182,
+     182,   182
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
@@ -2127,9 +2089,10 @@ static const yytype_uint8 yyr2[] =
        4,     4,     4,     4,     4,     5,     5,     4,     0,     5,
        4,     1,     1,     0,     2,     2,     0,     4,     1,     2,
        0,     4,     4,     4,     1,     4,     0,     2,     1,     1,
-       1,     2,     0,     4,     4,     4,     1,     4,     4,     4,
-       4,     4,     4,     6,     5,     0,     0,    10,     4,     0,
-       6,     4,     4,     2,     0,     2,     0,     4,     4,     5
+       1,     2,     0,     4,     4,     4,     4,     1,     1,     4,
+       4,     4,     4,     4,     4,     6,     5,     0,     0,    10,
+       4,     0,     6,     4,     4,     2,     0,     2,     0,     4,
+       4,     5
 };
 
 
@@ -2625,7 +2588,36 @@ yydestruct (const char *yymsg, int yytype, YYSTYPE *yyvaluep, YYLTYPE *yylocatio
   YY_SYMBOL_PRINT (yymsg, yytype, yyvaluep, yylocationp);
 
   YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN
-  YYUSE (yytype);
+  switch (yytype)
+    {
+          case 117: /* LL_IDENTIFIER  */
+#line 285 "modules/riemann/riemann-grammar.y" /* yacc.c:1257  */
+      { free(((*yyvaluep).cptr)); }
+#line 2597 "modules/riemann/riemann-grammar.c" /* yacc.c:1257  */
+        break;
+
+    case 120: /* LL_STRING  */
+#line 285 "modules/riemann/riemann-grammar.y" /* yacc.c:1257  */
+      { free(((*yyvaluep).cptr)); }
+#line 2603 "modules/riemann/riemann-grammar.c" /* yacc.c:1257  */
+        break;
+
+    case 122: /* LL_BLOCK  */
+#line 285 "modules/riemann/riemann-grammar.y" /* yacc.c:1257  */
+      { free(((*yyvaluep).cptr)); }
+#line 2609 "modules/riemann/riemann-grammar.c" /* yacc.c:1257  */
+        break;
+
+    case 169: /* string  */
+#line 285 "modules/riemann/riemann-grammar.y" /* yacc.c:1257  */
+      { free(((*yyvaluep).cptr)); }
+#line 2615 "modules/riemann/riemann-grammar.c" /* yacc.c:1257  */
+        break;
+
+
+      default:
+        break;
+    }
   YY_IGNORE_MAYBE_UNINITIALIZED_END
 }
 
@@ -2911,190 +2903,190 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 387 "riemann-grammar.y" /* yacc.c:1646  */
+#line 366 "modules/riemann/riemann-grammar.y" /* yacc.c:1646  */
     {
             last_driver = *instance = riemann_dd_new(configuration);
           }
-#line 2919 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
+#line 2911 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
     break;
 
   case 3:
-#line 390 "riemann-grammar.y" /* yacc.c:1646  */
+#line 369 "modules/riemann/riemann-grammar.y" /* yacc.c:1646  */
     { YYACCEPT; }
-#line 2925 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
+#line 2917 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
     break;
 
   case 6:
-#line 400 "riemann-grammar.y" /* yacc.c:1646  */
+#line 379 "modules/riemann/riemann-grammar.y" /* yacc.c:1646  */
     {
             riemann_dd_set_server(last_driver, (yyvsp[-1].cptr));
             free((yyvsp[-1].cptr));
           }
-#line 2934 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
+#line 2926 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
     break;
 
   case 7:
-#line 405 "riemann-grammar.y" /* yacc.c:1646  */
+#line 384 "modules/riemann/riemann-grammar.y" /* yacc.c:1646  */
     {
             riemann_dd_set_port(last_driver, (yyvsp[-1].num));
+          }
+#line 2934 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 8:
+#line 388 "modules/riemann/riemann-grammar.y" /* yacc.c:1646  */
+    {
+            riemann_dd_set_field_host(last_driver, (yyvsp[-1].ptr));
           }
 #line 2942 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 8:
-#line 409 "riemann-grammar.y" /* yacc.c:1646  */
+  case 9:
+#line 392 "modules/riemann/riemann-grammar.y" /* yacc.c:1646  */
     {
-            riemann_dd_set_field_host(last_driver, (yyvsp[-1].ptr));
+            riemann_dd_set_field_service(last_driver, (yyvsp[-1].ptr));
           }
 #line 2950 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 9:
-#line 413 "riemann-grammar.y" /* yacc.c:1646  */
+  case 10:
+#line 396 "modules/riemann/riemann-grammar.y" /* yacc.c:1646  */
     {
-            riemann_dd_set_field_service(last_driver, (yyvsp[-1].ptr));
+            riemann_dd_set_field_state(last_driver, (yyvsp[-1].ptr));
           }
 #line 2958 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 10:
-#line 417 "riemann-grammar.y" /* yacc.c:1646  */
+  case 11:
+#line 400 "modules/riemann/riemann-grammar.y" /* yacc.c:1646  */
     {
-            riemann_dd_set_field_state(last_driver, (yyvsp[-1].ptr));
+            riemann_dd_set_field_description(last_driver, (yyvsp[-1].ptr));
           }
 #line 2966 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 11:
-#line 421 "riemann-grammar.y" /* yacc.c:1646  */
+  case 12:
+#line 404 "modules/riemann/riemann-grammar.y" /* yacc.c:1646  */
     {
-            riemann_dd_set_field_description(last_driver, (yyvsp[-1].ptr));
+            riemann_dd_set_field_ttl(last_driver, (yyvsp[-1].ptr));
           }
 #line 2974 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 12:
-#line 425 "riemann-grammar.y" /* yacc.c:1646  */
+  case 13:
+#line 408 "modules/riemann/riemann-grammar.y" /* yacc.c:1646  */
     {
-            riemann_dd_set_field_ttl(last_driver, (yyvsp[-1].ptr));
+            riemann_dd_set_field_metric(last_driver, (yyvsp[-1].ptr));
           }
 #line 2982 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 13:
-#line 429 "riemann-grammar.y" /* yacc.c:1646  */
+  case 14:
+#line 412 "modules/riemann/riemann-grammar.y" /* yacc.c:1646  */
     {
-            riemann_dd_set_field_metric(last_driver, (yyvsp[-1].ptr));
+            riemann_dd_set_field_tags(last_driver, (yyvsp[-1].ptr));
           }
 #line 2990 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 14:
-#line 433 "riemann-grammar.y" /* yacc.c:1646  */
-    {
-            riemann_dd_set_field_tags(last_driver, (yyvsp[-1].ptr));
-          }
-#line 2998 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
-    break;
-
   case 15:
-#line 437 "riemann-grammar.y" /* yacc.c:1646  */
+#line 416 "modules/riemann/riemann-grammar.y" /* yacc.c:1646  */
     {
             CHECK_ERROR(riemann_dd_set_connection_type(last_driver, (yyvsp[-2].cptr)), (yylsp[-2]),
                         "Unknown Riemann connection type: %s", (yyvsp[-2].cptr));
             free((yyvsp[-2].cptr));
           }
-#line 3008 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
+#line 3000 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
     break;
 
   case 16:
-#line 443 "riemann-grammar.y" /* yacc.c:1646  */
+#line 422 "modules/riemann/riemann-grammar.y" /* yacc.c:1646  */
     {
             CHECK_ERROR(riemann_dd_set_connection_type(last_driver, (yyvsp[-2].cptr)), (yylsp[-2]),
                         "Unknown Riemann connection type: %s", (yyvsp[-2].cptr));
             free((yyvsp[-2].cptr));
+          }
+#line 3010 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 17:
+#line 428 "modules/riemann/riemann-grammar.y" /* yacc.c:1646  */
+    {
+            riemann_dd_set_timeout(last_driver, (yyvsp[-1].num));
           }
 #line 3018 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 17:
-#line 449 "riemann-grammar.y" /* yacc.c:1646  */
+  case 18:
+#line 432 "modules/riemann/riemann-grammar.y" /* yacc.c:1646  */
     {
-            riemann_dd_set_timeout(last_driver, (yyvsp[-1].num));
+            last_value_pairs = value_pairs_new();
           }
 #line 3026 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 18:
-#line 453 "riemann-grammar.y" /* yacc.c:1646  */
+  case 19:
+#line 436 "modules/riemann/riemann-grammar.y" /* yacc.c:1646  */
     {
-            last_value_pairs = value_pairs_new();
+            riemann_dd_set_field_attributes(last_driver, last_value_pairs);
           }
 #line 3034 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 19:
-#line 457 "riemann-grammar.y" /* yacc.c:1646  */
+  case 20:
+#line 440 "modules/riemann/riemann-grammar.y" /* yacc.c:1646  */
     {
-            riemann_dd_set_field_attributes(last_driver, last_value_pairs);
+            riemann_dd_set_flush_lines(last_driver,  (yyvsp[-1].num));
           }
 #line 3042 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 20:
-#line 461 "riemann-grammar.y" /* yacc.c:1646  */
-    {
-            riemann_dd_set_flush_lines(last_driver,  (yyvsp[-1].num));
-          }
-#line 3050 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
-    break;
-
   case 23:
-#line 466 "riemann-grammar.y" /* yacc.c:1646  */
+#line 445 "modules/riemann/riemann-grammar.y" /* yacc.c:1646  */
     { last_template_options = riemann_dd_get_template_options(last_driver); }
-#line 3056 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
+#line 3048 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
     break;
 
   case 27:
-#line 476 "riemann-grammar.y" /* yacc.c:1646  */
+#line 455 "modules/riemann/riemann-grammar.y" /* yacc.c:1646  */
     {
             value_pairs_add_pair(last_value_pairs, (yyvsp[-3].cptr), (yyvsp[-1].ptr));
             free((yyvsp[-3].cptr));
           }
-#line 3065 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
+#line 3057 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
     break;
 
   case 31:
-#line 489 "riemann-grammar.y" /* yacc.c:1646  */
+#line 468 "modules/riemann/riemann-grammar.y" /* yacc.c:1646  */
     { riemann_dd_set_tls_cacert(last_driver, (yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 3071 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
+#line 3063 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
     break;
 
   case 32:
-#line 490 "riemann-grammar.y" /* yacc.c:1646  */
+#line 469 "modules/riemann/riemann-grammar.y" /* yacc.c:1646  */
     { riemann_dd_set_tls_cert(last_driver, (yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 3077 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
+#line 3069 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
     break;
 
   case 33:
-#line 491 "riemann-grammar.y" /* yacc.c:1646  */
+#line 470 "modules/riemann/riemann-grammar.y" /* yacc.c:1646  */
     { riemann_dd_set_tls_key(last_driver, (yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 3083 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
+#line 3075 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
     break;
 
   case 34:
-#line 690 "riemann-grammar.y" /* yacc.c:1646  */
+#line 669 "modules/riemann/riemann-grammar.y" /* yacc.c:1646  */
     {
           GError *error = NULL;
 
           CHECK_ERROR(log_template_compile(last_template, (yyvsp[0].cptr), &error), (yylsp[0]), "Error compiling template (%s)", error->message);
           free((yyvsp[0].cptr));
         }
-#line 3094 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
+#line 3086 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
     break;
 
   case 35:
-#line 697 "riemann-grammar.y" /* yacc.c:1646  */
+#line 676 "modules/riemann/riemann-grammar.y" /* yacc.c:1646  */
     {
           GError *error = NULL;
 
@@ -3104,61 +3096,67 @@ yyreduce:
           CHECK_ERROR(log_template_set_type_hint(last_template, (yyvsp[-3].cptr), &error), (yylsp[-3]), "Error setting the template type-hint (%s)", error->message);
           free((yyvsp[-3].cptr));
         }
-#line 3108 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
+#line 3100 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
     break;
 
   case 36:
-#line 709 "riemann-grammar.y" /* yacc.c:1646  */
+#line 688 "modules/riemann/riemann-grammar.y" /* yacc.c:1646  */
     { last_template = log_template_new(configuration, NULL); }
-#line 3114 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
+#line 3106 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
     break;
 
   case 37:
-#line 709 "riemann-grammar.y" /* yacc.c:1646  */
+#line 688 "modules/riemann/riemann-grammar.y" /* yacc.c:1646  */
     { (yyval.ptr) = last_template; }
-#line 3120 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
+#line 3112 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
     break;
 
   case 40:
-#line 737 "riemann-grammar.y" /* yacc.c:1646  */
+#line 716 "modules/riemann/riemann-grammar.y" /* yacc.c:1646  */
     { (yyval.ptr) = g_list_reverse((yyvsp[0].ptr)); }
-#line 3126 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
+#line 3118 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
     break;
 
   case 41:
-#line 741 "riemann-grammar.y" /* yacc.c:1646  */
+#line 720 "modules/riemann/riemann-grammar.y" /* yacc.c:1646  */
     { (yyval.ptr) = g_list_append((yyvsp[0].ptr), g_strdup((yyvsp[-1].cptr))); free((yyvsp[-1].cptr)); }
-#line 3132 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
+#line 3124 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
     break;
 
   case 42:
-#line 742 "riemann-grammar.y" /* yacc.c:1646  */
+#line 721 "modules/riemann/riemann-grammar.y" /* yacc.c:1646  */
     { (yyval.ptr) = NULL; }
-#line 3138 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
+#line 3130 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
     break;
 
   case 43:
-#line 853 "riemann-grammar.y" /* yacc.c:1646  */
-    {
-          log_threaded_dest_driver_set_max_retries(last_driver, (yyvsp[-1].num));
-        }
-#line 3146 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
+#line 838 "modules/riemann/riemann-grammar.y" /* yacc.c:1646  */
+    { log_pipe_set_persist_name(&last_driver->super, g_strdup((yyvsp[-1].cptr))); free((yyvsp[-1].cptr)); }
+#line 3136 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
     break;
 
   case 44:
-#line 860 "riemann-grammar.y" /* yacc.c:1646  */
-    { ((LogDestDriver *) last_driver)->log_fifo_size = (yyvsp[-1].num); }
-#line 3152 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
+#line 843 "modules/riemann/riemann-grammar.y" /* yacc.c:1646  */
+    {
+          log_threaded_dest_driver_set_max_retries(last_driver, (yyvsp[-1].num));
+        }
+#line 3144 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
     break;
 
   case 45:
-#line 861 "riemann-grammar.y" /* yacc.c:1646  */
-    { ((LogDestDriver *) last_driver)->throttle = (yyvsp[-1].num); }
-#line 3158 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
+#line 850 "modules/riemann/riemann-grammar.y" /* yacc.c:1646  */
+    { ((LogDestDriver *) last_driver)->log_fifo_size = (yyvsp[-1].num); }
+#line 3150 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
     break;
 
   case 46:
-#line 863 "riemann-grammar.y" /* yacc.c:1646  */
+#line 851 "modules/riemann/riemann-grammar.y" /* yacc.c:1646  */
+    { ((LogDestDriver *) last_driver)->throttle = (yyvsp[-1].num); }
+#line 3156 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 47:
+#line 853 "modules/riemann/riemann-grammar.y" /* yacc.c:1646  */
     {
             Plugin *p;
             gint context = LL_CONTEXT_INNER_DEST;
@@ -3176,41 +3174,41 @@ yyreduce:
               }
             log_driver_add_plugin(last_driver, (LogDriverPlugin *) value);
           }
-#line 3180 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 47:
-#line 939 "riemann-grammar.y" /* yacc.c:1646  */
-    { last_template_options->ts_format = cfg_ts_format_value((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 3186 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 48:
-#line 940 "riemann-grammar.y" /* yacc.c:1646  */
-    { last_template_options->frac_digits = (yyvsp[-1].num); }
-#line 3192 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
+#line 3178 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
     break;
 
   case 49:
-#line 941 "riemann-grammar.y" /* yacc.c:1646  */
-    { last_template_options->time_zone[LTZ_SEND] = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 3198 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
+#line 926 "modules/riemann/riemann-grammar.y" /* yacc.c:1646  */
+    { last_template_options->ts_format = cfg_ts_format_value((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
+#line 3184 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
     break;
 
   case 50:
-#line 942 "riemann-grammar.y" /* yacc.c:1646  */
-    { last_template_options->time_zone[LTZ_SEND] = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 3204 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
+#line 927 "modules/riemann/riemann-grammar.y" /* yacc.c:1646  */
+    { last_template_options->frac_digits = (yyvsp[-1].num); }
+#line 3190 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
     break;
 
   case 51:
-#line 943 "riemann-grammar.y" /* yacc.c:1646  */
-    { last_template_options->time_zone[LTZ_LOCAL] = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 3210 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
+#line 928 "modules/riemann/riemann-grammar.y" /* yacc.c:1646  */
+    { last_template_options->time_zone[LTZ_SEND] = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
+#line 3196 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
     break;
 
   case 52:
-#line 945 "riemann-grammar.y" /* yacc.c:1646  */
+#line 929 "modules/riemann/riemann-grammar.y" /* yacc.c:1646  */
+    { last_template_options->time_zone[LTZ_SEND] = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
+#line 3202 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 53:
+#line 930 "modules/riemann/riemann-grammar.y" /* yacc.c:1646  */
+    { last_template_options->time_zone[LTZ_LOCAL] = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
+#line 3208 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 54:
+#line 932 "modules/riemann/riemann-grammar.y" /* yacc.c:1646  */
     {
           gint on_error;
 
@@ -3219,96 +3217,96 @@ yyreduce:
 
           log_template_options_set_on_error(last_template_options, on_error);
         }
-#line 3223 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
+#line 3221 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 53:
-#line 981 "riemann-grammar.y" /* yacc.c:1646  */
+  case 55:
+#line 968 "modules/riemann/riemann-grammar.y" /* yacc.c:1646  */
     {
           value_pairs_add_pair(last_value_pairs, (yyvsp[-3].cptr), (yyvsp[-1].ptr));
           free((yyvsp[-3].cptr));
         }
-#line 3232 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
+#line 3230 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 54:
-#line 986 "riemann-grammar.y" /* yacc.c:1646  */
+  case 56:
+#line 973 "modules/riemann/riemann-grammar.y" /* yacc.c:1646  */
     {
           value_pairs_add_pair(last_value_pairs, (yyvsp[-2].cptr), (yyvsp[-1].ptr));
           free((yyvsp[-2].cptr));
         }
-#line 3241 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
+#line 3239 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 55:
-#line 991 "riemann-grammar.y" /* yacc.c:1646  */
+  case 57:
+#line 978 "modules/riemann/riemann-grammar.y" /* yacc.c:1646  */
     {
           last_vp_transset = value_pairs_transform_set_new((yyvsp[-2].cptr));
           value_pairs_add_glob_pattern(last_value_pairs, (yyvsp[-2].cptr), TRUE);
           free((yyvsp[-2].cptr));
         }
-#line 3251 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 56:
-#line 997 "riemann-grammar.y" /* yacc.c:1646  */
-    { value_pairs_add_transforms(last_value_pairs, last_vp_transset); }
-#line 3257 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
+#line 3249 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
     break;
 
   case 58:
-#line 998 "riemann-grammar.y" /* yacc.c:1646  */
-    { value_pairs_add_glob_patterns(last_value_pairs, (yyvsp[-1].ptr), TRUE); }
-#line 3263 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
+#line 984 "modules/riemann/riemann-grammar.y" /* yacc.c:1646  */
+    { value_pairs_add_transforms(last_value_pairs, last_vp_transset); }
+#line 3255 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 59:
-#line 1000 "riemann-grammar.y" /* yacc.c:1646  */
+  case 60:
+#line 985 "modules/riemann/riemann-grammar.y" /* yacc.c:1646  */
+    { value_pairs_add_glob_patterns(last_value_pairs, (yyvsp[-1].ptr), TRUE); }
+#line 3261 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 61:
+#line 987 "modules/riemann/riemann-grammar.y" /* yacc.c:1646  */
     {
           last_vp_transset = value_pairs_transform_set_new((yyvsp[0].cptr));
           free((yyvsp[0].cptr));
         }
-#line 3272 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
+#line 3270 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 60:
-#line 1004 "riemann-grammar.y" /* yacc.c:1646  */
+  case 62:
+#line 991 "modules/riemann/riemann-grammar.y" /* yacc.c:1646  */
     { value_pairs_add_transforms(last_value_pairs, last_vp_transset); }
-#line 3278 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 61:
-#line 1005 "riemann-grammar.y" /* yacc.c:1646  */
-    { value_pairs_add_glob_patterns(last_value_pairs, (yyvsp[-1].ptr), FALSE); }
-#line 3284 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
+#line 3276 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
     break;
 
   case 63:
-#line 1010 "riemann-grammar.y" /* yacc.c:1646  */
+#line 992 "modules/riemann/riemann-grammar.y" /* yacc.c:1646  */
+    { value_pairs_add_glob_patterns(last_value_pairs, (yyvsp[-1].ptr), FALSE); }
+#line 3282 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 65:
+#line 997 "modules/riemann/riemann-grammar.y" /* yacc.c:1646  */
     { value_pairs_add_scope(last_value_pairs, (yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 3290 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 67:
-#line 1020 "riemann-grammar.y" /* yacc.c:1646  */
-    { value_pairs_transform_set_add_func(last_vp_transset, value_pairs_new_transform_shift((yyvsp[-1].num))); }
-#line 3296 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 68:
-#line 1021 "riemann-grammar.y" /* yacc.c:1646  */
-    { value_pairs_transform_set_add_func(last_vp_transset, value_pairs_new_transform_add_prefix((yyvsp[-1].cptr))); free((yyvsp[-1].cptr)); }
-#line 3302 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
+#line 3288 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
     break;
 
   case 69:
-#line 1022 "riemann-grammar.y" /* yacc.c:1646  */
+#line 1007 "modules/riemann/riemann-grammar.y" /* yacc.c:1646  */
+    { value_pairs_transform_set_add_func(last_vp_transset, value_pairs_new_transform_shift((yyvsp[-1].num))); }
+#line 3294 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 70:
+#line 1008 "modules/riemann/riemann-grammar.y" /* yacc.c:1646  */
+    { value_pairs_transform_set_add_func(last_vp_transset, value_pairs_new_transform_add_prefix((yyvsp[-1].cptr))); free((yyvsp[-1].cptr)); }
+#line 3300 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 71:
+#line 1009 "modules/riemann/riemann-grammar.y" /* yacc.c:1646  */
     { value_pairs_transform_set_add_func(last_vp_transset, value_pairs_new_transform_replace_prefix((yyvsp[-2].cptr), (yyvsp[-1].cptr))); free((yyvsp[-2].cptr)); free((yyvsp[-1].cptr)); }
-#line 3308 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
+#line 3306 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
     break;
 
 
-#line 3312 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
+#line 3310 "modules/riemann/riemann-grammar.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -3543,5 +3541,5 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 1026 "riemann-grammar.y" /* yacc.c:1906  */
+#line 1013 "modules/riemann/riemann-grammar.y" /* yacc.c:1906  */
 

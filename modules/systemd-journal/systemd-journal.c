@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2014      BalaBit S.a.r.l., Luxembourg, Luxembourg
- * Copyright (c) 2012-2014 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2012-2014 Balabit
  * Copyright (c) 2012-2014 Viktor Juhasz <viktor.juhasz@balabit.com>
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -57,8 +56,7 @@ __init(LogPipe *s)
   log_pipe_append((LogPipe *)self->reader, &self->super.super.super);
   if (!log_pipe_init((LogPipe *)self->reader))
     {
-      msg_error("Error initializing journal_reader",
-                NULL);
+      msg_error("Error initializing journal_reader");
       log_pipe_unref((LogPipe *) self->reader);
       self->reader = NULL;
       return FALSE;

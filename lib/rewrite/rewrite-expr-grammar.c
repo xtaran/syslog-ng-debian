@@ -89,8 +89,8 @@
 
 /* In a future release of Bison, this section will be replaced
    by #include "y.tab.h".  */
-#ifndef YY_REWRITE_EXPR_Y_TAB_H_INCLUDED
-# define YY_REWRITE_EXPR_Y_TAB_H_INCLUDED
+#ifndef YY_REWRITE_EXPR_LIB_REWRITE_REWRITE_EXPR_GRAMMAR_H_INCLUDED
+# define YY_REWRITE_EXPR_LIB_REWRITE_REWRITE_EXPR_GRAMMAR_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -99,7 +99,7 @@
 extern int rewrite_expr_debug;
 #endif
 /* "%code requires" blocks.  */
-#line 25 "rewrite-expr-grammar.y" /* yacc.c:355  */
+#line 25 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:355  */
 
 
 #include "rewrite/rewrite-expr-parser.h"
@@ -142,23 +142,6 @@ extern int rewrite_expr_debug;
     KW_CHANNEL = 10009,
     KW_INTERNAL = 10010,
     KW_FILE = 10011,
-    KW_SQL = 10030,
-    KW_TYPE = 10031,
-    KW_COLUMNS = 10032,
-    KW_INDEXES = 10033,
-    KW_VALUES = 10034,
-    KW_PASSWORD = 10035,
-    KW_DATABASE = 10036,
-    KW_USERNAME = 10037,
-    KW_TABLE = 10038,
-    KW_ENCODING = 10039,
-    KW_SESSION_STATEMENTS = 10040,
-    KW_DELIMITERS = 10050,
-    KW_QUOTES = 10051,
-    KW_QUOTE_PAIRS = 10052,
-    KW_NULL = 10053,
-    KW_CHARS = 10054,
-    KW_STRINGS = 10055,
     KW_SYSLOG = 10060,
     KW_MARK_FREQ = 10071,
     KW_STATS_FREQ = 10072,
@@ -171,6 +154,8 @@ extern int rewrite_expr_debug;
     KW_FILE_TEMPLATE = 10079,
     KW_PROTO_TEMPLATE = 10080,
     KW_MARK_MODE = 10081,
+    KW_ENCODING = 10082,
+    KW_TYPE = 10083,
     KW_CHAIN_HOSTNAMES = 10090,
     KW_NORMALIZE_HOSTNAMES = 10091,
     KW_KEEP_HOSTNAME = 10092,
@@ -200,6 +185,7 @@ extern int rewrite_expr_debug;
     KW_THROTTLE = 10170,
     KW_THREADED = 10171,
     KW_PASS_UNIX_CREDENTIALS = 10231,
+    KW_PERSIST_NAME = 10302,
     KW_FLAGS = 10190,
     KW_PAD_SIZE = 10200,
     KW_TIME_ZONE = 10201,
@@ -234,10 +220,7 @@ extern int rewrite_expr_debug;
     KW_NETMASK = 10355,
     KW_TAGS = 10356,
     KW_NETMASK6 = 10357,
-    KW_VALUE = 10361,
     KW_REWRITE = 10370,
-    KW_SET = 10371,
-    KW_SUBST = 10372,
     KW_YES = 10380,
     KW_NO = 10381,
     KW_IFDEF = 10410,
@@ -253,7 +236,6 @@ extern int rewrite_expr_debug;
     LL_EOL = 10428,
     LL_ERROR = 10429,
     KW_VALUE_PAIRS = 10500,
-    KW_SELECT = 10501,
     KW_EXCLUDE = 10502,
     KW_PAIR = 10503,
     KW_KEY = 10504,
@@ -267,7 +249,12 @@ extern int rewrite_expr_debug;
     KW_CONDITION = 10513,
     KW_SET_TAG = 10514,
     KW_CLEAR_TAG = 10515,
-    KW_GROUP_SET = 10516
+    KW_GROUP_SET = 10516,
+    KW_SET = 10517,
+    KW_UNSET = 10518,
+    KW_SUBST = 10519,
+    KW_VALUE = 10520,
+    KW_VALUES = 10521
   };
 #endif
 /* Tokens.  */
@@ -301,23 +288,6 @@ extern int rewrite_expr_debug;
 #define KW_CHANNEL 10009
 #define KW_INTERNAL 10010
 #define KW_FILE 10011
-#define KW_SQL 10030
-#define KW_TYPE 10031
-#define KW_COLUMNS 10032
-#define KW_INDEXES 10033
-#define KW_VALUES 10034
-#define KW_PASSWORD 10035
-#define KW_DATABASE 10036
-#define KW_USERNAME 10037
-#define KW_TABLE 10038
-#define KW_ENCODING 10039
-#define KW_SESSION_STATEMENTS 10040
-#define KW_DELIMITERS 10050
-#define KW_QUOTES 10051
-#define KW_QUOTE_PAIRS 10052
-#define KW_NULL 10053
-#define KW_CHARS 10054
-#define KW_STRINGS 10055
 #define KW_SYSLOG 10060
 #define KW_MARK_FREQ 10071
 #define KW_STATS_FREQ 10072
@@ -330,6 +300,8 @@ extern int rewrite_expr_debug;
 #define KW_FILE_TEMPLATE 10079
 #define KW_PROTO_TEMPLATE 10080
 #define KW_MARK_MODE 10081
+#define KW_ENCODING 10082
+#define KW_TYPE 10083
 #define KW_CHAIN_HOSTNAMES 10090
 #define KW_NORMALIZE_HOSTNAMES 10091
 #define KW_KEEP_HOSTNAME 10092
@@ -359,6 +331,7 @@ extern int rewrite_expr_debug;
 #define KW_THROTTLE 10170
 #define KW_THREADED 10171
 #define KW_PASS_UNIX_CREDENTIALS 10231
+#define KW_PERSIST_NAME 10302
 #define KW_FLAGS 10190
 #define KW_PAD_SIZE 10200
 #define KW_TIME_ZONE 10201
@@ -393,10 +366,7 @@ extern int rewrite_expr_debug;
 #define KW_NETMASK 10355
 #define KW_TAGS 10356
 #define KW_NETMASK6 10357
-#define KW_VALUE 10361
 #define KW_REWRITE 10370
-#define KW_SET 10371
-#define KW_SUBST 10372
 #define KW_YES 10380
 #define KW_NO 10381
 #define KW_IFDEF 10410
@@ -412,7 +382,6 @@ extern int rewrite_expr_debug;
 #define LL_EOL 10428
 #define LL_ERROR 10429
 #define KW_VALUE_PAIRS 10500
-#define KW_SELECT 10501
 #define KW_EXCLUDE 10502
 #define KW_PAIR 10503
 #define KW_KEY 10504
@@ -427,6 +396,11 @@ extern int rewrite_expr_debug;
 #define KW_SET_TAG 10514
 #define KW_CLEAR_TAG 10515
 #define KW_GROUP_SET 10516
+#define KW_SET 10517
+#define KW_UNSET 10518
+#define KW_SUBST 10519
+#define KW_VALUE 10520
+#define KW_VALUES 10521
 
 /* Value type.  */
 
@@ -448,18 +422,19 @@ struct YYLTYPE
 
 int rewrite_expr_parse (CfgLexer *lexer, LogExprNode **result, gpointer arg);
 
-#endif /* !YY_REWRITE_EXPR_Y_TAB_H_INCLUDED  */
+#endif /* !YY_REWRITE_EXPR_LIB_REWRITE_REWRITE_EXPR_GRAMMAR_H_INCLUDED  */
 
 /* Copy the second part of user declarations.  */
 
-#line 456 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:358  */
+#line 430 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:358  */
 /* Unqualified %code blocks.  */
-#line 31 "rewrite-expr-grammar.y" /* yacc.c:359  */
+#line 31 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:359  */
 
 
 #include "rewrite/rewrite-expr-grammar.h"
 #include "rewrite/rewrite-set-tag.h"
 #include "rewrite/rewrite-set.h"
+#include "rewrite/rewrite-unset.h"
 #include "rewrite/rewrite-subst.h"
 #include "rewrite/rewrite-groupset.h"
 #include "filter/filter-expr.h"
@@ -472,7 +447,7 @@ int rewrite_expr_parse (CfgLexer *lexer, LogExprNode **result, gpointer arg);
 
 LogRewrite *last_rewrite;
 
-#line 67 "rewrite-expr-grammar.y" /* yacc.c:359  */
+#line 68 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:359  */
 
 
 # define YYLLOC_DEFAULT(Current, Rhs, N)                                \
@@ -533,7 +508,7 @@ LogRewrite *last_rewrite;
 
 
 
-#line 537 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:359  */
+#line 512 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:359  */
 
 #ifdef short
 # undef short
@@ -775,23 +750,23 @@ union yyalloc
 #endif /* !YYCOPY_NEEDED */
 
 /* YYFINAL -- State number of the termination state.  */
-#define YYFINAL  18
+#define YYFINAL  20
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   199
+#define YYLAST   236
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  165
+#define YYNTOKENS  152
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  57
+#define YYNNTS  61
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  110
+#define YYNRULES  122
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  232
+#define YYNSTATES  268
 
 /* YYTRANSLATE[YYX] -- Symbol number corresponding to YYX as returned
    by yylex, with out-of-bounds checking.  */
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   10516
+#define YYMAXUTOK   10521
 
 #define YYTRANSLATE(YYX)                                                \
   ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
@@ -804,15 +779,15 @@ static const yytype_uint8 yytranslate[] =
       12,    13,    14,    15,    16,    17,    18,    19,    20,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     159,   160,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,   164,   163,
+     146,   147,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,   151,   150,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,   161,     2,   162,     2,     2,     2,     2,
+       2,     2,     2,   148,     2,   149,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -1803,73 +1778,75 @@ static const yytype_uint8 yytranslate[] =
       21,    22,    23,    24,    25,    26,    27,    28,    29,    30,
       31,    32,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      33,    34,    35,    36,    37,    38,    39,    40,    41,    42,
-      43,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      44,    45,    46,    47,    48,    49,     2,     2,     2,     2,
-      50,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,    51,    52,    53,    54,    55,    56,    57,    58,    59,
-      60,    61,     2,     2,     2,     2,     2,     2,     2,     2,
-      62,    63,    64,    65,    66,     2,     2,     2,     2,     2,
-      67,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      68,    69,    70,     2,     2,     2,     2,     2,     2,     2,
-      71,    72,     2,     2,     2,     2,     2,     2,     2,     2,
-      73,    74,    75,     2,     2,     2,     2,     2,     2,     2,
-      76,    77,    78,     2,     2,     2,     2,     2,     2,     2,
-      79,    80,    81,     2,     2,     2,     2,     2,     2,     2,
-      82,     2,    83,    84,    85,    86,    87,     2,     2,     2,
-      88,    89,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      91,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      92,    93,    94,    95,    96,    97,     2,     2,     2,     2,
-      98,    99,   100,     2,     2,     2,     2,     2,     2,     2,
-     101,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     102,    90,     2,     2,     2,     2,     2,     2,     2,     2,
-     103,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     104,   105,   106,     2,     2,     2,     2,     2,     2,     2,
-     107,   108,   109,     2,     2,     2,     2,     2,     2,     2,
-     110,   111,   112,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     113,   114,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,   115,     2,     2,     2,     2,     2,     2,
+      33,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,    34,    35,    36,    37,    38,    39,    40,    41,    42,
+      43,    44,    45,    46,     2,     2,     2,     2,     2,     2,
+      47,    48,    49,    50,    51,     2,     2,     2,     2,     2,
+      52,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+      53,    54,    55,     2,     2,     2,     2,     2,     2,     2,
+      56,    57,     2,     2,     2,     2,     2,     2,     2,     2,
+      58,    59,    60,     2,     2,     2,     2,     2,     2,     2,
+      61,    62,    63,     2,     2,     2,     2,     2,     2,     2,
+      64,    65,    66,     2,     2,     2,     2,     2,     2,     2,
+      67,     2,    68,    69,    70,    71,    72,     2,     2,     2,
+      73,    74,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     116,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     117,   118,   119,   120,   121,   122,   123,   124,     2,     2,
-       2,   125,     2,     2,     2,     2,     2,     2,     2,     2,
-     126,   127,   128,     2,     2,     2,     2,     2,     2,     2,
-     129,   130,     2,     2,     2,     2,     2,     2,     2,     2,
+      77,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+      78,    79,    80,    81,    82,    83,     2,     2,     2,     2,
+      84,    85,    86,     2,     2,     2,     2,     2,     2,     2,
+      87,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+      88,    75,     2,     2,     2,     2,     2,     2,     2,     2,
+      89,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+      90,    91,    92,     2,     2,     2,     2,     2,     2,     2,
+      93,    94,    95,     2,     2,     2,     2,     2,     2,     2,
+      96,    97,    98,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     131,   132,     2,     2,     2,     2,     2,     2,     2,     2,
-     133,   134,   135,   136,   137,   138,   139,   140,   141,   142,
+      99,   100,    76,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,   101,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     102,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     103,   104,   105,   106,   107,   108,   109,   110,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     111,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     112,   113,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     114,   115,     2,     2,     2,     2,     2,     2,     2,     2,
+     116,   117,   118,   119,   120,   121,   122,   123,   124,   125,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     143,   144,   145,   146,   147,   148,   149,   150,   151,   152,
-     153,   154,     2,   155,   156,   157,   158
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     126,     2,   127,   128,   129,   130,   131,   132,   133,   134,
+     135,   136,     2,   137,   138,   139,   140,   141,   142,   143,
+     144,   145
 };
 
 #if YYDEBUG
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   393,   393,   397,   398,   399,   403,   415,   414,   427,
-     426,   432,   433,   435,   434,   441,   460,   461,   465,   469,
-     473,   474,   478,   478,   479,   483,   484,   488,   503,   508,
-     507,   520,   522,   520,   529,   530,   531,   535,   536,   540,
-     559,   563,   563,   571,   572,   576,   581,   592,   602,   611,
-     613,   611,   622,   623,   624,   628,   632,   651,   652,   656,
-     657,   658,   659,   660,   661,   662,   663,   664,   665,   666,
-     670,   682,   687,   688,   692,   693,   697,   701,   702,   706,
-     707,   738,   739,   743,   744,   745,   749,   750,   760,   764,
-     765,   769,   770,   811,   812,   813,   814,   815,   816,   817,
-     818,   819,   819,   832,   833,   834,   835,   979,   980,   984,
-     985
+       0,   379,   379,   383,   384,   385,   389,   401,   400,   413,
+     412,   420,   419,   424,   425,   427,   426,   433,   452,   453,
+     457,   461,   465,   466,   470,   470,   471,   475,   476,   480,
+     481,   490,   504,   509,   508,   521,   523,   521,   530,   531,
+     532,   536,   537,   541,   560,   564,   564,   572,   573,   577,
+     582,   593,   603,   612,   614,   612,   623,   624,   625,   629,
+     633,   652,   653,   657,   658,   659,   660,   661,   662,   663,
+     664,   665,   666,   667,   671,   683,   688,   689,   693,   694,
+     698,   702,   703,   707,   708,   739,   740,   744,   745,   746,
+     750,   751,   761,   765,   766,   770,   771,   812,   813,   814,
+     815,   816,   817,   818,   819,   820,   820,   821,   840,   841,
+     842,   843,   883,   971,   972,   973,   974,   975,   976,   988,
+     989,   993,   994
 };
 #endif
 
@@ -1887,24 +1864,21 @@ static const char *const yytname[] =
   "LL_CONTEXT_INNER_SRC", "LL_CONTEXT_CLIENT_PROTO",
   "LL_CONTEXT_SERVER_PROTO", "KW_SOURCE", "KW_FILTER", "KW_PARSER",
   "KW_DESTINATION", "KW_LOG", "KW_OPTIONS", "KW_INCLUDE", "KW_BLOCK",
-  "KW_JUNCTION", "KW_CHANNEL", "KW_INTERNAL", "KW_FILE", "KW_SQL",
-  "KW_TYPE", "KW_COLUMNS", "KW_INDEXES", "KW_VALUES", "KW_PASSWORD",
-  "KW_DATABASE", "KW_USERNAME", "KW_TABLE", "KW_ENCODING",
-  "KW_SESSION_STATEMENTS", "KW_DELIMITERS", "KW_QUOTES", "KW_QUOTE_PAIRS",
-  "KW_NULL", "KW_CHARS", "KW_STRINGS", "KW_SYSLOG", "KW_MARK_FREQ",
-  "KW_STATS_FREQ", "KW_STATS_LEVEL", "KW_STATS_LIFETIME", "KW_FLUSH_LINES",
-  "KW_SUPPRESS", "KW_FLUSH_TIMEOUT", "KW_LOG_MSG_SIZE", "KW_FILE_TEMPLATE",
-  "KW_PROTO_TEMPLATE", "KW_MARK_MODE", "KW_CHAIN_HOSTNAMES",
-  "KW_NORMALIZE_HOSTNAMES", "KW_KEEP_HOSTNAME", "KW_CHECK_HOSTNAME",
-  "KW_BAD_HOSTNAME", "KW_KEEP_TIMESTAMP", "KW_USE_DNS", "KW_USE_FQDN",
-  "KW_CUSTOM_DOMAIN", "KW_DNS_CACHE", "KW_DNS_CACHE_SIZE",
-  "KW_DNS_CACHE_EXPIRE", "KW_DNS_CACHE_EXPIRE_FAILED",
-  "KW_DNS_CACHE_HOSTS", "KW_PERSIST_ONLY", "KW_USE_RCPTID",
-  "KW_USE_UNIQID", "KW_TZ_CONVERT", "KW_TS_FORMAT", "KW_FRAC_DIGITS",
-  "KW_LOG_FIFO_SIZE", "KW_LOG_FETCH_LIMIT", "KW_LOG_IW_SIZE",
-  "KW_LOG_PREFIX", "KW_PROGRAM_OVERRIDE", "KW_HOST_OVERRIDE",
-  "KW_THROTTLE", "KW_THREADED", "KW_PASS_UNIX_CREDENTIALS", "KW_FLAGS",
-  "KW_PAD_SIZE", "KW_TIME_ZONE", "KW_RECV_TIME_ZONE", "KW_SEND_TIME_ZONE",
+  "KW_JUNCTION", "KW_CHANNEL", "KW_INTERNAL", "KW_FILE", "KW_SYSLOG",
+  "KW_MARK_FREQ", "KW_STATS_FREQ", "KW_STATS_LEVEL", "KW_STATS_LIFETIME",
+  "KW_FLUSH_LINES", "KW_SUPPRESS", "KW_FLUSH_TIMEOUT", "KW_LOG_MSG_SIZE",
+  "KW_FILE_TEMPLATE", "KW_PROTO_TEMPLATE", "KW_MARK_MODE", "KW_ENCODING",
+  "KW_TYPE", "KW_CHAIN_HOSTNAMES", "KW_NORMALIZE_HOSTNAMES",
+  "KW_KEEP_HOSTNAME", "KW_CHECK_HOSTNAME", "KW_BAD_HOSTNAME",
+  "KW_KEEP_TIMESTAMP", "KW_USE_DNS", "KW_USE_FQDN", "KW_CUSTOM_DOMAIN",
+  "KW_DNS_CACHE", "KW_DNS_CACHE_SIZE", "KW_DNS_CACHE_EXPIRE",
+  "KW_DNS_CACHE_EXPIRE_FAILED", "KW_DNS_CACHE_HOSTS", "KW_PERSIST_ONLY",
+  "KW_USE_RCPTID", "KW_USE_UNIQID", "KW_TZ_CONVERT", "KW_TS_FORMAT",
+  "KW_FRAC_DIGITS", "KW_LOG_FIFO_SIZE", "KW_LOG_FETCH_LIMIT",
+  "KW_LOG_IW_SIZE", "KW_LOG_PREFIX", "KW_PROGRAM_OVERRIDE",
+  "KW_HOST_OVERRIDE", "KW_THROTTLE", "KW_THREADED",
+  "KW_PASS_UNIX_CREDENTIALS", "KW_PERSIST_NAME", "KW_FLAGS", "KW_PAD_SIZE",
+  "KW_TIME_ZONE", "KW_RECV_TIME_ZONE", "KW_SEND_TIME_ZONE",
   "KW_LOCAL_TIME_ZONE", "KW_FORMAT", "KW_TIME_REOPEN", "KW_TIME_REAP",
   "KW_TIME_SLEEP", "KW_TMPL_ESCAPE", "KW_OPTIONAL", "KW_CREATE_DIRS",
   "KW_OWNER", "KW_GROUP", "KW_PERM", "KW_DIR_OWNER", "KW_DIR_GROUP",
@@ -1912,27 +1886,28 @@ static const char *const yytname[] =
   "KW_TEMPLATE_FUNCTION", "KW_DEFAULT_FACILITY", "KW_DEFAULT_LEVEL",
   "KW_PORT", "KW_USE_TIME_RECVD", "KW_FACILITY", "KW_LEVEL", "KW_HOST",
   "KW_MATCH", "KW_MESSAGE", "KW_NETMASK", "KW_TAGS", "KW_NETMASK6",
-  "KW_VALUE", "KW_REWRITE", "KW_SET", "KW_SUBST", "KW_YES", "KW_NO",
-  "KW_IFDEF", "KW_ENDIF", "LL_DOTDOT", "LL_IDENTIFIER", "LL_NUMBER",
-  "LL_FLOAT", "LL_STRING", "LL_TOKEN", "LL_BLOCK", "LL_PRAGMA", "LL_EOL",
-  "LL_ERROR", "KW_VALUE_PAIRS", "KW_SELECT", "KW_EXCLUDE", "KW_PAIR",
-  "KW_KEY", "KW_SCOPE", "KW_SHIFT", "KW_REKEY", "KW_ADD_PREFIX",
-  "KW_REPLACE_PREFIX", "KW_ON_ERROR", "KW_RETRIES", "KW_CONDITION",
-  "KW_SET_TAG", "KW_CLEAR_TAG", "KW_GROUP_SET", "'('", "')'", "'{'", "'}'",
-  "';'", "':'", "$accept", "start", "rewrite_expr_list",
-  "rewrite_template_content", "rewrite_expr", "$@1", "$@2", "$@3",
+  "KW_REWRITE", "KW_YES", "KW_NO", "KW_IFDEF", "KW_ENDIF", "LL_DOTDOT",
+  "LL_IDENTIFIER", "LL_NUMBER", "LL_FLOAT", "LL_STRING", "LL_TOKEN",
+  "LL_BLOCK", "LL_PRAGMA", "LL_EOL", "LL_ERROR", "KW_VALUE_PAIRS",
+  "KW_EXCLUDE", "KW_PAIR", "KW_KEY", "KW_SCOPE", "KW_SHIFT", "KW_REKEY",
+  "KW_ADD_PREFIX", "KW_REPLACE_PREFIX", "KW_ON_ERROR", "KW_RETRIES",
+  "KW_CONDITION", "KW_SET_TAG", "KW_CLEAR_TAG", "KW_GROUP_SET", "KW_SET",
+  "KW_UNSET", "KW_SUBST", "KW_VALUE", "KW_VALUES", "'('", "')'", "'{'",
+  "'}'", "';'", "':'", "$accept", "start", "rewrite_expr_list",
+  "rewrite_template_content", "rewrite_expr", "$@1", "$@2", "$@3", "$@4",
   "rewrite_groupset_opts", "rewrite_groupset_opt", "rewrite_subst_opts",
-  "rewrite_subst_opt", "$@4", "rewrite_expr_opts", "rewrite_expr_opt",
-  "rewrite_condition_opt", "$@5", "source_content", "$@6", "$@7",
-  "source_items", "source_item", "source_plugin", "source_afinter",
-  "source_afinter_params", "$@8", "source_afinter_options",
-  "source_afinter_option", "filter_content", "parser_content",
-  "rewrite_content", "dest_content", "$@9", "$@10", "dest_items",
-  "dest_item", "dest_plugin", "log_items", "log_item", "log_junction",
-  "log_last_junction", "log_forks", "log_fork", "log_content", "log_flags",
-  "log_flags_items", "string", "yesno", "dnsmode", "string_list",
-  "string_list_build", "semicolons", "source_option", "$@12",
-  "host_resolve_option", "matcher_option", "matcher_flags", YY_NULLPTR
+  "rewrite_subst_opt", "$@5", "rewrite_set_opts", "rewrite_set_opt",
+  "rewrite_expr_opt", "rewrite_condition_opt", "$@6", "source_content",
+  "$@7", "$@8", "source_items", "source_item", "source_plugin",
+  "source_afinter", "source_afinter_params", "$@9",
+  "source_afinter_options", "source_afinter_option", "filter_content",
+  "parser_content", "rewrite_content", "dest_content", "$@10", "$@11",
+  "dest_items", "dest_item", "dest_plugin", "log_items", "log_item",
+  "log_junction", "log_last_junction", "log_forks", "log_fork",
+  "log_content", "log_flags", "log_flags_items", "string", "yesno",
+  "dnsmode", "string_list", "string_list_build", "semicolons",
+  "source_option", "$@13", "host_resolve_option", "driver_option",
+  "template_option", "matcher_option", "matcher_flags", YY_NULLPTR
 };
 #endif
 
@@ -1944,29 +1919,28 @@ static const yytype_uint16 yytoknum[] =
        0,   256, 10512,     1,     2,     3,     4,     5,     6,     7,
        8,     9,    10,    11,    12,    13,    14,    15,    16,    17,
       18, 10000, 10001, 10002, 10003, 10004, 10005, 10006, 10007, 10008,
-   10009, 10010, 10011, 10030, 10031, 10032, 10033, 10034, 10035, 10036,
-   10037, 10038, 10039, 10040, 10050, 10051, 10052, 10053, 10054, 10055,
-   10060, 10071, 10072, 10073, 10074, 10075, 10076, 10077, 10078, 10079,
-   10080, 10081, 10090, 10091, 10092, 10093, 10094, 10100, 10110, 10111,
-   10112, 10120, 10121, 10130, 10131, 10132, 10140, 10141, 10142, 10150,
-   10151, 10152, 10160, 10162, 10163, 10164, 10165, 10166, 10170, 10171,
-   10231, 10190, 10200, 10201, 10202, 10203, 10204, 10205, 10210, 10211,
-   10212, 10220, 10230, 10240, 10250, 10251, 10252, 10260, 10261, 10262,
-   10270, 10271, 10272, 10300, 10301, 10323, 10340, 10350, 10351, 10352,
-   10353, 10354, 10355, 10356, 10357, 10361, 10370, 10371, 10372, 10380,
-   10381, 10410, 10411, 10420, 10421, 10422, 10423, 10424, 10425, 10426,
-   10427, 10428, 10429, 10500, 10501, 10502, 10503, 10504, 10505, 10506,
-   10507, 10508, 10509, 10510, 10511, 10513, 10514, 10515, 10516,    40,
-      41,   123,   125,    59,    58
+   10009, 10010, 10011, 10060, 10071, 10072, 10073, 10074, 10075, 10076,
+   10077, 10078, 10079, 10080, 10081, 10082, 10083, 10090, 10091, 10092,
+   10093, 10094, 10100, 10110, 10111, 10112, 10120, 10121, 10130, 10131,
+   10132, 10140, 10141, 10142, 10150, 10151, 10152, 10160, 10162, 10163,
+   10164, 10165, 10166, 10170, 10171, 10231, 10302, 10190, 10200, 10201,
+   10202, 10203, 10204, 10205, 10210, 10211, 10212, 10220, 10230, 10240,
+   10250, 10251, 10252, 10260, 10261, 10262, 10270, 10271, 10272, 10300,
+   10301, 10323, 10340, 10350, 10351, 10352, 10353, 10354, 10355, 10356,
+   10357, 10370, 10380, 10381, 10410, 10411, 10420, 10421, 10422, 10423,
+   10424, 10425, 10426, 10427, 10428, 10429, 10500, 10502, 10503, 10504,
+   10505, 10506, 10507, 10508, 10509, 10510, 10511, 10513, 10514, 10515,
+   10516, 10517, 10518, 10519, 10520, 10521,    40,    41,   123,   125,
+      59,    58
 };
 # endif
 
-#define YYPACT_NINF -129
+#define YYPACT_NINF -193
 
 #define yypact_value_is_default(Yystate) \
-  (!!((Yystate) == (-129)))
+  (!!((Yystate) == (-193)))
 
-#define YYTABLE_NINF -45
+#define YYTABLE_NINF -49
 
 #define yytable_value_is_error(Yytable_value) \
   0
@@ -1975,30 +1949,33 @@ static const yytype_uint16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int16 yypact[] =
 {
-     -21,  -128,  -118,  -114,  -129,  -101,   -84,   -69,    72,    19,
-     -75,   -75,    19,   -81,   -81,   -81,   -81,   -81,  -129,   -57,
-     -52,  -129,  -129,   -75,   -75,   -21,   -21,   -67,  -129,  -129,
-    -129,  -129,   -81,   -50,   -48,  -129,     0,     0,    19,  -129,
-    -129,  -129,  -129,  -108,  -129,  -129,  -129,   -34,   -97,   -83,
-     -63,   -62,   -56,    19,   -75,  -129,   -54,   -47,  -129,   -43,
-     -42,   -41,  -108,  -129,  -121,   -37,   -36,   -34,  -129,   -81,
-    -129,   -81,  -129,   -81,  -129,   -81,  -129,   -81,  -129,    34,
-       0,  -129,  -129,   -81,  -129,  -129,  -129,   -32,  -121,   -18,
-    -129,   -81,  -129,  -129,   -31,   -29,   -20,   -22,   -23,   -19,
-     -17,   -13,   -12,   -16,   -11,    -9,    -8,  -129,  -129,    -6,
-      -5,  -129,  -129,    -3,    -2,  -129,   -81,    -1,  -129,  -129,
-    -129,     1,  -129,  -129,   -75,  -129,  -129,   -75,  -129,  -129,
-    -129,  -129,  -129,  -129,  -129,  -129,   -75,  -129,   -75,  -129,
-    -129,   -81,  -129,  -129,   -81,   -81,  -129,  -129,  -129,  -129,
-     -20,   -20,  -129,   -16,   -16,     3,   -81,     4,   -81,     5,
-       6,   -49,  -129,  -129,  -129,  -129,   -75,  -129,  -129,  -129,
-    -129,  -129,     2,     8,     9,    10,    11,    12,    13,    15,
-    -129,   -49,  -129,    18,  -129,   -87,   -87,   -87,    17,   -81,
-     -81,   -81,   -81,  -129,    20,    21,    22,    23,  -129,  -129,
-    -129,  -129,    24,    25,    27,    28,    29,    30,    31,    32,
-     -87,   -64,   -87,   -87,  -129,  -129,  -129,  -129,  -129,  -129,
-    -129,  -129,    33,  -129,  -129,    35,    36,    37,  -129,  -129,
-    -129,  -129
+     -25,   -85,  -193,   -62,   -57,   -41,   -39,  -193,   -37,    94,
+      50,   -29,   -29,    50,   -24,   -24,   -24,   -24,   -21,   -24,
+    -193,   -18,   -17,  -193,  -193,   -29,   -29,   -25,   -25,   -15,
+    -193,  -193,   -36,   -12,  -193,  -193,  -193,   -34,   -24,    -3,
+      -3,    50,  -193,  -193,  -193,  -193,  -193,  -193,  -107,   -34,
+      -9,    -8,    -6,    -5,    -4,    -2,    -1,     0,   -11,   -34,
+    -193,  -193,  -193,  -193,   -97,   -70,   -49,   -46,   -42,    50,
+     -29,  -193,     2,     3,  -193,     7,     1,  -107,  -193,     9,
+     -24,    21,   -24,   -24,   -24,   -24,  -193,   -24,  -193,  -193,
+    -104,   -24,  -193,   -24,  -193,   -24,  -193,   -24,  -193,   -24,
+    -193,    66,    -3,  -193,  -193,   -24,  -193,  -193,  -193,    10,
+      11,    15,    18,    19,    20,    22,    23,    24,  -104,   -33,
+    -193,    25,     5,   -22,    27,     6,    29,    28,    31,    30,
+     -19,    33,    32,    36,  -193,  -193,   -24,    37,  -193,  -193,
+    -193,  -193,  -193,  -193,  -193,  -193,  -193,  -193,  -193,    39,
+      40,  -193,  -193,  -193,    42,  -193,  -193,   -29,  -193,  -193,
+     -29,  -193,  -193,  -193,  -193,  -193,  -193,  -193,  -193,   -29,
+    -193,   -29,  -193,  -193,   -24,  -193,  -193,   -24,   -24,  -193,
+    -193,   -22,   -22,  -193,   -19,   -19,    43,   -24,    44,   -24,
+      45,    46,   -35,  -193,  -193,  -193,  -193,   -29,  -193,  -193,
+    -193,  -193,  -193,    48,    49,    51,    52,    53,    54,    55,
+      56,    57,  -193,   -35,  -193,    34,  -193,  -193,   -51,   -51,
+     -51,    65,   -24,   -24,   -24,   -24,   -24,  -193,    58,    59,
+      60,    61,  -193,  -193,  -193,  -193,    67,    68,    69,    70,
+      71,    72,    73,    74,    75,   -51,   -54,   -51,   -51,  -193,
+    -193,  -193,  -193,  -193,  -193,  -193,  -193,  -193,    76,  -193,
+    -193,    77,    78,    79,  -193,  -193,  -193,  -193
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -2006,52 +1983,57 @@ static const yytype_int16 yypact[] =
      means the default is an error.  */
 static const yytype_uint8 yydefact[] =
 {
-       5,     0,     0,     0,    15,     0,     0,     0,     0,    73,
-       0,     0,    73,     0,     0,     0,     0,     0,     1,     0,
-       0,     2,    71,     0,    91,     5,     5,     0,    81,    82,
-       9,     6,     0,     0,     0,    13,    58,    58,    73,    92,
-       3,     4,    70,    26,     7,    11,    12,    17,     0,     0,
-       0,     0,     0,    73,     0,    69,     0,     0,    72,     0,
-       0,     0,    26,    28,    22,     0,     0,    17,    19,     0,
-      31,     0,    46,     0,    47,     0,    49,     0,    48,    78,
-      58,    74,    75,     0,    29,    10,    25,     0,    22,     0,
-      24,    90,    14,    16,     0,     0,    36,     0,     0,     0,
-       0,     0,     0,    54,     0,     0,     0,    76,    57,     0,
-       0,     8,    20,     0,     0,    23,    90,     0,    88,    59,
-      60,     0,    39,    32,     0,    38,    37,     0,    61,    62,
-      63,    64,    67,    68,    56,    50,     0,    55,     0,    65,
-      66,    80,    27,    30,     0,   110,    89,    18,    41,    33,
-      36,    36,    51,    54,    54,     0,    80,     0,   110,     0,
-       0,   101,    34,    35,    52,    53,     0,    79,   107,   109,
-     108,    40,     0,     0,     0,     0,     0,     0,     0,     0,
-      42,   101,    45,     0,    77,     0,     0,     0,     0,     0,
-       0,     0,    90,    43,     0,     0,     0,     0,   102,    83,
-      84,    85,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,    94,    95,    99,    93,    98,    96,
-      97,   100,     0,    87,    86,     0,     0,     0,   106,   104,
-     103,   105
+       5,     0,    17,     0,     0,     0,     0,    11,     0,     0,
+      77,     0,     0,    77,     0,     0,     0,     0,     0,     0,
+       1,     0,     0,     2,    75,     0,    95,     5,     5,     0,
+      85,    86,     0,     0,    15,     6,     9,    28,     0,    62,
+      62,    77,    96,     3,     4,    74,    13,    14,    19,    28,
+       0,     0,     0,     0,     0,     0,     0,     0,     0,    28,
+      29,    32,    30,     7,     0,     0,     0,     0,     0,    77,
+       0,    73,     0,     0,    76,     0,     0,    19,    21,     0,
+       0,     0,     0,     0,     0,     0,    33,     0,    12,    27,
+      24,     0,    35,     0,    50,     0,    51,     0,    53,     0,
+      52,    82,    62,    78,    79,    94,    16,    18,    10,     0,
+       0,     0,     0,     0,     0,     0,     0,     0,    24,     0,
+      26,     0,     0,    40,     0,     0,     0,     0,     0,     0,
+      58,     0,     0,     0,    80,    61,    94,     0,    92,   113,
+     114,   115,   116,   117,   118,    34,    31,     8,    22,     0,
+       0,    25,    63,    64,     0,    43,    36,     0,    42,    41,
+       0,    65,    66,    67,    68,    71,    72,    60,    54,     0,
+      59,     0,    69,    70,    84,    93,    20,     0,   122,    45,
+      37,    40,    40,    55,    58,    58,     0,    84,     0,   122,
+       0,     0,   105,    38,    39,    56,    57,     0,    83,   119,
+     121,   120,    44,     0,     0,     0,     0,     0,     0,     0,
+       0,     0,    46,   105,    49,     0,   107,    81,     0,     0,
+       0,     0,     0,     0,     0,     0,    94,    47,     0,     0,
+       0,     0,   106,    87,    88,    89,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,     0,     0,    98,
+      99,   103,    97,   102,   100,   101,   112,   104,     0,    91,
+      90,     0,     0,     0,   111,   109,   108,   110
 };
 
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int16 yypgoto[] =
 {
-    -129,  -129,    26,    14,  -129,  -129,  -129,  -129,    73,  -129,
-      55,  -129,  -129,    84,   -58,    -7,  -129,  -129,  -129,  -129,
-     -66,  -129,  -129,  -129,  -129,  -129,   -33,  -129,  -129,  -129,
-    -129,  -129,  -129,  -129,   -53,  -129,  -129,    78,  -129,   -10,
-     120,    16,   -71,   146,  -129,    38,   -14,  -119,  -129,     7,
-      70,    -4,  -129,  -129,  -129,  -129,    40
+    -193,  -193,    92,     8,  -193,  -193,  -193,  -193,  -193,    91,
+    -193,    95,  -193,  -193,    -7,  -193,   -68,   -38,  -193,  -193,
+    -193,  -193,   -53,  -193,  -193,  -193,  -193,  -193,   -64,  -193,
+    -193,  -193,  -193,  -193,  -193,  -193,   -52,  -193,  -193,    87,
+    -193,   -16,   127,    16,   -58,   187,  -193,    41,   -14,  -192,
+    -193,     4,    93,   -10,  -193,  -193,  -193,  -193,  -193,  -193,
+      47
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int16 yydefgoto[] =
 {
-      -1,     8,     9,    30,    10,    64,    43,    47,    66,    67,
-      87,    88,    89,    61,    62,    63,   110,    95,    96,   149,
-     123,   124,   125,   126,   160,   161,   180,   181,    98,   100,
-     105,   102,   103,   152,   135,   136,   137,    53,    54,    11,
-      21,    22,    23,    56,   107,   155,    31,   202,   225,   117,
-     118,    25,   182,   183,   198,   115,   159
+      -1,     9,    10,    34,    11,    90,    49,    18,    48,    76,
+      77,   117,   118,   119,    58,    59,    60,    61,   115,   122,
+     123,   180,   156,   157,   158,   159,   191,   192,   212,   213,
+     125,   127,   132,   129,   130,   183,   168,   169,   170,    69,
+      70,    12,    23,    24,    25,    72,   134,   186,    35,   236,
+     261,   137,   138,    27,   214,   215,   232,   216,    62,   151,
+     190
 };
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -2059,114 +2041,127 @@ static const yytype_int16 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int16 yytable[] =
 {
-      32,    33,    34,    65,    59,    19,    90,    26,     1,    19,
-      20,   121,   223,   172,    20,   173,   113,    59,   174,    38,
-      39,    48,    49,    50,    51,   127,    55,    55,    27,     1,
-      90,    35,   138,    12,    60,   175,   176,   177,   178,   -21,
-      68,    13,   199,   200,    19,    14,    44,    60,   201,    20,
-      80,    40,    41,    28,    58,    94,    29,    97,    15,    99,
-      68,   101,    69,   104,    70,   199,   200,   203,   204,   109,
-      55,   201,    18,   114,   179,    16,    71,   116,    72,   127,
-     127,   194,   138,   138,   162,   163,   195,   196,    24,   197,
-      17,   222,   224,   226,   227,    42,    73,    75,    74,    76,
-     164,   165,   116,    77,    36,    78,     2,     3,    81,    37,
-      45,   -44,    46,     4,   122,    82,    83,    84,   134,    85,
-     150,    60,    91,   151,    92,   106,    52,   156,   111,   119,
-     157,   158,   153,   120,   154,     5,     6,     7,   128,   129,
-      93,   130,   156,   112,   158,   131,    86,   132,   193,   139,
-     133,   141,   205,   140,   142,   143,   144,   145,   108,   147,
-     148,   185,   184,   166,   168,   170,   171,   186,   187,   188,
-     189,   190,   191,    79,   192,   206,   207,   208,   116,   210,
-     211,   212,   213,    57,   214,   215,   146,   216,   217,   218,
-     219,   220,   221,   228,   167,   229,   230,   231,   169,   209
+      32,    33,    28,    21,     1,    38,    21,   259,    22,   154,
+      78,    22,   203,   149,   204,    41,    42,   205,    64,    65,
+      66,    67,   120,    71,    71,    36,     1,   237,   238,    29,
+      56,    50,    51,    56,   206,   207,   208,   209,    75,    78,
+      57,   210,    79,   -23,   150,    52,    63,    53,    54,    91,
+     120,    92,    89,   258,   260,   262,   263,    74,   233,   234,
+     102,   233,   234,    13,   235,   160,   109,   235,   111,   112,
+     113,   114,   171,   116,   211,    21,    93,   121,    94,   124,
+      22,   126,   228,   128,    14,   131,    71,   229,   230,    15,
+     231,   136,     2,    30,    20,   155,    31,    95,   167,    96,
+      97,    55,    98,    56,    99,    16,   100,    17,    68,    19,
+      57,    46,   -48,     3,     4,     5,     6,     7,     8,    43,
+      44,    26,   136,   160,   160,    37,   171,   171,   193,   194,
+      39,    40,   195,   196,    45,    47,    88,    80,    81,   110,
+      82,    83,    84,   133,    85,    86,    87,   181,   106,   227,
+     182,   103,   104,   105,   153,   162,   108,   139,   140,   184,
+     187,   185,   141,   188,   189,   142,   143,   144,   107,   145,
+     146,   147,   152,   187,   161,   189,   163,   164,   165,   166,
+     172,   173,   174,   239,   176,   177,   178,   217,   179,   135,
+     197,   199,   201,   202,   218,   219,   101,   220,   221,   222,
+     223,   224,   225,   226,   245,   246,   247,   248,   240,   241,
+     242,   243,   136,   148,   249,   250,   251,   252,   253,   254,
+     255,   256,   257,   264,   265,   266,   267,    73,   198,   175,
+     244,     0,     0,     0,     0,     0,   200
 };
 
-static const yytype_uint8 yycheck[] =
+static const yytype_int16 yycheck[] =
 {
-      14,    15,    16,    37,   125,    25,    64,    11,    29,    25,
-      30,    31,    76,    62,    30,    64,    34,   125,    67,    23,
-      24,    21,    22,    23,    24,    96,    36,    37,    12,    29,
-      88,    17,   103,   161,   155,    84,    85,    86,    87,   160,
-      47,   159,   129,   130,    25,   159,    32,   155,   135,    30,
-      54,    25,    26,   134,    38,    69,   137,    71,   159,    73,
-      67,    75,   159,    77,   161,   129,   130,   186,   187,    83,
-      80,   135,     0,    91,   123,   159,   159,    91,   161,   150,
-     151,    63,   153,   154,   150,   151,    68,    69,   163,    71,
-     159,   210,   211,   212,   213,   162,   159,   159,   161,   161,
-     153,   154,   116,   159,   161,   161,   127,   128,   162,   161,
-     160,   160,   160,   134,   134,   162,   159,   159,   134,   160,
-     124,   155,   159,   127,   160,    91,   126,   141,   160,   160,
-     144,   145,   136,   162,   138,   156,   157,   158,   160,   162,
-      67,   160,   156,    88,   158,   162,    62,   160,   181,   160,
-     162,   159,   135,   162,   160,   160,   159,   159,    80,   160,
-     159,   159,   166,   160,   160,   160,   160,   159,   159,   159,
-     159,   159,   159,    53,   159,   189,   190,   191,   192,   159,
-     159,   159,   159,    37,   160,   160,   116,   160,   160,   160,
-     160,   160,   160,   160,   156,   160,   160,   160,   158,   192
+      14,    15,    12,    25,    29,    19,    25,    61,    30,    31,
+      48,    30,    47,    46,    49,    25,    26,    52,    21,    22,
+      23,    24,    90,    39,    40,    17,    29,   219,   220,    13,
+     137,    65,    66,   137,    69,    70,    71,    72,   145,    77,
+     144,    76,    49,   147,    77,    79,    38,    81,    82,   146,
+     118,   148,    59,   245,   246,   247,   248,    41,   112,   113,
+      70,   112,   113,   148,   118,   123,    80,   118,    82,    83,
+      84,    85,   130,    87,   109,    25,   146,    91,   148,    93,
+      30,    95,    48,    97,   146,    99,   102,    53,    54,   146,
+      56,   105,   117,   117,     0,   117,   120,   146,   117,   148,
+     146,   135,   148,   137,   146,   146,   148,   146,   111,   146,
+     144,   147,   147,   138,   139,   140,   141,   142,   143,    27,
+      28,   150,   136,   181,   182,   146,   184,   185,   181,   182,
+     148,   148,   184,   185,   149,   147,   147,   146,   146,   118,
+     146,   146,   146,    77,   146,   146,   146,   157,   147,   213,
+     160,   149,   149,   146,   149,   149,   147,   147,   147,   169,
+     174,   171,   147,   177,   178,   147,   147,   147,    77,   147,
+     147,   147,   147,   187,   147,   189,   147,   149,   147,   149,
+     147,   149,   146,   118,   147,   146,   146,   197,   146,   102,
+     147,   147,   147,   147,   146,   146,    69,   146,   146,   146,
+     146,   146,   146,   146,   146,   146,   146,   146,   222,   223,
+     224,   225,   226,   118,   147,   147,   147,   147,   147,   147,
+     147,   147,   147,   147,   147,   147,   147,    40,   187,   136,
+     226,    -1,    -1,    -1,    -1,    -1,   189
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
      symbol of state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
-       0,    29,   127,   128,   134,   156,   157,   158,   166,   167,
-     169,   204,   161,   159,   159,   159,   159,   159,     0,    25,
-      30,   205,   206,   207,   163,   216,   216,   206,   134,   137,
-     168,   211,   211,   211,   211,   168,   161,   161,   216,   216,
-     167,   167,   162,   171,   168,   160,   160,   172,    21,    22,
-      23,    24,   126,   202,   203,   204,   208,   208,   206,   125,
-     155,   178,   179,   180,   170,    37,   173,   174,   180,   159,
-     161,   159,   161,   159,   161,   159,   161,   159,   161,   205,
-     216,   162,   162,   159,   159,   160,   178,   175,   176,   177,
-     179,   159,   160,   173,   211,   182,   183,   211,   193,   211,
-     194,   211,   196,   197,   211,   195,    91,   209,   202,   211,
-     181,   160,   175,    34,    91,   220,   211,   214,   215,   160,
-     162,    31,   134,   185,   186,   187,   188,   207,   160,   162,
-     160,   162,   160,   162,   134,   199,   200,   201,   207,   160,
-     162,   159,   160,   160,   159,   159,   215,   160,   159,   184,
-     216,   216,   198,   216,   216,   210,   211,   211,   211,   221,
-     189,   190,   185,   185,   199,   199,   160,   210,   160,   221,
-     160,   160,    62,    64,    67,    84,    85,    86,    87,   123,
-     191,   192,   217,   218,   216,   159,   159,   159,   159,   159,
-     159,   159,   159,   191,    63,    68,    69,    71,   219,   129,
-     130,   135,   212,   212,   212,   135,   211,   211,   211,   214,
-     159,   159,   159,   159,   160,   160,   160,   160,   160,   160,
-     160,   160,   212,    76,   212,   213,   212,   212,   160,   160,
-     160,   160
+       0,    29,   117,   138,   139,   140,   141,   142,   143,   153,
+     154,   156,   193,   148,   146,   146,   146,   146,   159,   146,
+       0,    25,    30,   194,   195,   196,   150,   205,   205,   195,
+     117,   120,   200,   200,   155,   200,   155,   146,   200,   148,
+     148,   205,   205,   154,   154,   149,   147,   147,   160,   158,
+      65,    66,    79,    81,    82,   135,   137,   144,   166,   167,
+     168,   169,   210,   155,    21,    22,    23,    24,   111,   191,
+     192,   193,   197,   197,   195,   145,   161,   162,   169,   166,
+     146,   146,   146,   146,   146,   146,   146,   146,   147,   166,
+     157,   146,   148,   146,   148,   146,   148,   146,   148,   146,
+     148,   194,   205,   149,   149,   146,   147,   161,   147,   200,
+     118,   200,   200,   200,   200,   170,   200,   163,   164,   165,
+     168,   200,   171,   172,   200,   182,   200,   183,   200,   185,
+     186,   200,   184,    77,   198,   191,   200,   203,   204,   147,
+     147,   147,   147,   147,   147,   147,   147,   147,   163,    46,
+      77,   211,   147,   149,    31,   117,   174,   175,   176,   177,
+     196,   147,   149,   147,   149,   147,   149,   117,   188,   189,
+     190,   196,   147,   149,   146,   204,   147,   146,   146,   146,
+     173,   205,   205,   187,   205,   205,   199,   200,   200,   200,
+     212,   178,   179,   174,   174,   188,   188,   147,   199,   147,
+     212,   147,   147,    47,    49,    52,    69,    70,    71,    72,
+      76,   109,   180,   181,   206,   207,   209,   205,   146,   146,
+     146,   146,   146,   146,   146,   146,   146,   180,    48,    53,
+      54,    56,   208,   112,   113,   118,   201,   201,   201,   118,
+     200,   200,   200,   200,   203,   146,   146,   146,   146,   147,
+     147,   147,   147,   147,   147,   147,   147,   147,   201,    61,
+     201,   202,   201,   201,   147,   147,   147,   147
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
-       0,   165,   166,   167,   167,   167,   168,   170,   169,   171,
-     169,   169,   169,   172,   169,   169,   173,   173,   174,   174,
-     175,   175,   177,   176,   176,   178,   178,   179,   179,   181,
-     180,   183,   184,   182,   185,   185,   185,   186,   186,   187,
-     188,   190,   189,   191,   191,   192,   193,   194,   195,   197,
-     198,   196,   199,   199,   199,   200,   201,   202,   202,   203,
-     203,   203,   203,   203,   203,   203,   203,   203,   203,   203,
-     204,   205,   206,   206,   207,   207,   208,   209,   209,   210,
-     210,   211,   211,   212,   212,   212,   213,   213,   214,   215,
-     215,   216,   216,   217,   217,   217,   217,   217,   217,   217,
-     217,   218,   217,   219,   219,   219,   219,   220,   220,   221,
-     221
+       0,   152,   153,   154,   154,   154,   155,   157,   156,   158,
+     156,   159,   156,   156,   156,   160,   156,   156,   161,   161,
+     162,   162,   163,   163,   165,   164,   164,   166,   166,   167,
+     167,   168,   168,   170,   169,   172,   173,   171,   174,   174,
+     174,   175,   175,   176,   177,   179,   178,   180,   180,   181,
+     182,   183,   184,   186,   187,   185,   188,   188,   188,   189,
+     190,   191,   191,   192,   192,   192,   192,   192,   192,   192,
+     192,   192,   192,   192,   193,   194,   195,   195,   196,   196,
+     197,   198,   198,   199,   199,   200,   200,   201,   201,   201,
+     202,   202,   203,   204,   204,   205,   205,   206,   206,   206,
+     206,   206,   206,   206,   206,   207,   206,   206,   208,   208,
+     208,   208,   209,   210,   210,   210,   210,   210,   210,   211,
+     211,   212,   212
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
 static const yytype_uint8 yyr2[] =
 {
        0,     2,     2,     3,     3,     0,     1,     0,     7,     0,
-       6,     4,     4,     0,     6,     1,     2,     0,     4,     1,
-       2,     0,     0,     2,     1,     2,     0,     4,     1,     0,
-       4,     0,     0,     3,     3,     3,     0,     1,     1,     1,
-       4,     0,     2,     2,     0,     1,     0,     0,     0,     0,
-       0,     3,     3,     3,     0,     1,     1,     3,     0,     4,
-       4,     4,     4,     4,     4,     4,     4,     4,     4,     1,
-       4,     1,     3,     0,     4,     4,     3,     5,     0,     2,
-       0,     1,     1,     1,     1,     1,     1,     1,     1,     2,
-       0,     1,     2,     4,     4,     4,     4,     4,     4,     4,
-       4,     0,     2,     4,     4,     4,     4,     4,     4,     2,
-       0
+       6,     0,     5,     4,     4,     0,     6,     1,     2,     0,
+       4,     1,     2,     0,     0,     2,     1,     2,     0,     1,
+       1,     4,     1,     0,     4,     0,     0,     3,     3,     3,
+       0,     1,     1,     1,     4,     0,     2,     2,     0,     1,
+       0,     0,     0,     0,     0,     3,     3,     3,     0,     1,
+       1,     3,     0,     4,     4,     4,     4,     4,     4,     4,
+       4,     4,     4,     1,     4,     1,     3,     0,     4,     4,
+       3,     5,     0,     2,     0,     1,     1,     1,     1,     1,
+       1,     1,     1,     2,     0,     1,     2,     4,     4,     4,
+       4,     4,     4,     4,     4,     0,     2,     1,     4,     4,
+       4,     4,     4,     4,     4,     4,     4,     4,     4,     4,
+       4,     2,     0
 };
 
 
@@ -2662,7 +2657,36 @@ yydestruct (const char *yymsg, int yytype, YYSTYPE *yyvaluep, YYLTYPE *yylocatio
   YY_SYMBOL_PRINT (yymsg, yytype, yyvaluep, yylocationp);
 
   YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN
-  YYUSE (yytype);
+  switch (yytype)
+    {
+          case 117: /* LL_IDENTIFIER  */
+#line 302 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1257  */
+      { free(((*yyvaluep).cptr)); }
+#line 2666 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1257  */
+        break;
+
+    case 120: /* LL_STRING  */
+#line 302 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1257  */
+      { free(((*yyvaluep).cptr)); }
+#line 2672 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1257  */
+        break;
+
+    case 122: /* LL_BLOCK  */
+#line 302 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1257  */
+      { free(((*yyvaluep).cptr)); }
+#line 2678 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1257  */
+        break;
+
+    case 200: /* string  */
+#line 302 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1257  */
+      { free(((*yyvaluep).cptr)); }
+#line 2684 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1257  */
+        break;
+
+
+      default:
+        break;
+    }
   YY_IGNORE_MAYBE_UNINITIALIZED_END
 }
 
@@ -2948,31 +2972,31 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 393 "rewrite-expr-grammar.y" /* yacc.c:1646  */
+#line 379 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
     { *result = log_expr_node_append_tail((yyvsp[-1].ptr), (yyvsp[0].ptr)); if (yychar != YYEMPTY) { cfg_lexer_unput_token(lexer, &yylval); } YYACCEPT; }
-#line 2954 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 2978 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
   case 3:
-#line 397 "rewrite-expr-grammar.y" /* yacc.c:1646  */
+#line 383 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
     { (yyval.ptr) = log_expr_node_append_tail(log_expr_node_new_pipe((yyvsp[-2].ptr), &(yylsp[-2])), (yyvsp[0].ptr)); }
-#line 2960 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 2984 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
   case 4:
-#line 398 "rewrite-expr-grammar.y" /* yacc.c:1646  */
+#line 384 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
     { (yyval.ptr) = log_expr_node_append_tail((yyvsp[-2].ptr),  (yyvsp[0].ptr)); }
-#line 2966 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 2990 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
   case 5:
-#line 399 "rewrite-expr-grammar.y" /* yacc.c:1646  */
+#line 385 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
     { (yyval.ptr) = NULL; }
-#line 2972 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 2996 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
   case 6:
-#line 404 "rewrite-expr-grammar.y" /* yacc.c:1646  */
+#line 390 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
     {
 	    GError *error = NULL;
 
@@ -2980,73 +3004,88 @@ yyreduce:
 	    CHECK_ERROR_GERROR(log_template_compile((yyval.ptr), (yyvsp[0].cptr), &error), (yylsp[0]), error, "error compiling replacement");
         free((yyvsp[0].cptr));
 	  }
-#line 2984 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 3008 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
   case 7:
-#line 415 "rewrite-expr-grammar.y" /* yacc.c:1646  */
+#line 401 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
     {
             last_rewrite = log_rewrite_subst_new((yyvsp[0].ptr), configuration);
             log_template_unref((yyvsp[0].ptr));
           }
-#line 2993 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 3017 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
   case 8:
-#line 420 "rewrite-expr-grammar.y" /* yacc.c:1646  */
+#line 406 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
     {
             GError *error = NULL;
             CHECK_ERROR_GERROR(log_rewrite_subst_compile_pattern(last_rewrite, (yyvsp[-4].cptr), &error), (yylsp[-4]), error, "error compiling search pattern");
             free((yyvsp[-4].cptr));
             (yyval.ptr) = last_rewrite;
           }
-#line 3004 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 3028 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 427 "rewrite-expr-grammar.y" /* yacc.c:1646  */
+#line 413 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
     {
             last_rewrite = log_rewrite_set_new((yyvsp[0].ptr), configuration);
+            last_template_options = log_rewrite_set_get_template_options(last_rewrite);
             log_template_unref((yyvsp[0].ptr));
           }
-#line 3013 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 3038 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 431 "rewrite-expr-grammar.y" /* yacc.c:1646  */
+#line 418 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
     { (yyval.ptr) = last_rewrite; }
-#line 3019 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 3044 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
   case 11:
-#line 432 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = log_rewrite_set_tag_new((yyvsp[-1].cptr), TRUE, configuration); free((yyvsp[-1].cptr)); }
-#line 3025 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 420 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    {
+            last_rewrite = log_rewrite_unset_new(configuration);
+          }
+#line 3052 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
   case 12:
-#line 433 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = log_rewrite_set_tag_new((yyvsp[-1].cptr), FALSE, configuration); free((yyvsp[-1].cptr)); }
-#line 3031 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 423 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = last_rewrite; }
+#line 3058 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
   case 13:
-#line 435 "rewrite-expr-grammar.y" /* yacc.c:1646  */
+#line 424 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = log_rewrite_set_tag_new((yyvsp[-1].cptr), TRUE, configuration); free((yyvsp[-1].cptr)); }
+#line 3064 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 14:
+#line 425 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = log_rewrite_set_tag_new((yyvsp[-1].cptr), FALSE, configuration); free((yyvsp[-1].cptr)); }
+#line 3070 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 15:
+#line 427 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
     {
             last_rewrite = log_rewrite_groupset_new((yyvsp[0].ptr), configuration);
             log_template_unref((yyvsp[0].ptr));
             }
-#line 3040 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 3079 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 14:
-#line 439 "rewrite-expr-grammar.y" /* yacc.c:1646  */
+  case 16:
+#line 431 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
     { (yyval.ptr) = last_rewrite; }
-#line 3046 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 3085 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 15:
-#line 442 "rewrite-expr-grammar.y" /* yacc.c:1646  */
+  case 17:
+#line 434 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
     {
             Plugin *p;
             gint context = LL_CONTEXT_REWRITE;
@@ -3062,32 +3101,31 @@ yyreduce:
               }
             (yyval.ptr) = last_rewrite;
           }
-#line 3066 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 3105 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 18:
-#line 466 "rewrite-expr-grammar.y" /* yacc.c:1646  */
+  case 20:
+#line 458 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
     {
             log_rewrite_groupset_add_fields(last_rewrite, (yyvsp[-1].ptr));
           }
-#line 3074 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 3113 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 22:
-#line 478 "rewrite-expr-grammar.y" /* yacc.c:1646  */
+  case 24:
+#line 470 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
     { last_matcher_options = log_rewrite_subst_get_matcher_options(last_rewrite); }
-#line 3080 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 3119 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 27:
-#line 489 "rewrite-expr-grammar.y" /* yacc.c:1646  */
+  case 31:
+#line 491 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
     {
             const gchar *p = (yyvsp[-1].cptr);
             if (p[0] == '$')
               {
                 msg_warning("Value references in rewrite rules should not use the '$' prefix, those are only needed in templates",
-                            evt_tag_str("value", (yyvsp[-1].cptr)),
-                            NULL);
+                            evt_tag_str("value", (yyvsp[-1].cptr)));
                 p++;
               }
             last_rewrite->value_handle = log_msg_get_value_handle(p);
@@ -3095,72 +3133,72 @@ yyreduce:
 	    CHECK_ERROR(log_msg_is_value_name_valid(p), (yylsp[-1]), "%s is not a valid name for a name-value pair, perhaps a misspelled .SDATA reference?", p);
             free((yyvsp[-1].cptr));
           }
-#line 3099 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 3137 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 29:
-#line 508 "rewrite-expr-grammar.y" /* yacc.c:1646  */
+  case 33:
+#line 509 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
     {
             FilterExprNode *filter_expr;
 
             CHECK_ERROR_WITHOUT_MESSAGE(cfg_parser_parse(&filter_expr_parser, lexer, (gpointer *) &filter_expr, NULL), (yylsp[-1]));
             log_rewrite_set_condition(last_rewrite, filter_expr);
           }
-#line 3110 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 31:
-#line 520 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { cfg_lexer_push_context(lexer, LL_CONTEXT_SOURCE, NULL, "source"); }
-#line 3116 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 32:
-#line 522 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { cfg_lexer_pop_context(lexer); }
-#line 3122 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 33:
-#line 523 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    {
-            (yyval.ptr) = log_expr_node_new_junction((yyvsp[-1].ptr), &(yyloc));
-          }
-#line 3130 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 34:
-#line 529 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = log_expr_node_append_tail(log_expr_node_new_pipe((yyvsp[-2].ptr), &(yylsp[-2])), (yyvsp[0].ptr)); }
-#line 3136 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 35:
-#line 530 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = log_expr_node_append_tail((yyvsp[-2].ptr),  (yyvsp[0].ptr)); }
-#line 3142 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 36:
-#line 531 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = NULL; }
 #line 3148 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 37:
-#line 535 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = (yyvsp[0].ptr); }
+  case 35:
+#line 521 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { cfg_lexer_push_context(lexer, LL_CONTEXT_SOURCE, NULL, "source"); }
 #line 3154 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 38:
-#line 536 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = (yyvsp[0].ptr); }
+  case 36:
+#line 523 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { cfg_lexer_pop_context(lexer); }
 #line 3160 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
+  case 37:
+#line 524 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    {
+            (yyval.ptr) = log_expr_node_new_junction((yyvsp[-1].ptr), &(yyloc));
+          }
+#line 3168 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 38:
+#line 530 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = log_expr_node_append_tail(log_expr_node_new_pipe((yyvsp[-2].ptr), &(yylsp[-2])), (yyvsp[0].ptr)); }
+#line 3174 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+    break;
+
   case 39:
-#line 541 "rewrite-expr-grammar.y" /* yacc.c:1646  */
+#line 531 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = log_expr_node_append_tail((yyvsp[-2].ptr),  (yyvsp[0].ptr)); }
+#line 3180 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 40:
+#line 532 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = NULL; }
+#line 3186 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 41:
+#line 536 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = (yyvsp[0].ptr); }
+#line 3192 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 42:
+#line 537 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = (yyvsp[0].ptr); }
+#line 3198 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 43:
+#line 542 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
     {
             Plugin *p;
             gint context = LL_CONTEXT_SOURCE;
@@ -3176,32 +3214,32 @@ yyreduce:
               }
             (yyval.ptr) = last_driver;
           }
-#line 3180 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 3218 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 40:
-#line 559 "rewrite-expr-grammar.y" /* yacc.c:1646  */
+  case 44:
+#line 560 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
     { (yyval.ptr) = (yyvsp[-1].ptr); }
-#line 3186 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 3224 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 41:
-#line 563 "rewrite-expr-grammar.y" /* yacc.c:1646  */
+  case 45:
+#line 564 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
     {
             last_driver = afinter_sd_new(configuration);
             last_source_options = &((AFInterSourceDriver *) last_driver)->source_options;
           }
-#line 3195 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 42:
-#line 567 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = last_driver; }
-#line 3201 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 3233 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
   case 46:
-#line 581 "rewrite-expr-grammar.y" /* yacc.c:1646  */
+#line 568 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = last_driver; }
+#line 3239 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 50:
+#line 582 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
     {
             FilterExprNode *last_filter_expr = NULL;
 
@@ -3209,77 +3247,77 @@ yyreduce:
 
             (yyval.ptr) = log_expr_node_new_pipe(log_filter_pipe_new(last_filter_expr, configuration), &(yyloc));
 	  }
-#line 3213 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 3251 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 47:
-#line 592 "rewrite-expr-grammar.y" /* yacc.c:1646  */
+  case 51:
+#line 593 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
     {
             LogExprNode *last_parser_expr = NULL;
 
             CHECK_ERROR_WITHOUT_MESSAGE(cfg_parser_parse(&parser_expr_parser, lexer, (gpointer *) &last_parser_expr, NULL), (yyloc));
             (yyval.ptr) = last_parser_expr;
           }
-#line 3224 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 3262 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 48:
-#line 602 "rewrite-expr-grammar.y" /* yacc.c:1646  */
+  case 52:
+#line 603 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
     {
             LogExprNode *last_rewrite_expr = NULL;
 
             CHECK_ERROR_WITHOUT_MESSAGE(cfg_parser_parse(&rewrite_expr_parser, lexer, (gpointer *) &last_rewrite_expr, NULL), (yyloc));
             (yyval.ptr) = last_rewrite_expr;
           }
-#line 3235 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 49:
-#line 611 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { cfg_lexer_push_context(lexer, LL_CONTEXT_DESTINATION, NULL, "destination"); }
-#line 3241 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 50:
-#line 613 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { cfg_lexer_pop_context(lexer); }
-#line 3247 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 51:
-#line 614 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    {
-             (yyval.ptr) = log_expr_node_new_junction((yyvsp[-1].ptr), &(yyloc));
-           }
-#line 3255 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 52:
-#line 622 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = log_expr_node_append_tail(log_expr_node_new_pipe((yyvsp[-2].ptr), &(yylsp[-2])), (yyvsp[0].ptr)); }
-#line 3261 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 53:
-#line 623 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = log_expr_node_append_tail((yyvsp[-2].ptr),  (yyvsp[0].ptr)); }
-#line 3267 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 54:
-#line 624 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = NULL; }
 #line 3273 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 55:
-#line 628 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = (yyvsp[0].ptr); }
+  case 53:
+#line 612 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { cfg_lexer_push_context(lexer, LL_CONTEXT_DESTINATION, NULL, "destination"); }
 #line 3279 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
+  case 54:
+#line 614 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { cfg_lexer_pop_context(lexer); }
+#line 3285 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 55:
+#line 615 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    {
+             (yyval.ptr) = log_expr_node_new_junction((yyvsp[-1].ptr), &(yyloc));
+           }
+#line 3293 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+    break;
+
   case 56:
-#line 633 "rewrite-expr-grammar.y" /* yacc.c:1646  */
+#line 623 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = log_expr_node_append_tail(log_expr_node_new_pipe((yyvsp[-2].ptr), &(yylsp[-2])), (yyvsp[0].ptr)); }
+#line 3299 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 57:
+#line 624 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = log_expr_node_append_tail((yyvsp[-2].ptr),  (yyvsp[0].ptr)); }
+#line 3305 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 58:
+#line 625 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = NULL; }
+#line 3311 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 59:
+#line 629 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = (yyvsp[0].ptr); }
+#line 3317 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 60:
+#line 634 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
     {
             Plugin *p;
             gint context = LL_CONTEXT_DESTINATION;
@@ -3295,293 +3333,342 @@ yyreduce:
               }
             (yyval.ptr) = last_driver;
           }
-#line 3299 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 57:
-#line 651 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { log_expr_node_append_tail((yyvsp[-2].ptr), (yyvsp[0].ptr)); (yyval.ptr) = (yyvsp[-2].ptr); }
-#line 3305 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 58:
-#line 652 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = NULL; }
-#line 3311 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 59:
-#line 656 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = log_expr_node_new_source_reference((yyvsp[-1].cptr), &(yyloc)); free((yyvsp[-1].cptr)); }
-#line 3317 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 60:
-#line 657 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = log_expr_node_new_source(NULL, (yyvsp[-1].ptr), &(yyloc)); }
-#line 3323 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 3337 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
   case 61:
-#line 658 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = log_expr_node_new_filter_reference((yyvsp[-1].cptr), &(yyloc)); free((yyvsp[-1].cptr)); }
-#line 3329 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 652 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { log_expr_node_append_tail((yyvsp[-2].ptr), (yyvsp[0].ptr)); (yyval.ptr) = (yyvsp[-2].ptr); }
+#line 3343 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
   case 62:
-#line 659 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = log_expr_node_new_filter(NULL, (yyvsp[-1].ptr), &(yyloc)); }
-#line 3335 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 653 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = NULL; }
+#line 3349 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
   case 63:
-#line 660 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = log_expr_node_new_parser_reference((yyvsp[-1].cptr), &(yyloc)); free((yyvsp[-1].cptr)); }
-#line 3341 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 657 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = log_expr_node_new_source_reference((yyvsp[-1].cptr), &(yyloc)); free((yyvsp[-1].cptr)); }
+#line 3355 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
   case 64:
-#line 661 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = log_expr_node_new_parser(NULL, (yyvsp[-1].ptr), &(yyloc)); }
-#line 3347 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 658 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = log_expr_node_new_source(NULL, (yyvsp[-1].ptr), &(yyloc)); }
+#line 3361 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
   case 65:
-#line 662 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = log_expr_node_new_rewrite_reference((yyvsp[-1].cptr), &(yyloc)); free((yyvsp[-1].cptr)); }
-#line 3353 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 659 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = log_expr_node_new_filter_reference((yyvsp[-1].cptr), &(yyloc)); free((yyvsp[-1].cptr)); }
+#line 3367 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
   case 66:
-#line 663 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = log_expr_node_new_rewrite(NULL, (yyvsp[-1].ptr), &(yyloc)); }
-#line 3359 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 660 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = log_expr_node_new_filter(NULL, (yyvsp[-1].ptr), &(yyloc)); }
+#line 3373 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
   case 67:
-#line 664 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = log_expr_node_new_destination_reference((yyvsp[-1].cptr), &(yyloc)); free((yyvsp[-1].cptr)); }
-#line 3365 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 661 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = log_expr_node_new_parser_reference((yyvsp[-1].cptr), &(yyloc)); free((yyvsp[-1].cptr)); }
+#line 3379 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
   case 68:
-#line 665 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = log_expr_node_new_destination(NULL, (yyvsp[-1].ptr), &(yyloc)); }
-#line 3371 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 662 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = log_expr_node_new_parser(NULL, (yyvsp[-1].ptr), &(yyloc)); }
+#line 3385 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
   case 69:
-#line 666 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = (yyvsp[0].ptr); }
-#line 3377 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 663 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = log_expr_node_new_rewrite_reference((yyvsp[-1].cptr), &(yyloc)); free((yyvsp[-1].cptr)); }
+#line 3391 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
   case 70:
-#line 670 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = log_expr_node_new_junction((yyvsp[-1].ptr), &(yyloc)); }
-#line 3383 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 664 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = log_expr_node_new_rewrite(NULL, (yyvsp[-1].ptr), &(yyloc)); }
+#line 3397 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
   case 71:
-#line 682 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = (yyvsp[0].ptr) ? log_expr_node_new_junction((yyvsp[0].ptr), &(yylsp[0])) :  NULL; }
-#line 3389 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 665 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = log_expr_node_new_destination_reference((yyvsp[-1].cptr), &(yyloc)); free((yyvsp[-1].cptr)); }
+#line 3403 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
   case 72:
-#line 687 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { log_expr_node_append_tail((yyvsp[-2].ptr), (yyvsp[0].ptr)); (yyval.ptr) = (yyvsp[-2].ptr); }
-#line 3395 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 666 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = log_expr_node_new_destination(NULL, (yyvsp[-1].ptr), &(yyloc)); }
+#line 3409 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
   case 73:
-#line 688 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = NULL; }
-#line 3401 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 667 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = (yyvsp[0].ptr); }
+#line 3415 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
   case 74:
-#line 692 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = (yyvsp[-1].ptr); }
-#line 3407 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 671 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = log_expr_node_new_junction((yyvsp[-1].ptr), &(yyloc)); }
+#line 3421 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
   case 75:
-#line 693 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = (yyvsp[-1].ptr); }
-#line 3413 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 683 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = (yyvsp[0].ptr) ? log_expr_node_new_junction((yyvsp[0].ptr), &(yylsp[0])) :  NULL; }
+#line 3427 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
   case 76:
-#line 697 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = log_expr_node_new_log(log_expr_node_append_tail((yyvsp[-2].ptr), (yyvsp[-1].ptr)), (yyvsp[0].num), &(yyloc)); }
-#line 3419 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 688 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { log_expr_node_append_tail((yyvsp[-2].ptr), (yyvsp[0].ptr)); (yyval.ptr) = (yyvsp[-2].ptr); }
+#line 3433 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
   case 77:
-#line 701 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { (yyval.num) = (yyvsp[-2].num); }
-#line 3425 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 689 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = NULL; }
+#line 3439 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
   case 78:
-#line 702 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { (yyval.num) = 0; }
-#line 3431 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 693 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = (yyvsp[-1].ptr); }
+#line 3445 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
   case 79:
-#line 706 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { (yyval.num) = log_expr_node_lookup_flag((yyvsp[-1].cptr)) | (yyvsp[0].num); free((yyvsp[-1].cptr)); }
-#line 3437 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 694 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = (yyvsp[-1].ptr); }
+#line 3451 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
   case 80:
-#line 707 "rewrite-expr-grammar.y" /* yacc.c:1646  */
+#line 698 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = log_expr_node_new_log(log_expr_node_append_tail((yyvsp[-2].ptr), (yyvsp[-1].ptr)), (yyvsp[0].num), &(yyloc)); }
+#line 3457 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 81:
+#line 702 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { (yyval.num) = (yyvsp[-2].num); }
+#line 3463 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 82:
+#line 703 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
     { (yyval.num) = 0; }
-#line 3443 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 3469 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
   case 83:
-#line 743 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { (yyval.num) = 1; }
-#line 3449 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 707 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { (yyval.num) = log_expr_node_lookup_flag((yyvsp[-1].cptr)) | (yyvsp[0].num); free((yyvsp[-1].cptr)); }
+#line 3475 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
   case 84:
-#line 744 "rewrite-expr-grammar.y" /* yacc.c:1646  */
+#line 708 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
     { (yyval.num) = 0; }
-#line 3455 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 85:
-#line 745 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { (yyval.num) = (yyvsp[0].num); }
-#line 3461 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 86:
-#line 749 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { (yyval.num) = (yyvsp[0].num); }
-#line 3467 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 3481 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
   case 87:
-#line 750 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { (yyval.num) = 2; }
-#line 3473 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 744 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { (yyval.num) = 1; }
+#line 3487 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
   case 88:
-#line 760 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = g_list_reverse((yyvsp[0].ptr)); }
-#line 3479 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 745 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { (yyval.num) = 0; }
+#line 3493 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
   case 89:
-#line 764 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = g_list_append((yyvsp[0].ptr), g_strdup((yyvsp[-1].cptr))); free((yyvsp[-1].cptr)); }
-#line 3485 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 746 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { (yyval.num) = (yyvsp[0].num); }
+#line 3499 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
   case 90:
-#line 765 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = NULL; }
-#line 3491 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 750 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { (yyval.num) = (yyvsp[0].num); }
+#line 3505 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 91:
+#line 751 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { (yyval.num) = 2; }
+#line 3511 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 92:
+#line 761 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = g_list_reverse((yyvsp[0].ptr)); }
+#line 3517 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
   case 93:
-#line 811 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { last_source_options->init_window_size = (yyvsp[-1].num); }
-#line 3497 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 765 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = g_list_append((yyvsp[0].ptr), g_strdup((yyvsp[-1].cptr))); free((yyvsp[-1].cptr)); }
+#line 3523 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
   case 94:
-#line 812 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { last_source_options->chain_hostnames = (yyvsp[-1].num); }
-#line 3503 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 95:
-#line 813 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { last_source_options->keep_hostname = (yyvsp[-1].num); }
-#line 3509 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 96:
-#line 814 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { last_source_options->program_override = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 3515 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 766 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = NULL; }
+#line 3529 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
   case 97:
-#line 815 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { last_source_options->host_override = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 3521 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 812 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { last_source_options->init_window_size = (yyvsp[-1].num); }
+#line 3535 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
   case 98:
-#line 816 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { gchar *p = strrchr((yyvsp[-1].cptr), ':'); if (p) *p = 0; last_source_options->program_override = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 3527 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 813 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { last_source_options->chain_hostnames = (yyvsp[-1].num); }
+#line 3541 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
   case 99:
-#line 817 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { last_source_options->keep_timestamp = (yyvsp[-1].num); }
-#line 3533 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 814 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { last_source_options->keep_hostname = (yyvsp[-1].num); }
+#line 3547 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
   case 100:
-#line 818 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { log_source_options_set_tags(last_source_options, (yyvsp[-1].ptr)); }
-#line 3539 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 815 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { last_source_options->program_override = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
+#line 3553 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
   case 101:
-#line 819 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { last_host_resolve_options = &last_source_options->host_resolve_options; }
-#line 3545 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 816 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { last_source_options->host_override = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
+#line 3559 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 102:
+#line 817 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { gchar *p = strrchr((yyvsp[-1].cptr), ':'); if (p) *p = 0; last_source_options->program_override = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
+#line 3565 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
   case 103:
-#line 832 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { last_host_resolve_options->use_fqdn = (yyvsp[-1].num); }
-#line 3551 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 818 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { last_source_options->keep_timestamp = (yyvsp[-1].num); }
+#line 3571 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
   case 104:
-#line 833 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { last_host_resolve_options->use_dns = (yyvsp[-1].num); }
-#line 3557 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 819 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { log_source_options_set_tags(last_source_options, (yyvsp[-1].ptr)); }
+#line 3577 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
   case 105:
-#line 834 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { last_host_resolve_options->use_dns_cache = (yyvsp[-1].num); }
-#line 3563 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 820 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { last_host_resolve_options = &last_source_options->host_resolve_options; }
+#line 3583 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 106:
-#line 835 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { last_host_resolve_options->normalize_hostnames = (yyvsp[-1].num); }
-#line 3569 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 107:
-#line 979 "rewrite-expr-grammar.y" /* yacc.c:1646  */
-    { CHECK_ERROR(log_matcher_options_set_type(last_matcher_options, (yyvsp[-1].cptr)), (yylsp[-1]), "unknown matcher type"); free((yyvsp[-1].cptr)); }
-#line 3575 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+  case 108:
+#line 840 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { last_host_resolve_options->use_fqdn = (yyvsp[-1].num); }
+#line 3589 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
   case 109:
-#line 984 "rewrite-expr-grammar.y" /* yacc.c:1646  */
+#line 841 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { last_host_resolve_options->use_dns = (yyvsp[-1].num); }
+#line 3595 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 110:
+#line 842 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { last_host_resolve_options->use_dns_cache = (yyvsp[-1].num); }
+#line 3601 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 111:
+#line 843 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { last_host_resolve_options->normalize_hostnames = (yyvsp[-1].num); }
+#line 3607 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 112:
+#line 883 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { log_pipe_set_persist_name(&last_driver->super, g_strdup((yyvsp[-1].cptr))); free((yyvsp[-1].cptr)); }
+#line 3613 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 113:
+#line 971 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { last_template_options->ts_format = cfg_ts_format_value((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
+#line 3619 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 114:
+#line 972 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { last_template_options->frac_digits = (yyvsp[-1].num); }
+#line 3625 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 115:
+#line 973 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { last_template_options->time_zone[LTZ_SEND] = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
+#line 3631 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 116:
+#line 974 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { last_template_options->time_zone[LTZ_SEND] = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
+#line 3637 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 117:
+#line 975 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { last_template_options->time_zone[LTZ_LOCAL] = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
+#line 3643 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 118:
+#line 977 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    {
+          gint on_error;
+
+          CHECK_ERROR(log_template_on_error_parse((yyvsp[-1].cptr), &on_error), (yylsp[-1]), "Invalid on-error() setting");
+          free((yyvsp[-1].cptr));
+
+          log_template_options_set_on_error(last_template_options, on_error);
+        }
+#line 3656 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 119:
+#line 988 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
+    { CHECK_ERROR(log_matcher_options_set_type(last_matcher_options, (yyvsp[-1].cptr)), (yylsp[-1]), "unknown matcher type"); free((yyvsp[-1].cptr)); }
+#line 3662 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 121:
+#line 993 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1646  */
     { CHECK_ERROR(log_matcher_options_process_flag(last_matcher_options, (yyvsp[-1].cptr)), (yylsp[-1]), "unknown matcher flag"); free((yyvsp[-1].cptr)); }
-#line 3581 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 3668 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
     break;
 
 
-#line 3585 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
+#line 3672 "lib/rewrite/rewrite-expr-grammar.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -3816,5 +3903,5 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 1049 "rewrite-expr-grammar.y" /* yacc.c:1906  */
+#line 1058 "lib/rewrite/rewrite-expr-grammar.y" /* yacc.c:1906  */
 

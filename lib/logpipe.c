@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2012 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2002-2012 Balabit
  * Copyright (c) 1998-2012 Balázs Scheidler
  *
  * This library is free software; you can redistribute it and/or
@@ -39,6 +39,7 @@ log_pipe_init_instance(LogPipe *self, GlobalConfig *cfg)
   g_atomic_counter_set(&self->ref_cnt, 1);
   self->cfg = cfg;
   self->pipe_next = NULL;
+  self->persist_name = NULL;
 
   /* NOTE: queue == NULL means that this pipe simply forwards the
    * message along the pipeline, e.g. like it has called
@@ -94,3 +95,25 @@ log_pipe_forward_notify(LogPipe *self, gint notify_code, gpointer user_data)
 {
   log_pipe_notify(self->pipe_next, notify_code, user_data);
 }
+
+void
+log_pipe_set_persist_name(LogPipe *self, const gchar *persist_name)
+{
+  g_free((gpointer)self->persist_name);
+  self->persist_name = persist_name;
+}
+
+const gchar *
+log_pipe_get_persist_name(const LogPipe *self)
+{
+  return (self->generate_persist_name != NULL) ? self->generate_persist_name(self)
+                                               : self->persist_name;
+}
+
+#ifdef __linux__
+
+void
+__log_pipe_forward_msg(LogPipe *self, LogMessage *msg, const LogPathOptions *path_options)
+__attribute__((alias("log_pipe_forward_msg")));
+
+#endif

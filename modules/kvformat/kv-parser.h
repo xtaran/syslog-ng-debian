@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 BalaBit
+ * Copyright (c) 2015 Balabit
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 as published
@@ -26,6 +26,7 @@
 #include "kv-scanner.h"
 
 void kv_parser_set_prefix(LogParser *p, const gchar *prefix);
+void kv_parser_set_value_separator(LogParser *p, gchar value_separator);
 LogParser *kv_parser_new(GlobalConfig *cfg, KVScanner *kv_scanner);
 
 #endif

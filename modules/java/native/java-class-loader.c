@@ -1,18 +1,19 @@
 /*
- * Copyright (c) 2010-2014 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2010-2014 Balabit
  * Copyright (c) 2010-2014 Viktor Juhasz <viktor.juhasz@balabit.com>
  *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published
- * by the Free Software Foundation, or (at your option) any later version.
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * As an additional exemption you are allowed to compile & link against the
@@ -25,6 +26,7 @@
 #include "java-class-loader.h"
 #include "java_machine.h"
 #include "messages.h"
+#include "lib/reloc.h"
 
 #define SYSLOG_NG_CLASS_LOADER  "org/syslog_ng/SyslogNgClassLoader"
 #define SYSLOG_NG_JAR           "syslog-ng-core.jar"
@@ -32,7 +34,7 @@
 jstring
 __create_class_path(ClassLoader *self, JNIEnv *java_env, const gchar *class_path)
 {
-  GString *g_class_path = g_string_new(java_module_path);
+  GString *g_class_path = g_string_new(get_installation_path_for(SYSLOG_NG_JAVA_MODULE_PATH));
   jstring str_class_path = NULL;
   g_string_append(g_class_path, "/" SYSLOG_NG_JAR);
   if (class_path && (strlen(class_path) > 0))
@@ -54,14 +56,13 @@ class_loader_new(JNIEnv *java_env)
   if (!self->syslogng_class_loader)
     {
       msg_error("Can't find class",
-                evt_tag_str("class_name", SYSLOG_NG_CLASS_LOADER),
-                NULL);
+                evt_tag_str("class_name", SYSLOG_NG_CLASS_LOADER));
       goto error;
     }
   self->loader_constructor = CALL_JAVA_FUNCTION(java_env, GetMethodID, self->syslogng_class_loader, "<init>", "()V");
   if (!self->loader_constructor)
     {
-      msg_error("Can't find constructor for SyslogNgClassLoader", NULL);
+      msg_error("Can't find constructor for SyslogNgClassLoader");
       goto error;
     }
 
@@ -70,8 +71,7 @@ class_loader_new(JNIEnv *java_env)
     {
       msg_error("Can't find method in class",
                 evt_tag_str("class_name", SYSLOG_NG_CLASS_LOADER),
-                evt_tag_str("method", "Class loadClass(String className)"),
-                NULL);
+                evt_tag_str("method", "Class loadClass(String className)"));
       goto error;
     }
 
@@ -80,15 +80,14 @@ class_loader_new(JNIEnv *java_env)
     {
       msg_error("Can't find method in class",
                 evt_tag_str("class_name", SYSLOG_NG_CLASS_LOADER),
-                evt_tag_str("method", "void initCurrentThread()"),
-                NULL);
+                evt_tag_str("method", "void initCurrentThread()"));
     }
 
 
   self->loader_object = CALL_JAVA_FUNCTION(java_env, NewObject, self->syslogng_class_loader, self->loader_constructor);
   if (!self->loader_object)
     {
-      msg_error("Can't create SyslogNgClassLoader", NULL);
+      msg_error("Can't create SyslogNgClassLoader");
       goto error;
     }
   return self;

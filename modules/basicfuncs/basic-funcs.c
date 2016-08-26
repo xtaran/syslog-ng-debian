@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2002-2014 BalaBit IT Ltd, Budapest, Hungary
- * Copyright (c) 1998-2014 Balázs Scheidler
+ * Copyright (c) 2010-2015 Balabit
+ * Copyright (c) 2010-2015 Balázs Scheidler
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 as published
@@ -69,6 +69,10 @@ static Plugin basicfuncs_plugins[] =
   TEMPLATE_FUNCTION_PLUGIN(tf_num_multi, "*"),
   TEMPLATE_FUNCTION_PLUGIN(tf_num_div, "/"),
   TEMPLATE_FUNCTION_PLUGIN(tf_num_mod, "%"),
+  TEMPLATE_FUNCTION_PLUGIN(tf_num_sum, "sum"),
+  TEMPLATE_FUNCTION_PLUGIN(tf_num_min, "min"),
+  TEMPLATE_FUNCTION_PLUGIN(tf_num_max, "max"),
+  TEMPLATE_FUNCTION_PLUGIN(tf_num_average, "average"),
 
   /* ip-funcs */
   TEMPLATE_FUNCTION_PLUGIN(tf_ipv4_to_int, "ipv4-to-int"),
@@ -90,9 +94,9 @@ basicfuncs_module_init(GlobalConfig *cfg, CfgArgs *args)
 const ModuleInfo module_info =
 {
   .canonical_name = "basicfuncs",
-  .version = VERSION,
+  .version = SYSLOG_NG_VERSION,
   .description = "The basicfuncs module provides various template functions for syslog-ng.",
-  .core_revision = SOURCE_REVISION,
+  .core_revision = SYSLOG_NG_SOURCE_REVISION,
   .plugins = basicfuncs_plugins,
   .plugins_len = G_N_ELEMENTS(basicfuncs_plugins),
 };

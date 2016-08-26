@@ -1,18 +1,19 @@
 /*
- * Copyright (c) 2010-2015 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2010-2015 Balabit
  * Copyright (c) 2010-2015 Viktor Juhasz <viktor.juhasz@balabit.com>
  *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published
- * by the Free Software Foundation, or (at your option) any later version.
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * As an additional exemption you are allowed to compile & link against the
@@ -24,7 +25,7 @@
 #include "java-logmsg-proxy.h"
 #include "java_machine.h"
 #include "messages.h"
-#include "logmsg.h"
+#include "logmsg/logmsg.h"
 
 
 #define LOG_MESSAGE "org.syslog_ng.LogMessage"
@@ -77,16 +78,14 @@ __load_object(JavaLogMessageProxy *self)
   self->loaded_class = java_machine_load_class(self->java_machine, LOG_MESSAGE, NULL);
   if (!self->loaded_class) {
       msg_error("Can't find class",
-                evt_tag_str("class_name", LOG_MESSAGE),
-                NULL);
+                evt_tag_str("class_name", LOG_MESSAGE));
       return FALSE;
   }
 
   self->mi_constructor = CALL_JAVA_FUNCTION(java_env, GetMethodID, self->loaded_class, "<init>", "(J)V");
   if (!self->mi_constructor) {
       msg_error("Can't find default constructor for class",
-                evt_tag_str("class_name", LOG_MESSAGE),
-                NULL);
+                evt_tag_str("class_name", LOG_MESSAGE));
       return FALSE;
   }
 
@@ -101,8 +100,7 @@ java_log_message_proxy_create_java_object(JavaLogMessageProxy *self, LogMessage 
   if (!jmsg)
     {
       msg_error("Can't create object",
-                evt_tag_str("class_name", LOG_MESSAGE),
-                NULL);
+                evt_tag_str("class_name", LOG_MESSAGE));
     }
   return jmsg;
 }

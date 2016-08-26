@@ -1,18 +1,19 @@
 /*
- * Copyright (c) 2014 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2014 Balabit
  * Copyright (c) 2014 Viktor Juhasz <viktor.juhasz@balabit.com>
  *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published
- * by the Free Software Foundation, or (at your option) any later version.
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * As an additional exemption you are allowed to compile & link against the
@@ -26,7 +27,7 @@
 #include "stats/stats.h"
 #include "logqueue.h"
 #include "driver.h"
-#include "misc.h"
+#include "str-utils.h"
 
 #include <stdio.h>
 
@@ -118,9 +119,7 @@ java_dd_init(LogPipe *s)
     {
       msg_error("Can't compile template",
                 evt_tag_str("template", self->template_string),
-                evt_tag_str("error", error->message),
-                NULL
-      );
+                evt_tag_str("error", error->message));
       return FALSE;
     }
 
@@ -197,14 +196,34 @@ java_worker_thread_deinit(LogThrDestDriver *d)
   java_machine_detach_thread();
 }
 
+static const gchar *
+java_dd_format_persist_name(const LogPipe *s)
+{
+  const JavaDestDriver *self = (const JavaDestDriver *)s;
+  static gchar persist_name[1024];
+
+  if (s->persist_name)
+    g_snprintf(persist_name, sizeof(persist_name), "java_dst.%s", s->persist_name);
+  else
+    g_snprintf(persist_name, sizeof(persist_name), "java_dst(%s)",
+               java_destination_proxy_get_name_by_uniq_options(self->proxy));
+
+  return persist_name;
+}
+
 static gchar *
 java_dd_format_stats_instance(LogThrDestDriver *d)
 {
   JavaDestDriver *self = (JavaDestDriver *)d;
   static gchar persist_name[1024];
 
-  g_snprintf(persist_name, sizeof(persist_name),
-            "java_dst(%s)", java_destination_proxy_get_name_by_uniq_options(self->proxy));
+  if (d->super.super.super.persist_name)
+    g_snprintf(persist_name, sizeof(persist_name), "java_dst,%s",
+               d->super.super.super.persist_name);
+  else
+    g_snprintf(persist_name, sizeof(persist_name), "java_dst,%s",
+               java_destination_proxy_get_name_by_uniq_options(self->proxy));
+
   return persist_name;
 }
 
@@ -227,8 +246,7 @@ static void
 __retry_over_message(LogThrDestDriver *s, LogMessage *msg)
 {
   msg_error("Multiple failures while inserting this record to the java destination, message dropped",
-            evt_tag_int("number_of_retries", s->retries.max),
-            NULL);
+            evt_tag_int("number_of_retries", s->retries.max));
 }
 
 LogTemplateOptions *
@@ -248,6 +266,7 @@ java_dd_new(GlobalConfig *cfg)
   self->super.super.super.super.free_fn = java_dd_free;
   self->super.super.super.super.init = java_dd_init;
   self->super.super.super.super.deinit = java_dd_deinit;
+  self->super.super.super.super.generate_persist_name = java_dd_format_persist_name;
 
   self->super.worker.thread_deinit = java_worker_thread_deinit;
   self->super.worker.insert = java_worker_insert;
@@ -256,7 +275,6 @@ java_dd_new(GlobalConfig *cfg)
   self->super.worker.worker_message_queue_empty = java_worker_message_queue_empty;
 
   self->super.format.stats_instance = java_dd_format_stats_instance;
-  self->super.format.persist_name = java_dd_format_stats_instance;
   self->super.messages.retry_over = __retry_over_message;
   self->super.stats_source = SCS_JAVA;
 

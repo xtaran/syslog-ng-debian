@@ -1,3 +1,26 @@
+/*
+ * Copyright (c) 2010-2014 Balabit
+ * Copyright (c) 2010-2014 Balázs Scheidler <balazs.scheidler@balabit.com>
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License version 2 as published
+ * by the Free Software Foundation, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ * As an additional exemption you are allowed to compile & link against the
+ * OpenSSL libraries as published by the OpenSSL project. See the file
+ * COPYING for details.
+ *
+ */
+
 gboolean fail = FALSE;
 gboolean verbose = FALSE;
 
@@ -15,18 +38,22 @@ do { \
 
 
 gchar *pdb_parser_skeleton_prefix ="<?xml version='1.0' encoding='UTF-8'?>\
-          <patterndb version='3' pub_date='2010-02-22'>\
-            <ruleset name='test1_program' id='480de478-d4a6-4a7f-bea4-0c0245d361e1'>\
-                <pattern>test</pattern>\
-                    <rule id='1' class='test1' provider='my'>\
-                        <patterns>\
-                         <pattern>";
+<patterndb version='4' pub_date='2010-02-22'>\
+  <ruleset name='test1_program' id='480de478-d4a6-4a7f-bea4-0c0245d361e1'>\
+    <patterns>\
+      <pattern>test</pattern>\
+    </patterns>\
+    <rules>\
+      <rule id='1' class='test1' provider='my'>\
+        <patterns>\
+          <pattern>" /* HERE COMES THE GENERATED PATTERN */ ;
 
-gchar *pdb_parser_skeleton_postfix =  "</pattern>\
-                      </patterns>\
-                    </rule>\
-            </ruleset>\
-        </patterndb>";
+gchar *pdb_parser_skeleton_postfix =  /* HERE IS THE GENERATED PATTERN */ "</pattern>\
+        </patterns>\
+      </rule>\
+    </rules>\
+  </ruleset>\
+</patterndb>";
 
 
 void
@@ -57,7 +84,7 @@ void
 test_parser(gchar **test)
 {
   GString *str;
-  gint index = 1;
+  gsize i = 1;
 
   str = g_string_new(pdb_parser_skeleton_prefix);
   g_string_append(str, test[0]);
@@ -65,11 +92,11 @@ test_parser(gchar **test)
 
   _load_pattern_db_from_string(str->str);
   g_string_free(str, TRUE);
-  while(test[index] != NULL)
-    test_pattern(test[index++], test[0], TRUE);
-  index++;
-  while(test[index] != NULL)
-    test_pattern(test[index++], test[0], FALSE);
+  while(test[i] != NULL)
+    test_pattern(test[i++], test[0], TRUE);
+  i++;
+  while(test[i] != NULL)
+    test_pattern(test[i++], test[0], FALSE);
 
   _destroy_pattern_db();
 }

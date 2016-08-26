@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2015 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2002-2015 Balabit
  * Copyright (c) 1998-2015 Balázs Scheidler
  *
  * This library is free software; you can redistribute it and/or
@@ -28,6 +28,7 @@
 #include "messages.h"
 #include "dnscache.h"
 
+#include <unistd.h>
 #include <arpa/inet.h>
 #include <string.h>
 
@@ -136,13 +137,11 @@ detect_local_fqdn_hostname(void)
       hostname = get_local_fqdn_hostname_from_dns();
       if (!hostname)
         {
-          msg_verbose("Unable to detect fully qualified hostname for localhost, use_fqdn() will use the short hostname",
-                      NULL);
+          msg_verbose("Unable to detect fully qualified hostname for localhost, use_fqdn() will use the short hostname");
           hostname = get_local_hostname_from_system();
           if (!hostname[0])
             {
-              msg_error("Could not resolve local hostname either from the DNS nor gethostname(), assuming localhost",
-                        NULL);
+              msg_error("Could not resolve local hostname either from the DNS nor gethostname(), assuming localhost");
               hostname = g_strdup("localhost");
             }
         }

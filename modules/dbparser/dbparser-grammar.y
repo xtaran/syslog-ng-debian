@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2013 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2002-2013 Balabit
  * Copyright (c) 1998-2013 Balázs Scheidler
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -30,13 +30,16 @@
 %code {
 
 #include "dbparser.h"
+#include "cfg-grammar.h"
+#include "groupingby.h"
 #include "cfg-parser.h"
 #include "dbparser-grammar.h"
 #include "syslog-names.h"
 #include "messages.h"
+#include "filter/filter-expr.h"
 #include <string.h>
-extern LogParser *last_parser;
 
+SyntheticMessage *last_message;
 }
 
 %name-prefix "dbparser_"
@@ -153,26 +156,6 @@ extern LogParser *last_parser;
 /* source & destination items */
 %token KW_INTERNAL                    10010
 %token KW_FILE                        10011
-
-%token KW_SQL                         10030
-%token KW_TYPE                        10031
-%token KW_COLUMNS                     10032
-%token KW_INDEXES                     10033
-%token KW_VALUES                      10034
-%token KW_PASSWORD                    10035
-%token KW_DATABASE                    10036
-%token KW_USERNAME                    10037
-%token KW_TABLE                       10038
-%token KW_ENCODING                    10039
-%token KW_SESSION_STATEMENTS          10040
-
-%token KW_DELIMITERS                  10050
-%token KW_QUOTES                      10051
-%token KW_QUOTE_PAIRS                 10052
-%token KW_NULL                        10053
-%token KW_CHARS                       10054
-%token KW_STRINGS                     10055
-
 %token KW_SYSLOG                      10060
 
 /* option items */
@@ -187,6 +170,8 @@ extern LogParser *last_parser;
 %token KW_FILE_TEMPLATE               10079
 %token KW_PROTO_TEMPLATE              10080
 %token KW_MARK_MODE                   10081
+%token KW_ENCODING                    10082
+%token KW_TYPE                        10083
 
 %token KW_CHAIN_HOSTNAMES             10090
 %token KW_NORMALIZE_HOSTNAMES         10091
@@ -225,6 +210,8 @@ extern LogParser *last_parser;
 %token KW_THROTTLE                    10170
 %token KW_THREADED                    10171
 %token KW_PASS_UNIX_CREDENTIALS       10231
+
+%token KW_PERSIST_NAME                10302
 
 /* log statement options */
 %token KW_FLAGS                       10190
@@ -283,13 +270,8 @@ extern LogParser *last_parser;
 
 /* parser items */
 
-%token KW_VALUE                       10361
-
 /* rewrite items */
-
 %token KW_REWRITE                     10370
-%token KW_SET                         10371
-%token KW_SUBST                       10372
 
 /* yes/no switches */
 
@@ -311,9 +293,10 @@ extern LogParser *last_parser;
 %token LL_EOL                         10428
 %token LL_ERROR                       10429
 
+%destructor { free($$); } <cptr>
+
 /* value pairs */
 %token KW_VALUE_PAIRS                 10500
-%token KW_SELECT                      10501
 %token KW_EXCLUDE                     10502
 %token KW_PAIR                        10503
 %token KW_KEY                         10504
@@ -375,9 +358,22 @@ extern LogParser *last_parser;
 
 
 %token KW_DB_PARSER
+%token KW_GROUPING_BY
 %token KW_INJECT_MODE
+%token KW_KEY
+%token KW_SCOPE
+%token KW_INHERIT_MODE
+%token KW_TIMEOUT
+%token KW_TRIGGER
+%token KW_WHERE
+%token KW_HAVING
+%token KW_AGGREGATE
+%token KW_VALUE
 
 %type <num> stateful_parser_inject_mode
+%type <ptr> synthetic_message
+%type <num> inherit_mode
+%type <num> context_scope
 
 %%
 
@@ -392,6 +388,11 @@ parser_expr_db
           }
           parser_db_opts
           ')'
+	| KW_GROUPING_BY '('
+	  {
+	    last_parser = *instance = grouping_by_new(configuration);
+	  }
+          grouping_by_opts ')'
         ;
 
 parser_db_opts
@@ -419,6 +420,80 @@ stateful_parser_inject_mode
           }
 	| KW_INTERNAL				{ $$ = stateful_parser_lookup_inject_mode("internal"); }
 	;
+
+grouping_by_opts
+	: grouping_by_opt grouping_by_opts
+	|
+	;
+
+grouping_by_opt
+	: KW_KEY '(' template_content ')'                       { grouping_by_set_key_template(last_parser, $3); log_template_unref($3); }
+        | KW_SCOPE '(' context_scope ')'                        { grouping_by_set_scope(last_parser, $3); }
+        | KW_WHERE '('
+          {
+            FilterExprNode *filter_expr;
+
+            CHECK_ERROR_WITHOUT_MESSAGE(cfg_parser_parse(&filter_expr_parser, lexer, (gpointer *) &filter_expr, NULL), @1);
+            grouping_by_set_where_condition(last_parser, filter_expr);
+          } ')'
+        | KW_HAVING '('
+          {
+            FilterExprNode *filter_expr;
+
+            CHECK_ERROR_WITHOUT_MESSAGE(cfg_parser_parse(&filter_expr_parser, lexer, (gpointer *) &filter_expr, NULL), @1);
+            grouping_by_set_having_condition(last_parser, filter_expr);
+          } ')'
+	| KW_TIMEOUT '(' LL_NUMBER ')'				{ grouping_by_set_timeout(last_parser, $3); }
+	| KW_AGGREGATE '(' synthetic_message ')'		{ grouping_by_set_synthetic_message(last_parser, $3); }
+	| KW_TRIGGER '('
+          {
+            FilterExprNode *filter_expr;
+
+            CHECK_ERROR_WITHOUT_MESSAGE(cfg_parser_parse(&filter_expr_parser, lexer, (gpointer *) &filter_expr, NULL), @1);
+            grouping_by_set_trigger_condition(last_parser, filter_expr);
+          } ')'
+	| stateful_parser_opt
+	;
+
+synthetic_message
+	: { last_message = synthetic_message_new(); } synthetic_message_opts { $$ = last_message; }
+	;
+
+
+synthetic_message_opts
+	: synthetic_message_opt synthetic_message_opts
+	|
+	;
+
+synthetic_message_opt
+	: KW_INHERIT_MODE '(' inherit_mode ')'                  { synthetic_message_set_inherit_mode(last_message, $3); }
+	| KW_VALUE '(' string template_content ')'
+	  {
+	    synthetic_message_add_value_template(last_message, $3, $4);
+	    free($3);
+            log_template_unref($4);
+	  }
+	| KW_TAGS '(' string ')'				{ synthetic_message_add_tag(last_message, $3); free($3); }
+	;
+
+inherit_mode
+        : string
+          {
+            $$ = synthetic_message_lookup_inherit_mode($1);
+            free($1);
+            CHECK_ERROR($$ >= 0, @1, "unknown inherit-mode()");
+          }
+        ;
+
+context_scope
+        : string
+          {
+            $$ = correllation_key_lookup_scope($1);
+            free($1);
+            CHECK_ERROR($$ >= 0, @1, "unknown context-scope()");
+          }
+        ;
+
 
 
 source_content
@@ -723,10 +798,17 @@ source_option
 	| KW_KEEP_TIMESTAMP '(' yesno ')'	{ last_source_options->keep_timestamp = $3; }
         | KW_TAGS '(' string_list ')'		{ log_source_options_set_tags(last_source_options, $3); }
         | { last_host_resolve_options = &last_source_options->host_resolve_options; } host_resolve_option
+        | driver_option
         ;
 
 source_proto_option
-        : KW_ENCODING '(' string ')'		{ last_proto_server_options->encoding = g_strdup($3); free($3); }
+        : KW_ENCODING '(' string ')'
+          {
+            CHECK_ERROR(log_proto_server_options_set_encoding(last_proto_server_options, $3),
+                        @3,
+                        "unknown encoding %s", $3);
+            free($3);
+          }
 	| KW_LOG_MSG_SIZE '(' LL_NUMBER ')'	{ last_proto_server_options->max_msg_size = $3; }
         ;
 
@@ -777,6 +859,10 @@ source_reader_option_flags
 	|
 	;
 
+driver_option
+    : KW_PERSIST_NAME '(' string ')' { log_pipe_set_persist_name(&last_driver->super, g_strdup($3)); free($3); }
+    ;
+
 threaded_dest_driver_option
 	: KW_RETRIES '(' LL_NUMBER ')'
         {
@@ -806,6 +892,7 @@ dest_driver_option
               }
             log_driver_add_plugin(last_driver, (LogDriverPlugin *) value);
           }
+    | driver_option
         ;
 
 dest_writer_options
@@ -847,21 +934,17 @@ dest_writer_options_flags
 
 file_perm_option
 	: KW_OWNER '(' string_or_number ')'	{ file_perm_options_set_file_uid(last_file_perm_options, $3); free($3); }
-	| KW_OWNER '(' ')'	                { file_perm_options_set_file_uid(last_file_perm_options, "-2"); }
+	| KW_OWNER '(' ')'	                { file_perm_options_dont_change_file_uid(last_file_perm_options); }
 	| KW_GROUP '(' string_or_number ')'	{ file_perm_options_set_file_gid(last_file_perm_options, $3); free($3); }
-	| KW_GROUP '(' ')'	                { file_perm_options_set_file_gid(last_file_perm_options, "-2"); }
+	| KW_GROUP '(' ')'	                { file_perm_options_dont_change_file_gid(last_file_perm_options); }
 	| KW_PERM '(' LL_NUMBER ')'		{ file_perm_options_set_file_perm(last_file_perm_options, $3); }
-	| KW_PERM '(' ')'		        { file_perm_options_set_file_perm(last_file_perm_options, -2); }
-        ;
-
-file_dir_perm_option
-        : file_perm_option
+	| KW_PERM '(' ')'		        { file_perm_options_dont_change_file_perm(last_file_perm_options); }
         | KW_DIR_OWNER '(' string_or_number ')'	{ file_perm_options_set_dir_uid(last_file_perm_options, $3); free($3); }
-	| KW_DIR_OWNER '(' ')'	                { file_perm_options_set_dir_uid(last_file_perm_options, "-2"); }
+	| KW_DIR_OWNER '(' ')'	                { file_perm_options_dont_change_dir_uid(last_file_perm_options); }
 	| KW_DIR_GROUP '(' string_or_number ')'	{ file_perm_options_set_dir_gid(last_file_perm_options, $3); free($3); }
-	| KW_DIR_GROUP '(' ')'	                { file_perm_options_set_dir_gid(last_file_perm_options, "-2"); }
+	| KW_DIR_GROUP '(' ')'	                { file_perm_options_dont_change_dir_gid(last_file_perm_options); }
 	| KW_DIR_PERM '(' LL_NUMBER ')'		{ file_perm_options_set_dir_perm(last_file_perm_options, $3); }
-	| KW_DIR_PERM '(' ')'		        { file_perm_options_set_dir_perm(last_file_perm_options, -2); }
+	| KW_DIR_PERM '(' ')'		        { file_perm_options_dont_change_dir_perm(last_file_perm_options); }
         ;
 
 template_option

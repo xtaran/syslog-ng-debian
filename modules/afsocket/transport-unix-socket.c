@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2014 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2002-2014 Balabit
  * Copyright (c) 1998-2013 Balázs Scheidler
  * Copyright (c) 2014 Gergely Nagy
  *
@@ -31,6 +31,8 @@
 #include <sys/stat.h>
 #include <sys/socket.h>
 #include <fcntl.h>
+#include <errno.h>
+#include <unistd.h>
 
 static void
 _add_nv_pair_int(LogTransportAuxData *aux, const gchar *name, gint value)
@@ -213,7 +215,7 @@ _unix_socket_read(gint fd, gpointer buf, gsize buflen, LogTransportAuxData *aux)
   struct msghdr msg;
   struct iovec iov[1];
   struct sockaddr_storage ss;
-#if defined(HAVE_CTRLBUF_IN_MSGHDR)
+#if defined(SYSLOG_NG_HAVE_CTRLBUF_IN_MSGHDR)
   gchar ctlbuf[32];
   msg.msg_control = ctlbuf;
   msg.msg_controllen = sizeof(ctlbuf);

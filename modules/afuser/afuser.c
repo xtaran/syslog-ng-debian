@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2012 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2002-2012 Balabit
  * Copyright (c) 1998-2012 Balázs Scheidler
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -28,6 +28,7 @@
 #include <string.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <errno.h>
 
 typedef struct _AFUserDestDriver
 {
@@ -36,7 +37,7 @@ typedef struct _AFUserDestDriver
   time_t disable_until;
 } AFUserDestDriver;
 
-#ifdef HAVE_UTMPX_H
+#ifdef SYSLOG_NG_HAVE_UTMPX_H
 
 typedef struct utmpx UtmpEntry;
 
@@ -73,7 +74,7 @@ _close_utmp(void)
 static gboolean
 _utmp_entry_matches(UtmpEntry *ut, GString *username)
 {
-#ifdef HAVE_MODERN_UTMP
+#ifdef SYSLOG_NG_HAVE_MODERN_UTMP
   if (ut->ut_type != USER_PROCESS)
     return FALSE;
 #endif
@@ -81,7 +82,7 @@ _utmp_entry_matches(UtmpEntry *ut, GString *username)
   if (strcmp(username->str, "*") == 0)
     return TRUE;
 
-#ifdef HAVE_MODERN_UTMP
+#ifdef SYSLOG_NG_HAVE_MODERN_UTMP
   if (strncmp(username->str, ut->ut_user, sizeof(ut->ut_user)) == 0)
 #else
   if (strncmp(username->str, ut->ut_name, sizeof(ut->ut_name)) == 0)
@@ -132,21 +133,19 @@ afuser_dd_queue(LogPipe *s, LogMessage *msg, const LogPathOptions *path_options,
             line[0] = 0;
           strncpy(p, ut->ut_line, sizeof(line) - (p - line));
           msg_debug("Posting message to user terminal",
-#ifdef HAVE_MODERN_UTMP
+#ifdef SYSLOG_NG_HAVE_MODERN_UTMP
                     evt_tag_str("user", ut->ut_user),
 #else
                     evt_tag_str("user", ut->ut_name),
 #endif
-                    evt_tag_str("line", line),
-                    NULL);
+                    evt_tag_str("line", line));
           fd = open(line, O_NOCTTY | O_APPEND | O_WRONLY | O_NONBLOCK);
           if (fd != -1) 
             {
               if (write(fd, buf, strlen(buf)) < 0 && errno == EAGAIN)
                 {
                   msg_notice("Writing to the user terminal has blocked for writing, disabling for 10 minutes",
-                            evt_tag_str("user", self->username->str),
-                            NULL);
+                            evt_tag_str("user", self->username->str));
                   self->disable_until = now + 600;
                 }
               close(fd);

@@ -1,3 +1,26 @@
+#############################################################################
+# Copyright (c) 2016 Balabit
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+#
+# As an additional exemption you are allowed to compile & link against the
+# OpenSSL libraries as published by the OpenSSL project. See the file
+# COPYING for details.
+#
+#############################################################################
+
 dnl Process this file with autoconf to produce a configure script.
 dnl
 dnl There are a couple of environment defined variables which this script
@@ -8,15 +31,11 @@ dnl SNAPSHOT_VERSION   - snapshot version to add to version number
 dnl BINARY_BRANCH      - the value is added to all source/binary packages
 dnl SOURCE_REVISION    - Revision of the source-tree, will added to the version string
 dnl
-AC_INIT(syslog-ng/main.c)
+
+AC_INIT([syslog-ng], m4_esyscmd([tr -d '\n' < VERSION]))
+AC_CONFIG_SRCDIR([syslog-ng/main.c])
 AC_CONFIG_MACRO_DIR([m4])
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
-
-dnl ***************************************************************************
-dnl definitions
-
-PACKAGE="syslog-ng"
-VERSION="`cat $srcdir/VERSION`"
 
 dnl ***************************************************************************
 dnl dependencies
@@ -24,17 +43,19 @@ dnl dependencies
 GLIB_MIN_VERSION="2.10.1"
 EVTLOG_MIN_VERSION="0.2.12"
 OPENSSL_MIN_VERSION="0.9.8"
-LIBDBI_MIN_VERSION="0.8.0"
+LIBDBI_MIN_VERSION="0.9.0"
+LIBRABBITMQ_MIN_VERSION="0.5.3"
 IVYKIS_MIN_VERSION="0.36.1"
 JSON_C_MIN_VERSION="0.9"
 PCRE_MIN_VERSION="6.1"
-LMC_MIN_VERSION="0.1.8"
+LMC_MIN_VERSION="1.0.0"
 LRMQ_MIN_VERSION="0.0.1"
 LRC_MIN_VERSION="1.6.0"
 JOURNALD_MIN_VERSION="195"
 LIBSYSTEMD_MIN_VERSION="209"
 JAVA_MIN_VERSION="1.7"
 GRADLE_MIN_VERSION="2.2"
+HIREDIS_MIN_VERSION="0.11.0"
 
 dnl ***************************************************************************
 dnl Initial setup
@@ -58,10 +79,10 @@ else
         CURRDATE=`date +"%a, %d %b %Y %H:%M:%S %Z"`
 fi
 
-AM_INIT_AUTOMAKE($PACKAGE, $VERSION, [foreign no-define subdir-objects])
+AM_INIT_AUTOMAKE([foreign no-define subdir-objects])
 _AM_PROG_TAR([ustar])
 if test -n "$SNAPSHOT_VERSION"; then
-	VERSION=$VERSION+$SNAPSHOT_VERSION
+	PACKAGE_VERSION=$PACKAGE_VERSION+$SNAPSHOT_VERSION
 fi
 
 if test "x$prefix" = "xNONE"; then
@@ -72,6 +93,11 @@ if test "x$exec_prefix" = "xNONE"; then
 fi
 pidfiledir='${localstatedir}'
 moduledir='${exec_prefix}/lib/syslog-ng'
+toolsdir='${datadir}/syslog-ng/tools'
+xsddir='${datadir}/syslog-ng/xsd'
+
+config_includedir='${datadir}/syslog-ng/include'
+scldir="${config_includedir}/scl"
 
 AC_CONFIG_HEADERS(config.h)
 
@@ -108,6 +134,9 @@ AC_ARG_WITH([systemdsystemunitdir],
 
 AC_ARG_ENABLE(debug,
               [  --enable-debug      Enable debugging code.],, enable_debug="no")
+
+AC_ARG_ENABLE(extra-warnings,
+              [  --enable-extra-warnings      Enable extra compiler warnings (recommended).],, enable_extra_warnings="no")
 
 AC_ARG_ENABLE(env-wrapper,
               [  --enable-env-wrapper    Enable wrapper program to set up various environment variables],, enable_env_wrapper=auto)
@@ -158,10 +187,15 @@ AC_ARG_ENABLE(mongodb,
 	      [  --enable-mongodb        Enable mongodb destination (default: auto)]
               ,,enable_mongodb="auto")
 
-AC_ARG_WITH(libmongo-client,
-              [  --with-libmongo-client=[system/internal/auto/no]
-                                         Link against the system supplied or the built-in libmongo-client library. (default: auto)]
-              ,,with_libmongo_client="auto")
+AC_ARG_WITH(mongoc,
+              [  --with-mongoc=[system/internal/auto/no]
+                                         Link against the system supplied or the built-in mongo-c-driver library. (default: auto)]
+              ,,with_mongoc="auto")
+
+AC_ARG_ENABLE(legacy-mongodb-options,
+              [  --enable-legacy-mongodb-options=[yes/no]
+                                         Support libmongo-client non-URI MongoDB options. (default: yes)]
+              ,,enable_legacy_mongodb_options="yes")
 
 AC_ARG_WITH(jsonc,
               [  --with-jsonc=[system/internal/auto/no]
@@ -197,6 +231,14 @@ AC_ARG_ENABLE(smtp,
 AC_ARG_WITH(libesmtp,
              AC_HELP_STRING([--with-libesmtp=DIR],
                             [use libesmtp library from (prefix) directory DIR]),,)
+
+AC_ARG_ENABLE(http,
+              [  --disable-http          Disable http support (default: auto)]
+              ,,enable_http="auto")
+
+AC_ARG_WITH(libcurl,
+             AC_HELP_STRING([--with-libcurl=DIR],
+                            [use libcurl library from (prefix) directory DIR]),,)
 
 AC_ARG_ENABLE(redis,
               [  --disable-redis          Disable REDIS support (default: auto)]
@@ -246,6 +288,12 @@ AC_ARG_ENABLE(manpages, AC_HELP_STRING([ --enable-manpages], [ Enable generation
 
 AC_ARG_ENABLE(java, [ --enable-java  Enable java destination (default: auto)],, enable_java="auto")
 
+AC_ARG_ENABLE(java-modules, [ --enable-java-modules  Compile all Java modules (default: auto)],, enable_java_modules="auto")
+
+AC_ARG_ENABLE(native,
+              [  --enable-native        Enable native bindings (default: auto)]
+              ,,enable_native="auto")
+
 AC_ARG_ENABLE(all-modules,
               [  --enable-all-modules    Forcibly enable all modules. (default: auto)]
               ,,enable_all_modules="auto")
@@ -254,7 +302,7 @@ if test "x$enable_all_modules" != "xauto"; then
    state="$enable_all_modules"
 
    MODULES="spoof_source sun_streams sql pacct mongodb json amqp stomp \
-            redis systemd geoip riemann ipv6 smtp"
+            redis systemd geoip riemann ipv6 smtp native python java java_modules"
    for mod in ${MODULES}; do
        modstate=$(eval echo \$enable_${mod})
        if test "x$modstate" = "xauto"; then
@@ -299,20 +347,18 @@ AC_PATH_PROG(PYTHON, python)
 dnl ***************************************************************************
 dnl Validate yacc
 
-yacc_ok=1
-if echo "$YACC" | grep bison > /dev/null; then
+yacc_ok=0
+if echo "$YACC" | grep -q bison; then
 	# NOTE: m4 removes [], that's why it needs to be escaped
-	bison_version=[`$YACC --version | head -n 1 | sed -e 's/[^0-9.]*\([-0-9.]\+\)$/\1/'`]
+	bison_version=`$YACC --version | head -n 1 | sed 's/@<:@^0-9.@:>@*//'`
 	bison_version_major=`echo $bison_version | cut -d. -f1`
 	bison_version_minor=`echo $bison_version | cut -d. -f2`
-	if test "$bison_version_major" -lt 2 -o "$bison_version_minor" -lt 4; then
-		yacc_ok=0
+	if test "$bison_version_major" -ge 2 -a "$bison_version_minor" -ge 4; then
+		yacc_ok=1
 	fi
 	if test "$bison_version_major" -gt 2; then
 		yacc_ok=1
 	fi
-else
-	yacc_ok=0
 fi
 
 if test $yacc_ok = 0; then
@@ -355,6 +401,8 @@ if test "x$ac_compiler_gnu" = "xyes"; then
         if test "x$enable_gcov" = "xyes"; then
                 CFLAGS="${CFLAGS} -fprofile-arcs -ftest-coverage"
         fi
+else
+        enable_extra_warnings="no"
 fi
 CFLAGS="${CFLAGS} -pthread"
 
@@ -387,6 +435,9 @@ case "$ostype" in
 		LDFLAGS="$LDFLAGS -Wl,-brtl"
 		MODULE_LDFLAGS="-avoid-version -module"
 		;;
+	Darwin)
+		MODULE_LDFLAGS="-avoid-version -dylib"
+    ;;
 	OSF1)
 		CFLAGS="${CFLAGS} -D_XOPEN_SOURCE=500 -D_XOPEN_SOURCE_EXTENDED -D_OSF_SOURCE -D_POSIX_C_SOURCE"
 		;;
@@ -417,6 +468,18 @@ elif test "x$enable_mixed_linking" = "xyes"; then
 	enable_dynamic_linking="no"
 	enable_mixed_linking="yes"
 	linking_mode="mixed"
+fi
+
+dnl ***************************************************************************
+dnl Check for --whole-archive flag
+dnl ***************************************************************************
+
+if test $ostype = "Darwin"; then
+  WHOLE_ARCHIVE_OPT="-all_load"
+  NO_WHOLE_ARCHIVE_OPT="-noall_load"
+else
+  WHOLE_ARCHIVE_OPT="--whole-archive"
+  NO_WHOLE_ARCHIVE_OPT="--no-whole-archive"
 fi
 
 dnl ***************************************************************************
@@ -666,24 +729,30 @@ elif test "x$enable_tcp_wrapper" != "xyes"; then
 fi
 
 dnl ***************************************************************************
-dnl libdbi headers/libraries
+dnl -ldl
 dnl ***************************************************************************
 
 AC_CHECK_LIB(dl, dlsym, DL_LIBS="-ldl")
-PKG_CHECK_MODULES(LIBDBI, dbi >= $LIBDBI_MIN_VERSION, libdbi_pkgconfig_not_found="0", libdbi_pkgconfig_not_found="1")
 
-if test "$libdbi_pkgconfig_not_found" -eq 1; then
-	dnl if libdbi has no .pc file, try it without one
-	AC_CHECK_LIB(dbi, dbi_initialize, LIBDBI_LIBS="-ldbi"; LIBDBI_CFLAGS="-I/usr/include")
-fi
+dnl ***************************************************************************
+dnl libdbi headers/libraries
+dnl ***************************************************************************
+if test "x$enable_sql" = "xyes" || test "x$enable_sql" = "xauto"; then
+	PKG_CHECK_MODULES(LIBDBI, dbi >= $LIBDBI_MIN_VERSION, with_libdbi="1", with_libdbi="0")
+	if test "$with_libdbi" -eq 0; then
+		dnl if libdbi has no .pc file (e.g., Ubuntu Precise), try it without one
+		AC_CHECK_LIB(dbi, dbi_initialize_r, LIBDBI_LIBS="-ldbi"; LIBDBI_CFLAGS="-I/usr/include/dbi"; with_libdbi="1")
+	fi
 
-if test "x$enable_sql" = "xauto"; then
 	AC_MSG_CHECKING(whether to enable SQL support)
-	if test "x$LIBDBI_LIBS" != "x"; then
+	if test "$with_libdbi" -eq 1; then
 		enable_sql="yes"
 		AC_MSG_RESULT(yes)
-	else
+	elif test "x$enable_sql" = "xyes"; then
+		AC_MSG_RESULT(no)
 		enable_sql="no"
+                AC_MSG_ERROR([Could not find libdbi, and SQL support was explicitly enabled.])
+        else
 		AC_MSG_RESULT(no)
 	fi
 fi
@@ -864,13 +933,13 @@ if test "x$with_ivykis" = "xinternal"; then
 		# these can only be used in lib as it assumes
 		# the current directory just one below ivykis
 
-		IVYKIS_LIBS="-Wl,--whole-archive -L\$(top_builddir)/lib/ivykis/src -livykis  -Wl,--no-whole-archive"
+		IVYKIS_LIBS="-Wl,${WHOLE_ARCHIVE_OPT} -L\$(top_builddir)/lib/ivykis/src -livykis -Wl,${NO_WHOLE_ARCHIVE_OPT}"
 		IVYKIS_CFLAGS="-I\$(top_srcdir)/lib/ivykis/src/include -I\$(top_builddir)/lib/ivykis/src/include"
 		IVYKIS_SUBDIRS=lib/ivykis
                 INTERNAL_IVYKIS_CFLAGS="-I\${includedir}/syslog-ng/ivykis"
 
 		# LIBS to use when libtool is not applicable (when linking the main syslog-ng executable in mixed linking mode)
-		IVYKIS_NO_LIBTOOL_LIBS="-Wl,--whole-archive -L\$(top_builddir)/lib/ivykis/src/.libs -livykis -Wl,--no-whole-archive"
+		IVYKIS_NO_LIBTOOL_LIBS="-Wl,${WHOLE_ARCHIVE_OPT} -L\$(top_builddir)/lib/ivykis/src/.libs -livykis -Wl,${NO_WHOLE_ARCHIVE_OPT}"
 	else
 		AC_MSG_ERROR([Internal ivykis sources not found in lib/ivykis. This is a hard dependency, unable to build syslog-ng without them.])
 	fi
@@ -918,36 +987,52 @@ if test "x$with_jsonc" = "xinternal" -o "x$with_jsonc" = "xauto"; then
 fi
 
 dnl ***************************************************************************
-dnl libmongo headers/libraries
+dnl mongo-c-driver headers/libraries
 dnl ***************************************************************************
 
-if test "x$with_libmongo_client" = "xauto"; then
-  with_libmongo_client="system"
-  PKG_CHECK_MODULES(LIBMONGO, libmongo-client >= $LMC_MIN_VERSION,,with_libmongo_client="auto-internal")
-elif test "x$with_libmongo_client" = "xsystem"; then
-  PKG_CHECK_MODULES(LIBMONGO, libmongo-client >= $LMC_MIN_VERSION)
+if test x"$enable_legacy_mongodb_options" = x"no"; then
+	enable_legacy_mongodb_options_bit=0
+else
+	enable_legacy_mongodb_options_bit=1
+fi
+AC_DEFINE_UNQUOTED(ENABLE_LEGACY_MONGODB_OPTIONS, [$enable_legacy_mongodb_options_bit], [Support libmongo-client non-URI MongoDB options])
+
+if test "x$with_mongoc" = "xauto"; then
+  with_mongoc="system"
+  PKG_CHECK_MODULES(LIBMONGO, libmongoc >= $LMC_MIN_VERSION,,with_mongoc="auto-internal")
+elif test "x$with_mongoc" = "xsystem"; then
+  PKG_CHECK_MODULES(LIBMONGO, libmongoc >= $LMC_MIN_VERSION)
 fi
 
-if test "x$with_libmongo_client" = "xinternal" || test "x$with_libmongo_client" = "xauto-internal"; then
-        with_libmongo_client="internal"
-	if test -f "$srcdir/modules/afmongodb/libmongo-client/src/mongo.h"; then
-		AC_CONFIG_SUBDIRS([modules/afmongodb/libmongo-client])
+if test "x$with_mongoc" = "xinternal" || test "x$with_mongoc" = "xauto-internal"; then
+        with_mongoc="internal"
+	if test -f "$srcdir/modules/afmongodb/mongo-c-driver/src/mongoc/mongoc.h"; then
+		AC_CONFIG_SUBDIRS([modules/afmongodb/mongo-c-driver])
 
 		# these can only be used in modules/mongodb as it assumes
-		# the current directory just one below libmongo-client
+		# the current directory just one below mongo-c-driver
 
-		LIBMONGO_LIBS="-L\$(top_builddir)/modules/afmongodb/libmongo-client/src -lmongo-client $OPENSSL_LIBS"
-		LIBMONGO_CFLAGS="-I\$(top_srcdir)/modules/afmongodb/libmongo-client/src"
-		LIBMONGO_SUBDIRS="modules/afmongodb/libmongo-client"
+		LIBMONGO_LIBS="\
+			-L\$(top_builddir)/modules/afmongodb/mongo-c-driver \
+			-L\$(top_builddir)/modules/afmongodb/mongo-c-driver/src/libbson \
+			-lmongoc-1.0 -lbson $OPENSSL_LIBS"
+		LIBMONGO_CFLAGS="\
+			-I\$(top_srcdir)/modules/afmongodb/mongo-c-driver/src/mongoc \
+			-I\$(top_srcdir)/modules/afmongodb/mongo-c-driver/src/libbson/src/bson \
+			-I\$(top_builddir)/modules/afmongodb/mongo-c-driver/src/libbson/src/bson \
+			-I\$(top_builddir)/modules/afmongodb/mongo-c-driver/src/mongoc \
+		"
+		LIBMONGO_SUBDIRS="modules/afmongodb/mongo-c-driver"
+		AC_CHECK_LIB(sasl2, prop_get, LIBMONGO_LIBS="$LIBMONGO_LIBS -lsasl2")
 	else
-		AC_MSG_WARN([Internal libmongo-client sources not found in modules/afmongodb/libmongo-client])
-		with_libmongo_client="no"
+		AC_MSG_WARN([Internal mongo-c-driver sources not found in modules/afmongodb/mongo-c-driver])
+		with_mongoc="no"
 	fi
 fi
 
-if test "x$with_libmongo_client" = "xno"; then
+if test "x$with_mongoc" = "xno"; then
    if test "x$enable_mongodb" = "xyes"; then
-      AC_MSG_ERROR([Could not find libmongo-client, and MongoDB support was explicitly enabled.])
+      AC_MSG_ERROR([Could not find mongo-c-driver, and MongoDB support was explicitly enabled.])
    fi
    enable_mongodb="no"
 fi
@@ -955,9 +1040,9 @@ fi
 dnl ***************************************************************************
 dnl libesmtp headers/libraries
 dnl ***************************************************************************
-if test "x$enable_smtp" != "xno" && test "x$with_libesmtp" != "no"; then
+if test "x$enable_smtp" != "xno" && test "x$with_libesmtp" != "xno"; then
 	libesmtp="yes"
-	if test "x$with_libesmtp" != "yes" && test "x$with_libesmtp" != "x"; then
+	if test "x$with_libesmtp" != "xyes" && test "x$with_libesmtp" != "x"; then
 		CPPFLAGS_SAVE="$CPPFLAGS"
 		LDFLAGS_SAVE="$LDFLAGS"
 		CPPFLAGS="$CPPFLAGS -I$with_libesmtp/include"
@@ -984,11 +1069,42 @@ if test "x$enable_smtp" != "xno" && test "x$with_libesmtp" != "no"; then
 fi
 
 dnl ***************************************************************************
+dnl libcurl headers/libraries
+dnl ***************************************************************************
+if test "x$enable_http" != "xno" && test "x$with_libcurl" != "xno"; then
+	libcurl="yes"
+	if test "x$with_libcurl" != "xyes" && test "x$with_libcurl" != "x"; then
+		CPPFLAGS_SAVE="$CPPFLAGS"
+		LDFLAGS_SAVE="$LDFLAGS"
+		CPPFLAGS="$CPPFLAGS -I$with_libcurl/include"
+		LDFLAGS="$LDFLAGS -L$with_libcurl/lib"
+		AC_CHECK_HEADER(curl/curl.h, [LIBCURL_CFLAGS="-I$with_libcurl/include"
+					     LIBCURL_LIBS="-L$with_libcurl/lib -lcurl"], [libcurl=no])
+		CPPFLAGS="$CPPFLAGS_SAVE"
+		LDFLAGS="$LDFLAGS_SAVE"
+	else
+		AC_MSG_CHECKING(for libcurl)
+		if curl-config --version >/dev/null 2>&1; then
+			AC_MSG_RESULT(yes)
+			LIBCURL_CFLAGS="`curl-config --cflags`"
+			LIBCURL_LIBS="`curl-config --libs`"
+		else
+			AC_MSG_RESULT(no)
+			libcurl=no
+		fi
+	fi
+	if test "x$enable_http" = "xyes" && test "x$libcurl" = "xno"; then
+		AC_MSG_ERROR(libcurl not found)
+	fi
+	enable_http=$libcurl
+fi
+
+dnl ***************************************************************************
 dnl libhiredis headers/libraries
 dnl ***************************************************************************
-if test "x$enable_redis" != "xno" && test "x$with_redis" != "no"; then
+if test "x$enable_redis" != "xno" && test "x$with_redis" != "xno"; then
        hiredis="yes"
-       if test "x$with_libhiredis" != "yes" && test "x$with_libhiredis" != "x"; then
+       if test "x$with_libhiredis" != "xyes" && test "x$with_libhiredis" != "x"; then
                CFLAGS_SAVE="$CFLAGS"
                LDFLAGS_SAVE="$LDFLAGS"
                CFLAGS="$CFLAGS -I$with_libhiredis/include"
@@ -999,9 +1115,11 @@ if test "x$enable_redis" != "xno" && test "x$with_redis" != "no"; then
                LDFLAGS="$LDFLAGS_SAVE"
        else
                hiredis="yes"
-               PKG_CHECK_MODULES(HIREDIS, hiredis, ,
-                                 [PKG_CHECK_MODULES(HIREDIS, libhiredis,,
-                                  [AC_CHECK_HEADER(hiredis/hiredis.h, [HIREDIS_LIBS="-lhiredis"], [hiredis=no])])])
+               PKG_CHECK_MODULES(HIREDIS, hiredis >= $HIREDIS_MIN_VERSION, ,
+                                 [AC_MSG_WARN([pkg-config was not able to find hiredis >= $HIREDIS_MIN_VERSION])
+				  PKG_CHECK_MODULES(HIREDIS, libhiredis >= $HIREDIS_MIN_VERSION,,
+				  [AC_MSG_WARN([pkg-config was not able to find libhiredis >= $HIREDIS_MIN_VERSION])
+				   hiredis=no])])
        fi
 
        if test "x$enable_redis" = "xyes" && test "x$hiredis" = "xno"; then
@@ -1039,7 +1157,7 @@ if test "x$with_librabbitmq_client" = "xinternal"; then
         with_librabbitmq_client="no"
     fi
 elif test "x$with_librabbitmq_client" = "xsystem"; then
-    AC_MSG_ERROR([Building with system librabbitmq is not supported yet.])
+    PKG_CHECK_MODULES(LIBRABBITMQ, librabbitmq >= $LIBRABBITMQ_MIN_VERSION, , enable_amqp = "no")
 fi
 
 if test "x$with_librabbitmq_client" = "xno"; then
@@ -1053,6 +1171,10 @@ fi
 if test "x$enable_amqp" = "xno"; then
    with_librabbitmq_client="no"
    LIBRABBITMQ_SUBDIRS=""
+fi
+
+if test "x$enable_native" = "xyes" -o "x$enable_native" = "xauto"; then
+    AC_CONFIG_FILES([syslog-ng-native-connector.pc])
 fi
 
 dnl ***************************************************************************
@@ -1074,7 +1196,7 @@ dnl ***************************************************************************
 dnl python checks
 dnl ***************************************************************************
 if test "x$enable_python" != "xno"; then
-  if test "x$with_python" != "xno"; then
+  if test "x$with_python" != "xauto"; then
     case "$with_python" in
       auto)
           with_python="python"
@@ -1086,14 +1208,15 @@ if test "x$enable_python" != "xno"; then
           with_python="python-${with_python}"
           ;;
     esac
-    PKG_CHECK_MODULES(PYTHON, $with_python >= 2.6, enable_python="yes", enable_python="no")
-    if test "x$enable_python" = "xno"; then
-      AC_MSG_ERROR([Could not find the requested Python development libraries])
-    fi
   else
-    enable_python="no"
-    with_python=""
+    with_python="python"
   fi
+
+  PKG_CHECK_MODULES(PYTHON, $with_python >= 2.6, python_found="yes", python_found="no")
+  if test "x$enable_python" = "xyes" -a "x$python_found" = "xno"; then
+    AC_MSG_ERROR([Could not find the requested Python development libraries])
+  fi
+  enable_python="$python_found" 
 else
   with_python=""
 fi
@@ -1105,10 +1228,25 @@ dnl ***************************************************************************
 if test "x$enable_java" = "xauto" || test "x$enable_java" = "xyes"; then
     if test "x$enable_java" = "xauto"; then
       AC_CHECK_JAVA_VERSION([$JAVA_MIN_VERSION], [enable_java=yes], [enable_java=no])
-      AC_CHECK_GRADLE_VERSION([$GRADLE_MIN_VERSION], [enable_java=yes], [enable_java=no])
     else
       AC_CHECK_JAVA_VERSION([$JAVA_MIN_VERSION], [enable_java=yes], [AC_MSG_ERROR([Java not found])])
-      AC_CHECK_GRADLE_VERSION([$GRADLE_MIN_VERSION], [enable_java=yes], [AC_MSG_ERROR([Gradle not found])])
+    fi
+fi
+
+if test "x$enable_java" = "xyes"; then
+    if test "x$enable_java_modules" = "xauto" || test "x$enable_java_modules" = "xyes"; then
+        if test "x$enable_java_modules" = "xauto"; then
+          AC_CHECK_GRADLE_VERSION([$GRADLE_MIN_VERSION], [enable_java_modules=yes], [enable_java_modules=no])
+        else
+          AC_CHECK_GRADLE_VERSION([$GRADLE_MIN_VERSION], [enable_java_modules=yes], [AC_MSG_ERROR([Gradle not found])])
+        fi
+    fi
+else
+    if test "x$enable_java_modules" = "xyes"; then
+        AC_MSG_ERROR([Could not build Java modules without Java])
+    elif test "x$enable_java_modules" = "xauto"; then
+        AC_MSG_WARN([Could not build Java modules without Java])
+	enable_java_modules=no
     fi
 fi
 
@@ -1171,7 +1309,7 @@ fi
 
 if test "x$enable_mongodb" = "xauto"; then
 	AC_MSG_CHECKING(whether to enable mongodb destination support)
-	if test "x$with_libmongo_client" != "no"; then
+	if test "x$with_mongoc" != "xno"; then
 		enable_mongodb="yes"
 	else
 		enable_mongodb="no"
@@ -1181,7 +1319,7 @@ fi
 
 if test "x$enable_amqp" = "xauto"; then
     AC_MSG_CHECKING(whether to enable amqp destination support)
-    if test "x$with_librabbitmq_client" != "no"; then
+    if test "x$with_librabbitmq_client" != "xno"; then
         enable_amqp="yes"
     else
         enable_amqp="no"
@@ -1242,6 +1380,11 @@ if test "x$enable_systemd" = "xyes"; then
 fi
 
 PKG_CHECK_MODULES(UUID, uuid, enable_libuuid="yes", enable_libuuid="no")
+
+dnl ***************************************************************************
+dnl check if we have timezone variable in <time.h>
+dnl ***************************************************************************
+AC_VAR_TIMEZONE_EXTERNALS
 
 dnl ***************************************************************************
 dnl default modules to be loaded
@@ -1326,7 +1469,7 @@ if test "x$linking_mode" = "xdynamic"; then
 	# syslog-ng binary is linked with the default link command (e.g. libtool)
 	SYSLOGNG_LINK='$(LINK)'
 else
-	SYSLOGNG_DEPS_LIBS="$LIBS $BASE_LIBS $RESOLV_LIBS $LD_START_STATIC -Wl,--whole-archive $GLIB_LIBS $EVTLOG_LIBS $PCRE_LIBS $REGEX_LIBS -Wl,--no-whole-archive $IVYKIS_NO_LIBTOOL_LIBS $LD_END_STATIC $LIBCAP_LIBS $DL_LIBS "
+	SYSLOGNG_DEPS_LIBS="$LIBS $BASE_LIBS $RESOLV_LIBS $LD_START_STATIC -Wl,${WHOLE_ARCHIVE_OPT} $GLIB_LIBS $EVTLOG_LIBS $PCRE_LIBS $REGEX_LIBS  -Wl,${NO_WHOLE_ARCHIVE_OPT} $IVYKIS_NO_LIBTOOL_LIBS $LD_END_STATIC $LIBCAP_LIBS $DL_LIBS "
 	TOOL_DEPS_LIBS="$LIBS $BASE_LIBS $GLIB_LIBS $EVTLOG_LIBS $RESOLV_LIBS $LIBCAP_LIBS $PCRE_LIBS $REGEX_LIBS $IVYKIS_LIBS $DL_LIBS"
 	CORE_DEPS_LIBS=""
 
@@ -1348,20 +1491,20 @@ enable_value()
 journald_mode()
 {
   if test "x$with_systemd_journal" = "xno"; then
-    echo JOURNALD_OFF
+    echo SYSLOG_NG_JOURNALD_OFF
   elif test "x$with_systemd_journal" = "xsystem"; then
-    echo JOURNALD_SYSTEM
+    echo SYSLOG_NG_JOURNALD_SYSTEM
   else
-    echo JOURNALD_OPTIONS
+    echo SYSLOG_NG_JOURNALD_OPTIONAL
   fi
 }
 
-AC_DEFINE_UNQUOTED(JOURNALD_OFF, 0, [Test value])
-AC_DEFINE_UNQUOTED(JOURNALD_OPTIONAL, 1, [Test value])
-AC_DEFINE_UNQUOTED(JOURNALD_SYSTEM, 2, [Test value])
+AC_DEFINE_UNQUOTED(JOURNALD_OFF, 0, ["Disable systemd-journal source"])
+AC_DEFINE_UNQUOTED(JOURNALD_OPTIONAL, 1, ["Enable systemd-journal source if journald is available"])
+AC_DEFINE_UNQUOTED(JOURNALD_SYSTEM, 2, ["Force systemd-journal source to use system's journald"])
 
-AC_DEFINE_UNQUOTED(PACKAGE, "$PACKAGE", [package name])
-AC_DEFINE_UNQUOTED(VERSION, "$VERSION", [version number])
+AC_DEFINE_UNQUOTED(PACKAGE_NAME, "$PACKAGE_NAME", [package name])
+AC_DEFINE_UNQUOTED(VERSION, "$PACKAGE_VERSION", [version number])
 AC_DEFINE_UNQUOTED(SOURCE_REVISION, "$SOURCE_REVISION", [source revision])
 AC_DEFINE_UNQUOTED(LICENSE_VERSION, "$LICENSE_VERSION", [Required license version])
 
@@ -1373,6 +1516,9 @@ AC_DEFINE_UNQUOTED(PATH_LOCALSTATEDIR, "$localstatedir", [local state directory]
 AC_DEFINE_UNQUOTED(PATH_PIDFILEDIR, "$pidfiledir", [local state directory])
 AC_DEFINE_UNQUOTED(PATH_DATAROOTDIR, "$datarootdir", [data root directory])
 AC_DEFINE_UNQUOTED(PATH_DATADIR, "$datadir", [data directory])
+AC_DEFINE_UNQUOTED(PATH_CONFIG_INCLUDEDIR, "$config_includedir", [include directory])
+AC_DEFINE_UNQUOTED(PATH_SCLDIR, "$scldir", [SCL directory])
+AC_DEFINE_UNQUOTED(PATH_XSDDIR, "$xsddir", [XSD directory])
 AC_DEFINE_UNQUOTED(PATH_LIBEXECDIR, "$libexecdir", [libexec directory])
 if test -n "$timezonedir"; then
         AC_DEFINE_UNQUOTED(PATH_TIMEZONEDIR, "$timezonedir", [timezone base directory])
@@ -1380,6 +1526,7 @@ fi
 if test -n "$env_ld_library_path"; then
         AC_DEFINE_UNQUOTED(ENV_LD_LIBRARY_PATH, "$env_ld_library_path", [set LD_LIBRARY_PATH to this value])
 fi
+AC_DEFINE_UNQUOTED(PATH_MODULEDIR, "$moduledir", [module installation directory])
 AC_DEFINE_UNQUOTED(MODULE_PATH, "$module_path", [module search path])
 AC_DEFINE_UNQUOTED(JAVA_MODULE_PATH, "$java_module_path", [java module search path])
 
@@ -1407,6 +1554,7 @@ AM_CONDITIONAL(ENABLE_SUN_STREAMS, [test "$enable_sun_streams" = "yes"])
 AM_CONDITIONAL(ENABLE_PACCT, [test "$enable_pacct" = "yes"])
 AM_CONDITIONAL(ENABLE_MONGODB, [test "$enable_mongodb" = "yes"])
 AM_CONDITIONAL(ENABLE_SMTP, [test "$enable_smtp" = "yes"])
+AM_CONDITIONAL(ENABLE_HTTP, [test "$enable_http" = "yes"])
 AM_CONDITIONAL(ENABLE_AMQP, [test "$enable_amqp" = "yes"])
 AM_CONDITIONAL(ENABLE_STOMP, [test "$enable_stomp" = "yes"])
 AM_CONDITIONAL(ENABLE_JSON, [test "$enable_json" = "yes"])
@@ -1420,17 +1568,19 @@ AM_CONDITIONAL(ENABLE_RIEMANN, [test "$enable_riemann" != "no"])
 AM_CONDITIONAL(ENABLE_JOURNALD, [test "$with_systemd_journal" != "no"])
 AM_CONDITIONAL(ENABLE_PYTHON, [test "$enable_python" != "no"])
 AM_CONDITIONAL(ENABLE_JAVA, [test "$enable_java" = "yes"])
+AM_CONDITIONAL(ENABLE_JAVA_MODULES, [test "$enable_java_modules" = "yes"])
 AM_CONDITIONAL(ENABLE_MANPAGES, [test "$enable_manpages" != "no"])
-
-# substitution into manual pages
-expanded_sysconfdir=[`patheval $sysconfdir | sed -e 's/-/\\\\-/g'`]
-expanded_moduledir=[`patheval $moduledir`]
+AM_CONDITIONAL(ENABLE_NATIVE, [test "$enable_native" != "no"])
+AM_CONDITIONAL(ENABLE_EXTRA_WARNINGS, [test "$enable_extra_warnings" = "yes"])
+AM_CONDITIONAL(ENABLE_LEGACY_MONGODB_OPTIONS, [test x"$enable_legacy_mongodb_options" != x"no"])
 
 AC_SUBST(timezonedir)
 AC_SUBST(pidfiledir)
 AC_SUBST(moduledir)
-AC_SUBST(expanded_sysconfdir)
-AC_SUBST(expanded_moduledir)
+AC_SUBST(toolsdir)
+AC_SUBST(config_includedir)
+AC_SUBST(scldir)
+AC_SUBST(xsddir)
 AC_SUBST(systemdsystemunitdir)
 AC_SUBST(SYSLOGNG_LINK)
 AC_SUBST(SYSLOGNG_DEPS_LIBS)
@@ -1453,6 +1603,8 @@ AC_SUBST(LIBMONGO_CFLAGS)
 AC_SUBST(LIBMONGO_SUBDIRS)
 AC_SUBST(LIBESMTP_CFLAGS)
 AC_SUBST(LIBESMTP_LIBS)
+AC_SUBST(LIBCURL_CFLAGS)
+AC_SUBST(LIBCURL_LIBS)
 AC_SUBST(LIBRABBITMQ_LIBS)
 AC_SUBST(LIBRABBITMQ_CFLAGS)
 AC_SUBST(LIBRABBITMQ_SUBDIRS)
@@ -1476,6 +1628,8 @@ AC_SUBST(LIBSYSTEMD_JOURNAL_CFLAGS)
 AC_SUBST(LIBSYSTEMD_JOURNAL_LIBS)
 AC_SUBST(XSL_STYLESHEET)
 
+AX_PREFIX_CONFIG_H(syslog-ng-config.h, "SYSLOG_NG")
+AX_VALGRIND_CHECK
 
 AC_OUTPUT(dist.conf
           Makefile
@@ -1486,7 +1640,7 @@ AC_OUTPUT(dist.conf
           )
 
 echo
-echo "syslog-ng Open Source Edition $VERSION configured"
+echo "syslog-ng Open Source Edition $PACKAGE_VERSION configured"
 echo " Compiler options:"
 echo "  compiler                    : $CC"
 echo "  compiler options            : $CFLAGS $CPPFLAGS"
@@ -1497,7 +1651,7 @@ echo "  embedded crypto             : ${with_embedded_crypto:=no}"
 echo "  __thread keyword            : ${ac_cv_have_tls:=no}"
 echo " Submodules:"
 echo "  ivykis                      : $with_ivykis"
-echo "  libmongo-client             : $with_libmongo_client"
+echo "  mongoc                      : $with_mongoc"
 echo "  librabbitmq                 : $with_librabbitmq_client"
 echo "  jsonc                       : $with_jsonc"
 echo " Features:"
@@ -1511,6 +1665,7 @@ echo "  Linux capability support    : ${has_linux_caps:=no}"
 echo "  Env wrapper support         : ${enable_env_wrapper:=no}"
 echo "  systemd support             : ${enable_systemd:=no} (unit dir: ${systemdsystemunitdir:=none})"
 echo "  systemd-journal support     : ${with_systemd_journal:=no}"
+echo "  libmongo-client options     : ${enable_legacy_mongodb_options}"
 echo " Modules:"
 echo "  Module search path          : ${module_path}"
 echo "  Sun STREAMS support (module): ${enable_sun_streams:=no}"
@@ -1519,6 +1674,7 @@ echo "  PACCT module (EXPERIMENTAL) : ${enable_pacct:=no}"
 echo "  MongoDB destination (module): ${enable_mongodb:=no}"
 echo "  JSON support (module)       : ${enable_json:=no}"
 echo "  SMTP support (module)       : ${enable_smtp:=no}"
+echo "  HTTP support (module)       : ${enable_http:=no}"
 echo "  AMQP destination (module)   : ${enable_amqp:=no}"
 echo "  STOMP destination (module)  : ${enable_stomp:=no}"
 echo "  GEOIP support (module)      : ${enable_geoip:=no}"
@@ -1526,3 +1682,5 @@ echo "  Redis support (module)      : ${enable_redis:=no}"
 echo "  Riemann destination (module): ${enable_riemann:=no}"
 echo "  python                      : ${enable_python:=no} (pkg-config package: ${with_python:=none})"
 echo "  java                        : ${enable_java:=no}"
+echo "  java modules                : ${enable_java_modules:=no}"
+echo "  native bindings             : ${enable_native:=no}"

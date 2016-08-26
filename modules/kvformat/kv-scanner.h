@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 BalaBit
+ * Copyright (c) 2015 Balabit
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 as published
@@ -34,6 +34,7 @@ struct _KVScanner
   GString *value;
   GString *decoded_value;
   gboolean value_was_quoted;
+  gchar value_separator;
   gchar quote_char;
   gint quote_state;
   gint next_quote_state;
@@ -41,6 +42,7 @@ struct _KVScanner
   void (*free_fn)(KVScanner *self);
 };
 
+void kv_scanner_set_value_separator(KVScanner *self, gchar value_separator);
 void kv_scanner_input(KVScanner *self, const gchar *input);
 gboolean kv_scanner_scan_next(KVScanner *self);
 const gchar *kv_scanner_get_current_key(KVScanner *self);

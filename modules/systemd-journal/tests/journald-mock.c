@@ -1,6 +1,5 @@
 /*
- * Copyright (c) 2014      BalaBit S.a.r.l., Luxembourg, Luxembourg
- * Copyright (c) 2010-2014 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2010-2014 Balabit
  * Copyright (c) 2010-2014 Viktor Juhasz <viktor.juhasz@balabit.com>
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -23,7 +22,7 @@
  */
 
 #include "journald-mock.h"
-#include "misc.h"
+#include "fdhelpers.h"
 
 #include <fcntl.h>
 #include <unistd.h>
@@ -182,7 +181,8 @@ journald_mock_new()
 {
   Journald *self = g_new0(Journald, 1);
 
-  pipe(self->fds);
+  int result = pipe(self->fds);
+  g_assert(result == 0);
   g_fd_set_nonblock(self->fds[0], TRUE);
   g_fd_set_nonblock(self->fds[1], TRUE);
 

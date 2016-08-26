@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2013 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2002-2013 Balabit
  * Copyright (c) 1998-2013 Balázs Scheidler
  *
  * This library is free software; you can redistribute it and/or
@@ -25,14 +25,15 @@
 #include "logtransport.h"
 #include "messages.h"
 
+#include <unistd.h>
+
 void
 log_transport_free_method(LogTransport *s)
 {
   if (s->fd != -1)
     {
       msg_verbose("Closing log transport fd",
-                  evt_tag_int("fd", s->fd),
-                  NULL);
+                  evt_tag_int("fd", s->fd));
       close(s->fd);
     }
 }

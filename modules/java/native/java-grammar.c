@@ -89,8 +89,8 @@
 
 /* In a future release of Bison, this section will be replaced
    by #include "y.tab.h".  */
-#ifndef YY_JAVA_Y_TAB_H_INCLUDED
-# define YY_JAVA_Y_TAB_H_INCLUDED
+#ifndef YY_JAVA_MODULES_JAVA_NATIVE_JAVA_GRAMMAR_H_INCLUDED
+# define YY_JAVA_MODULES_JAVA_NATIVE_JAVA_GRAMMAR_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -99,7 +99,7 @@
 extern int java_debug;
 #endif
 /* "%code requires" blocks.  */
-#line 24 "java-grammar.y" /* yacc.c:355  */
+#line 25 "modules/java/native/java-grammar.y" /* yacc.c:355  */
 
 
 #include "java-parser.h"
@@ -142,23 +142,6 @@ extern int java_debug;
     KW_CHANNEL = 10009,
     KW_INTERNAL = 10010,
     KW_FILE = 10011,
-    KW_SQL = 10030,
-    KW_TYPE = 10031,
-    KW_COLUMNS = 10032,
-    KW_INDEXES = 10033,
-    KW_VALUES = 10034,
-    KW_PASSWORD = 10035,
-    KW_DATABASE = 10036,
-    KW_USERNAME = 10037,
-    KW_TABLE = 10038,
-    KW_ENCODING = 10039,
-    KW_SESSION_STATEMENTS = 10040,
-    KW_DELIMITERS = 10050,
-    KW_QUOTES = 10051,
-    KW_QUOTE_PAIRS = 10052,
-    KW_NULL = 10053,
-    KW_CHARS = 10054,
-    KW_STRINGS = 10055,
     KW_SYSLOG = 10060,
     KW_MARK_FREQ = 10071,
     KW_STATS_FREQ = 10072,
@@ -171,6 +154,8 @@ extern int java_debug;
     KW_FILE_TEMPLATE = 10079,
     KW_PROTO_TEMPLATE = 10080,
     KW_MARK_MODE = 10081,
+    KW_ENCODING = 10082,
+    KW_TYPE = 10083,
     KW_CHAIN_HOSTNAMES = 10090,
     KW_NORMALIZE_HOSTNAMES = 10091,
     KW_KEEP_HOSTNAME = 10092,
@@ -200,6 +185,7 @@ extern int java_debug;
     KW_THROTTLE = 10170,
     KW_THREADED = 10171,
     KW_PASS_UNIX_CREDENTIALS = 10231,
+    KW_PERSIST_NAME = 10302,
     KW_FLAGS = 10190,
     KW_PAD_SIZE = 10200,
     KW_TIME_ZONE = 10201,
@@ -234,10 +220,7 @@ extern int java_debug;
     KW_NETMASK = 10355,
     KW_TAGS = 10356,
     KW_NETMASK6 = 10357,
-    KW_VALUE = 10361,
     KW_REWRITE = 10370,
-    KW_SET = 10371,
-    KW_SUBST = 10372,
     KW_YES = 10380,
     KW_NO = 10381,
     KW_IFDEF = 10410,
@@ -253,7 +236,6 @@ extern int java_debug;
     LL_EOL = 10428,
     LL_ERROR = 10429,
     KW_VALUE_PAIRS = 10500,
-    KW_SELECT = 10501,
     KW_EXCLUDE = 10502,
     KW_PAIR = 10503,
     KW_KEY = 10504,
@@ -301,23 +283,6 @@ extern int java_debug;
 #define KW_CHANNEL 10009
 #define KW_INTERNAL 10010
 #define KW_FILE 10011
-#define KW_SQL 10030
-#define KW_TYPE 10031
-#define KW_COLUMNS 10032
-#define KW_INDEXES 10033
-#define KW_VALUES 10034
-#define KW_PASSWORD 10035
-#define KW_DATABASE 10036
-#define KW_USERNAME 10037
-#define KW_TABLE 10038
-#define KW_ENCODING 10039
-#define KW_SESSION_STATEMENTS 10040
-#define KW_DELIMITERS 10050
-#define KW_QUOTES 10051
-#define KW_QUOTE_PAIRS 10052
-#define KW_NULL 10053
-#define KW_CHARS 10054
-#define KW_STRINGS 10055
 #define KW_SYSLOG 10060
 #define KW_MARK_FREQ 10071
 #define KW_STATS_FREQ 10072
@@ -330,6 +295,8 @@ extern int java_debug;
 #define KW_FILE_TEMPLATE 10079
 #define KW_PROTO_TEMPLATE 10080
 #define KW_MARK_MODE 10081
+#define KW_ENCODING 10082
+#define KW_TYPE 10083
 #define KW_CHAIN_HOSTNAMES 10090
 #define KW_NORMALIZE_HOSTNAMES 10091
 #define KW_KEEP_HOSTNAME 10092
@@ -359,6 +326,7 @@ extern int java_debug;
 #define KW_THROTTLE 10170
 #define KW_THREADED 10171
 #define KW_PASS_UNIX_CREDENTIALS 10231
+#define KW_PERSIST_NAME 10302
 #define KW_FLAGS 10190
 #define KW_PAD_SIZE 10200
 #define KW_TIME_ZONE 10201
@@ -393,10 +361,7 @@ extern int java_debug;
 #define KW_NETMASK 10355
 #define KW_TAGS 10356
 #define KW_NETMASK6 10357
-#define KW_VALUE 10361
 #define KW_REWRITE 10370
-#define KW_SET 10371
-#define KW_SUBST 10372
 #define KW_YES 10380
 #define KW_NO 10381
 #define KW_IFDEF 10410
@@ -412,7 +377,6 @@ extern int java_debug;
 #define LL_EOL 10428
 #define LL_ERROR 10429
 #define KW_VALUE_PAIRS 10500
-#define KW_SELECT 10501
 #define KW_EXCLUDE 10502
 #define KW_PAIR 10503
 #define KW_KEY 10504
@@ -448,20 +412,20 @@ struct YYLTYPE
 
 int java_parse (CfgLexer *lexer, LogDriver **instance, gpointer arg);
 
-#endif /* !YY_JAVA_Y_TAB_H_INCLUDED  */
+#endif /* !YY_JAVA_MODULES_JAVA_NATIVE_JAVA_GRAMMAR_H_INCLUDED  */
 
 /* Copy the second part of user declarations.  */
 
-#line 456 "modules/java/native/java-grammar.c" /* yacc.c:358  */
+#line 420 "modules/java/native/java-grammar.c" /* yacc.c:358  */
 /* Unqualified %code blocks.  */
-#line 30 "java-grammar.y" /* yacc.c:359  */
+#line 31 "modules/java/native/java-grammar.y" /* yacc.c:359  */
 
 
 #include "cfg-parser.h"
 #include "cfg-grammar.h"
 #include "plugin.h"
 
-#line 52 "java-grammar.y" /* yacc.c:359  */
+#line 53 "modules/java/native/java-grammar.y" /* yacc.c:359  */
 
 
 # define YYLLOC_DEFAULT(Current, Rhs, N)                                \
@@ -522,7 +486,7 @@ int java_parse (CfgLexer *lexer, LogDriver **instance, gpointer arg);
 
 
 
-#line 526 "modules/java/native/java-grammar.c" /* yacc.c:359  */
+#line 490 "modules/java/native/java-grammar.c" /* yacc.c:359  */
 
 #ifdef short
 # undef short
@@ -766,16 +730,16 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  4
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   78
+#define YYLAST   75
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  165
+#define YYNTOKENS  147
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  12
+#define YYNNTS  13
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  28
+#define YYNRULES  30
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  74
+#define YYNSTATES  79
 
 /* YYTRANSLATE[YYX] -- Symbol number corresponding to YYX as returned
    by yylex, with out-of-bounds checking.  */
@@ -793,15 +757,15 @@ static const yytype_uint8 yytranslate[] =
       12,    13,    14,    15,    16,    17,    18,    19,    20,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     159,   160,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,   164,   163,
+     141,   142,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,   146,   145,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,   161,     2,   162,     2,     2,     2,     2,
+       2,     2,     2,   143,     2,   144,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -1792,64 +1756,65 @@ static const yytype_uint8 yytranslate[] =
       21,    22,    23,    24,    25,    26,    27,    28,    29,    30,
       31,    32,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      33,    34,    35,    36,    37,    38,    39,    40,    41,    42,
-      43,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      44,    45,    46,    47,    48,    49,     2,     2,     2,     2,
-      50,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,    51,    52,    53,    54,    55,    56,    57,    58,    59,
-      60,    61,     2,     2,     2,     2,     2,     2,     2,     2,
-      62,    63,    64,    65,    66,     2,     2,     2,     2,     2,
-      67,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      68,    69,    70,     2,     2,     2,     2,     2,     2,     2,
-      71,    72,     2,     2,     2,     2,     2,     2,     2,     2,
-      73,    74,    75,     2,     2,     2,     2,     2,     2,     2,
-      76,    77,    78,     2,     2,     2,     2,     2,     2,     2,
-      79,    80,    81,     2,     2,     2,     2,     2,     2,     2,
-      82,     2,    83,    84,    85,    86,    87,     2,     2,     2,
-      88,    89,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      91,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      92,    93,    94,    95,    96,    97,     2,     2,     2,     2,
-      98,    99,   100,     2,     2,     2,     2,     2,     2,     2,
-     101,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     102,    90,     2,     2,     2,     2,     2,     2,     2,     2,
-     103,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     104,   105,   106,     2,     2,     2,     2,     2,     2,     2,
-     107,   108,   109,     2,     2,     2,     2,     2,     2,     2,
-     110,   111,   112,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     113,   114,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,   115,     2,     2,     2,     2,     2,     2,
+      33,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,    34,    35,    36,    37,    38,    39,    40,    41,    42,
+      43,    44,    45,    46,     2,     2,     2,     2,     2,     2,
+      47,    48,    49,    50,    51,     2,     2,     2,     2,     2,
+      52,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+      53,    54,    55,     2,     2,     2,     2,     2,     2,     2,
+      56,    57,     2,     2,     2,     2,     2,     2,     2,     2,
+      58,    59,    60,     2,     2,     2,     2,     2,     2,     2,
+      61,    62,    63,     2,     2,     2,     2,     2,     2,     2,
+      64,    65,    66,     2,     2,     2,     2,     2,     2,     2,
+      67,     2,    68,    69,    70,    71,    72,     2,     2,     2,
+      73,    74,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     116,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     117,   118,   119,   120,   121,   122,   123,   124,     2,     2,
-       2,   125,     2,     2,     2,     2,     2,     2,     2,     2,
-     126,   127,   128,     2,     2,     2,     2,     2,     2,     2,
-     129,   130,     2,     2,     2,     2,     2,     2,     2,     2,
+      77,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+      78,    79,    80,    81,    82,    83,     2,     2,     2,     2,
+      84,    85,    86,     2,     2,     2,     2,     2,     2,     2,
+      87,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+      88,    75,     2,     2,     2,     2,     2,     2,     2,     2,
+      89,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+      90,    91,    92,     2,     2,     2,     2,     2,     2,     2,
+      93,    94,    95,     2,     2,     2,     2,     2,     2,     2,
+      96,    97,    98,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     131,   132,     2,     2,     2,     2,     2,     2,     2,     2,
-     133,   134,   135,   136,   137,   138,   139,   140,   141,   142,
+      99,   100,    76,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,   101,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     102,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     103,   104,   105,   106,   107,   108,   109,   110,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     111,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     112,   113,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     114,   115,     2,     2,     2,     2,     2,     2,     2,     2,
+     116,   117,   118,   119,   120,   121,   122,   123,   124,   125,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     143,   144,   145,   146,   147,   148,   149,   150,   151,   152,
-     153,   154,     2,   155,   156,   157,   158
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     126,     2,   127,   128,   129,   130,   131,   132,   133,   134,
+     135,   136,     2,   137,   138,   139,   140
 };
 
 #if YYDEBUG
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   379,   379,   378,   386,   387,   391,   396,   401,   402,
-     403,   404,   405,   405,   409,   410,   414,   637,   638,   774,
-     782,   783,   784,   861,   862,   863,   864,   865,   866
+       0,   360,   360,   359,   367,   368,   372,   377,   382,   383,
+     384,   385,   386,   386,   390,   391,   395,   618,   619,   762,
+     766,   774,   775,   776,   794,   850,   851,   852,   853,   854,
+     855
 };
 #endif
 
@@ -1867,24 +1832,21 @@ static const char *const yytname[] =
   "LL_CONTEXT_INNER_SRC", "LL_CONTEXT_CLIENT_PROTO",
   "LL_CONTEXT_SERVER_PROTO", "KW_SOURCE", "KW_FILTER", "KW_PARSER",
   "KW_DESTINATION", "KW_LOG", "KW_OPTIONS", "KW_INCLUDE", "KW_BLOCK",
-  "KW_JUNCTION", "KW_CHANNEL", "KW_INTERNAL", "KW_FILE", "KW_SQL",
-  "KW_TYPE", "KW_COLUMNS", "KW_INDEXES", "KW_VALUES", "KW_PASSWORD",
-  "KW_DATABASE", "KW_USERNAME", "KW_TABLE", "KW_ENCODING",
-  "KW_SESSION_STATEMENTS", "KW_DELIMITERS", "KW_QUOTES", "KW_QUOTE_PAIRS",
-  "KW_NULL", "KW_CHARS", "KW_STRINGS", "KW_SYSLOG", "KW_MARK_FREQ",
-  "KW_STATS_FREQ", "KW_STATS_LEVEL", "KW_STATS_LIFETIME", "KW_FLUSH_LINES",
-  "KW_SUPPRESS", "KW_FLUSH_TIMEOUT", "KW_LOG_MSG_SIZE", "KW_FILE_TEMPLATE",
-  "KW_PROTO_TEMPLATE", "KW_MARK_MODE", "KW_CHAIN_HOSTNAMES",
-  "KW_NORMALIZE_HOSTNAMES", "KW_KEEP_HOSTNAME", "KW_CHECK_HOSTNAME",
-  "KW_BAD_HOSTNAME", "KW_KEEP_TIMESTAMP", "KW_USE_DNS", "KW_USE_FQDN",
-  "KW_CUSTOM_DOMAIN", "KW_DNS_CACHE", "KW_DNS_CACHE_SIZE",
-  "KW_DNS_CACHE_EXPIRE", "KW_DNS_CACHE_EXPIRE_FAILED",
-  "KW_DNS_CACHE_HOSTS", "KW_PERSIST_ONLY", "KW_USE_RCPTID",
-  "KW_USE_UNIQID", "KW_TZ_CONVERT", "KW_TS_FORMAT", "KW_FRAC_DIGITS",
-  "KW_LOG_FIFO_SIZE", "KW_LOG_FETCH_LIMIT", "KW_LOG_IW_SIZE",
-  "KW_LOG_PREFIX", "KW_PROGRAM_OVERRIDE", "KW_HOST_OVERRIDE",
-  "KW_THROTTLE", "KW_THREADED", "KW_PASS_UNIX_CREDENTIALS", "KW_FLAGS",
-  "KW_PAD_SIZE", "KW_TIME_ZONE", "KW_RECV_TIME_ZONE", "KW_SEND_TIME_ZONE",
+  "KW_JUNCTION", "KW_CHANNEL", "KW_INTERNAL", "KW_FILE", "KW_SYSLOG",
+  "KW_MARK_FREQ", "KW_STATS_FREQ", "KW_STATS_LEVEL", "KW_STATS_LIFETIME",
+  "KW_FLUSH_LINES", "KW_SUPPRESS", "KW_FLUSH_TIMEOUT", "KW_LOG_MSG_SIZE",
+  "KW_FILE_TEMPLATE", "KW_PROTO_TEMPLATE", "KW_MARK_MODE", "KW_ENCODING",
+  "KW_TYPE", "KW_CHAIN_HOSTNAMES", "KW_NORMALIZE_HOSTNAMES",
+  "KW_KEEP_HOSTNAME", "KW_CHECK_HOSTNAME", "KW_BAD_HOSTNAME",
+  "KW_KEEP_TIMESTAMP", "KW_USE_DNS", "KW_USE_FQDN", "KW_CUSTOM_DOMAIN",
+  "KW_DNS_CACHE", "KW_DNS_CACHE_SIZE", "KW_DNS_CACHE_EXPIRE",
+  "KW_DNS_CACHE_EXPIRE_FAILED", "KW_DNS_CACHE_HOSTS", "KW_PERSIST_ONLY",
+  "KW_USE_RCPTID", "KW_USE_UNIQID", "KW_TZ_CONVERT", "KW_TS_FORMAT",
+  "KW_FRAC_DIGITS", "KW_LOG_FIFO_SIZE", "KW_LOG_FETCH_LIMIT",
+  "KW_LOG_IW_SIZE", "KW_LOG_PREFIX", "KW_PROGRAM_OVERRIDE",
+  "KW_HOST_OVERRIDE", "KW_THROTTLE", "KW_THREADED",
+  "KW_PASS_UNIX_CREDENTIALS", "KW_PERSIST_NAME", "KW_FLAGS", "KW_PAD_SIZE",
+  "KW_TIME_ZONE", "KW_RECV_TIME_ZONE", "KW_SEND_TIME_ZONE",
   "KW_LOCAL_TIME_ZONE", "KW_FORMAT", "KW_TIME_REOPEN", "KW_TIME_REAP",
   "KW_TIME_SLEEP", "KW_TMPL_ESCAPE", "KW_OPTIONAL", "KW_CREATE_DIRS",
   "KW_OWNER", "KW_GROUP", "KW_PERM", "KW_DIR_OWNER", "KW_DIR_GROUP",
@@ -1892,17 +1854,17 @@ static const char *const yytname[] =
   "KW_TEMPLATE_FUNCTION", "KW_DEFAULT_FACILITY", "KW_DEFAULT_LEVEL",
   "KW_PORT", "KW_USE_TIME_RECVD", "KW_FACILITY", "KW_LEVEL", "KW_HOST",
   "KW_MATCH", "KW_MESSAGE", "KW_NETMASK", "KW_TAGS", "KW_NETMASK6",
-  "KW_VALUE", "KW_REWRITE", "KW_SET", "KW_SUBST", "KW_YES", "KW_NO",
-  "KW_IFDEF", "KW_ENDIF", "LL_DOTDOT", "LL_IDENTIFIER", "LL_NUMBER",
-  "LL_FLOAT", "LL_STRING", "LL_TOKEN", "LL_BLOCK", "LL_PRAGMA", "LL_EOL",
-  "LL_ERROR", "KW_VALUE_PAIRS", "KW_SELECT", "KW_EXCLUDE", "KW_PAIR",
-  "KW_KEY", "KW_SCOPE", "KW_SHIFT", "KW_REKEY", "KW_ADD_PREFIX",
-  "KW_REPLACE_PREFIX", "KW_ON_ERROR", "KW_RETRIES", "KW_JAVA",
-  "KW_CLASS_PATH", "KW_CLASS_NAME", "KW_OPTION", "'('", "')'", "'{'",
-  "'}'", "';'", "':'", "$accept", "start", "$@1", "java_dest_options",
-  "java_dest_option", "$@2", "java_dest_custom_options",
-  "java_dest_custom_option", "string", "threaded_dest_driver_option",
-  "dest_driver_option", "template_option", YY_NULLPTR
+  "KW_REWRITE", "KW_YES", "KW_NO", "KW_IFDEF", "KW_ENDIF", "LL_DOTDOT",
+  "LL_IDENTIFIER", "LL_NUMBER", "LL_FLOAT", "LL_STRING", "LL_TOKEN",
+  "LL_BLOCK", "LL_PRAGMA", "LL_EOL", "LL_ERROR", "KW_VALUE_PAIRS",
+  "KW_EXCLUDE", "KW_PAIR", "KW_KEY", "KW_SCOPE", "KW_SHIFT", "KW_REKEY",
+  "KW_ADD_PREFIX", "KW_REPLACE_PREFIX", "KW_ON_ERROR", "KW_RETRIES",
+  "KW_JAVA", "KW_CLASS_PATH", "KW_CLASS_NAME", "KW_OPTION", "'('", "')'",
+  "'{'", "'}'", "';'", "':'", "$accept", "start", "$@1",
+  "java_dest_options", "java_dest_option", "$@2",
+  "java_dest_custom_options", "java_dest_custom_option", "string",
+  "driver_option", "threaded_dest_driver_option", "dest_driver_option",
+  "template_option", YY_NULLPTR
 };
 #endif
 
@@ -1914,27 +1876,25 @@ static const yytype_uint16 yytoknum[] =
        0,   256, 10512,     1,     2,     3,     4,     5,     6,     7,
        8,     9,    10,    11,    12,    13,    14,    15,    16,    17,
       18, 10000, 10001, 10002, 10003, 10004, 10005, 10006, 10007, 10008,
-   10009, 10010, 10011, 10030, 10031, 10032, 10033, 10034, 10035, 10036,
-   10037, 10038, 10039, 10040, 10050, 10051, 10052, 10053, 10054, 10055,
-   10060, 10071, 10072, 10073, 10074, 10075, 10076, 10077, 10078, 10079,
-   10080, 10081, 10090, 10091, 10092, 10093, 10094, 10100, 10110, 10111,
-   10112, 10120, 10121, 10130, 10131, 10132, 10140, 10141, 10142, 10150,
-   10151, 10152, 10160, 10162, 10163, 10164, 10165, 10166, 10170, 10171,
-   10231, 10190, 10200, 10201, 10202, 10203, 10204, 10205, 10210, 10211,
-   10212, 10220, 10230, 10240, 10250, 10251, 10252, 10260, 10261, 10262,
-   10270, 10271, 10272, 10300, 10301, 10323, 10340, 10350, 10351, 10352,
-   10353, 10354, 10355, 10356, 10357, 10361, 10370, 10371, 10372, 10380,
-   10381, 10410, 10411, 10420, 10421, 10422, 10423, 10424, 10425, 10426,
-   10427, 10428, 10429, 10500, 10501, 10502, 10503, 10504, 10505, 10506,
-   10507, 10508, 10509, 10510, 10511, 10513, 10514, 10515, 10516,    40,
-      41,   123,   125,    59,    58
+   10009, 10010, 10011, 10060, 10071, 10072, 10073, 10074, 10075, 10076,
+   10077, 10078, 10079, 10080, 10081, 10082, 10083, 10090, 10091, 10092,
+   10093, 10094, 10100, 10110, 10111, 10112, 10120, 10121, 10130, 10131,
+   10132, 10140, 10141, 10142, 10150, 10151, 10152, 10160, 10162, 10163,
+   10164, 10165, 10166, 10170, 10171, 10231, 10302, 10190, 10200, 10201,
+   10202, 10203, 10204, 10205, 10210, 10211, 10212, 10220, 10230, 10240,
+   10250, 10251, 10252, 10260, 10261, 10262, 10270, 10271, 10272, 10300,
+   10301, 10323, 10340, 10350, 10351, 10352, 10353, 10354, 10355, 10356,
+   10357, 10370, 10380, 10381, 10410, 10411, 10420, 10421, 10422, 10423,
+   10424, 10425, 10426, 10427, 10428, 10429, 10500, 10502, 10503, 10504,
+   10505, 10506, 10507, 10508, 10509, 10510, 10511, 10513, 10514, 10515,
+   10516,    40,    41,   123,   125,    59,    58
 };
 # endif
 
-#define YYPACT_NINF -154
+#define YYPACT_NINF -136
 
 #define yypact_value_is_default(Yystate) \
-  (!!((Yystate) == (-154)))
+  (!!((Yystate) == (-136)))
 
 #define YYTABLE_NINF -6
 
@@ -1945,14 +1905,14 @@ static const yytype_uint16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int16 yypact[] =
 {
-      -3,  -153,     3,  -154,  -154,  -149,   -82,  -148,  -146,  -145,
-    -154,  -144,  -143,  -141,  -138,  -137,   -82,   -76,  -154,  -154,
-    -113,  -111,  -125,  -110,  -125,  -125,  -108,  -154,  -154,  -133,
-    -132,  -128,  -123,  -122,  -121,  -154,  -120,  -119,  -154,  -154,
-    -118,  -117,  -116,  -115,   -98,  -114,  -108,  -125,   -88,  -125,
-    -125,  -125,  -125,  -154,  -154,  -154,  -154,  -154,  -154,  -154,
-    -154,  -154,  -112,  -109,  -107,  -106,  -105,  -104,  -154,  -154,
-    -154,  -154,  -154,  -154
+      -3,  -135,     3,  -136,  -136,  -134,   -67,  -128,  -127,  -125,
+    -124,  -136,  -122,  -119,  -118,  -117,  -116,   -67,   -61,  -136,
+    -136,  -136,   -93,   -91,  -105,  -105,   -90,  -105,  -105,   -89,
+    -136,  -136,  -111,  -109,  -108,  -106,  -101,  -100,  -136,   -99,
+     -98,  -136,  -136,   -97,   -96,   -95,   -94,   -88,   -78,   -87,
+     -89,  -105,   -69,  -105,  -105,  -105,  -105,  -136,  -136,  -136,
+    -136,  -136,  -136,  -136,  -136,  -136,  -136,   -86,   -85,   -84,
+     -83,   -82,   -81,  -136,  -136,  -136,  -136,  -136,  -136
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -1961,27 +1921,27 @@ static const yytype_int16 yypact[] =
 static const yytype_uint8 yydefact[] =
 {
        0,     0,     0,     2,     1,     0,    12,     0,     0,     0,
-      22,     0,     0,     0,     0,     0,    12,     0,    10,    11,
-       0,     0,     0,     0,     0,     0,    15,     3,     4,     0,
-       0,     0,     0,     0,     0,    13,     0,     0,    17,    18,
-       0,     0,     0,     0,     0,     0,    15,     0,     0,     0,
-       0,     0,     0,    20,    21,     8,    19,     6,     7,    16,
-       9,    14,     0,     0,     0,     0,     0,     0,    23,    24,
-      25,    26,    27,    28
+       0,    23,     0,     0,     0,     0,     0,    12,     0,    24,
+      10,    11,     0,     0,     0,     0,     0,     0,     0,    15,
+       3,     4,     0,     0,     0,     0,     0,     0,    13,     0,
+       0,    17,    18,     0,     0,     0,     0,     0,     0,     0,
+      15,     0,     0,     0,     0,     0,     0,    21,    22,    19,
+       8,    20,     6,     7,    16,     9,    14,     0,     0,     0,
+       0,     0,     0,    25,    26,    27,    28,    29,    30
 };
 
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int16 yypgoto[] =
 {
-    -154,  -154,  -154,    33,  -154,  -154,     4,  -154,   -17,  -154,
-    -154,  -154
+    -136,  -136,  -136,    34,  -136,  -136,     2,  -136,   -17,  -136,
+    -136,  -136,  -136
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-      -1,     2,     5,    15,    16,    17,    45,    46,    40,    18,
-      19,    35
+      -1,     2,     5,    16,    17,    18,    49,    50,    43,    19,
+      20,    21,    38
 };
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -1989,48 +1949,49 @@ static const yytype_int8 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int8 yytable[] =
 {
-       7,     1,     3,     4,    29,    30,     8,    42,    43,    38,
-       6,    20,    39,    21,    22,    23,    24,    31,    25,    32,
-      33,    26,    36,    27,    37,    41,    47,    48,     9,    44,
-      62,    49,    64,    65,    66,    67,    50,    51,    52,    59,
-      53,    54,    55,    56,    57,    58,    60,    63,    68,    28,
-      61,    69,    10,    70,    71,    72,    73,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,    11,     0,    12,    13,    14,    34,    -5
+       7,     1,     3,     4,    32,    33,     8,     6,    44,     9,
+      46,    47,    41,    22,    23,    42,    24,    25,    34,    26,
+      35,    36,    27,    28,    29,    39,    30,    40,    45,    10,
+      51,    48,    52,    53,    67,    54,    69,    70,    71,    72,
+      55,    56,    64,    57,    58,    59,    60,    61,    62,    68,
+      11,    31,    66,     0,    63,    65,    73,    74,    75,    76,
+      77,    78,     0,     0,     0,     0,     0,     0,     0,    12,
+       0,    13,    14,    15,    37,    -5
 };
 
 static const yytype_int16 yycheck[] =
 {
-      82,     4,   155,     0,    80,    81,    88,    24,    25,   134,
-     159,   159,   137,   159,   159,   159,   159,    93,   159,    95,
-      96,   159,   135,   160,   135,   135,   159,   159,   110,   137,
-      47,   159,    49,    50,    51,    52,   159,   159,   159,   137,
-     160,   160,   160,   160,   160,   160,   160,   135,   160,    16,
-      46,   160,   134,   160,   160,   160,   160,    -1,    -1,    -1,
-      -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
-      -1,    -1,   154,    -1,   156,   157,   158,   153,   160
+      67,     4,   137,     0,    65,    66,    73,   141,    25,    76,
+      27,    28,   117,   141,   141,   120,   141,   141,    79,   141,
+      81,    82,   141,   141,   141,   118,   142,   118,   118,    96,
+     141,   120,   141,   141,    51,   141,    53,    54,    55,    56,
+     141,   141,   120,   142,   142,   142,   142,   142,   142,   118,
+     117,    17,    50,    -1,   142,   142,   142,   142,   142,   142,
+     142,   142,    -1,    -1,    -1,    -1,    -1,    -1,    -1,   136,
+      -1,   138,   139,   140,   135,   142
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
      symbol of state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
-       0,     4,   166,   155,     0,   167,   159,    82,    88,   110,
-     134,   154,   156,   157,   158,   168,   169,   170,   174,   175,
-     159,   159,   159,   159,   159,   159,   159,   160,   168,    80,
-      81,    93,    95,    96,   153,   176,   135,   135,   134,   137,
-     173,   135,   173,   173,   137,   171,   172,   159,   159,   159,
-     159,   159,   159,   160,   160,   160,   160,   160,   160,   137,
-     160,   171,   173,   135,   173,   173,   173,   173,   160,   160,
-     160,   160,   160,   160
+       0,     4,   148,   137,     0,   149,   141,    67,    73,    76,
+      96,   117,   136,   138,   139,   140,   150,   151,   152,   156,
+     157,   158,   141,   141,   141,   141,   141,   141,   141,   141,
+     142,   150,    65,    66,    79,    81,    82,   135,   159,   118,
+     118,   117,   120,   155,   155,   118,   155,   155,   120,   153,
+     154,   141,   141,   141,   141,   141,   141,   142,   142,   142,
+     142,   142,   142,   142,   120,   142,   153,   155,   118,   155,
+     155,   155,   155,   142,   142,   142,   142,   142,   142
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
-       0,   165,   167,   166,   168,   168,   169,   169,   169,   169,
-     169,   169,   170,   169,   171,   171,   172,   173,   173,   174,
-     175,   175,   175,   176,   176,   176,   176,   176,   176
+       0,   147,   149,   148,   150,   150,   151,   151,   151,   151,
+     151,   151,   152,   151,   153,   153,   154,   155,   155,   156,
+     157,   158,   158,   158,   158,   159,   159,   159,   159,   159,
+     159
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
@@ -2038,7 +1999,8 @@ static const yytype_uint8 yyr2[] =
 {
        0,     2,     0,     6,     2,     0,     4,     4,     4,     4,
        1,     1,     0,     2,     2,     0,     2,     1,     1,     4,
-       4,     4,     1,     4,     4,     4,     4,     4,     4
+       4,     4,     4,     1,     1,     4,     4,     4,     4,     4,
+       4
 };
 
 
@@ -2534,7 +2496,36 @@ yydestruct (const char *yymsg, int yytype, YYSTYPE *yyvaluep, YYLTYPE *yylocatio
   YY_SYMBOL_PRINT (yymsg, yytype, yyvaluep, yylocationp);
 
   YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN
-  YYUSE (yytype);
+  switch (yytype)
+    {
+          case 117: /* LL_IDENTIFIER  */
+#line 287 "modules/java/native/java-grammar.y" /* yacc.c:1257  */
+      { free(((*yyvaluep).cptr)); }
+#line 2505 "modules/java/native/java-grammar.c" /* yacc.c:1257  */
+        break;
+
+    case 120: /* LL_STRING  */
+#line 287 "modules/java/native/java-grammar.y" /* yacc.c:1257  */
+      { free(((*yyvaluep).cptr)); }
+#line 2511 "modules/java/native/java-grammar.c" /* yacc.c:1257  */
+        break;
+
+    case 122: /* LL_BLOCK  */
+#line 287 "modules/java/native/java-grammar.y" /* yacc.c:1257  */
+      { free(((*yyvaluep).cptr)); }
+#line 2517 "modules/java/native/java-grammar.c" /* yacc.c:1257  */
+        break;
+
+    case 155: /* string  */
+#line 287 "modules/java/native/java-grammar.y" /* yacc.c:1257  */
+      { free(((*yyvaluep).cptr)); }
+#line 2523 "modules/java/native/java-grammar.c" /* yacc.c:1257  */
+        break;
+
+
+      default:
+        break;
+    }
   YY_IGNORE_MAYBE_UNINITIALIZED_END
 }
 
@@ -2820,77 +2811,83 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 379 "java-grammar.y" /* yacc.c:1646  */
+#line 360 "modules/java/native/java-grammar.y" /* yacc.c:1646  */
     {
             last_driver = *instance = java_dd_new(configuration);
           }
-#line 2828 "modules/java/native/java-grammar.c" /* yacc.c:1646  */
+#line 2819 "modules/java/native/java-grammar.c" /* yacc.c:1646  */
     break;
 
   case 3:
-#line 382 "java-grammar.y" /* yacc.c:1646  */
+#line 363 "modules/java/native/java-grammar.y" /* yacc.c:1646  */
     { YYACCEPT; }
-#line 2834 "modules/java/native/java-grammar.c" /* yacc.c:1646  */
+#line 2825 "modules/java/native/java-grammar.c" /* yacc.c:1646  */
     break;
 
   case 6:
-#line 392 "java-grammar.y" /* yacc.c:1646  */
+#line 373 "modules/java/native/java-grammar.y" /* yacc.c:1646  */
     {
           	java_dd_set_class_path(last_driver, (yyvsp[-1].cptr));
+            free((yyvsp[-1].cptr));
+          }
+#line 2834 "modules/java/native/java-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 7:
+#line 378 "modules/java/native/java-grammar.y" /* yacc.c:1646  */
+    {
+          	java_dd_set_class_name(last_driver, (yyvsp[-1].cptr));
             free((yyvsp[-1].cptr));
           }
 #line 2843 "modules/java/native/java-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 7:
-#line 397 "java-grammar.y" /* yacc.c:1646  */
-    {
-          	java_dd_set_class_name(last_driver, (yyvsp[-1].cptr));
-            free((yyvsp[-1].cptr));
-          }
-#line 2852 "modules/java/native/java-grammar.c" /* yacc.c:1646  */
-    break;
-
   case 8:
-#line 401 "java-grammar.y" /* yacc.c:1646  */
+#line 382 "modules/java/native/java-grammar.y" /* yacc.c:1646  */
     { java_dd_set_template_string(last_driver, (yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 2858 "modules/java/native/java-grammar.c" /* yacc.c:1646  */
+#line 2849 "modules/java/native/java-grammar.c" /* yacc.c:1646  */
     break;
 
   case 12:
-#line 405 "java-grammar.y" /* yacc.c:1646  */
+#line 386 "modules/java/native/java-grammar.y" /* yacc.c:1646  */
     { last_template_options = java_dd_get_template_options(last_driver); }
-#line 2864 "modules/java/native/java-grammar.c" /* yacc.c:1646  */
+#line 2855 "modules/java/native/java-grammar.c" /* yacc.c:1646  */
     break;
 
   case 16:
-#line 414 "java-grammar.y" /* yacc.c:1646  */
+#line 395 "modules/java/native/java-grammar.y" /* yacc.c:1646  */
     { java_dd_set_option(last_driver, (yyvsp[-1].cptr), (yyvsp[0].cptr)); free((yyvsp[-1].cptr)); free((yyvsp[0].cptr)); }
-#line 2870 "modules/java/native/java-grammar.c" /* yacc.c:1646  */
+#line 2861 "modules/java/native/java-grammar.c" /* yacc.c:1646  */
     break;
 
   case 19:
-#line 775 "java-grammar.y" /* yacc.c:1646  */
-    {
-          log_threaded_dest_driver_set_max_retries(last_driver, (yyvsp[-1].num));
-        }
-#line 2878 "modules/java/native/java-grammar.c" /* yacc.c:1646  */
+#line 762 "modules/java/native/java-grammar.y" /* yacc.c:1646  */
+    { log_pipe_set_persist_name(&last_driver->super, g_strdup((yyvsp[-1].cptr))); free((yyvsp[-1].cptr)); }
+#line 2867 "modules/java/native/java-grammar.c" /* yacc.c:1646  */
     break;
 
   case 20:
-#line 782 "java-grammar.y" /* yacc.c:1646  */
-    { ((LogDestDriver *) last_driver)->log_fifo_size = (yyvsp[-1].num); }
-#line 2884 "modules/java/native/java-grammar.c" /* yacc.c:1646  */
+#line 767 "modules/java/native/java-grammar.y" /* yacc.c:1646  */
+    {
+          log_threaded_dest_driver_set_max_retries(last_driver, (yyvsp[-1].num));
+        }
+#line 2875 "modules/java/native/java-grammar.c" /* yacc.c:1646  */
     break;
 
   case 21:
-#line 783 "java-grammar.y" /* yacc.c:1646  */
-    { ((LogDestDriver *) last_driver)->throttle = (yyvsp[-1].num); }
-#line 2890 "modules/java/native/java-grammar.c" /* yacc.c:1646  */
+#line 774 "modules/java/native/java-grammar.y" /* yacc.c:1646  */
+    { ((LogDestDriver *) last_driver)->log_fifo_size = (yyvsp[-1].num); }
+#line 2881 "modules/java/native/java-grammar.c" /* yacc.c:1646  */
     break;
 
   case 22:
-#line 785 "java-grammar.y" /* yacc.c:1646  */
+#line 775 "modules/java/native/java-grammar.y" /* yacc.c:1646  */
+    { ((LogDestDriver *) last_driver)->throttle = (yyvsp[-1].num); }
+#line 2887 "modules/java/native/java-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 23:
+#line 777 "modules/java/native/java-grammar.y" /* yacc.c:1646  */
     {
             Plugin *p;
             gint context = LL_CONTEXT_INNER_DEST;
@@ -2908,41 +2905,41 @@ yyreduce:
               }
             log_driver_add_plugin(last_driver, (LogDriverPlugin *) value);
           }
-#line 2912 "modules/java/native/java-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 23:
-#line 861 "java-grammar.y" /* yacc.c:1646  */
-    { last_template_options->ts_format = cfg_ts_format_value((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 2918 "modules/java/native/java-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 24:
-#line 862 "java-grammar.y" /* yacc.c:1646  */
-    { last_template_options->frac_digits = (yyvsp[-1].num); }
-#line 2924 "modules/java/native/java-grammar.c" /* yacc.c:1646  */
+#line 2909 "modules/java/native/java-grammar.c" /* yacc.c:1646  */
     break;
 
   case 25:
-#line 863 "java-grammar.y" /* yacc.c:1646  */
-    { last_template_options->time_zone[LTZ_SEND] = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 2930 "modules/java/native/java-grammar.c" /* yacc.c:1646  */
+#line 850 "modules/java/native/java-grammar.y" /* yacc.c:1646  */
+    { last_template_options->ts_format = cfg_ts_format_value((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
+#line 2915 "modules/java/native/java-grammar.c" /* yacc.c:1646  */
     break;
 
   case 26:
-#line 864 "java-grammar.y" /* yacc.c:1646  */
-    { last_template_options->time_zone[LTZ_SEND] = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 2936 "modules/java/native/java-grammar.c" /* yacc.c:1646  */
+#line 851 "modules/java/native/java-grammar.y" /* yacc.c:1646  */
+    { last_template_options->frac_digits = (yyvsp[-1].num); }
+#line 2921 "modules/java/native/java-grammar.c" /* yacc.c:1646  */
     break;
 
   case 27:
-#line 865 "java-grammar.y" /* yacc.c:1646  */
-    { last_template_options->time_zone[LTZ_LOCAL] = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 2942 "modules/java/native/java-grammar.c" /* yacc.c:1646  */
+#line 852 "modules/java/native/java-grammar.y" /* yacc.c:1646  */
+    { last_template_options->time_zone[LTZ_SEND] = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
+#line 2927 "modules/java/native/java-grammar.c" /* yacc.c:1646  */
     break;
 
   case 28:
-#line 867 "java-grammar.y" /* yacc.c:1646  */
+#line 853 "modules/java/native/java-grammar.y" /* yacc.c:1646  */
+    { last_template_options->time_zone[LTZ_SEND] = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
+#line 2933 "modules/java/native/java-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 29:
+#line 854 "modules/java/native/java-grammar.y" /* yacc.c:1646  */
+    { last_template_options->time_zone[LTZ_LOCAL] = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
+#line 2939 "modules/java/native/java-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 30:
+#line 856 "modules/java/native/java-grammar.y" /* yacc.c:1646  */
     {
           gint on_error;
 
@@ -2951,11 +2948,11 @@ yyreduce:
 
           log_template_options_set_on_error(last_template_options, on_error);
         }
-#line 2955 "modules/java/native/java-grammar.c" /* yacc.c:1646  */
+#line 2952 "modules/java/native/java-grammar.c" /* yacc.c:1646  */
     break;
 
 
-#line 2959 "modules/java/native/java-grammar.c" /* yacc.c:1646  */
+#line 2956 "modules/java/native/java-grammar.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -3190,5 +3187,5 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 948 "java-grammar.y" /* yacc.c:1906  */
+#line 937 "modules/java/native/java-grammar.y" /* yacc.c:1906  */
 

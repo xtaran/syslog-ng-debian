@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2013 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2002-2013 Balabit
  * Copyright (c) 1998-2013 Balázs Scheidler
  *
  * This library is free software; you can redistribute it and/or
@@ -48,15 +48,13 @@ log_filter_pipe_queue(LogPipe *s, LogMessage *msg, const LogPathOptions *path_op
 
   msg_debug("Filter rule evaluation begins",
             evt_tag_str("rule", self->name),
-            log_pipe_location_tag(s),
-            NULL);
+            log_pipe_location_tag(s));
 
   res = filter_expr_eval_root(self->expr, &msg, path_options);
   msg_debug("Filter rule evaluation result",
             evt_tag_str("result", res ? "match" : "not-match"),
             evt_tag_str("rule", self->name),
-            log_pipe_location_tag(s),
-            NULL);
+            log_pipe_location_tag(s));
   if (res)
     {
       log_pipe_forward_msg(s, msg, path_options);
@@ -65,7 +63,7 @@ log_filter_pipe_queue(LogPipe *s, LogMessage *msg, const LogPathOptions *path_op
     {
       if (path_options->matched)
         (*path_options->matched) = FALSE;
-      log_msg_drop(msg, path_options);
+      log_msg_drop(msg, path_options, AT_PROCESSED);
     }
 }
 

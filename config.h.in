@@ -12,6 +12,9 @@
 /* Enable IPv6 support */
 #undef ENABLE_IPV6
 
+/* Support libmongo-client non-URI MongoDB options */
+#undef ENABLE_LEGACY_MONGODB_OPTIONS
+
 /* Enable libuuid support */
 #undef ENABLE_LIBUUID
 
@@ -33,6 +36,9 @@
 /* set LD_LIBRARY_PATH to this value */
 #undef ENV_LD_LIBRARY_PATH
 
+/* Define to 1 if you have the external `altzone' variable. */
+#undef HAVE_ALTZONE
+
 /* define if your platform has a broken pread/pwrite (e.g. HP-UX) */
 #undef HAVE_BROKEN_PREAD
 
@@ -41,6 +47,13 @@
 
 /* Whether you have msg_control field in msghdr in socket.h */
 #undef HAVE_CTRLBUF_IN_MSGHDR
+
+/* Define to 1 if you have the external `daylight' variable. */
+#undef HAVE_DAYLIGHT
+
+/* Define to 1 if you have the declaration of `tzname', and to 0 if you don't.
+   */
+#undef HAVE_DECL_TZNAME
 
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #undef HAVE_DLFCN_H
@@ -159,6 +172,9 @@
 /* Whether you have tm_gmtoff field in struct tm */
 #undef HAVE_STRUCT_TM_TM_GMTOFF
 
+/* Define to 1 if `tm_zone' is a member of `struct tm'. */
+#undef HAVE_STRUCT_TM_TM_ZONE
+
 /* Define to 1 if the system has the type `struct ucred'. */
 #undef HAVE_STRUCT_UCRED
 
@@ -183,6 +199,17 @@
 /* "Whether Transport Layer Security is supported by the system" */
 #undef HAVE_THREAD_KEYWORD
 
+/* Define to 1 if you have the external `timezone' variable. */
+#undef HAVE_TIMEZONE
+
+/* Define to 1 if your `struct tm' has `tm_zone'. Deprecated, use
+   `HAVE_STRUCT_TM_TM_ZONE' instead. */
+#undef HAVE_TM_ZONE
+
+/* Define to 1 if you don't have `tm_zone' but do have the external array
+   `tzname'. */
+#undef HAVE_TZNAME
+
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
 
@@ -195,13 +222,13 @@
 /* java module search path */
 #undef JAVA_MODULE_PATH
 
-/* Test value */
+/* "Disable systemd-journal source" */
 #undef JOURNALD_OFF
 
-/* Test value */
+/* "Enable systemd-journal source if journald is available" */
 #undef JOURNALD_OPTIONAL
 
-/* Test value */
+/* "Force systemd-journal source to use system's journald" */
 #undef JOURNALD_SYSTEM
 
 /* Required license version */
@@ -214,16 +241,10 @@
 /* module search path */
 #undef MODULE_PATH
 
-/* Define to 1 if your C compiler doesn't accept -c and -o together. */
-#undef NO_MINUS_C_MINUS_O
-
-/* package name */
-#undef PACKAGE
-
 /* Define to the address where bug reports for this package should be sent. */
 #undef PACKAGE_BUGREPORT
 
-/* Define to the full name of this package. */
+/* package name */
 #undef PACKAGE_NAME
 
 /* Define to the full name and version of this package. */
@@ -237,6 +258,9 @@
 
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
+
+/* include directory */
+#undef PATH_CONFIG_INCLUDEDIR
 
 /* data directory */
 #undef PATH_DATADIR
@@ -253,17 +277,26 @@
 /* local state directory */
 #undef PATH_LOCALSTATEDIR
 
+/* module installation directory */
+#undef PATH_MODULEDIR
+
 /* local state directory */
 #undef PATH_PIDFILEDIR
 
 /* prefix directory */
 #undef PATH_PREFIX
 
+/* SCL directory */
+#undef PATH_SCLDIR
+
 /* sysconfdir */
 #undef PATH_SYSCONFDIR
 
 /* timezone base directory */
 #undef PATH_TIMEZONEDIR
+
+/* XSD directory */
+#undef PATH_XSDDIR
 
 /* source revision */
 #undef SOURCE_REVISION

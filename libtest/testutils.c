@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2012 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2012 Balabit
+ * Copyright (c) 2012 Peter Gyorko
  * Copyright (c) 2012 Balázs Scheidler
  *
  * This library is free software; you can redistribute it and/or
@@ -30,6 +31,8 @@
 #include <stdio.h>
 #include <stdarg.h>
 
+static gboolean testutils_global_success = TRUE;
+
 struct timeval start_time_val;
 
 GString *current_testcase_description = NULL;
@@ -40,6 +43,7 @@ GList *internal_messages = NULL;
 static void
 print_failure(const gchar *custom_template, va_list custom_args, gchar *assertion_failure_template, ...)
 {
+  testutils_global_success = FALSE;
   va_list assertion_failure_args;
   fprintf(stderr, "\n  ###########################################################################\n  #\n");
   fprintf(stderr,   "  # FAIL: ASSERTION FAILED");
@@ -74,7 +78,7 @@ start_stopwatch(void)
 }
 
 void
-stop_stopwatch_and_display_result(gchar *message_template, ...)
+stop_stopwatch_and_display_result(gint iterations, gchar *message_template, ...)
 {
   va_list args;
   guint64 diff;
@@ -86,7 +90,8 @@ stop_stopwatch_and_display_result(gchar *message_template, ...)
   va_end(args);
 
   diff = (end_time_val.tv_sec - start_time_val.tv_sec) * 1000000 + end_time_val.tv_usec - start_time_val.tv_usec;
-  printf("; runtime=%lu.%06lu s\n", diff / 1000000, diff % 1000000);
+  printf("; %.2f iterations/sec", iterations * 1e6 / diff);
+  printf(", runtime=%lu.%06lus\n", diff / 1000000, diff % 1000000);
 }
 
 static void
@@ -108,6 +113,26 @@ start_grabbing_messages(void)
 {
   reset_grabbed_messages();
   msg_set_post_func(grab_message);
+}
+
+void
+display_grabbed_messages(void)
+{
+  GList *l;
+
+  if (internal_messages)
+    {
+      fprintf(stderr, "  # Grabbed internal messages follow:\n");
+      for (l = internal_messages; l; l = l->next)
+        {
+          LogMessage *msg = (LogMessage *) l->data;
+          const gchar *msg_text = log_msg_get_value(msg, LM_V_MESSAGE, NULL);
+
+          fprintf(stderr, "  #\t%s\n", msg_text);
+        }
+    } else {
+        fprintf(stderr, "  # No internal messeges grabbed!\n");
+    }
 }
 
 void
@@ -137,14 +162,7 @@ assert_grabbed_messages_contain_non_fatal(const gchar *pattern, const gchar *err
   print_failure(error_message, args, "no grabbed message contains the pattern=%s", pattern);
   va_end(args);
 
-  fprintf(stderr, "  # Grabbed internal messages follow:\n");
-  for (l = internal_messages; l; l = l->next)
-    {
-      LogMessage *msg = (LogMessage *) l->data;
-      const gchar *msg_text = log_msg_get_value(msg, LM_V_MESSAGE, NULL);
-
-      fprintf(stderr, "  #\t%s\n", msg_text);
-    }
+  display_grabbed_messages();
 
   return FALSE;
 }
@@ -245,8 +263,13 @@ assert_nstring_non_fatal_va(const gchar *actual, gint actual_len, const gchar *e
       memcmp(actual, expected, actual_len) == 0)
     return TRUE;
 
-  print_failure(error_message, args, "actual=" PRETTY_NSTRING_FORMAT ", expected=" PRETTY_NSTRING_FORMAT " actual_length=%d expected_length=%d",
-                                     PRETTY_NSTRING(actual, actual_len), PRETTY_NSTRING(expected, expected_len), actual_len, expected_len);
+  print_failure(error_message, args,
+                " actual_length=%d expected_length=%d,\n"
+                "  #  actual=   " PRETTY_NSTRING_FORMAT ",\n"
+                "  #  expected= " PRETTY_NSTRING_FORMAT,
+                actual_len, expected_len,
+                PRETTY_NSTRING(actual, actual_len),
+                PRETTY_NSTRING(expected, expected_len));
 
   return FALSE;
 }
@@ -372,16 +395,35 @@ assert_gboolean_non_fatal(gboolean actual, gboolean expected, const gchar *error
 }
 
 gboolean
-assert_null_non_fatal(void *pointer, const gchar *error_message, ...)
+assert_null_non_fatal_va(const void *pointer, const gchar *error_message, va_list args)
 {
-  va_list args;
-
   if (pointer == NULL)
     return TRUE;
 
-  va_start(args, error_message);
   print_failure(error_message, args, "Pointer expected to be NULL; pointer=%llx", (guint64)pointer);
+
+  return FALSE;
+}
+
+gboolean
+assert_null_non_fatal(const void *pointer, const gchar *error_message, ...)
+{
+  va_list args;
+
+  va_start(args, error_message);
+  gboolean success = assert_null_non_fatal_va(pointer, error_message, args);
   va_end(args);
+
+  return success;
+}
+
+gboolean
+assert_not_null_non_fatal_va(void *pointer, const gchar *error_message, va_list args)
+{
+  if (pointer != NULL)
+    return TRUE;
+
+  print_failure(error_message, args, "Unexpected NULL pointer");
 
   return FALSE;
 }
@@ -391,14 +433,11 @@ assert_not_null_non_fatal(void *pointer, const gchar *error_message, ...)
 {
   va_list args;
 
-  if (pointer != NULL)
-    return TRUE;
-
   va_start(args, error_message);
-  print_failure(error_message, args, "Unexpected NULL pointer");
+  gboolean success = assert_not_null_non_fatal_va(pointer, error_message, args);
   va_end(args);
 
-  return FALSE;
+  return success;
 }
 
 gboolean
@@ -480,4 +519,28 @@ assert_msg_field_equals_non_fatal(LogMessage *msg, gchar *field_name, gchar *exp
   va_end(args);
 
   return result;
-};
+}
+
+gboolean
+assert_msg_field_unset_non_fatal(LogMessage *msg, gchar *field_name, const gchar *error_message, ...)
+{
+  gssize actual_value_len;
+  const gchar *actual_value;
+  va_list args;
+
+  NVHandle handle = log_msg_get_value_handle(field_name);
+  actual_value = log_msg_get_value_if_set(msg, handle, &actual_value_len);
+
+  va_start(args, error_message);
+
+  gboolean success = assert_null_non_fatal_va(actual_value, error_message, args);
+
+  va_end(args);
+  return success;
+}
+
+gboolean
+testutils_deinit(void)
+{
+  return testutils_global_success;
+}

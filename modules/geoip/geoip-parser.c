@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2015 Balabit
  * Copyright (c) 2015 Gergely Nagy
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -138,6 +139,7 @@ geoip_parser_clone(LogPipe *s)
 
   geoip_parser_set_database(&cloned->super, self->database);
   geoip_parser_set_prefix(&cloned->super, self->prefix);
+  log_parser_set_template(&cloned->super, log_template_ref(self->super.template));
   geoip_parser_reset_fields(cloned);
 
   return &cloned->super.super;
@@ -166,9 +168,14 @@ geoip_parser_init(LogPipe *s)
 
   geoip_parser_reset_fields(self);
 
-  self->gi = GeoIP_open(self->database, GEOIP_MMAP_CACHE);
+  if (self->database)
+    self->gi = GeoIP_open(self->database, GEOIP_MMAP_CACHE);
+  else
+    self->gi = GeoIP_new(GEOIP_MMAP_CACHE);
 
-  return !!self->gi;
+  if (!self->gi)
+    return FALSE;
+  return log_parser_init_method(s);
 }
 
 LogParser *
@@ -182,7 +189,6 @@ geoip_parser_new(GlobalConfig *cfg)
   self->super.super.clone = geoip_parser_clone;
   self->super.process = geoip_parser_process;
 
-  geoip_parser_set_database(&self->super, "/usr/share/GeoIP/GeoIP.dat");
   geoip_parser_set_prefix(&self->super, ".geoip.");
 
   return &self->super;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 BalaBit
+ * Copyright (c) 2015 Balabit
  * Copyright (c) 2015 Balazs Scheidler <balazs.scheidler@balabit.com>
  *
  * This library is free software; you can redistribute it and/or
@@ -130,8 +130,7 @@ _py_evaluate_global_code(PythonConfig *pc, const gchar *code)
       gchar buf[256];
 
       msg_error("Error evaluating global Python block",
-                evt_tag_str("exception", _py_format_exception_text(buf, sizeof(buf))),
-                NULL);
+                evt_tag_str("exception", _py_format_exception_text(buf, sizeof(buf))));
       return FALSE;
     }
   Py_XDECREF(result);

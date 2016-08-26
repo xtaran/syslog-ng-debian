@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2012 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2002-2012 Balabit
  * Copyright (c) 1998-2012 Balázs Scheidler
  *
  * This library is free software; you can redistribute it and/or
@@ -151,7 +151,7 @@ struct _LogDestDriver
   LogDriver super;
 
   gpointer acquire_queue_data;
-  LogQueue *(*acquire_queue)(LogDestDriver *s, gchar *persist_name, gpointer user_data);
+  LogQueue *(*acquire_queue)(LogDestDriver *s, const gchar *persist_name, gpointer user_data);
   gpointer release_queue_data;
   void (*release_queue)(LogDestDriver *s, LogQueue *q, gpointer user_data);
 
@@ -166,7 +166,7 @@ struct _LogDestDriver
 
 /* returns a reference */
 static inline LogQueue *
-log_dest_driver_acquire_queue(LogDestDriver *self, gchar *persist_name)
+log_dest_driver_acquire_queue(LogDestDriver *self, const gchar *persist_name)
 {
   LogQueue *q;
 

@@ -59,7 +59,7 @@
 #define YYPULL 1
 
 /* "%code top" blocks.  */
-#line 24 "afsql-grammar.y" /* yacc.c:316  */
+#line 24 "modules/afsql/afsql-grammar.y" /* yacc.c:316  */
 
 #include "afsql-parser.h"
 
@@ -96,8 +96,8 @@
 
 /* In a future release of Bison, this section will be replaced
    by #include "y.tab.h".  */
-#ifndef YY_AFSQL_Y_TAB_H_INCLUDED
-# define YY_AFSQL_Y_TAB_H_INCLUDED
+#ifndef YY_AFSQL_MODULES_AFSQL_AFSQL_GRAMMAR_H_INCLUDED
+# define YY_AFSQL_MODULES_AFSQL_AFSQL_GRAMMAR_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -141,23 +141,6 @@ extern int afsql_debug;
     KW_CHANNEL = 10009,
     KW_INTERNAL = 10010,
     KW_FILE = 10011,
-    KW_SQL = 10030,
-    KW_TYPE = 10031,
-    KW_COLUMNS = 10032,
-    KW_INDEXES = 10033,
-    KW_VALUES = 10034,
-    KW_PASSWORD = 10035,
-    KW_DATABASE = 10036,
-    KW_USERNAME = 10037,
-    KW_TABLE = 10038,
-    KW_ENCODING = 10039,
-    KW_SESSION_STATEMENTS = 10040,
-    KW_DELIMITERS = 10050,
-    KW_QUOTES = 10051,
-    KW_QUOTE_PAIRS = 10052,
-    KW_NULL = 10053,
-    KW_CHARS = 10054,
-    KW_STRINGS = 10055,
     KW_SYSLOG = 10060,
     KW_MARK_FREQ = 10071,
     KW_STATS_FREQ = 10072,
@@ -170,6 +153,8 @@ extern int afsql_debug;
     KW_FILE_TEMPLATE = 10079,
     KW_PROTO_TEMPLATE = 10080,
     KW_MARK_MODE = 10081,
+    KW_ENCODING = 10082,
+    KW_TYPE = 10083,
     KW_CHAIN_HOSTNAMES = 10090,
     KW_NORMALIZE_HOSTNAMES = 10091,
     KW_KEEP_HOSTNAME = 10092,
@@ -199,6 +184,7 @@ extern int afsql_debug;
     KW_THROTTLE = 10170,
     KW_THREADED = 10171,
     KW_PASS_UNIX_CREDENTIALS = 10231,
+    KW_PERSIST_NAME = 10302,
     KW_FLAGS = 10190,
     KW_PAD_SIZE = 10200,
     KW_TIME_ZONE = 10201,
@@ -233,10 +219,7 @@ extern int afsql_debug;
     KW_NETMASK = 10355,
     KW_TAGS = 10356,
     KW_NETMASK6 = 10357,
-    KW_VALUE = 10361,
     KW_REWRITE = 10370,
-    KW_SET = 10371,
-    KW_SUBST = 10372,
     KW_YES = 10380,
     KW_NO = 10381,
     KW_IFDEF = 10410,
@@ -252,7 +235,6 @@ extern int afsql_debug;
     LL_EOL = 10428,
     LL_ERROR = 10429,
     KW_VALUE_PAIRS = 10500,
-    KW_SELECT = 10501,
     KW_EXCLUDE = 10502,
     KW_PAIR = 10503,
     KW_KEY = 10504,
@@ -264,7 +246,17 @@ extern int afsql_debug;
     KW_ON_ERROR = 10510,
     KW_RETRIES = 10511,
     KW_DEFAULT = 10513,
-    KW_DBD_OPTION = 10514
+    KW_DBD_OPTION = 10514,
+    KW_INDEXES = 10515,
+    KW_VALUES = 10516,
+    KW_SQL = 10517,
+    KW_PASSWORD = 10518,
+    KW_USERNAME = 10519,
+    KW_DATABASE = 10520,
+    KW_TABLE = 10521,
+    KW_SESSION_STATEMENTS = 10522,
+    KW_COLUMNS = 10523,
+    KW_NULL = 10524
   };
 #endif
 /* Tokens.  */
@@ -298,23 +290,6 @@ extern int afsql_debug;
 #define KW_CHANNEL 10009
 #define KW_INTERNAL 10010
 #define KW_FILE 10011
-#define KW_SQL 10030
-#define KW_TYPE 10031
-#define KW_COLUMNS 10032
-#define KW_INDEXES 10033
-#define KW_VALUES 10034
-#define KW_PASSWORD 10035
-#define KW_DATABASE 10036
-#define KW_USERNAME 10037
-#define KW_TABLE 10038
-#define KW_ENCODING 10039
-#define KW_SESSION_STATEMENTS 10040
-#define KW_DELIMITERS 10050
-#define KW_QUOTES 10051
-#define KW_QUOTE_PAIRS 10052
-#define KW_NULL 10053
-#define KW_CHARS 10054
-#define KW_STRINGS 10055
 #define KW_SYSLOG 10060
 #define KW_MARK_FREQ 10071
 #define KW_STATS_FREQ 10072
@@ -327,6 +302,8 @@ extern int afsql_debug;
 #define KW_FILE_TEMPLATE 10079
 #define KW_PROTO_TEMPLATE 10080
 #define KW_MARK_MODE 10081
+#define KW_ENCODING 10082
+#define KW_TYPE 10083
 #define KW_CHAIN_HOSTNAMES 10090
 #define KW_NORMALIZE_HOSTNAMES 10091
 #define KW_KEEP_HOSTNAME 10092
@@ -356,6 +333,7 @@ extern int afsql_debug;
 #define KW_THROTTLE 10170
 #define KW_THREADED 10171
 #define KW_PASS_UNIX_CREDENTIALS 10231
+#define KW_PERSIST_NAME 10302
 #define KW_FLAGS 10190
 #define KW_PAD_SIZE 10200
 #define KW_TIME_ZONE 10201
@@ -390,10 +368,7 @@ extern int afsql_debug;
 #define KW_NETMASK 10355
 #define KW_TAGS 10356
 #define KW_NETMASK6 10357
-#define KW_VALUE 10361
 #define KW_REWRITE 10370
-#define KW_SET 10371
-#define KW_SUBST 10372
 #define KW_YES 10380
 #define KW_NO 10381
 #define KW_IFDEF 10410
@@ -409,7 +384,6 @@ extern int afsql_debug;
 #define LL_EOL 10428
 #define LL_ERROR 10429
 #define KW_VALUE_PAIRS 10500
-#define KW_SELECT 10501
 #define KW_EXCLUDE 10502
 #define KW_PAIR 10503
 #define KW_KEY 10504
@@ -422,6 +396,16 @@ extern int afsql_debug;
 #define KW_RETRIES 10511
 #define KW_DEFAULT 10513
 #define KW_DBD_OPTION 10514
+#define KW_INDEXES 10515
+#define KW_VALUES 10516
+#define KW_SQL 10517
+#define KW_PASSWORD 10518
+#define KW_USERNAME 10519
+#define KW_DATABASE 10520
+#define KW_TABLE 10521
+#define KW_SESSION_STATEMENTS 10522
+#define KW_COLUMNS 10523
+#define KW_NULL 10524
 
 /* Value type.  */
 
@@ -443,13 +427,13 @@ struct YYLTYPE
 
 int afsql_parse (CfgLexer *lexer, LogDriver **instance, gpointer arg);
 
-#endif /* !YY_AFSQL_Y_TAB_H_INCLUDED  */
+#endif /* !YY_AFSQL_MODULES_AFSQL_AFSQL_GRAMMAR_H_INCLUDED  */
 
 /* Copy the second part of user declarations.  */
 
-#line 451 "modules/afsql/afsql-grammar.c" /* yacc.c:358  */
+#line 435 "modules/afsql/afsql-grammar.c" /* yacc.c:358  */
 /* Unqualified %code blocks.  */
-#line 30 "afsql-grammar.y" /* yacc.c:359  */
+#line 30 "modules/afsql/afsql-grammar.y" /* yacc.c:359  */
 
 
 #include "afsql.h"
@@ -459,7 +443,7 @@ int afsql_parse (CfgLexer *lexer, LogDriver **instance, gpointer arg);
 #include "messages.h"
 #include "plugin.h"
 
-#line 59 "afsql-grammar.y" /* yacc.c:359  */
+#line 59 "modules/afsql/afsql-grammar.y" /* yacc.c:359  */
 
 
 # define YYLLOC_DEFAULT(Current, Rhs, N)                                \
@@ -520,7 +504,7 @@ int afsql_parse (CfgLexer *lexer, LogDriver **instance, gpointer arg);
 
 
 
-#line 524 "modules/afsql/afsql-grammar.c" /* yacc.c:359  */
+#line 508 "modules/afsql/afsql-grammar.c" /* yacc.c:359  */
 
 #ifdef short
 # undef short
@@ -764,21 +748,21 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  5
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   131
+#define YYLAST   140
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  163
+#define YYNTOKENS  155
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  17
+#define YYNNTS  18
 /* YYNRULES -- Number of rules.  */
 #define YYNRULES  53
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  137
+#define YYNSTATES  140
 
 /* YYTRANSLATE[YYX] -- Symbol number corresponding to YYX as returned
    by yylex, with out-of-bounds checking.  */
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   10514
+#define YYMAXUTOK   10524
 
 #define YYTRANSLATE(YYX)                                                \
   ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
@@ -791,15 +775,15 @@ static const yytype_uint8 yytranslate[] =
       12,    13,    14,    15,    16,    17,    18,    19,    20,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     157,   158,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,   162,   161,
+     149,   150,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,   154,   153,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,   159,     2,   160,     2,     2,     2,     2,
+       2,     2,     2,   151,     2,   152,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -1790,67 +1774,68 @@ static const yytype_uint8 yytranslate[] =
       21,    22,    23,    24,    25,    26,    27,    28,    29,    30,
       31,    32,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      33,    34,    35,    36,    37,    38,    39,    40,    41,    42,
-      43,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      44,    45,    46,    47,    48,    49,     2,     2,     2,     2,
-      50,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,    51,    52,    53,    54,    55,    56,    57,    58,    59,
-      60,    61,     2,     2,     2,     2,     2,     2,     2,     2,
-      62,    63,    64,    65,    66,     2,     2,     2,     2,     2,
-      67,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      68,    69,    70,     2,     2,     2,     2,     2,     2,     2,
-      71,    72,     2,     2,     2,     2,     2,     2,     2,     2,
-      73,    74,    75,     2,     2,     2,     2,     2,     2,     2,
-      76,    77,    78,     2,     2,     2,     2,     2,     2,     2,
-      79,    80,    81,     2,     2,     2,     2,     2,     2,     2,
-      82,     2,    83,    84,    85,    86,    87,     2,     2,     2,
-      88,    89,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      91,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      92,    93,    94,    95,    96,    97,     2,     2,     2,     2,
-      98,    99,   100,     2,     2,     2,     2,     2,     2,     2,
-     101,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     102,    90,     2,     2,     2,     2,     2,     2,     2,     2,
-     103,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     104,   105,   106,     2,     2,     2,     2,     2,     2,     2,
-     107,   108,   109,     2,     2,     2,     2,     2,     2,     2,
-     110,   111,   112,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     113,   114,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,   115,     2,     2,     2,     2,     2,     2,
+      33,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,    34,    35,    36,    37,    38,    39,    40,    41,    42,
+      43,    44,    45,    46,     2,     2,     2,     2,     2,     2,
+      47,    48,    49,    50,    51,     2,     2,     2,     2,     2,
+      52,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+      53,    54,    55,     2,     2,     2,     2,     2,     2,     2,
+      56,    57,     2,     2,     2,     2,     2,     2,     2,     2,
+      58,    59,    60,     2,     2,     2,     2,     2,     2,     2,
+      61,    62,    63,     2,     2,     2,     2,     2,     2,     2,
+      64,    65,    66,     2,     2,     2,     2,     2,     2,     2,
+      67,     2,    68,    69,    70,    71,    72,     2,     2,     2,
+      73,    74,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     116,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     117,   118,   119,   120,   121,   122,   123,   124,     2,     2,
-       2,   125,     2,     2,     2,     2,     2,     2,     2,     2,
-     126,   127,   128,     2,     2,     2,     2,     2,     2,     2,
-     129,   130,     2,     2,     2,     2,     2,     2,     2,     2,
+      77,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+      78,    79,    80,    81,    82,    83,     2,     2,     2,     2,
+      84,    85,    86,     2,     2,     2,     2,     2,     2,     2,
+      87,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+      88,    75,     2,     2,     2,     2,     2,     2,     2,     2,
+      89,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+      90,    91,    92,     2,     2,     2,     2,     2,     2,     2,
+      93,    94,    95,     2,     2,     2,     2,     2,     2,     2,
+      96,    97,    98,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     131,   132,     2,     2,     2,     2,     2,     2,     2,     2,
-     133,   134,   135,   136,   137,   138,   139,   140,   141,   142,
+      99,   100,    76,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,   101,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     102,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     103,   104,   105,   106,   107,   108,   109,   110,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     111,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     112,   113,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     114,   115,     2,     2,     2,     2,     2,     2,     2,     2,
+     116,   117,   118,   119,   120,   121,   122,   123,   124,   125,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     143,   144,   145,   146,   147,   148,   149,   150,   151,   152,
-     153,   154,     2,   155,   156
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     126,     2,   127,   128,   129,   130,   131,   132,   133,   134,
+     135,   136,     2,   137,   138,   139,   140,   141,   142,   143,
+     144,   145,   146,   147,   148
 };
 
 #if YYDEBUG
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   389,   389,   394,   399,   399,   408,   409,   413,   416,
-     417,   418,   424,   425,   426,   427,   428,   429,   430,   431,
-     432,   433,   434,   435,   436,   437,   438,   441,   441,   442,
-     443,   449,   453,   454,   455,   459,   460,   684,   685,   700,
-     701,   702,   706,   710,   711,   829,   830,   831,   908,   909,
-     910,   911,   912,   913
+       0,   379,   379,   384,   389,   389,   396,   397,   401,   402,
+     403,   409,   410,   411,   412,   413,   414,   415,   416,   417,
+     418,   419,   420,   421,   422,   423,   426,   426,   427,   431,
+     435,   436,   437,   441,   442,   666,   667,   682,   683,   684,
+     688,   692,   693,   810,   822,   823,   824,   842,   898,   899,
+     900,   901,   902,   903
 };
 #endif
 
@@ -1868,24 +1853,21 @@ static const char *const yytname[] =
   "LL_CONTEXT_INNER_SRC", "LL_CONTEXT_CLIENT_PROTO",
   "LL_CONTEXT_SERVER_PROTO", "KW_SOURCE", "KW_FILTER", "KW_PARSER",
   "KW_DESTINATION", "KW_LOG", "KW_OPTIONS", "KW_INCLUDE", "KW_BLOCK",
-  "KW_JUNCTION", "KW_CHANNEL", "KW_INTERNAL", "KW_FILE", "KW_SQL",
-  "KW_TYPE", "KW_COLUMNS", "KW_INDEXES", "KW_VALUES", "KW_PASSWORD",
-  "KW_DATABASE", "KW_USERNAME", "KW_TABLE", "KW_ENCODING",
-  "KW_SESSION_STATEMENTS", "KW_DELIMITERS", "KW_QUOTES", "KW_QUOTE_PAIRS",
-  "KW_NULL", "KW_CHARS", "KW_STRINGS", "KW_SYSLOG", "KW_MARK_FREQ",
-  "KW_STATS_FREQ", "KW_STATS_LEVEL", "KW_STATS_LIFETIME", "KW_FLUSH_LINES",
-  "KW_SUPPRESS", "KW_FLUSH_TIMEOUT", "KW_LOG_MSG_SIZE", "KW_FILE_TEMPLATE",
-  "KW_PROTO_TEMPLATE", "KW_MARK_MODE", "KW_CHAIN_HOSTNAMES",
-  "KW_NORMALIZE_HOSTNAMES", "KW_KEEP_HOSTNAME", "KW_CHECK_HOSTNAME",
-  "KW_BAD_HOSTNAME", "KW_KEEP_TIMESTAMP", "KW_USE_DNS", "KW_USE_FQDN",
-  "KW_CUSTOM_DOMAIN", "KW_DNS_CACHE", "KW_DNS_CACHE_SIZE",
-  "KW_DNS_CACHE_EXPIRE", "KW_DNS_CACHE_EXPIRE_FAILED",
-  "KW_DNS_CACHE_HOSTS", "KW_PERSIST_ONLY", "KW_USE_RCPTID",
-  "KW_USE_UNIQID", "KW_TZ_CONVERT", "KW_TS_FORMAT", "KW_FRAC_DIGITS",
-  "KW_LOG_FIFO_SIZE", "KW_LOG_FETCH_LIMIT", "KW_LOG_IW_SIZE",
-  "KW_LOG_PREFIX", "KW_PROGRAM_OVERRIDE", "KW_HOST_OVERRIDE",
-  "KW_THROTTLE", "KW_THREADED", "KW_PASS_UNIX_CREDENTIALS", "KW_FLAGS",
-  "KW_PAD_SIZE", "KW_TIME_ZONE", "KW_RECV_TIME_ZONE", "KW_SEND_TIME_ZONE",
+  "KW_JUNCTION", "KW_CHANNEL", "KW_INTERNAL", "KW_FILE", "KW_SYSLOG",
+  "KW_MARK_FREQ", "KW_STATS_FREQ", "KW_STATS_LEVEL", "KW_STATS_LIFETIME",
+  "KW_FLUSH_LINES", "KW_SUPPRESS", "KW_FLUSH_TIMEOUT", "KW_LOG_MSG_SIZE",
+  "KW_FILE_TEMPLATE", "KW_PROTO_TEMPLATE", "KW_MARK_MODE", "KW_ENCODING",
+  "KW_TYPE", "KW_CHAIN_HOSTNAMES", "KW_NORMALIZE_HOSTNAMES",
+  "KW_KEEP_HOSTNAME", "KW_CHECK_HOSTNAME", "KW_BAD_HOSTNAME",
+  "KW_KEEP_TIMESTAMP", "KW_USE_DNS", "KW_USE_FQDN", "KW_CUSTOM_DOMAIN",
+  "KW_DNS_CACHE", "KW_DNS_CACHE_SIZE", "KW_DNS_CACHE_EXPIRE",
+  "KW_DNS_CACHE_EXPIRE_FAILED", "KW_DNS_CACHE_HOSTS", "KW_PERSIST_ONLY",
+  "KW_USE_RCPTID", "KW_USE_UNIQID", "KW_TZ_CONVERT", "KW_TS_FORMAT",
+  "KW_FRAC_DIGITS", "KW_LOG_FIFO_SIZE", "KW_LOG_FETCH_LIMIT",
+  "KW_LOG_IW_SIZE", "KW_LOG_PREFIX", "KW_PROGRAM_OVERRIDE",
+  "KW_HOST_OVERRIDE", "KW_THROTTLE", "KW_THREADED",
+  "KW_PASS_UNIX_CREDENTIALS", "KW_PERSIST_NAME", "KW_FLAGS", "KW_PAD_SIZE",
+  "KW_TIME_ZONE", "KW_RECV_TIME_ZONE", "KW_SEND_TIME_ZONE",
   "KW_LOCAL_TIME_ZONE", "KW_FORMAT", "KW_TIME_REOPEN", "KW_TIME_REAP",
   "KW_TIME_SLEEP", "KW_TMPL_ESCAPE", "KW_OPTIONAL", "KW_CREATE_DIRS",
   "KW_OWNER", "KW_GROUP", "KW_PERM", "KW_DIR_OWNER", "KW_DIR_GROUP",
@@ -1893,18 +1875,20 @@ static const char *const yytname[] =
   "KW_TEMPLATE_FUNCTION", "KW_DEFAULT_FACILITY", "KW_DEFAULT_LEVEL",
   "KW_PORT", "KW_USE_TIME_RECVD", "KW_FACILITY", "KW_LEVEL", "KW_HOST",
   "KW_MATCH", "KW_MESSAGE", "KW_NETMASK", "KW_TAGS", "KW_NETMASK6",
-  "KW_VALUE", "KW_REWRITE", "KW_SET", "KW_SUBST", "KW_YES", "KW_NO",
-  "KW_IFDEF", "KW_ENDIF", "LL_DOTDOT", "LL_IDENTIFIER", "LL_NUMBER",
-  "LL_FLOAT", "LL_STRING", "LL_TOKEN", "LL_BLOCK", "LL_PRAGMA", "LL_EOL",
-  "LL_ERROR", "KW_VALUE_PAIRS", "KW_SELECT", "KW_EXCLUDE", "KW_PAIR",
-  "KW_KEY", "KW_SCOPE", "KW_SHIFT", "KW_REKEY", "KW_ADD_PREFIX",
-  "KW_REPLACE_PREFIX", "KW_ON_ERROR", "KW_RETRIES", "KW_DEFAULT",
-  "KW_DBD_OPTION", "'('", "')'", "'{'", "'}'", "';'", "':'", "$accept",
-  "start", "dest_afsql", "dest_afsql_params", "$@1", "dest_afsql_options",
-  "dest_afsql_option", "$@2", "dest_afsql_values",
-  "dest_afsql_values_build", "dest_afsql_flags", "string",
-  "string_or_number", "string_list", "string_list_build",
-  "dest_driver_option", "template_option", YY_NULLPTR
+  "KW_REWRITE", "KW_YES", "KW_NO", "KW_IFDEF", "KW_ENDIF", "LL_DOTDOT",
+  "LL_IDENTIFIER", "LL_NUMBER", "LL_FLOAT", "LL_STRING", "LL_TOKEN",
+  "LL_BLOCK", "LL_PRAGMA", "LL_EOL", "LL_ERROR", "KW_VALUE_PAIRS",
+  "KW_EXCLUDE", "KW_PAIR", "KW_KEY", "KW_SCOPE", "KW_SHIFT", "KW_REKEY",
+  "KW_ADD_PREFIX", "KW_REPLACE_PREFIX", "KW_ON_ERROR", "KW_RETRIES",
+  "KW_DEFAULT", "KW_DBD_OPTION", "KW_INDEXES", "KW_VALUES", "KW_SQL",
+  "KW_PASSWORD", "KW_USERNAME", "KW_DATABASE", "KW_TABLE",
+  "KW_SESSION_STATEMENTS", "KW_COLUMNS", "KW_NULL", "'('", "')'", "'{'",
+  "'}'", "';'", "':'", "$accept", "start", "dest_afsql",
+  "dest_afsql_params", "$@1", "dest_afsql_options", "dest_afsql_option",
+  "$@2", "dest_afsql_values", "dest_afsql_values_build",
+  "dest_afsql_flags", "string", "string_or_number", "string_list",
+  "string_list_build", "driver_option", "dest_driver_option",
+  "template_option", YY_NULLPTR
 };
 #endif
 
@@ -1916,27 +1900,26 @@ static const yytype_uint16 yytoknum[] =
        0,   256, 10512,     1,     2,     3,     4,     5,     6,     7,
        8,     9,    10,    11,    12,    13,    14,    15,    16,    17,
       18, 10000, 10001, 10002, 10003, 10004, 10005, 10006, 10007, 10008,
-   10009, 10010, 10011, 10030, 10031, 10032, 10033, 10034, 10035, 10036,
-   10037, 10038, 10039, 10040, 10050, 10051, 10052, 10053, 10054, 10055,
-   10060, 10071, 10072, 10073, 10074, 10075, 10076, 10077, 10078, 10079,
-   10080, 10081, 10090, 10091, 10092, 10093, 10094, 10100, 10110, 10111,
-   10112, 10120, 10121, 10130, 10131, 10132, 10140, 10141, 10142, 10150,
-   10151, 10152, 10160, 10162, 10163, 10164, 10165, 10166, 10170, 10171,
-   10231, 10190, 10200, 10201, 10202, 10203, 10204, 10205, 10210, 10211,
-   10212, 10220, 10230, 10240, 10250, 10251, 10252, 10260, 10261, 10262,
-   10270, 10271, 10272, 10300, 10301, 10323, 10340, 10350, 10351, 10352,
-   10353, 10354, 10355, 10356, 10357, 10361, 10370, 10371, 10372, 10380,
-   10381, 10410, 10411, 10420, 10421, 10422, 10423, 10424, 10425, 10426,
-   10427, 10428, 10429, 10500, 10501, 10502, 10503, 10504, 10505, 10506,
-   10507, 10508, 10509, 10510, 10511, 10513, 10514,    40,    41,   123,
-     125,    59,    58
+   10009, 10010, 10011, 10060, 10071, 10072, 10073, 10074, 10075, 10076,
+   10077, 10078, 10079, 10080, 10081, 10082, 10083, 10090, 10091, 10092,
+   10093, 10094, 10100, 10110, 10111, 10112, 10120, 10121, 10130, 10131,
+   10132, 10140, 10141, 10142, 10150, 10151, 10152, 10160, 10162, 10163,
+   10164, 10165, 10166, 10170, 10171, 10231, 10302, 10190, 10200, 10201,
+   10202, 10203, 10204, 10205, 10210, 10211, 10212, 10220, 10230, 10240,
+   10250, 10251, 10252, 10260, 10261, 10262, 10270, 10271, 10272, 10300,
+   10301, 10323, 10340, 10350, 10351, 10352, 10353, 10354, 10355, 10356,
+   10357, 10370, 10380, 10381, 10410, 10411, 10420, 10421, 10422, 10423,
+   10424, 10425, 10426, 10427, 10428, 10429, 10500, 10502, 10503, 10504,
+   10505, 10506, 10507, 10508, 10509, 10510, 10511, 10513, 10514, 10515,
+   10516, 10517, 10518, 10519, 10520, 10521, 10522, 10523, 10524,    40,
+      41,   123,   125,    59,    58
 };
 # endif
 
-#define YYPACT_NINF -130
+#define YYPACT_NINF -137
 
 #define yypact_value_is_default(Yystate) \
-  (!!((Yystate) == (-130)))
+  (!!((Yystate) == (-137)))
 
 #define YYTABLE_NINF -8
 
@@ -1947,20 +1930,20 @@ static const yytype_uint16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int16 yypact[] =
 {
-       6,   -14,    20,  -129,  -130,  -130,  -130,  -125,   -34,  -130,
-    -107,  -106,  -104,  -102,  -101,   -99,   -98,   -97,   -96,   -94,
-     -93,   -91,   -90,   -88,   -87,   -86,   -85,  -130,  -130,  -130,
-     -84,   -83,  -130,   -34,   -69,  -130,   -95,   -95,   -95,  -112,
-     -95,   -95,   -95,   -95,   -95,   -95,   -73,   -60,   -59,   -58,
-     -95,  -119,   -95,   -57,   -95,  -130,   -78,   -75,   -74,   -71,
-     -68,   -63,  -130,  -130,  -130,   -62,   -95,   -56,  -130,   -55,
-    -112,   -54,  -130,  -112,   -53,   -52,   -51,   -50,   -49,   -48,
-     -47,   -46,   -45,   -44,   -43,   -95,  -130,  -130,  -130,   -42,
-     -41,   -40,  -105,   -95,   -36,   -95,   -95,   -95,   -95,  -130,
-    -130,  -130,  -130,  -130,  -130,  -130,  -130,  -130,  -130,  -130,
-    -130,  -130,  -130,  -130,  -130,  -130,  -130,  -130,  -130,  -130,
-    -130,   -39,   -37,   -35,   -33,   -32,   -31,   -28,   -27,  -130,
-    -130,  -130,  -130,  -130,  -130,  -130,  -130
+      -3,  -136,     7,  -135,  -137,  -137,  -137,  -123,   -38,  -137,
+    -119,  -118,  -117,  -116,  -115,  -113,  -112,  -109,  -108,  -137,
+    -106,  -105,  -104,  -103,  -101,  -100,   -99,   -98,   -97,   -95,
+     -94,  -137,   -38,   -62,  -137,  -137,   -76,   -71,   -96,   -65,
+     -61,   -96,   -96,  -107,   -96,   -60,   -96,   -96,  -111,   -96,
+     -96,   -96,   -96,   -96,   -96,   -96,  -137,   -93,   -90,   -89,
+     -88,   -87,   -85,  -137,   -84,   -82,  -137,  -137,   -81,   -80,
+     -79,   -78,   -75,   -96,  -137,  -137,  -137,   -74,   -73,   -70,
+    -102,   -96,   -63,  -137,  -111,   -57,  -137,  -111,   -56,   -54,
+     -53,   -51,   -47,   -39,   -36,   -96,   -44,   -96,   -96,   -96,
+     -96,  -137,  -137,  -137,  -137,  -137,  -137,  -137,  -137,  -137,
+    -137,  -137,   -35,   -34,  -137,  -137,  -137,  -137,  -137,  -137,
+    -137,  -137,  -137,  -137,  -137,  -137,   -33,   -32,   -29,   -28,
+     -27,   -25,  -137,  -137,  -137,  -137,  -137,  -137,  -137,  -137
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -1968,34 +1951,34 @@ static const yytype_int16 yypact[] =
      means the default is an error.  */
 static const yytype_uint8 yydefact[] =
 {
-       0,     0,     0,     0,     2,     1,     4,     0,    27,     3,
+       0,     0,     0,     0,     2,     1,     4,     0,    26,     3,
+       0,     0,     0,     0,     0,     0,     0,     0,     0,    46,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,     8,    30,    47,
-       0,     0,     5,    27,     0,    29,     0,    44,    44,    34,
-       0,     0,     0,     0,    44,     0,     0,     0,     0,     0,
-      36,     0,     0,     0,     0,     6,     0,     0,     0,     0,
-       0,     0,    28,    37,    38,     0,    44,     0,    42,     0,
-      34,     0,    31,    34,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,    36,    40,    41,    39,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,     9,
-      43,    18,    19,    33,    20,    32,    15,    16,    12,    17,
-      25,    21,    23,    24,    45,    46,    26,    35,    11,    10,
-      22,     0,     0,     0,     0,     0,     0,     0,     0,    13,
-      14,    48,    49,    50,    51,    52,    53
+       0,     5,    26,     0,    47,    28,     0,     0,     0,     0,
+       0,     0,    34,     0,     0,     0,     0,    42,    32,     0,
+       0,     0,     0,    42,    42,     0,     6,     0,     0,     0,
+       0,     0,     0,    27,     0,     0,    35,    36,     0,     0,
+       0,     0,     0,    34,    38,    39,    37,     0,     0,     0,
+       0,    42,     0,    40,    32,     0,    29,    32,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+       0,    22,    23,     8,    44,    45,    43,    25,    33,    10,
+       9,    21,     0,     0,    41,    18,    31,    19,    30,    14,
+      11,    15,    16,    24,    17,    20,     0,     0,     0,     0,
+       0,     0,    12,    13,    48,    49,    50,    51,    52,    53
 };
 
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int16 yypgoto[] =
 {
-    -130,  -130,  -130,  -130,  -130,    19,  -130,  -130,  -130,   -29,
-      10,    -5,  -130,   -30,    35,  -130,  -130
+    -137,  -137,  -137,  -137,  -137,    33,  -137,  -137,  -137,   -59,
+      12,    40,  -137,   -31,    38,  -137,  -137,  -137
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-      -1,     2,     4,     7,     8,    32,    33,    34,    71,    72,
-      84,    66,    89,    67,    68,    35,    62
+      -1,     2,     4,     7,     8,    31,    32,    33,    85,    86,
+      72,    81,    77,    82,    83,    34,    35,    63
 };
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -2003,79 +1986,81 @@ static const yytype_int8 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int16 yytable[] =
 {
-      10,    11,    12,    13,    14,    15,    16,    17,    69,    18,
-       1,    56,    57,    19,    78,    63,    86,    87,    64,     3,
-       5,    20,    63,    21,    58,    64,    59,    60,     6,    63,
-     121,    65,    64,     9,    73,    74,    75,    76,    77,    63,
-      79,   103,    64,    70,   105,    85,    88,    90,    22,    92,
-      36,    37,    55,    38,    23,    39,    40,    24,    41,    42,
-      43,    44,    80,    45,    46,    73,    47,    48,    73,    49,
-      50,    51,    52,    53,    54,    81,    82,    83,    91,    93,
-      85,    25,    94,    95,    61,    26,    96,   122,   123,    97,
-     125,   126,   127,   128,    98,   117,    99,    27,    28,   124,
-      29,   100,   101,   102,   104,   106,   107,   108,   109,   110,
-     111,   112,   113,   114,   115,   116,   118,   119,   120,   129,
-      30,   130,    31,   131,    -7,   132,   133,   134,     0,     0,
-     135,   136
+      10,     1,    11,    57,    58,     3,    66,     5,    12,    67,
+      66,    74,    75,    67,     6,    66,   112,    59,    67,    60,
+      61,    66,    92,    93,    67,   116,    84,     9,   118,    13,
+      36,    37,    38,    39,    40,    14,    41,    42,    15,    16,
+      43,    44,    64,    45,    46,    47,    48,    65,    49,    50,
+      51,    52,    53,    69,    54,    55,    95,    70,    79,    96,
+      97,    98,    99,    17,   100,    56,   101,    18,   102,   103,
+     104,   105,   106,    62,   127,   107,   109,   110,    68,    19,
+     111,    71,    73,    76,    78,   108,    80,   115,    87,    88,
+      89,    90,    91,   117,   119,    94,   120,   121,    20,   122,
+      21,    22,    23,   123,    24,    25,    26,    27,    28,    29,
+      30,   124,    -7,    73,   125,   132,   133,   134,   135,   114,
+     113,   136,   137,   138,    87,   139,     0,    87,     0,     0,
+       0,     0,     0,     0,     0,   126,     0,   128,   129,   130,
+     131
 };
 
 static const yytype_int16 yycheck[] =
 {
-      34,    35,    36,    37,    38,    39,    40,    41,    38,    43,
-       4,    80,    81,    47,    44,   134,   135,   136,   137,    33,
-       0,    55,   134,    57,    93,   137,    95,    96,   157,   134,
-     135,    36,   137,   158,    39,    40,    41,    42,    43,   134,
-      45,    70,   137,   155,    73,    50,    51,    52,    82,    54,
-     157,   157,    33,   157,    88,   157,   157,    91,   157,   157,
-     157,   157,   135,   157,   157,    70,   157,   157,    73,   157,
-     157,   157,   157,   157,   157,   135,   135,   135,   135,   157,
-      85,   115,   157,   157,   153,   119,   157,    92,    93,   157,
-      95,    96,    97,    98,   157,    85,   158,   131,   132,   135,
-     134,    66,   158,   158,   158,   158,   158,   158,   158,   158,
-     158,   158,   158,   158,   158,   158,   158,   158,   158,   158,
-     154,   158,   156,   158,   158,   158,   158,   158,    -1,    -1,
-     158,   158
+      38,     4,    40,    65,    66,   141,   117,     0,    46,   120,
+     117,   118,   119,   120,   149,   117,   118,    79,   120,    81,
+      82,   117,    53,    54,   120,    84,   137,   150,    87,    67,
+     149,   149,   149,   149,   149,    73,   149,   149,    76,    77,
+     149,   149,   118,   149,   149,   149,   149,   118,   149,   149,
+     149,   149,   149,   118,   149,   149,   149,   118,   118,   149,
+     149,   149,   149,   101,   149,    32,   150,   105,   150,   150,
+     150,   150,   150,   135,   118,   150,   150,   150,    38,   117,
+     150,    41,    42,    43,    44,    73,    46,   150,    48,    49,
+      50,    51,    52,   150,   150,    55,   150,   150,   136,   150,
+     138,   139,   140,   150,   142,   143,   144,   145,   146,   147,
+     148,   150,   150,    73,   150,   150,   150,   150,   150,    81,
+      80,   150,   150,   150,    84,   150,    -1,    87,    -1,    -1,
+      -1,    -1,    -1,    -1,    -1,    95,    -1,    97,    98,    99,
+     100
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
      symbol of state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
-       0,     4,   164,    33,   165,     0,   157,   166,   167,   158,
-      34,    35,    36,    37,    38,    39,    40,    41,    43,    47,
-      55,    57,    82,    88,    91,   115,   119,   131,   132,   134,
-     154,   156,   168,   169,   170,   178,   157,   157,   157,   157,
-     157,   157,   157,   157,   157,   157,   157,   157,   157,   157,
-     157,   157,   157,   157,   157,   168,    80,    81,    93,    95,
-      96,   153,   179,   134,   137,   174,   174,   176,   177,   176,
-     155,   171,   172,   174,   174,   174,   174,   174,   176,   174,
-     135,   135,   135,   135,   173,   174,   135,   136,   174,   175,
-     174,   135,   174,   157,   157,   157,   157,   157,   157,   158,
-     177,   158,   158,   172,   158,   172,   158,   158,   158,   158,
-     158,   158,   158,   158,   158,   158,   158,   173,   158,   158,
-     158,   135,   174,   174,   135,   174,   174,   174,   174,   158,
-     158,   158,   158,   158,   158,   158,   158
+       0,     4,   156,   141,   157,     0,   149,   158,   159,   150,
+      38,    40,    46,    67,    73,    76,    77,   101,   105,   117,
+     136,   138,   139,   140,   142,   143,   144,   145,   146,   147,
+     148,   160,   161,   162,   170,   171,   149,   149,   149,   149,
+     149,   149,   149,   149,   149,   149,   149,   149,   149,   149,
+     149,   149,   149,   149,   149,   149,   160,    65,    66,    79,
+      81,    82,   135,   172,   118,   118,   117,   120,   166,   118,
+     118,   166,   165,   166,   118,   119,   166,   167,   166,   118,
+     166,   166,   168,   169,   137,   163,   164,   166,   166,   166,
+     166,   166,   168,   168,   166,   149,   149,   149,   149,   149,
+     149,   150,   150,   150,   150,   150,   150,   150,   165,   150,
+     150,   150,   118,   166,   169,   150,   164,   150,   164,   150,
+     150,   150,   150,   150,   150,   150,   166,   118,   166,   166,
+     166,   166,   150,   150,   150,   150,   150,   150,   150,   150
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
-       0,   163,   164,   165,   167,   166,   168,   168,   169,   169,
-     169,   169,   169,   169,   169,   169,   169,   169,   169,   169,
-     169,   169,   169,   169,   169,   169,   169,   170,   169,   169,
-     169,   171,   172,   172,   172,   173,   173,   174,   174,   175,
-     175,   175,   176,   177,   177,   178,   178,   178,   179,   179,
-     179,   179,   179,   179
+       0,   155,   156,   157,   159,   158,   160,   160,   161,   161,
+     161,   161,   161,   161,   161,   161,   161,   161,   161,   161,
+     161,   161,   161,   161,   161,   161,   162,   161,   161,   163,
+     164,   164,   164,   165,   165,   166,   166,   167,   167,   167,
+     168,   169,   169,   170,   171,   171,   171,   171,   172,   172,
+     172,   172,   172,   172
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
 static const yytype_uint8 yyr2[] =
 {
-       0,     2,     2,     4,     0,     2,     2,     0,     1,     4,
-       4,     4,     4,     5,     5,     4,     4,     4,     4,     4,
-       4,     4,     4,     4,     4,     4,     4,     0,     2,     1,
-       1,     1,     2,     2,     0,     2,     0,     1,     1,     1,
-       1,     1,     1,     2,     0,     4,     4,     1,     4,     4,
+       0,     2,     2,     4,     0,     2,     2,     0,     4,     4,
+       4,     4,     5,     5,     4,     4,     4,     4,     4,     4,
+       4,     4,     4,     4,     4,     4,     0,     2,     1,     1,
+       2,     2,     0,     2,     0,     1,     1,     1,     1,     1,
+       1,     2,     0,     4,     4,     4,     1,     1,     4,     4,
        4,     4,     4,     4
 };
 
@@ -2572,7 +2557,42 @@ yydestruct (const char *yymsg, int yytype, YYSTYPE *yyvaluep, YYLTYPE *yylocatio
   YY_SYMBOL_PRINT (yymsg, yytype, yyvaluep, yylocationp);
 
   YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN
-  YYUSE (yytype);
+  switch (yytype)
+    {
+          case 117: /* LL_IDENTIFIER  */
+#line 293 "modules/afsql/afsql-grammar.y" /* yacc.c:1257  */
+      { free(((*yyvaluep).cptr)); }
+#line 2566 "modules/afsql/afsql-grammar.c" /* yacc.c:1257  */
+        break;
+
+    case 120: /* LL_STRING  */
+#line 293 "modules/afsql/afsql-grammar.y" /* yacc.c:1257  */
+      { free(((*yyvaluep).cptr)); }
+#line 2572 "modules/afsql/afsql-grammar.c" /* yacc.c:1257  */
+        break;
+
+    case 122: /* LL_BLOCK  */
+#line 293 "modules/afsql/afsql-grammar.y" /* yacc.c:1257  */
+      { free(((*yyvaluep).cptr)); }
+#line 2578 "modules/afsql/afsql-grammar.c" /* yacc.c:1257  */
+        break;
+
+    case 166: /* string  */
+#line 293 "modules/afsql/afsql-grammar.y" /* yacc.c:1257  */
+      { free(((*yyvaluep).cptr)); }
+#line 2584 "modules/afsql/afsql-grammar.c" /* yacc.c:1257  */
+        break;
+
+    case 167: /* string_or_number  */
+#line 293 "modules/afsql/afsql-grammar.y" /* yacc.c:1257  */
+      { free(((*yyvaluep).cptr)); }
+#line 2590 "modules/afsql/afsql-grammar.c" /* yacc.c:1257  */
+        break;
+
+
+      default:
+        break;
+    }
   YY_IGNORE_MAYBE_UNINITIALIZED_END
 }
 
@@ -2858,253 +2878,241 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 389 "afsql-grammar.y" /* yacc.c:1646  */
+#line 379 "modules/afsql/afsql-grammar.y" /* yacc.c:1646  */
     { YYACCEPT; }
-#line 2864 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
+#line 2884 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
     break;
 
   case 3:
-#line 394 "afsql-grammar.y" /* yacc.c:1646  */
+#line 384 "modules/afsql/afsql-grammar.y" /* yacc.c:1646  */
     { (yyval.ptr) = (yyvsp[-1].ptr); }
-#line 2870 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
+#line 2890 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
     break;
 
   case 4:
-#line 399 "afsql-grammar.y" /* yacc.c:1646  */
+#line 389 "modules/afsql/afsql-grammar.y" /* yacc.c:1646  */
     {
-#if ENABLE_SQL
             last_driver = *instance = afsql_dd_new(configuration);
-#endif /* ENABLE_SQL */
           }
-#line 2880 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
+#line 2898 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
     break;
 
   case 5:
-#line 404 "afsql-grammar.y" /* yacc.c:1646  */
+#line 392 "modules/afsql/afsql-grammar.y" /* yacc.c:1646  */
     { (yyval.ptr) = last_driver; }
-#line 2886 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
+#line 2904 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
     break;
 
   case 8:
-#line 413 "afsql-grammar.y" /* yacc.c:1646  */
-    {
-#if ENABLE_SQL
-}
-#line 2894 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
+#line 401 "modules/afsql/afsql-grammar.y" /* yacc.c:1646  */
+    { afsql_dd_set_type(last_driver, (yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
+#line 2910 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 416 "afsql-grammar.y" /* yacc.c:1646  */
-    { afsql_dd_set_type(last_driver, (yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 2900 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
+#line 402 "modules/afsql/afsql-grammar.y" /* yacc.c:1646  */
+    { afsql_dd_set_host(last_driver, (yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
+#line 2916 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 417 "afsql-grammar.y" /* yacc.c:1646  */
-    { afsql_dd_set_host(last_driver, (yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 2906 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 11:
-#line 419 "afsql-grammar.y" /* yacc.c:1646  */
+#line 404 "modules/afsql/afsql-grammar.y" /* yacc.c:1646  */
     {
             CHECK_ERROR(afsql_dd_check_port((yyvsp[-1].cptr)), (yylsp[-1]), "Illegal sql port number: %s", (yyvsp[-1].cptr));
             afsql_dd_set_port(last_driver, (yyvsp[-1].cptr));
             free((yyvsp[-1].cptr));
           }
-#line 2916 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
+#line 2926 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 11:
+#line 409 "modules/afsql/afsql-grammar.y" /* yacc.c:1646  */
+    { afsql_dd_set_user(last_driver, (yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
+#line 2932 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
     break;
 
   case 12:
-#line 424 "afsql-grammar.y" /* yacc.c:1646  */
-    { afsql_dd_set_user(last_driver, (yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 2922 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
+#line 410 "modules/afsql/afsql-grammar.y" /* yacc.c:1646  */
+    { afsql_dd_add_dbd_option_numeric(last_driver, (yyvsp[-2].cptr), (yyvsp[-1].num)); free((yyvsp[-2].cptr)); }
+#line 2938 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
     break;
 
   case 13:
-#line 425 "afsql-grammar.y" /* yacc.c:1646  */
-    { afsql_dd_add_dbd_option_numeric(last_driver, (yyvsp[-2].cptr), (yyvsp[-1].num)); free((yyvsp[-2].cptr)); }
-#line 2928 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
+#line 411 "modules/afsql/afsql-grammar.y" /* yacc.c:1646  */
+    { afsql_dd_add_dbd_option(last_driver, (yyvsp[-2].cptr), (yyvsp[-1].cptr)); free((yyvsp[-2].cptr)); free((yyvsp[-1].cptr)); }
+#line 2944 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
     break;
 
   case 14:
-#line 426 "afsql-grammar.y" /* yacc.c:1646  */
-    { afsql_dd_add_dbd_option(last_driver, (yyvsp[-2].cptr), (yyvsp[-1].cptr)); free((yyvsp[-2].cptr)); free((yyvsp[-1].cptr)); }
-#line 2934 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
+#line 412 "modules/afsql/afsql-grammar.y" /* yacc.c:1646  */
+    { afsql_dd_set_password(last_driver, (yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
+#line 2950 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
     break;
 
   case 15:
-#line 427 "afsql-grammar.y" /* yacc.c:1646  */
-    { afsql_dd_set_password(last_driver, (yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 2940 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
+#line 413 "modules/afsql/afsql-grammar.y" /* yacc.c:1646  */
+    { afsql_dd_set_database(last_driver, (yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
+#line 2956 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
     break;
 
   case 16:
-#line 428 "afsql-grammar.y" /* yacc.c:1646  */
-    { afsql_dd_set_database(last_driver, (yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 2946 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
+#line 414 "modules/afsql/afsql-grammar.y" /* yacc.c:1646  */
+    { afsql_dd_set_table(last_driver, (yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
+#line 2962 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
     break;
 
   case 17:
-#line 429 "afsql-grammar.y" /* yacc.c:1646  */
-    { afsql_dd_set_table(last_driver, (yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 2952 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
+#line 415 "modules/afsql/afsql-grammar.y" /* yacc.c:1646  */
+    { afsql_dd_set_columns(last_driver, (yyvsp[-1].ptr)); }
+#line 2968 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
     break;
 
   case 18:
-#line 430 "afsql-grammar.y" /* yacc.c:1646  */
-    { afsql_dd_set_columns(last_driver, (yyvsp[-1].ptr)); }
-#line 2958 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
+#line 416 "modules/afsql/afsql-grammar.y" /* yacc.c:1646  */
+    { afsql_dd_set_indexes(last_driver, (yyvsp[-1].ptr)); }
+#line 2974 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
     break;
 
   case 19:
-#line 431 "afsql-grammar.y" /* yacc.c:1646  */
-    { afsql_dd_set_indexes(last_driver, (yyvsp[-1].ptr)); }
-#line 2964 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
+#line 417 "modules/afsql/afsql-grammar.y" /* yacc.c:1646  */
+    { afsql_dd_set_values(last_driver, (yyvsp[-1].ptr)); }
+#line 2980 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
     break;
 
   case 20:
-#line 432 "afsql-grammar.y" /* yacc.c:1646  */
-    { afsql_dd_set_values(last_driver, (yyvsp[-1].ptr)); }
-#line 2970 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
+#line 418 "modules/afsql/afsql-grammar.y" /* yacc.c:1646  */
+    { afsql_dd_set_null_value(last_driver, (yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
+#line 2986 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
     break;
 
   case 21:
-#line 433 "afsql-grammar.y" /* yacc.c:1646  */
-    { afsql_dd_set_null_value(last_driver, (yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 2976 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
+#line 419 "modules/afsql/afsql-grammar.y" /* yacc.c:1646  */
+    { afsql_dd_set_retries(last_driver, (yyvsp[-1].num)); }
+#line 2992 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
     break;
 
   case 22:
-#line 434 "afsql-grammar.y" /* yacc.c:1646  */
-    { afsql_dd_set_retries(last_driver, (yyvsp[-1].num)); }
-#line 2982 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
+#line 420 "modules/afsql/afsql-grammar.y" /* yacc.c:1646  */
+    { afsql_dd_set_flush_lines(last_driver, (yyvsp[-1].num)); }
+#line 2998 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
     break;
 
   case 23:
-#line 435 "afsql-grammar.y" /* yacc.c:1646  */
-    { afsql_dd_set_flush_lines(last_driver, (yyvsp[-1].num)); }
-#line 2988 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
+#line 421 "modules/afsql/afsql-grammar.y" /* yacc.c:1646  */
+    { afsql_dd_set_flush_timeout(last_driver, (yyvsp[-1].num)); }
+#line 3004 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
     break;
 
   case 24:
-#line 436 "afsql-grammar.y" /* yacc.c:1646  */
-    { afsql_dd_set_flush_timeout(last_driver, (yyvsp[-1].num)); }
-#line 2994 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
+#line 422 "modules/afsql/afsql-grammar.y" /* yacc.c:1646  */
+    { afsql_dd_set_session_statements(last_driver, (yyvsp[-1].ptr)); }
+#line 3010 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
     break;
 
   case 25:
-#line 437 "afsql-grammar.y" /* yacc.c:1646  */
-    { afsql_dd_set_session_statements(last_driver, (yyvsp[-1].ptr)); }
-#line 3000 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
+#line 423 "modules/afsql/afsql-grammar.y" /* yacc.c:1646  */
+    { afsql_dd_set_flags(last_driver, (yyvsp[-1].num)); }
+#line 3016 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
     break;
 
   case 26:
-#line 438 "afsql-grammar.y" /* yacc.c:1646  */
-    { afsql_dd_set_flags(last_driver, (yyvsp[-1].num)); }
-#line 3006 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
+#line 426 "modules/afsql/afsql-grammar.y" /* yacc.c:1646  */
+    { last_template_options = &((AFSqlDestDriver *) last_driver)->template_options; }
+#line 3022 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 27:
-#line 441 "afsql-grammar.y" /* yacc.c:1646  */
-    { last_template_options = &((AFSqlDestDriver *) last_driver)->template_options; }
-#line 3012 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
+  case 29:
+#line 431 "modules/afsql/afsql-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = g_list_reverse((yyvsp[0].ptr)); }
+#line 3028 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
     break;
 
   case 30:
-#line 443 "afsql-grammar.y" /* yacc.c:1646  */
-    {
-#endif /* ENABLE_SQL */
-}
-#line 3020 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
+#line 435 "modules/afsql/afsql-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = g_list_append((yyvsp[0].ptr), g_strdup((yyvsp[-1].cptr))); free((yyvsp[-1].cptr)); }
+#line 3034 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
     break;
 
   case 31:
-#line 449 "afsql-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = g_list_reverse((yyvsp[0].ptr)); }
-#line 3026 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
+#line 436 "modules/afsql/afsql-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = g_list_append((yyvsp[0].ptr), GUINT_TO_POINTER(AFSQL_COLUMN_DEFAULT)); }
+#line 3040 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
     break;
 
   case 32:
-#line 453 "afsql-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = g_list_append((yyvsp[0].ptr), g_strdup((yyvsp[-1].cptr))); free((yyvsp[-1].cptr)); }
-#line 3032 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
+#line 437 "modules/afsql/afsql-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = NULL; }
+#line 3046 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
     break;
 
   case 33:
-#line 454 "afsql-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = g_list_append((yyvsp[0].ptr), GUINT_TO_POINTER(AFSQL_COLUMN_DEFAULT)); }
-#line 3038 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
+#line 441 "modules/afsql/afsql-grammar.y" /* yacc.c:1646  */
+    { (yyval.num) = afsql_dd_lookup_flag((yyvsp[-1].cptr)) | (yyvsp[0].num); free((yyvsp[-1].cptr)); }
+#line 3052 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
     break;
 
   case 34:
-#line 455 "afsql-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = NULL; }
-#line 3044 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 35:
-#line 459 "afsql-grammar.y" /* yacc.c:1646  */
-    { (yyval.num) = afsql_dd_lookup_flag((yyvsp[-1].cptr)) | (yyvsp[0].num); free((yyvsp[-1].cptr)); }
-#line 3050 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 36:
-#line 460 "afsql-grammar.y" /* yacc.c:1646  */
+#line 442 "modules/afsql/afsql-grammar.y" /* yacc.c:1646  */
     { (yyval.num) = 0; }
-#line 3056 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
+#line 3058 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 37:
+#line 682 "modules/afsql/afsql-grammar.y" /* yacc.c:1646  */
+    { (yyval.cptr) = (yyvsp[0].cptr); }
+#line 3064 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 38:
+#line 683 "modules/afsql/afsql-grammar.y" /* yacc.c:1646  */
+    { (yyval.cptr) = strdup(lexer->token_text->str); }
+#line 3070 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
     break;
 
   case 39:
-#line 700 "afsql-grammar.y" /* yacc.c:1646  */
-    { (yyval.cptr) = (yyvsp[0].cptr); }
-#line 3062 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
+#line 684 "modules/afsql/afsql-grammar.y" /* yacc.c:1646  */
+    { (yyval.cptr) = strdup(lexer->token_text->str); }
+#line 3076 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
     break;
 
   case 40:
-#line 701 "afsql-grammar.y" /* yacc.c:1646  */
-    { (yyval.cptr) = strdup(lexer->token_text->str); }
-#line 3068 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
+#line 688 "modules/afsql/afsql-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = g_list_reverse((yyvsp[0].ptr)); }
+#line 3082 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
     break;
 
   case 41:
-#line 702 "afsql-grammar.y" /* yacc.c:1646  */
-    { (yyval.cptr) = strdup(lexer->token_text->str); }
-#line 3074 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
+#line 692 "modules/afsql/afsql-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = g_list_append((yyvsp[0].ptr), g_strdup((yyvsp[-1].cptr))); free((yyvsp[-1].cptr)); }
+#line 3088 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
     break;
 
   case 42:
-#line 706 "afsql-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = g_list_reverse((yyvsp[0].ptr)); }
-#line 3080 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
+#line 693 "modules/afsql/afsql-grammar.y" /* yacc.c:1646  */
+    { (yyval.ptr) = NULL; }
+#line 3094 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
     break;
 
   case 43:
-#line 710 "afsql-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = g_list_append((yyvsp[0].ptr), g_strdup((yyvsp[-1].cptr))); free((yyvsp[-1].cptr)); }
-#line 3086 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
+#line 810 "modules/afsql/afsql-grammar.y" /* yacc.c:1646  */
+    { log_pipe_set_persist_name(&last_driver->super, g_strdup((yyvsp[-1].cptr))); free((yyvsp[-1].cptr)); }
+#line 3100 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
     break;
 
   case 44:
-#line 711 "afsql-grammar.y" /* yacc.c:1646  */
-    { (yyval.ptr) = NULL; }
-#line 3092 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
+#line 822 "modules/afsql/afsql-grammar.y" /* yacc.c:1646  */
+    { ((LogDestDriver *) last_driver)->log_fifo_size = (yyvsp[-1].num); }
+#line 3106 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
     break;
 
   case 45:
-#line 829 "afsql-grammar.y" /* yacc.c:1646  */
-    { ((LogDestDriver *) last_driver)->log_fifo_size = (yyvsp[-1].num); }
-#line 3098 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
+#line 823 "modules/afsql/afsql-grammar.y" /* yacc.c:1646  */
+    { ((LogDestDriver *) last_driver)->throttle = (yyvsp[-1].num); }
+#line 3112 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
     break;
 
   case 46:
-#line 830 "afsql-grammar.y" /* yacc.c:1646  */
-    { ((LogDestDriver *) last_driver)->throttle = (yyvsp[-1].num); }
-#line 3104 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 47:
-#line 832 "afsql-grammar.y" /* yacc.c:1646  */
+#line 825 "modules/afsql/afsql-grammar.y" /* yacc.c:1646  */
     {
             Plugin *p;
             gint context = LL_CONTEXT_INNER_DEST;
@@ -3122,41 +3130,41 @@ yyreduce:
               }
             log_driver_add_plugin(last_driver, (LogDriverPlugin *) value);
           }
-#line 3126 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
+#line 3134 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
     break;
 
   case 48:
-#line 908 "afsql-grammar.y" /* yacc.c:1646  */
+#line 898 "modules/afsql/afsql-grammar.y" /* yacc.c:1646  */
     { last_template_options->ts_format = cfg_ts_format_value((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 3132 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
+#line 3140 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
     break;
 
   case 49:
-#line 909 "afsql-grammar.y" /* yacc.c:1646  */
+#line 899 "modules/afsql/afsql-grammar.y" /* yacc.c:1646  */
     { last_template_options->frac_digits = (yyvsp[-1].num); }
-#line 3138 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
+#line 3146 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
     break;
 
   case 50:
-#line 910 "afsql-grammar.y" /* yacc.c:1646  */
+#line 900 "modules/afsql/afsql-grammar.y" /* yacc.c:1646  */
     { last_template_options->time_zone[LTZ_SEND] = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 3144 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
+#line 3152 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
     break;
 
   case 51:
-#line 911 "afsql-grammar.y" /* yacc.c:1646  */
+#line 901 "modules/afsql/afsql-grammar.y" /* yacc.c:1646  */
     { last_template_options->time_zone[LTZ_SEND] = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 3150 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
+#line 3158 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
     break;
 
   case 52:
-#line 912 "afsql-grammar.y" /* yacc.c:1646  */
+#line 902 "modules/afsql/afsql-grammar.y" /* yacc.c:1646  */
     { last_template_options->time_zone[LTZ_LOCAL] = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 3156 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
+#line 3164 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
     break;
 
   case 53:
-#line 914 "afsql-grammar.y" /* yacc.c:1646  */
+#line 904 "modules/afsql/afsql-grammar.y" /* yacc.c:1646  */
     {
           gint on_error;
 
@@ -3165,11 +3173,11 @@ yyreduce:
 
           log_template_options_set_on_error(last_template_options, on_error);
         }
-#line 3169 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
+#line 3177 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
     break;
 
 
-#line 3173 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
+#line 3181 "modules/afsql/afsql-grammar.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -3404,5 +3412,5 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 995 "afsql-grammar.y" /* yacc.c:1906  */
+#line 985 "modules/afsql/afsql-grammar.y" /* yacc.c:1906  */
 

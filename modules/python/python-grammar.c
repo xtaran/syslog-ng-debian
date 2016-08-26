@@ -89,8 +89,8 @@
 
 /* In a future release of Bison, this section will be replaced
    by #include "y.tab.h".  */
-#ifndef YY_PYTHON_Y_TAB_H_INCLUDED
-# define YY_PYTHON_Y_TAB_H_INCLUDED
+#ifndef YY_PYTHON_MODULES_PYTHON_PYTHON_GRAMMAR_H_INCLUDED
+# define YY_PYTHON_MODULES_PYTHON_PYTHON_GRAMMAR_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -99,17 +99,16 @@
 extern int python_debug;
 #endif
 /* "%code requires" blocks.  */
-#line 24 "python-grammar.y" /* yacc.c:355  */
+#line 24 "modules/python/python-grammar.y" /* yacc.c:355  */
 
 
 #include "python-parser.h"
 #include "python-dest.h"
 #include "python-main.h"
-#include "value-pairs.h"
-#include "vptransform.h"
+#include "value-pairs/value-pairs.h"
 
 
-#line 113 "modules/python/python-grammar.c" /* yacc.c:355  */
+#line 112 "modules/python/python-grammar.c" /* yacc.c:355  */
 
 /* Token type.  */
 #ifndef YYTOKENTYPE
@@ -146,23 +145,6 @@ extern int python_debug;
     KW_CHANNEL = 10009,
     KW_INTERNAL = 10010,
     KW_FILE = 10011,
-    KW_SQL = 10030,
-    KW_TYPE = 10031,
-    KW_COLUMNS = 10032,
-    KW_INDEXES = 10033,
-    KW_VALUES = 10034,
-    KW_PASSWORD = 10035,
-    KW_DATABASE = 10036,
-    KW_USERNAME = 10037,
-    KW_TABLE = 10038,
-    KW_ENCODING = 10039,
-    KW_SESSION_STATEMENTS = 10040,
-    KW_DELIMITERS = 10050,
-    KW_QUOTES = 10051,
-    KW_QUOTE_PAIRS = 10052,
-    KW_NULL = 10053,
-    KW_CHARS = 10054,
-    KW_STRINGS = 10055,
     KW_SYSLOG = 10060,
     KW_MARK_FREQ = 10071,
     KW_STATS_FREQ = 10072,
@@ -175,6 +157,8 @@ extern int python_debug;
     KW_FILE_TEMPLATE = 10079,
     KW_PROTO_TEMPLATE = 10080,
     KW_MARK_MODE = 10081,
+    KW_ENCODING = 10082,
+    KW_TYPE = 10083,
     KW_CHAIN_HOSTNAMES = 10090,
     KW_NORMALIZE_HOSTNAMES = 10091,
     KW_KEEP_HOSTNAME = 10092,
@@ -204,6 +188,7 @@ extern int python_debug;
     KW_THROTTLE = 10170,
     KW_THREADED = 10171,
     KW_PASS_UNIX_CREDENTIALS = 10231,
+    KW_PERSIST_NAME = 10302,
     KW_FLAGS = 10190,
     KW_PAD_SIZE = 10200,
     KW_TIME_ZONE = 10201,
@@ -238,10 +223,7 @@ extern int python_debug;
     KW_NETMASK = 10355,
     KW_TAGS = 10356,
     KW_NETMASK6 = 10357,
-    KW_VALUE = 10361,
     KW_REWRITE = 10370,
-    KW_SET = 10371,
-    KW_SUBST = 10372,
     KW_YES = 10380,
     KW_NO = 10381,
     KW_IFDEF = 10410,
@@ -257,7 +239,6 @@ extern int python_debug;
     LL_EOL = 10428,
     LL_ERROR = 10429,
     KW_VALUE_PAIRS = 10500,
-    KW_SELECT = 10501,
     KW_EXCLUDE = 10502,
     KW_PAIR = 10503,
     KW_KEY = 10504,
@@ -304,23 +285,6 @@ extern int python_debug;
 #define KW_CHANNEL 10009
 #define KW_INTERNAL 10010
 #define KW_FILE 10011
-#define KW_SQL 10030
-#define KW_TYPE 10031
-#define KW_COLUMNS 10032
-#define KW_INDEXES 10033
-#define KW_VALUES 10034
-#define KW_PASSWORD 10035
-#define KW_DATABASE 10036
-#define KW_USERNAME 10037
-#define KW_TABLE 10038
-#define KW_ENCODING 10039
-#define KW_SESSION_STATEMENTS 10040
-#define KW_DELIMITERS 10050
-#define KW_QUOTES 10051
-#define KW_QUOTE_PAIRS 10052
-#define KW_NULL 10053
-#define KW_CHARS 10054
-#define KW_STRINGS 10055
 #define KW_SYSLOG 10060
 #define KW_MARK_FREQ 10071
 #define KW_STATS_FREQ 10072
@@ -333,6 +297,8 @@ extern int python_debug;
 #define KW_FILE_TEMPLATE 10079
 #define KW_PROTO_TEMPLATE 10080
 #define KW_MARK_MODE 10081
+#define KW_ENCODING 10082
+#define KW_TYPE 10083
 #define KW_CHAIN_HOSTNAMES 10090
 #define KW_NORMALIZE_HOSTNAMES 10091
 #define KW_KEEP_HOSTNAME 10092
@@ -362,6 +328,7 @@ extern int python_debug;
 #define KW_THROTTLE 10170
 #define KW_THREADED 10171
 #define KW_PASS_UNIX_CREDENTIALS 10231
+#define KW_PERSIST_NAME 10302
 #define KW_FLAGS 10190
 #define KW_PAD_SIZE 10200
 #define KW_TIME_ZONE 10201
@@ -396,10 +363,7 @@ extern int python_debug;
 #define KW_NETMASK 10355
 #define KW_TAGS 10356
 #define KW_NETMASK6 10357
-#define KW_VALUE 10361
 #define KW_REWRITE 10370
-#define KW_SET 10371
-#define KW_SUBST 10372
 #define KW_YES 10380
 #define KW_NO 10381
 #define KW_IFDEF 10410
@@ -415,7 +379,6 @@ extern int python_debug;
 #define LL_EOL 10428
 #define LL_ERROR 10429
 #define KW_VALUE_PAIRS 10500
-#define KW_SELECT 10501
 #define KW_EXCLUDE 10502
 #define KW_PAIR 10503
 #define KW_KEY 10504
@@ -450,19 +413,19 @@ struct YYLTYPE
 
 int python_parse (CfgLexer *lexer, LogDriver **instance, gpointer arg);
 
-#endif /* !YY_PYTHON_Y_TAB_H_INCLUDED  */
+#endif /* !YY_PYTHON_MODULES_PYTHON_PYTHON_GRAMMAR_H_INCLUDED  */
 
 /* Copy the second part of user declarations.  */
 
-#line 458 "modules/python/python-grammar.c" /* yacc.c:358  */
+#line 421 "modules/python/python-grammar.c" /* yacc.c:358  */
 /* Unqualified %code blocks.  */
-#line 34 "python-grammar.y" /* yacc.c:359  */
+#line 33 "modules/python/python-grammar.y" /* yacc.c:359  */
 
 
 #include "cfg-grammar.h"
 #include "cfg-parser.h"
 #include "plugin.h"
-#line 54 "python-grammar.y" /* yacc.c:359  */
+#line 53 "modules/python/python-grammar.y" /* yacc.c:359  */
 
 
 # define YYLLOC_DEFAULT(Current, Rhs, N)                                \
@@ -523,7 +486,7 @@ int python_parse (CfgLexer *lexer, LogDriver **instance, gpointer arg);
 
 
 
-#line 527 "modules/python/python-grammar.c" /* yacc.c:359  */
+#line 490 "modules/python/python-grammar.c" /* yacc.c:359  */
 
 #ifdef short
 # undef short
@@ -767,16 +730,16 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  6
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   133
+#define YYLAST   122
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  164
+#define YYNTOKENS  146
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  28
+#define YYNNTS  29
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  57
+#define YYNRULES  59
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  141
+#define YYNSTATES  146
 
 /* YYTRANSLATE[YYX] -- Symbol number corresponding to YYX as returned
    by yylex, with out-of-bounds checking.  */
@@ -794,15 +757,15 @@ static const yytype_uint8 yytranslate[] =
       12,    13,    14,    15,    16,    17,    18,    19,    20,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     158,   159,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,   163,   162,
+     140,   141,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,   145,   144,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,   160,     2,   161,     2,     2,     2,     2,
+       2,     2,     2,   142,     2,   143,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -1793,67 +1756,67 @@ static const yytype_uint8 yytranslate[] =
       21,    22,    23,    24,    25,    26,    27,    28,    29,    30,
       31,    32,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      33,    34,    35,    36,    37,    38,    39,    40,    41,    42,
-      43,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      44,    45,    46,    47,    48,    49,     2,     2,     2,     2,
-      50,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,    51,    52,    53,    54,    55,    56,    57,    58,    59,
-      60,    61,     2,     2,     2,     2,     2,     2,     2,     2,
-      62,    63,    64,    65,    66,     2,     2,     2,     2,     2,
-      67,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      68,    69,    70,     2,     2,     2,     2,     2,     2,     2,
-      71,    72,     2,     2,     2,     2,     2,     2,     2,     2,
-      73,    74,    75,     2,     2,     2,     2,     2,     2,     2,
-      76,    77,    78,     2,     2,     2,     2,     2,     2,     2,
-      79,    80,    81,     2,     2,     2,     2,     2,     2,     2,
-      82,     2,    83,    84,    85,    86,    87,     2,     2,     2,
-      88,    89,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      91,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      92,    93,    94,    95,    96,    97,     2,     2,     2,     2,
-      98,    99,   100,     2,     2,     2,     2,     2,     2,     2,
-     101,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     102,    90,     2,     2,     2,     2,     2,     2,     2,     2,
-     103,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     104,   105,   106,     2,     2,     2,     2,     2,     2,     2,
-     107,   108,   109,     2,     2,     2,     2,     2,     2,     2,
-     110,   111,   112,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     113,   114,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,   115,     2,     2,     2,     2,     2,     2,
+      33,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,    34,    35,    36,    37,    38,    39,    40,    41,    42,
+      43,    44,    45,    46,     2,     2,     2,     2,     2,     2,
+      47,    48,    49,    50,    51,     2,     2,     2,     2,     2,
+      52,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+      53,    54,    55,     2,     2,     2,     2,     2,     2,     2,
+      56,    57,     2,     2,     2,     2,     2,     2,     2,     2,
+      58,    59,    60,     2,     2,     2,     2,     2,     2,     2,
+      61,    62,    63,     2,     2,     2,     2,     2,     2,     2,
+      64,    65,    66,     2,     2,     2,     2,     2,     2,     2,
+      67,     2,    68,    69,    70,    71,    72,     2,     2,     2,
+      73,    74,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     116,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     117,   118,   119,   120,   121,   122,   123,   124,     2,     2,
-       2,   125,     2,     2,     2,     2,     2,     2,     2,     2,
-     126,   127,   128,     2,     2,     2,     2,     2,     2,     2,
-     129,   130,     2,     2,     2,     2,     2,     2,     2,     2,
+      77,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+      78,    79,    80,    81,    82,    83,     2,     2,     2,     2,
+      84,    85,    86,     2,     2,     2,     2,     2,     2,     2,
+      87,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+      88,    75,     2,     2,     2,     2,     2,     2,     2,     2,
+      89,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+      90,    91,    92,     2,     2,     2,     2,     2,     2,     2,
+      93,    94,    95,     2,     2,     2,     2,     2,     2,     2,
+      96,    97,    98,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     131,   132,     2,     2,     2,     2,     2,     2,     2,     2,
-     133,   134,   135,   136,   137,   138,   139,   140,   141,   142,
+      99,   100,    76,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,   101,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     102,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     103,   104,   105,   106,   107,   108,   109,   110,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     111,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     112,   113,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     114,   115,     2,     2,     2,     2,     2,     2,     2,     2,
+     116,   117,   118,   119,   120,   121,   122,   123,   124,   125,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     143,   144,   145,   146,   147,   148,   149,   150,   151,   152,
-     153,   154,     2,   155,   156,   157
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+     126,     2,   127,   128,   129,   130,   131,   132,   133,   134,
+     135,   136,     2,   137,   138,   139
 };
 
 #if YYDEBUG
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   381,   381,   380,   386,   388,   385,   398,   399,   403,
-     408,   412,   413,   417,   418,   418,   422,   423,   427,   638,
-     645,   658,   658,   664,   665,   686,   690,   691,   809,   810,
-     811,   888,   889,   890,   891,   892,   893,   916,   915,   924,
-     925,   929,   934,   940,   946,   939,   947,   949,   948,   954,
-     955,   959,   960,   964,   965,   969,   970,   971
+       0,   359,   359,   358,   364,   366,   363,   376,   377,   381,
+     386,   390,   391,   395,   396,   396,   400,   401,   405,   616,
+     623,   636,   636,   642,   643,   664,   668,   669,   786,   798,
+     799,   800,   818,   874,   875,   876,   877,   878,   879,   902,
+     901,   910,   911,   915,   920,   926,   932,   925,   933,   935,
+     934,   940,   941,   945,   946,   950,   951,   955,   956,   957
 };
 #endif
 
@@ -1871,24 +1834,21 @@ static const char *const yytname[] =
   "LL_CONTEXT_INNER_SRC", "LL_CONTEXT_CLIENT_PROTO",
   "LL_CONTEXT_SERVER_PROTO", "KW_SOURCE", "KW_FILTER", "KW_PARSER",
   "KW_DESTINATION", "KW_LOG", "KW_OPTIONS", "KW_INCLUDE", "KW_BLOCK",
-  "KW_JUNCTION", "KW_CHANNEL", "KW_INTERNAL", "KW_FILE", "KW_SQL",
-  "KW_TYPE", "KW_COLUMNS", "KW_INDEXES", "KW_VALUES", "KW_PASSWORD",
-  "KW_DATABASE", "KW_USERNAME", "KW_TABLE", "KW_ENCODING",
-  "KW_SESSION_STATEMENTS", "KW_DELIMITERS", "KW_QUOTES", "KW_QUOTE_PAIRS",
-  "KW_NULL", "KW_CHARS", "KW_STRINGS", "KW_SYSLOG", "KW_MARK_FREQ",
-  "KW_STATS_FREQ", "KW_STATS_LEVEL", "KW_STATS_LIFETIME", "KW_FLUSH_LINES",
-  "KW_SUPPRESS", "KW_FLUSH_TIMEOUT", "KW_LOG_MSG_SIZE", "KW_FILE_TEMPLATE",
-  "KW_PROTO_TEMPLATE", "KW_MARK_MODE", "KW_CHAIN_HOSTNAMES",
-  "KW_NORMALIZE_HOSTNAMES", "KW_KEEP_HOSTNAME", "KW_CHECK_HOSTNAME",
-  "KW_BAD_HOSTNAME", "KW_KEEP_TIMESTAMP", "KW_USE_DNS", "KW_USE_FQDN",
-  "KW_CUSTOM_DOMAIN", "KW_DNS_CACHE", "KW_DNS_CACHE_SIZE",
-  "KW_DNS_CACHE_EXPIRE", "KW_DNS_CACHE_EXPIRE_FAILED",
-  "KW_DNS_CACHE_HOSTS", "KW_PERSIST_ONLY", "KW_USE_RCPTID",
-  "KW_USE_UNIQID", "KW_TZ_CONVERT", "KW_TS_FORMAT", "KW_FRAC_DIGITS",
-  "KW_LOG_FIFO_SIZE", "KW_LOG_FETCH_LIMIT", "KW_LOG_IW_SIZE",
-  "KW_LOG_PREFIX", "KW_PROGRAM_OVERRIDE", "KW_HOST_OVERRIDE",
-  "KW_THROTTLE", "KW_THREADED", "KW_PASS_UNIX_CREDENTIALS", "KW_FLAGS",
-  "KW_PAD_SIZE", "KW_TIME_ZONE", "KW_RECV_TIME_ZONE", "KW_SEND_TIME_ZONE",
+  "KW_JUNCTION", "KW_CHANNEL", "KW_INTERNAL", "KW_FILE", "KW_SYSLOG",
+  "KW_MARK_FREQ", "KW_STATS_FREQ", "KW_STATS_LEVEL", "KW_STATS_LIFETIME",
+  "KW_FLUSH_LINES", "KW_SUPPRESS", "KW_FLUSH_TIMEOUT", "KW_LOG_MSG_SIZE",
+  "KW_FILE_TEMPLATE", "KW_PROTO_TEMPLATE", "KW_MARK_MODE", "KW_ENCODING",
+  "KW_TYPE", "KW_CHAIN_HOSTNAMES", "KW_NORMALIZE_HOSTNAMES",
+  "KW_KEEP_HOSTNAME", "KW_CHECK_HOSTNAME", "KW_BAD_HOSTNAME",
+  "KW_KEEP_TIMESTAMP", "KW_USE_DNS", "KW_USE_FQDN", "KW_CUSTOM_DOMAIN",
+  "KW_DNS_CACHE", "KW_DNS_CACHE_SIZE", "KW_DNS_CACHE_EXPIRE",
+  "KW_DNS_CACHE_EXPIRE_FAILED", "KW_DNS_CACHE_HOSTS", "KW_PERSIST_ONLY",
+  "KW_USE_RCPTID", "KW_USE_UNIQID", "KW_TZ_CONVERT", "KW_TS_FORMAT",
+  "KW_FRAC_DIGITS", "KW_LOG_FIFO_SIZE", "KW_LOG_FETCH_LIMIT",
+  "KW_LOG_IW_SIZE", "KW_LOG_PREFIX", "KW_PROGRAM_OVERRIDE",
+  "KW_HOST_OVERRIDE", "KW_THROTTLE", "KW_THREADED",
+  "KW_PASS_UNIX_CREDENTIALS", "KW_PERSIST_NAME", "KW_FLAGS", "KW_PAD_SIZE",
+  "KW_TIME_ZONE", "KW_RECV_TIME_ZONE", "KW_SEND_TIME_ZONE",
   "KW_LOCAL_TIME_ZONE", "KW_FORMAT", "KW_TIME_REOPEN", "KW_TIME_REAP",
   "KW_TIME_SLEEP", "KW_TMPL_ESCAPE", "KW_OPTIONAL", "KW_CREATE_DIRS",
   "KW_OWNER", "KW_GROUP", "KW_PERM", "KW_DIR_OWNER", "KW_DIR_GROUP",
@@ -1896,20 +1856,19 @@ static const char *const yytname[] =
   "KW_TEMPLATE_FUNCTION", "KW_DEFAULT_FACILITY", "KW_DEFAULT_LEVEL",
   "KW_PORT", "KW_USE_TIME_RECVD", "KW_FACILITY", "KW_LEVEL", "KW_HOST",
   "KW_MATCH", "KW_MESSAGE", "KW_NETMASK", "KW_TAGS", "KW_NETMASK6",
-  "KW_VALUE", "KW_REWRITE", "KW_SET", "KW_SUBST", "KW_YES", "KW_NO",
-  "KW_IFDEF", "KW_ENDIF", "LL_DOTDOT", "LL_IDENTIFIER", "LL_NUMBER",
-  "LL_FLOAT", "LL_STRING", "LL_TOKEN", "LL_BLOCK", "LL_PRAGMA", "LL_EOL",
-  "LL_ERROR", "KW_VALUE_PAIRS", "KW_SELECT", "KW_EXCLUDE", "KW_PAIR",
-  "KW_KEY", "KW_SCOPE", "KW_SHIFT", "KW_REKEY", "KW_ADD_PREFIX",
-  "KW_REPLACE_PREFIX", "KW_ON_ERROR", "KW_RETRIES", "KW_PYTHON",
-  "KW_CLASS", "KW_IMPORTS", "'('", "')'", "'{'", "'}'", "';'", "':'",
-  "$accept", "start", "$@1", "$@2", "$@3", "python_options",
+  "KW_REWRITE", "KW_YES", "KW_NO", "KW_IFDEF", "KW_ENDIF", "LL_DOTDOT",
+  "LL_IDENTIFIER", "LL_NUMBER", "LL_FLOAT", "LL_STRING", "LL_TOKEN",
+  "LL_BLOCK", "LL_PRAGMA", "LL_EOL", "LL_ERROR", "KW_VALUE_PAIRS",
+  "KW_EXCLUDE", "KW_PAIR", "KW_KEY", "KW_SCOPE", "KW_SHIFT", "KW_REKEY",
+  "KW_ADD_PREFIX", "KW_REPLACE_PREFIX", "KW_ON_ERROR", "KW_RETRIES",
+  "KW_PYTHON", "KW_CLASS", "KW_IMPORTS", "'('", "')'", "'{'", "'}'", "';'",
+  "':'", "$accept", "start", "$@1", "$@2", "$@3", "python_options",
   "python_option", "$@4", "python_dest_custom_options",
   "python_dest_custom_option", "template_content_inner",
   "template_content", "$@10", "string", "string_list", "string_list_build",
-  "dest_driver_option", "template_option", "value_pair_option", "$@16",
-  "vp_options", "vp_option", "$@17", "$@18", "$@19", "vp_scope_list",
-  "vp_rekey_options", "vp_rekey_option", YY_NULLPTR
+  "driver_option", "dest_driver_option", "template_option",
+  "value_pair_option", "$@16", "vp_options", "vp_option", "$@17", "$@18",
+  "$@19", "vp_scope_list", "vp_rekey_options", "vp_rekey_option", YY_NULLPTR
 };
 #endif
 
@@ -1921,27 +1880,25 @@ static const yytype_uint16 yytoknum[] =
        0,   256, 10512,     1,     2,     3,     4,     5,     6,     7,
        8,     9,    10,    11,    12,    13,    14,    15,    16,    17,
       18, 10000, 10001, 10002, 10003, 10004, 10005, 10006, 10007, 10008,
-   10009, 10010, 10011, 10030, 10031, 10032, 10033, 10034, 10035, 10036,
-   10037, 10038, 10039, 10040, 10050, 10051, 10052, 10053, 10054, 10055,
-   10060, 10071, 10072, 10073, 10074, 10075, 10076, 10077, 10078, 10079,
-   10080, 10081, 10090, 10091, 10092, 10093, 10094, 10100, 10110, 10111,
-   10112, 10120, 10121, 10130, 10131, 10132, 10140, 10141, 10142, 10150,
-   10151, 10152, 10160, 10162, 10163, 10164, 10165, 10166, 10170, 10171,
-   10231, 10190, 10200, 10201, 10202, 10203, 10204, 10205, 10210, 10211,
-   10212, 10220, 10230, 10240, 10250, 10251, 10252, 10260, 10261, 10262,
-   10270, 10271, 10272, 10300, 10301, 10323, 10340, 10350, 10351, 10352,
-   10353, 10354, 10355, 10356, 10357, 10361, 10370, 10371, 10372, 10380,
-   10381, 10410, 10411, 10420, 10421, 10422, 10423, 10424, 10425, 10426,
-   10427, 10428, 10429, 10500, 10501, 10502, 10503, 10504, 10505, 10506,
-   10507, 10508, 10509, 10510, 10511, 10513, 10514, 10515,    40,    41,
-     123,   125,    59,    58
+   10009, 10010, 10011, 10060, 10071, 10072, 10073, 10074, 10075, 10076,
+   10077, 10078, 10079, 10080, 10081, 10082, 10083, 10090, 10091, 10092,
+   10093, 10094, 10100, 10110, 10111, 10112, 10120, 10121, 10130, 10131,
+   10132, 10140, 10141, 10142, 10150, 10151, 10152, 10160, 10162, 10163,
+   10164, 10165, 10166, 10170, 10171, 10231, 10302, 10190, 10200, 10201,
+   10202, 10203, 10204, 10205, 10210, 10211, 10212, 10220, 10230, 10240,
+   10250, 10251, 10252, 10260, 10261, 10262, 10270, 10271, 10272, 10300,
+   10301, 10323, 10340, 10350, 10351, 10352, 10353, 10354, 10355, 10356,
+   10357, 10370, 10380, 10381, 10410, 10411, 10420, 10421, 10422, 10423,
+   10424, 10425, 10426, 10427, 10428, 10429, 10500, 10502, 10503, 10504,
+   10505, 10506, 10507, 10508, 10509, 10510, 10511, 10513, 10514, 10515,
+      40,    41,   123,   125,    59,    58
 };
 # endif
 
-#define YYPACT_NINF -150
+#define YYPACT_NINF -136
 
 #define yypact_value_is_default(Yystate) \
-  (!!((Yystate) == (-150)))
+  (!!((Yystate) == (-136)))
 
 #define YYTABLE_NINF -9
 
@@ -1952,21 +1909,21 @@ static const yytype_uint16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int16 yypact[] =
 {
-      32,  -149,  -117,    27,  -150,  -150,  -150,  -102,  -119,  -150,
-     -26,  -150,  -116,  -115,  -114,  -150,  -150,  -113,  -111,  -110,
-     -26,   -78,  -150,  -150,   -94,   -89,   -85,  -107,  -118,  -118,
-    -150,  -150,  -106,  -105,  -104,  -103,   -97,   -95,  -150,   -92,
-     -91,   -94,   -90,   -88,  -137,  -150,  -150,   -87,  -118,   -86,
-    -150,  -118,   -71,  -118,  -118,  -118,  -118,  -118,  -150,  -150,
-    -150,  -150,   -82,   -81,   -80,   -79,   -77,   -76,  -137,  -150,
-    -150,  -150,   -75,   -74,   -73,   -72,   -70,   -69,   -68,  -118,
-    -118,  -118,  -118,  -118,  -150,  -150,  -150,  -150,  -150,  -150,
-    -150,  -150,  -150,   -66,  -122,  -130,   -65,  -118,   -64,  -150,
-    -150,  -150,   -63,  -112,   -61,  -150,  -150,  -150,  -128,   -60,
-    -150,   -58,  -150,  -150,  -150,   -55,   -54,   -53,   -52,  -128,
-    -150,  -118,  -128,   -43,  -118,  -118,  -150,  -150,   -49,   -48,
-     -46,   -45,  -118,  -150,  -150,  -150,  -150,   -44,   -41,  -150,
-    -150
+      36,  -135,  -117,    24,  -136,  -136,  -136,   -96,  -104,  -136,
+     -26,  -136,   -98,   -97,   -95,   -94,  -136,  -136,   -91,   -87,
+     -93,   -26,   -60,  -136,  -136,  -136,   -73,   -67,   -64,   -92,
+     -85,   -92,   -92,  -136,  -136,   -84,   -79,   -78,   -77,   -76,
+     -75,  -136,   -74,   -72,   -73,   -71,   -70,  -136,  -136,   -69,
+    -115,   -65,   -92,   -63,  -136,   -92,   -51,   -92,   -92,   -92,
+     -92,   -92,  -136,  -136,  -136,  -136,  -136,   -61,   -59,   -58,
+     -57,   -56,   -55,  -115,  -136,  -136,  -136,   -54,   -53,   -52,
+     -49,   -47,   -46,   -45,   -92,   -92,   -92,   -92,   -92,  -136,
+    -136,  -136,  -136,  -136,  -136,  -136,  -136,  -136,   -44,   -42,
+    -109,   -37,   -92,   -36,  -136,  -136,  -136,   -35,   -83,   -50,
+    -136,  -136,  -136,  -124,   -34,  -136,   -41,  -136,  -136,  -136,
+     -32,   -30,   -29,   -27,  -124,  -136,   -92,  -124,   -33,   -92,
+     -92,  -136,  -136,   -25,   -24,   -23,   -22,   -92,  -136,  -136,
+    -136,  -136,   -21,   -20,  -136,  -136
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -1975,36 +1932,36 @@ static const yytype_int16 yypact[] =
 static const yytype_uint8 yydefact[] =
 {
        0,     0,     0,     0,     4,     2,     1,     0,     0,     5,
-      14,     6,     0,     0,     0,    30,    37,     0,     0,     0,
-      14,     0,    13,    12,    17,     0,     0,     0,     0,    27,
-       3,     7,     0,     0,     0,     0,     0,     0,    15,     0,
-       0,    17,     0,     0,    40,    23,    24,     0,    27,     0,
-      25,     0,     0,     0,     0,     0,     0,     0,    11,    16,
-      28,    29,     0,     0,     0,     0,     0,     0,    40,     9,
-      26,    10,     0,     0,     0,     0,     0,     0,     0,    27,
-       0,    27,    52,     0,    38,    39,    31,    32,    33,    34,
-      35,    36,    18,     0,    21,    27,     0,    52,     0,    47,
-      49,    21,     0,     0,     0,    46,    51,    50,    54,     0,
-      42,    23,    22,    19,    43,     0,     0,     0,     0,    54,
-      41,     0,    54,     0,     0,     0,    48,    53,     0,     0,
-       0,     0,     0,    20,    44,    55,    56,     0,     0,    57,
-      45
+      14,     6,     0,     0,     0,     0,    31,    39,     0,     0,
+       0,    14,     0,    32,    13,    12,    17,     0,     0,     0,
+       0,     0,    27,     3,     7,     0,     0,     0,     0,     0,
+       0,    15,     0,     0,    17,     0,     0,    23,    24,     0,
+      42,     0,    27,     0,    25,     0,     0,     0,     0,     0,
+       0,     0,    11,    16,    29,    30,    28,     0,     0,     0,
+       0,     0,     0,    42,     9,    26,    10,     0,     0,     0,
+       0,     0,     0,     0,    27,     0,    27,    54,     0,    40,
+      41,    33,    34,    35,    36,    37,    38,    18,     0,    21,
+      27,     0,    54,     0,    49,    51,    21,     0,     0,     0,
+      48,    53,    52,    56,     0,    44,    23,    22,    19,    45,
+       0,     0,     0,     0,    56,    43,     0,    56,     0,     0,
+       0,    50,    55,     0,     0,     0,     0,     0,    20,    46,
+      57,    58,     0,     0,    59,    47
 };
 
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int16 yypgoto[] =
 {
-    -150,  -150,  -150,  -150,  -150,    45,  -150,  -150,    26,  -150,
-    -150,   -31,  -150,   -23,   -67,   -47,  -150,  -150,  -150,  -150,
-      14,  -150,  -150,  -150,  -150,    -9,   -93,  -150
+    -136,  -136,  -136,  -136,  -136,    47,  -136,  -136,    29,  -136,
+    -136,   -13,  -136,   -28,   -68,   -48,  -136,  -136,  -136,  -136,
+    -136,     4,  -136,  -136,  -136,  -136,    20,   -89,  -136
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int16 yydefgoto[] =
 {
-      -1,     3,     8,     7,    11,    19,    20,    21,    40,    41,
-     112,   102,   103,    48,    49,    50,    22,    38,    23,    27,
-      67,    68,   122,   138,   108,    98,   118,   119
+      -1,     3,     8,     7,    11,    20,    21,    22,    43,    44,
+     117,   107,   108,    52,    53,    54,    23,    24,    41,    25,
+      30,    72,    73,   127,   143,   113,   103,   123,   124
 };
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -2012,70 +1969,68 @@ static const yytype_int16 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int16 yytable[] =
 {
-      12,    70,    32,    33,    45,    47,     4,    46,    62,    63,
-      64,    65,    93,    66,    96,    34,    45,    35,    36,    46,
-     104,   115,   111,   116,   117,    46,   127,     6,    72,   129,
-      74,    75,    76,    77,    78,     1,     2,     9,     5,    10,
-      39,   101,    24,    25,    26,    28,    42,    29,    70,    30,
-      43,    44,    51,    52,    53,    54,    13,    94,    95,    97,
-      99,    55,    14,    56,    73,    31,    57,    59,    58,    60,
-     109,    61,    69,    71,    97,    37,    79,    80,    81,    82,
-     113,    83,    85,    84,    86,    87,    88,    89,   106,    90,
-      91,    92,   130,   100,   105,   107,   110,   114,   128,   120,
-     121,   131,   132,   123,   124,   125,     0,   126,    15,   137,
-     133,   134,     0,   135,   136,   139,     0,    16,   140,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-      17,    18,     0,    -8
+      12,    49,     4,    51,    75,    35,    36,   120,    47,   121,
+     122,    48,    67,    68,    69,    70,    98,    71,   101,    37,
+       5,    38,    39,   109,     6,    47,     9,    77,    48,    79,
+      80,    81,    82,    83,   116,   132,    10,    48,   134,     1,
+       2,    13,    26,    27,    42,    28,    29,    14,    33,    31,
+      15,    45,    75,    32,    46,    50,    55,    99,   100,   102,
+     104,    56,    57,    58,    59,    60,    61,    78,    34,    62,
+      64,    65,    66,    63,   102,    40,    74,    90,    76,    84,
+     118,    85,    86,    87,    88,   135,    89,    91,    92,    93,
+     119,    16,    94,   114,    95,    96,    97,   105,   133,   126,
+      17,   136,   137,   106,   110,   112,   115,   125,   128,   142,
+     129,   130,    18,    19,   131,    -8,   138,   139,   140,   141,
+     144,   145,   111
 };
 
-static const yytype_int16 yycheck[] =
+static const yytype_uint8 yycheck[] =
 {
-      26,    48,    80,    81,   134,    28,   155,   137,   145,   146,
-     147,   148,    79,   150,    81,    93,   134,    95,    96,   137,
-     150,   149,   134,   151,   152,   137,   119,     0,    51,   122,
-      53,    54,    55,    56,    57,     3,     4,   139,   155,   158,
-     134,   163,   158,   158,   158,   158,   135,   158,    95,   159,
-     135,   158,   158,   158,   158,   158,    82,    80,    81,    82,
-      83,   158,    88,   158,   135,    20,   158,    41,   159,   159,
-     101,   159,   159,   159,    97,   153,   158,   158,   158,   158,
-     103,   158,    68,   159,   159,   159,   159,   159,    97,   159,
-     159,   159,   135,   159,   159,   159,   159,   158,   121,   159,
-     158,   124,   125,   158,   158,   158,    -1,   159,   134,   132,
-     159,   159,    -1,   159,   159,   159,    -1,   143,   159,    -1,
-      -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
-     156,   157,    -1,   159
+      26,    29,   137,    31,    52,    65,    66,   131,   117,   133,
+     134,   120,   127,   128,   129,   130,    84,   132,    86,    79,
+     137,    81,    82,   132,     0,   117,   122,    55,   120,    57,
+      58,    59,    60,    61,   117,   124,   140,   120,   127,     3,
+       4,    67,   140,   140,   117,   140,   140,    73,   141,   140,
+      76,   118,   100,   140,   118,   140,   140,    85,    86,    87,
+      88,   140,   140,   140,   140,   140,   140,   118,    21,   141,
+     141,   141,   141,    44,   102,   135,   141,    73,   141,   140,
+     108,   140,   140,   140,   140,   118,   141,   141,   141,   141,
+     140,   117,   141,   106,   141,   141,   141,   141,   126,   140,
+     126,   129,   130,   145,   141,   141,   141,   141,   140,   137,
+     140,   140,   138,   139,   141,   141,   141,   141,   141,   141,
+     141,   141,   102
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
      symbol of state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
-       0,     3,     4,   165,   155,   155,     0,   167,   166,   139,
-     158,   168,    26,    82,    88,   134,   143,   156,   157,   169,
-     170,   171,   180,   182,   158,   158,   158,   183,   158,   158,
-     159,   169,    80,    81,    93,    95,    96,   153,   181,   134,
-     172,   173,   135,   135,   158,   134,   137,   177,   177,   178,
-     179,   158,   158,   158,   158,   158,   158,   158,   159,   172,
-     159,   159,   145,   146,   147,   148,   150,   184,   185,   159,
-     179,   159,   177,   135,   177,   177,   177,   177,   177,   158,
-     158,   158,   158,   158,   159,   184,   159,   159,   159,   159,
-     159,   159,   159,   178,   177,   177,   178,   177,   189,   177,
-     159,   163,   175,   176,   150,   159,   189,   159,   188,   175,
-     159,   134,   174,   177,   158,   149,   151,   152,   190,   191,
-     159,   158,   186,   158,   158,   158,   159,   190,   177,   190,
-     135,   177,   177,   159,   159,   159,   159,   177,   187,   159,
-     159
+       0,     3,     4,   147,   137,   137,     0,   149,   148,   122,
+     140,   150,    26,    67,    73,    76,   117,   126,   138,   139,
+     151,   152,   153,   162,   163,   165,   140,   140,   140,   140,
+     166,   140,   140,   141,   151,    65,    66,    79,    81,    82,
+     135,   164,   117,   154,   155,   118,   118,   117,   120,   159,
+     140,   159,   159,   160,   161,   140,   140,   140,   140,   140,
+     140,   140,   141,   154,   141,   141,   141,   127,   128,   129,
+     130,   132,   167,   168,   141,   161,   141,   159,   118,   159,
+     159,   159,   159,   159,   140,   140,   140,   140,   140,   141,
+     167,   141,   141,   141,   141,   141,   141,   141,   160,   159,
+     159,   160,   159,   172,   159,   141,   145,   157,   158,   132,
+     141,   172,   141,   171,   157,   141,   117,   156,   159,   140,
+     131,   133,   134,   173,   174,   141,   140,   169,   140,   140,
+     140,   141,   173,   159,   173,   118,   159,   159,   141,   141,
+     141,   141,   159,   170,   141,   141
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
-       0,   164,   166,   165,   167,   168,   165,   169,   169,   170,
-     170,   170,   170,   170,   171,   170,   172,   172,   173,   174,
-     174,   176,   175,   177,   177,   178,   179,   179,   180,   180,
-     180,   181,   181,   181,   181,   181,   181,   183,   182,   184,
-     184,   185,   185,   186,   187,   185,   185,   188,   185,   185,
-     185,   189,   189,   190,   190,   191,   191,   191
+       0,   146,   148,   147,   149,   150,   147,   151,   151,   152,
+     152,   152,   152,   152,   153,   152,   154,   154,   155,   156,
+     156,   158,   157,   159,   159,   160,   161,   161,   162,   163,
+     163,   163,   163,   164,   164,   164,   164,   164,   164,   166,
+     165,   167,   167,   168,   168,   169,   170,   168,   168,   171,
+     168,   168,   168,   172,   172,   173,   173,   174,   174,   174
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
@@ -2084,9 +2039,9 @@ static const yytype_uint8 yyr2[] =
        0,     2,     0,     6,     0,     0,     5,     2,     0,     4,
        4,     4,     1,     1,     0,     2,     2,     0,     4,     1,
        4,     0,     2,     1,     1,     1,     2,     0,     4,     4,
-       1,     4,     4,     4,     4,     4,     4,     0,     5,     2,
-       0,     6,     5,     0,     0,    10,     4,     0,     6,     4,
-       4,     2,     0,     2,     0,     4,     4,     5
+       4,     1,     1,     4,     4,     4,     4,     4,     4,     0,
+       5,     2,     0,     6,     5,     0,     0,    10,     4,     0,
+       6,     4,     4,     2,     0,     2,     0,     4,     4,     5
 };
 
 
@@ -2582,7 +2537,36 @@ yydestruct (const char *yymsg, int yytype, YYSTYPE *yyvaluep, YYLTYPE *yylocatio
   YY_SYMBOL_PRINT (yymsg, yytype, yyvaluep, yylocationp);
 
   YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN
-  YYUSE (yytype);
+  switch (yytype)
+    {
+          case 117: /* LL_IDENTIFIER  */
+#line 287 "modules/python/python-grammar.y" /* yacc.c:1257  */
+      { free(((*yyvaluep).cptr)); }
+#line 2546 "modules/python/python-grammar.c" /* yacc.c:1257  */
+        break;
+
+    case 120: /* LL_STRING  */
+#line 287 "modules/python/python-grammar.y" /* yacc.c:1257  */
+      { free(((*yyvaluep).cptr)); }
+#line 2552 "modules/python/python-grammar.c" /* yacc.c:1257  */
+        break;
+
+    case 122: /* LL_BLOCK  */
+#line 287 "modules/python/python-grammar.y" /* yacc.c:1257  */
+      { free(((*yyvaluep).cptr)); }
+#line 2558 "modules/python/python-grammar.c" /* yacc.c:1257  */
+        break;
+
+    case 159: /* string  */
+#line 287 "modules/python/python-grammar.y" /* yacc.c:1257  */
+      { free(((*yyvaluep).cptr)); }
+#line 2564 "modules/python/python-grammar.c" /* yacc.c:1257  */
+        break;
+
+
+      default:
+        break;
+    }
   YY_IGNORE_MAYBE_UNINITIALIZED_END
 }
 
@@ -2868,92 +2852,92 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 381 "python-grammar.y" /* yacc.c:1646  */
+#line 359 "modules/python/python-grammar.y" /* yacc.c:1646  */
     {
             last_driver = *instance = python_dd_new(configuration);
           }
-#line 2876 "modules/python/python-grammar.c" /* yacc.c:1646  */
+#line 2860 "modules/python/python-grammar.c" /* yacc.c:1646  */
     break;
 
   case 3:
-#line 384 "python-grammar.y" /* yacc.c:1646  */
+#line 362 "modules/python/python-grammar.y" /* yacc.c:1646  */
     { YYACCEPT; }
-#line 2882 "modules/python/python-grammar.c" /* yacc.c:1646  */
+#line 2866 "modules/python/python-grammar.c" /* yacc.c:1646  */
     break;
 
   case 4:
-#line 386 "python-grammar.y" /* yacc.c:1646  */
+#line 364 "modules/python/python-grammar.y" /* yacc.c:1646  */
     { cfg_lexer_push_context(lexer, LL_CONTEXT_BLOCK_CONTENT, NULL, "Python code"); }
-#line 2888 "modules/python/python-grammar.c" /* yacc.c:1646  */
+#line 2872 "modules/python/python-grammar.c" /* yacc.c:1646  */
     break;
 
   case 5:
-#line 388 "python-grammar.y" /* yacc.c:1646  */
+#line 366 "modules/python/python-grammar.y" /* yacc.c:1646  */
     { cfg_lexer_pop_context(lexer); }
-#line 2894 "modules/python/python-grammar.c" /* yacc.c:1646  */
+#line 2878 "modules/python/python-grammar.c" /* yacc.c:1646  */
     break;
 
   case 6:
-#line 389 "python-grammar.y" /* yacc.c:1646  */
+#line 367 "modules/python/python-grammar.y" /* yacc.c:1646  */
     {
 	    python_evaluate_global_code(configuration, (yyvsp[-1].cptr));
 	    free((yyvsp[-1].cptr));
 	    *instance = (void *) 1;
 	    YYACCEPT;
           }
-#line 2905 "modules/python/python-grammar.c" /* yacc.c:1646  */
+#line 2889 "modules/python/python-grammar.c" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 404 "python-grammar.y" /* yacc.c:1646  */
+#line 382 "modules/python/python-grammar.y" /* yacc.c:1646  */
     {
             python_dd_set_class(last_driver, (yyvsp[-1].cptr));
             free((yyvsp[-1].cptr));
           }
-#line 2914 "modules/python/python-grammar.c" /* yacc.c:1646  */
+#line 2898 "modules/python/python-grammar.c" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 409 "python-grammar.y" /* yacc.c:1646  */
+#line 387 "modules/python/python-grammar.y" /* yacc.c:1646  */
     {
             python_dd_set_imports(last_driver, (yyvsp[-1].ptr));
           }
-#line 2922 "modules/python/python-grammar.c" /* yacc.c:1646  */
+#line 2906 "modules/python/python-grammar.c" /* yacc.c:1646  */
     break;
 
   case 12:
-#line 414 "python-grammar.y" /* yacc.c:1646  */
+#line 392 "modules/python/python-grammar.y" /* yacc.c:1646  */
     {
             python_dd_set_value_pairs(last_driver, (yyvsp[0].ptr));
           }
-#line 2930 "modules/python/python-grammar.c" /* yacc.c:1646  */
+#line 2914 "modules/python/python-grammar.c" /* yacc.c:1646  */
     break;
 
   case 14:
-#line 418 "python-grammar.y" /* yacc.c:1646  */
+#line 396 "modules/python/python-grammar.y" /* yacc.c:1646  */
     { last_template_options = python_dd_get_template_options(last_driver); }
-#line 2936 "modules/python/python-grammar.c" /* yacc.c:1646  */
+#line 2920 "modules/python/python-grammar.c" /* yacc.c:1646  */
     break;
 
   case 18:
-#line 427 "python-grammar.y" /* yacc.c:1646  */
+#line 405 "modules/python/python-grammar.y" /* yacc.c:1646  */
     { python_dd_set_option(last_driver, (yyvsp[-3].cptr), (yyvsp[-1].cptr)); free((yyvsp[-3].cptr)); free((yyvsp[-1].cptr));  }
-#line 2942 "modules/python/python-grammar.c" /* yacc.c:1646  */
+#line 2926 "modules/python/python-grammar.c" /* yacc.c:1646  */
     break;
 
   case 19:
-#line 639 "python-grammar.y" /* yacc.c:1646  */
+#line 617 "modules/python/python-grammar.y" /* yacc.c:1646  */
     {
           GError *error = NULL;
 
           CHECK_ERROR(log_template_compile(last_template, (yyvsp[0].cptr), &error), (yylsp[0]), "Error compiling template (%s)", error->message);
           free((yyvsp[0].cptr));
         }
-#line 2953 "modules/python/python-grammar.c" /* yacc.c:1646  */
+#line 2937 "modules/python/python-grammar.c" /* yacc.c:1646  */
     break;
 
   case 20:
-#line 646 "python-grammar.y" /* yacc.c:1646  */
+#line 624 "modules/python/python-grammar.y" /* yacc.c:1646  */
     {
           GError *error = NULL;
 
@@ -2963,53 +2947,59 @@ yyreduce:
           CHECK_ERROR(log_template_set_type_hint(last_template, (yyvsp[-3].cptr), &error), (yylsp[-3]), "Error setting the template type-hint (%s)", error->message);
           free((yyvsp[-3].cptr));
         }
-#line 2967 "modules/python/python-grammar.c" /* yacc.c:1646  */
+#line 2951 "modules/python/python-grammar.c" /* yacc.c:1646  */
     break;
 
   case 21:
-#line 658 "python-grammar.y" /* yacc.c:1646  */
+#line 636 "modules/python/python-grammar.y" /* yacc.c:1646  */
     { last_template = log_template_new(configuration, NULL); }
-#line 2973 "modules/python/python-grammar.c" /* yacc.c:1646  */
+#line 2957 "modules/python/python-grammar.c" /* yacc.c:1646  */
     break;
 
   case 22:
-#line 658 "python-grammar.y" /* yacc.c:1646  */
+#line 636 "modules/python/python-grammar.y" /* yacc.c:1646  */
     { (yyval.ptr) = last_template; }
-#line 2979 "modules/python/python-grammar.c" /* yacc.c:1646  */
+#line 2963 "modules/python/python-grammar.c" /* yacc.c:1646  */
     break;
 
   case 25:
-#line 686 "python-grammar.y" /* yacc.c:1646  */
+#line 664 "modules/python/python-grammar.y" /* yacc.c:1646  */
     { (yyval.ptr) = g_list_reverse((yyvsp[0].ptr)); }
-#line 2985 "modules/python/python-grammar.c" /* yacc.c:1646  */
+#line 2969 "modules/python/python-grammar.c" /* yacc.c:1646  */
     break;
 
   case 26:
-#line 690 "python-grammar.y" /* yacc.c:1646  */
+#line 668 "modules/python/python-grammar.y" /* yacc.c:1646  */
     { (yyval.ptr) = g_list_append((yyvsp[0].ptr), g_strdup((yyvsp[-1].cptr))); free((yyvsp[-1].cptr)); }
-#line 2991 "modules/python/python-grammar.c" /* yacc.c:1646  */
+#line 2975 "modules/python/python-grammar.c" /* yacc.c:1646  */
     break;
 
   case 27:
-#line 691 "python-grammar.y" /* yacc.c:1646  */
+#line 669 "modules/python/python-grammar.y" /* yacc.c:1646  */
     { (yyval.ptr) = NULL; }
-#line 2997 "modules/python/python-grammar.c" /* yacc.c:1646  */
+#line 2981 "modules/python/python-grammar.c" /* yacc.c:1646  */
     break;
 
   case 28:
-#line 809 "python-grammar.y" /* yacc.c:1646  */
-    { ((LogDestDriver *) last_driver)->log_fifo_size = (yyvsp[-1].num); }
-#line 3003 "modules/python/python-grammar.c" /* yacc.c:1646  */
+#line 786 "modules/python/python-grammar.y" /* yacc.c:1646  */
+    { log_pipe_set_persist_name(&last_driver->super, g_strdup((yyvsp[-1].cptr))); free((yyvsp[-1].cptr)); }
+#line 2987 "modules/python/python-grammar.c" /* yacc.c:1646  */
     break;
 
   case 29:
-#line 810 "python-grammar.y" /* yacc.c:1646  */
-    { ((LogDestDriver *) last_driver)->throttle = (yyvsp[-1].num); }
-#line 3009 "modules/python/python-grammar.c" /* yacc.c:1646  */
+#line 798 "modules/python/python-grammar.y" /* yacc.c:1646  */
+    { ((LogDestDriver *) last_driver)->log_fifo_size = (yyvsp[-1].num); }
+#line 2993 "modules/python/python-grammar.c" /* yacc.c:1646  */
     break;
 
   case 30:
-#line 812 "python-grammar.y" /* yacc.c:1646  */
+#line 799 "modules/python/python-grammar.y" /* yacc.c:1646  */
+    { ((LogDestDriver *) last_driver)->throttle = (yyvsp[-1].num); }
+#line 2999 "modules/python/python-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 31:
+#line 801 "modules/python/python-grammar.y" /* yacc.c:1646  */
     {
             Plugin *p;
             gint context = LL_CONTEXT_INNER_DEST;
@@ -3027,41 +3017,41 @@ yyreduce:
               }
             log_driver_add_plugin(last_driver, (LogDriverPlugin *) value);
           }
-#line 3031 "modules/python/python-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 31:
-#line 888 "python-grammar.y" /* yacc.c:1646  */
-    { last_template_options->ts_format = cfg_ts_format_value((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 3037 "modules/python/python-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 32:
-#line 889 "python-grammar.y" /* yacc.c:1646  */
-    { last_template_options->frac_digits = (yyvsp[-1].num); }
-#line 3043 "modules/python/python-grammar.c" /* yacc.c:1646  */
+#line 3021 "modules/python/python-grammar.c" /* yacc.c:1646  */
     break;
 
   case 33:
-#line 890 "python-grammar.y" /* yacc.c:1646  */
-    { last_template_options->time_zone[LTZ_SEND] = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 3049 "modules/python/python-grammar.c" /* yacc.c:1646  */
+#line 874 "modules/python/python-grammar.y" /* yacc.c:1646  */
+    { last_template_options->ts_format = cfg_ts_format_value((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
+#line 3027 "modules/python/python-grammar.c" /* yacc.c:1646  */
     break;
 
   case 34:
-#line 891 "python-grammar.y" /* yacc.c:1646  */
-    { last_template_options->time_zone[LTZ_SEND] = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 3055 "modules/python/python-grammar.c" /* yacc.c:1646  */
+#line 875 "modules/python/python-grammar.y" /* yacc.c:1646  */
+    { last_template_options->frac_digits = (yyvsp[-1].num); }
+#line 3033 "modules/python/python-grammar.c" /* yacc.c:1646  */
     break;
 
   case 35:
-#line 892 "python-grammar.y" /* yacc.c:1646  */
-    { last_template_options->time_zone[LTZ_LOCAL] = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 3061 "modules/python/python-grammar.c" /* yacc.c:1646  */
+#line 876 "modules/python/python-grammar.y" /* yacc.c:1646  */
+    { last_template_options->time_zone[LTZ_SEND] = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
+#line 3039 "modules/python/python-grammar.c" /* yacc.c:1646  */
     break;
 
   case 36:
-#line 894 "python-grammar.y" /* yacc.c:1646  */
+#line 877 "modules/python/python-grammar.y" /* yacc.c:1646  */
+    { last_template_options->time_zone[LTZ_SEND] = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
+#line 3045 "modules/python/python-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 37:
+#line 878 "modules/python/python-grammar.y" /* yacc.c:1646  */
+    { last_template_options->time_zone[LTZ_LOCAL] = g_strdup((yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
+#line 3051 "modules/python/python-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 38:
+#line 880 "modules/python/python-grammar.y" /* yacc.c:1646  */
     {
           gint on_error;
 
@@ -3070,110 +3060,110 @@ yyreduce:
 
           log_template_options_set_on_error(last_template_options, on_error);
         }
-#line 3074 "modules/python/python-grammar.c" /* yacc.c:1646  */
+#line 3064 "modules/python/python-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 37:
-#line 916 "python-grammar.y" /* yacc.c:1646  */
+  case 39:
+#line 902 "modules/python/python-grammar.y" /* yacc.c:1646  */
     {
             last_value_pairs = value_pairs_new();
           }
-#line 3082 "modules/python/python-grammar.c" /* yacc.c:1646  */
+#line 3072 "modules/python/python-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 38:
-#line 920 "python-grammar.y" /* yacc.c:1646  */
+  case 40:
+#line 906 "modules/python/python-grammar.y" /* yacc.c:1646  */
     { (yyval.ptr) = last_value_pairs; }
-#line 3088 "modules/python/python-grammar.c" /* yacc.c:1646  */
+#line 3078 "modules/python/python-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 41:
-#line 930 "python-grammar.y" /* yacc.c:1646  */
+  case 43:
+#line 916 "modules/python/python-grammar.y" /* yacc.c:1646  */
     {
           value_pairs_add_pair(last_value_pairs, (yyvsp[-3].cptr), (yyvsp[-1].ptr));
           free((yyvsp[-3].cptr));
         }
-#line 3097 "modules/python/python-grammar.c" /* yacc.c:1646  */
+#line 3087 "modules/python/python-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 42:
-#line 935 "python-grammar.y" /* yacc.c:1646  */
+  case 44:
+#line 921 "modules/python/python-grammar.y" /* yacc.c:1646  */
     {
           value_pairs_add_pair(last_value_pairs, (yyvsp[-2].cptr), (yyvsp[-1].ptr));
           free((yyvsp[-2].cptr));
         }
-#line 3106 "modules/python/python-grammar.c" /* yacc.c:1646  */
+#line 3096 "modules/python/python-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 43:
-#line 940 "python-grammar.y" /* yacc.c:1646  */
+  case 45:
+#line 926 "modules/python/python-grammar.y" /* yacc.c:1646  */
     {
           last_vp_transset = value_pairs_transform_set_new((yyvsp[-2].cptr));
           value_pairs_add_glob_pattern(last_value_pairs, (yyvsp[-2].cptr), TRUE);
           free((yyvsp[-2].cptr));
         }
-#line 3116 "modules/python/python-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 44:
-#line 946 "python-grammar.y" /* yacc.c:1646  */
-    { value_pairs_add_transforms(last_value_pairs, last_vp_transset); }
-#line 3122 "modules/python/python-grammar.c" /* yacc.c:1646  */
+#line 3106 "modules/python/python-grammar.c" /* yacc.c:1646  */
     break;
 
   case 46:
-#line 947 "python-grammar.y" /* yacc.c:1646  */
-    { value_pairs_add_glob_patterns(last_value_pairs, (yyvsp[-1].ptr), TRUE); }
-#line 3128 "modules/python/python-grammar.c" /* yacc.c:1646  */
+#line 932 "modules/python/python-grammar.y" /* yacc.c:1646  */
+    { value_pairs_add_transforms(last_value_pairs, last_vp_transset); }
+#line 3112 "modules/python/python-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 47:
-#line 949 "python-grammar.y" /* yacc.c:1646  */
+  case 48:
+#line 933 "modules/python/python-grammar.y" /* yacc.c:1646  */
+    { value_pairs_add_glob_patterns(last_value_pairs, (yyvsp[-1].ptr), TRUE); }
+#line 3118 "modules/python/python-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 49:
+#line 935 "modules/python/python-grammar.y" /* yacc.c:1646  */
     {
           last_vp_transset = value_pairs_transform_set_new((yyvsp[0].cptr));
           free((yyvsp[0].cptr));
         }
-#line 3137 "modules/python/python-grammar.c" /* yacc.c:1646  */
+#line 3127 "modules/python/python-grammar.c" /* yacc.c:1646  */
     break;
 
-  case 48:
-#line 953 "python-grammar.y" /* yacc.c:1646  */
+  case 50:
+#line 939 "modules/python/python-grammar.y" /* yacc.c:1646  */
     { value_pairs_add_transforms(last_value_pairs, last_vp_transset); }
-#line 3143 "modules/python/python-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 49:
-#line 954 "python-grammar.y" /* yacc.c:1646  */
-    { value_pairs_add_glob_patterns(last_value_pairs, (yyvsp[-1].ptr), FALSE); }
-#line 3149 "modules/python/python-grammar.c" /* yacc.c:1646  */
+#line 3133 "modules/python/python-grammar.c" /* yacc.c:1646  */
     break;
 
   case 51:
-#line 959 "python-grammar.y" /* yacc.c:1646  */
+#line 940 "modules/python/python-grammar.y" /* yacc.c:1646  */
+    { value_pairs_add_glob_patterns(last_value_pairs, (yyvsp[-1].ptr), FALSE); }
+#line 3139 "modules/python/python-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 53:
+#line 945 "modules/python/python-grammar.y" /* yacc.c:1646  */
     { value_pairs_add_scope(last_value_pairs, (yyvsp[-1].cptr)); free((yyvsp[-1].cptr)); }
-#line 3155 "modules/python/python-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 55:
-#line 969 "python-grammar.y" /* yacc.c:1646  */
-    { value_pairs_transform_set_add_func(last_vp_transset, value_pairs_new_transform_shift((yyvsp[-1].num))); }
-#line 3161 "modules/python/python-grammar.c" /* yacc.c:1646  */
-    break;
-
-  case 56:
-#line 970 "python-grammar.y" /* yacc.c:1646  */
-    { value_pairs_transform_set_add_func(last_vp_transset, value_pairs_new_transform_add_prefix((yyvsp[-1].cptr))); free((yyvsp[-1].cptr)); }
-#line 3167 "modules/python/python-grammar.c" /* yacc.c:1646  */
+#line 3145 "modules/python/python-grammar.c" /* yacc.c:1646  */
     break;
 
   case 57:
-#line 971 "python-grammar.y" /* yacc.c:1646  */
+#line 955 "modules/python/python-grammar.y" /* yacc.c:1646  */
+    { value_pairs_transform_set_add_func(last_vp_transset, value_pairs_new_transform_shift((yyvsp[-1].num))); }
+#line 3151 "modules/python/python-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 58:
+#line 956 "modules/python/python-grammar.y" /* yacc.c:1646  */
+    { value_pairs_transform_set_add_func(last_vp_transset, value_pairs_new_transform_add_prefix((yyvsp[-1].cptr))); free((yyvsp[-1].cptr)); }
+#line 3157 "modules/python/python-grammar.c" /* yacc.c:1646  */
+    break;
+
+  case 59:
+#line 957 "modules/python/python-grammar.y" /* yacc.c:1646  */
     { value_pairs_transform_set_add_func(last_vp_transset, value_pairs_new_transform_replace_prefix((yyvsp[-2].cptr), (yyvsp[-1].cptr))); free((yyvsp[-2].cptr)); free((yyvsp[-1].cptr)); }
-#line 3173 "modules/python/python-grammar.c" /* yacc.c:1646  */
+#line 3163 "modules/python/python-grammar.c" /* yacc.c:1646  */
     break;
 
 
-#line 3177 "modules/python/python-grammar.c" /* yacc.c:1646  */
+#line 3167 "modules/python/python-grammar.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -3408,5 +3398,5 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 975 "python-grammar.y" /* yacc.c:1906  */
+#line 961 "modules/python/python-grammar.y" /* yacc.c:1906  */
 

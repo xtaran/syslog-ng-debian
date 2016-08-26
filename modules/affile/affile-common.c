@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2013 BalaBit IT Ltd, Budapest, Hungary
+ * Copyright (c) 2002-2013 Balabit
  * Copyright (c) 1998-2012 Balázs Scheidler
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -23,7 +23,8 @@
 #include "affile-common.h"
 #include "messages.h"
 #include "gprocess.h"
-#include "misc.h"
+#include "fdhelpers.h"
+#include "pathutils.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -51,7 +52,7 @@ _string_contains_fragment(const gchar *str, const gchar *fragments[])
 }
 
 static inline gboolean
-_path_is_spurious(const gchar *name, const gchar *spurious_paths[])
+_is_path_spurious(const gchar *name)
 {
   return _string_contains_fragment(name, spurious_paths);
 }
@@ -121,14 +122,12 @@ _validate_file_type(const gchar *name, FileOpenOptions *open_opts)
       if (open_opts->is_pipe && !S_ISFIFO(st.st_mode))
         {
           msg_warning("WARNING: you are using the pipe driver, underlying file is not a FIFO, it should be used by file()",
-                      evt_tag_str("filename", name),
-                      NULL);
+                      evt_tag_str("filename", name));
         }
       else if (!open_opts->is_pipe && S_ISFIFO(st.st_mode))
         {
           msg_warning("WARNING: you are using the file driver, underlying file is a FIFO, it should be used by pipe()",
-                      evt_tag_str("filename", name),
-                      NULL);
+                      evt_tag_str("filename", name));
         }
     }
 }
@@ -138,11 +137,10 @@ affile_open_file(gchar *name, FileOpenOptions *open_opts, FilePermOptions *perm_
 {
   cap_t saved_caps;
 
-  if (_path_is_spurious(name, spurious_paths))
+  if (_is_path_spurious(name))
     {
       msg_error("Spurious path, logfile not created",
-                evt_tag_str("path", name),
-                NULL);
+                evt_tag_str("path", name));
       return FALSE;
     }
 
@@ -158,14 +156,14 @@ affile_open_file(gchar *name, FileOpenOptions *open_opts, FilePermOptions *perm_
 
   *fd = _open_fd(name, open_opts, perm_opts);
 
-  _set_fd_permission(perm_opts, *fd);
+  if (!is_file_device(name))
+    _set_fd_permission(perm_opts, *fd);
 
   g_process_cap_restore(saved_caps);
 
   msg_trace("affile_open_file",
             evt_tag_str("path", name),
-            evt_tag_int("fd", *fd),
-            NULL);
+            evt_tag_int("fd", *fd));
 
   return (*fd != -1);
 }
