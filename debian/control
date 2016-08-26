@@ -28,7 +28,8 @@ Build-Depends: debhelper (>= 9~),
                libriemann-client-dev (>= 1.6.0~),
                python, python-dev, pep8, pylint, dh-python,
                dh-exec (>= 0.13~),
-               python-nose, python-ply
+               python-nose, python-ply,
+               libxml2-utils, geoip-database
 Build-Conflicts: autoconf2.13
 Standards-Version: 3.9.6
 Homepage: http://www.syslog-ng.org/
