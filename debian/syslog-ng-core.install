@@ -30,7 +30,7 @@ usr/share/syslog-ng/include/scl/apache/*
 usr/share/syslog-ng/include/scl/loggly/*
 usr/share/syslog-ng/include/scl/logmatic/*
 usr/share/syslog-ng/xsd/*
-lib/systemd/system/*
+[!kfreebsd-any] lib/systemd/system/*
 
 debian/syslog-ng.conf                   /etc/syslog-ng/
 debian/scl.conf                         /etc/syslog-ng/
