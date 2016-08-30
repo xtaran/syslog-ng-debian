@@ -1,3 +1,10 @@
+syslog-ng (3.8.1-2) experimental; urgency=medium
+
+  * [fc743d9] Added upstream patch fixing hurd-i386 compilation
+  * [0efe489] Do not try to install systemd related things on kfreebsd
+
+ -- SZALAY Attila <sasa@debian.org>  Tue, 30 Aug 2016 21:42:18 +0200
+
 syslog-ng (3.8.1-1) experimental; urgency=medium
 
   * [469c62c] Revert to the old watch file.
