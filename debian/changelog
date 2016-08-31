@@ -8,10 +8,11 @@ syslog-ng (3.8.1-2) experimental; urgency=medium
 syslog-ng (3.8.1-1) experimental; urgency=medium
 
   * [469c62c] Revert to the old watch file.
-    The tags does not work, because the downloaded archive does not contain some
-    essential part of the distribution.
+    The tags does not work, because the downloaded archive does not
+    contain some essential part of the distribution.
   * [b1f13dc] Imported Upstream version 3.8.1
-  * [da4ae60] Added import-orig options to exclude the .git files and the debian directory
+  * [da4ae60] Added import-orig options to exclude the .git files and the
+    debian directory
   * [c29eaa1] Removed test patches
   * [f7197f1] Added new dependencies needed by new test cases
   * [cdfc0cc] Removed datadir which is not needed any more
