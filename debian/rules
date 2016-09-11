@@ -117,9 +117,12 @@ override_dh_auto_configure:
 #
 # Similarly, we want to install python modules to their proper place,
 # and this is a great time to tell the build system where that is.
+# Also removing .la files, these files don't needed and just confuse
+# the list-missing option
 override_dh_auto_install:
 	dh_auto_install -- pkgconfigdir=/usr/lib/pkgconfig \
 			   PYSETUP_OPTIONS="--install-layout=deb --root=$(CURDIR)/debian/tmp/"
+	find . -name \*.la | xargs --no-run-if-empty rm
 
 # To get better test results, and actually see failing tests, we need
 # to pass VERBOSE=1 to make when running the tests. Do that here.
