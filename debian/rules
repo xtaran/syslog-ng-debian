@@ -70,11 +70,6 @@ endif
 #* Overrides for dh_auto*
 ##
 
-#FIXME: Thsi does not work because no submodules present
-## We need to call autogen.sh instead of autoreconf.
-#override_dh_autoreconf:
-#	[ -e "configure" ] || dh_autoreconf -- sh -c "./autogen.sh"
-
 # Oh, the joys of configure!
 # We pass down all appropriate options, along with EXTRA_CONFIGURE_OPTS.
 # This also sets SOURCE_REVISION to the debian package version.
@@ -114,21 +109,6 @@ override_dh_auto_configure:
 		SOURCE_REVISION="$${SOURCE_REVISION}" \
 		${SYSTEMD_CONFIGURE_OPTS} \
 		${EXTRA_CONFIGURE_OPTS}
-
-# Building is fine, but the manpages need some sed work, to replace
-# /opt/syslog-ng with something sensible. And unfortunately,
-# rabbitmq-c is a bit broken, so we need to create a directory for it
-# too.
-override_dh_auto_build:
-	install -d debian/build-tree/modules/afamqp/rabbitmq-c/librabbitmq
-	dh_auto_build
-	-for f in debian/build-tree/doc/man/*; do \
-		sed -e "s#/opt/syslog\\\-ng/etc#/etc/syslog-ng#g" \
-		    -e "s#/opt/syslog\\\-ng##g" \
-		    -e "/affile/{s#,#, #g}" \
-		    -e 's#^/$$##' <$$f >$$f.new && \
-		rm $$f && mv $$f.new $$f; \
-	done
 
 # The pkg-config .pc file is installed into ${libdir}/pkgconfig, but
 # we override libdir above to place everything useful there. We want
