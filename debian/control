@@ -35,8 +35,8 @@ Build-Depends: debhelper (>= 9~),
 Build-Conflicts: autoconf2.13
 Standards-Version: 3.9.8
 Homepage: http://www.syslog-ng.org/
-Vcs-Git: git://anonscm.debian.org/syslog-ng/syslog-ng-debian.git
-Vcs-Browser: http://anonscm.debian.org/gitweb/?p=syslog-ng/syslog-ng-debian.git
+Vcs-Git: https://github.com/gcsideal/syslog-ng-debian.git
+Vcs-Browser: https://github.com/gcsideal/syslog-ng-debian
 
 Package: syslog-ng
 Architecture: all
