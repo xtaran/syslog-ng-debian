@@ -1,0 +1,8 @@
+Tests: basic
+Depends: syslog-ng-core
+
+Tests: basic
+Depends: syslog-ng
+
+Tests: basic
+Depends: @
