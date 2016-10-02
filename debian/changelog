@@ -1,3 +1,14 @@
+syslog-ng (3.7.3-3) unstable; urgency=medium
+
+  * [469c62c] Revert to the old watch file.
+    The tags does not work, because the downloaded archive does not contain some
+    essential part of the distribution.
+  * [80260f3] Added tzdata dependency, needed by a testcase.
+    Because tzdata is neither essential nor build-essential
+    package, explicit build-dependency is needed. (Closes: #839449)
+
+ -- SZALAY Attila <sasa@debian.org>  Sun, 02 Oct 2016 16:17:30 +0200
+
 syslog-ng (3.7.3-2) experimental; urgency=medium
 
   * [db0cb33] Removed unneeded file mode change.
