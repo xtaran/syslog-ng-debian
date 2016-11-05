@@ -1,3 +1,19 @@
+syslog-ng (3.8.1-5) unstable; urgency=medium
+
+  * [05e9749] Revert export method to head.
+    Much cleaner and can be changed in parameter list
+    if needed
+  * [6b49e04] Added basic test to check if syslog-ng can start
+  * [80260f3] Added tzdata dependency, needed by a testcase.
+    Because tzdata is neither essential nor build-essential
+    package explicit build-dependency is needed. (Closes: #839449)
+  * [e68e244] Upgraded ABI version to 3.8
+  * [1241045] Temporally stay with the libssl-1.0 until upstream fix this
+    (Closes: #828565)
+  * [c8dc698] Added dependency to lsb-base as lintian suggested
+
+ -- SZALAY Attila <sasa@debian.org>  Sat, 05 Nov 2016 19:09:39 +0100
+
 syslog-ng (3.8.1-4) experimental; urgency=medium
 
   * [6b459d5] Bumped policy version to 3.9.8
