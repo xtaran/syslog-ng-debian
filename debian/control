@@ -118,7 +118,7 @@ Description: Enhanced system logging daemon (development files)
 Package: syslog-ng-core
 Architecture: any
 Multi-Arch: foreign
-Depends: ${shlibs:Depends}, ${misc:Depends}, syslog-ng-mod-journal [linux-any], util-linux (>= 2.12-10)
+Depends: ${shlibs:Depends}, ${misc:Depends}, syslog-ng-mod-journal [linux-any], util-linux (>= 2.12-10), lsb-base (>= 3.0-6)
 Recommends: logrotate
 Suggests: ${sng:CoreModules}, ${sng:Modules}
 Provides: system-log-daemon, linux-kernel-log-daemon, libsyslog-ng-dev,
