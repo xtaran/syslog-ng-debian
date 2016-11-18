@@ -1,3 +1,12 @@
+syslog-ng (3.8.1-6) unstable; urgency=medium
+
+  * [41f337f] Updated configuration.
+    Removed the deprecated defines from scl.conf
+    and upgraded the version of the configuration
+    file. (Closes: #843937)
+
+ -- SZALAY Attila <sasa@debian.org>  Fri, 18 Nov 2016 16:23:17 +0100
+
 syslog-ng (3.8.1-5) unstable; urgency=medium
 
   * [05e9749] Revert export method to head.
