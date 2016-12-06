@@ -1,3 +1,10 @@
+syslog-ng (3.8.1-7) unstable; urgency=medium
+
+  * [45109e3] Moved templates depending on json to mod-json (Closes: #845799)
+  * [023a862] Added some more testcases to autopkg
+
+ -- SZALAY Attila <sasa@debian.org>  Tue, 06 Dec 2016 23:44:35 +0100
+
 syslog-ng (3.8.1-6) unstable; urgency=medium
 
   * [41f337f] Updated configuration.
