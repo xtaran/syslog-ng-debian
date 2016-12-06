@@ -24,7 +24,6 @@ usr/lib/syslog-ng/*/libdisk-buffer.so
 usr/share/syslog-ng/include/scl/system/*
 usr/share/syslog-ng/include/scl/syslogconf/*
 usr/share/syslog-ng/include/scl/rewrite/*
-usr/share/syslog-ng/include/scl/cim/*
 usr/share/syslog-ng/include/scl/mbox/*
 usr/share/syslog-ng/include/scl/apache/*
 usr/share/syslog-ng/include/scl/loggly/*
