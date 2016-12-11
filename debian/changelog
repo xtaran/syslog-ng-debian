@@ -1,3 +1,11 @@
+syslog-ng (3.8.1-8) unstable; urgency=medium
+
+  * [ee388fd] Declaring breaks because of file moving (Closes: 847708)
+  * [1ebe21f] Switch to unstable repo
+  * [18653b3] Added testing upgrade capability
+
+ -- SZALAY Attila <sasa@debian.org>  Sun, 11 Dec 2016 18:32:35 +0100
+
 syslog-ng (3.8.1-7) unstable; urgency=medium
 
   * [45109e3] Moved templates depending on json to mod-json (Closes: #845799)
