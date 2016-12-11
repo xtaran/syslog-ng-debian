@@ -42,3 +42,7 @@ Depends: syslog-ng-core, syslog-ng-mod-python
 
 Tests: basic
 Depends: syslog-ng-core, syslog-ng-mod-add-contextual-data
+
+Tests: upgrade
+Restrictions: needs-root
+Depends: apt-utils
