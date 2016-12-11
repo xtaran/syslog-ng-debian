@@ -172,6 +172,7 @@ Description: Enhanced system logging daemon (systemd journal plugin)
 
 Package: syslog-ng-mod-json
 Architecture: any
+Breaks: syslog-ng-core (<< 3.8.1-7)
 Multi-Arch: foreign
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Enhanced system logging daemon (JSON plugin)
