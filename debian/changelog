@@ -1,3 +1,9 @@
+syslog-ng (3.8.1-9) unstable; urgency=medium
+
+  * Fix build with OpenSSL 1.1 (closes: #848786).
+
+ -- Laszlo Boszormenyi (GCS) <gcs@debian.org>  Thu, 22 Dec 2016 10:44:32 +0000
+
 syslog-ng (3.8.1-8) unstable; urgency=medium
 
   * [ee388fd] Declaring breaks because of file moving (Closes: 847708)
