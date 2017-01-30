@@ -7,23 +7,23 @@ Fixes: #1234
 
 Signed-off-by: Laszlo Budai <Laszlo.Budai@balabit.com>
 ---
- configure.ac                       |  6 +++--
+ configure.ac                       |  4 +++
  lib/compat/Makefile.am             |  6 +++--
  lib/compat/openssl_support.c       | 46 +++++++++++++++++++++++++++++++++
  lib/compat/openssl_support.h       | 53 ++++++++++++++++++++++++++++++++++++++
- lib/tlscontext.c                   | 24 +++++++----------
- modules/afsocket/afinet-dest.c     |  8 ++++--
+ lib/tlscontext.c                   | 24 ++++++++++-------
+ modules/afsocket/afinet-dest.c     |  9 +++++--
  modules/cryptofuncs/cryptofuncs.c  | 42 ++++++++++++++++++------------
  modules/dbparser/pdbtool/pdbtool.c |  1 +
- 9 files changed, 152 insertions(+), 36 deletions(-)
+ 8 files changed, 155 insertions(+), 30 deletions(-)
  create mode 100644 lib/compat/openssl_support.c
  create mode 100644 lib/compat/openssl_support.h
 
 diff --git a/configure.ac b/configure.ac
-index 8d8e01b..3089c31 100644
+index 611e7b5..cecb7cd 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -871,6 +871,10 @@ if test -n "$OPENSSL_LIBS" -a "$linking_
+@@ -871,6 +871,10 @@ if test -n "$OPENSSL_LIBS" -a "$linking_mode" != "dynamic"; then
  	LIBS=$old_LIBS
  fi
  
@@ -169,7 +169,7 @@ index 0000000..97977e5
 +#endif
 +
 diff --git a/lib/tlscontext.c b/lib/tlscontext.c
-index 4b5273c..45ca423 100644
+index fff1a3f..956fd83 100644
 --- a/lib/tlscontext.c
 +++ b/lib/tlscontext.c
 @@ -24,6 +24,7 @@
@@ -180,7 +180,7 @@ index 4b5273c..45ca423 100644
  
  #include <arpa/inet.h>
  #include <unistd.h>
-@@ -136,8 +136,9 @@ tls_session_verify(TLSSession *self, int
+@@ -136,35 +137,37 @@ tls_session_verify(TLSSession *self, int ok, X509_STORE_CTX *ctx)
    if (self->ctx->verify_mode & TVM_UNTRUSTED)
      return 1;
  
@@ -190,8 +190,6 @@ index 4b5273c..45ca423 100644
 +  if (ok && ctx_error_depth == 0 && !tls_session_verify_fingerprint(ctx))
      {
        msg_notice("Certificate valid, but fingerprint constraints were not met, rejecting");
-       return 0;
-@@ -143,10 +144,11 @@ tls_session_verify(TLSSession *self, int
        return 0;
      }
  
@@ -203,9 +201,6 @@ index 4b5273c..45ca423 100644
 -      ctx->error = X509_V_ERR_INVALID_CA;
 +      X509_STORE_CTX_set_error(ctx, X509_V_ERR_INVALID_CA);
        return 0;
-     }
- 
-@@ -151,20 +151,20 @@ tls_session_verify(TLSSession *self, int
      }
  
    /* reject certificate if it is valid, but its DN is not trusted */
@@ -230,7 +225,7 @@ index 4b5273c..45ca423 100644
      {
        msg_warning("Certificate valid, but purpose is invalid");
        return 1;
-@@ -184,7 +186,8 @@ tls_session_verify_callback(int ok, X509
+@@ -184,7 +187,8 @@ tls_session_verify_callback(int ok, X509_STORE_CTX *ctx)
     */
    if (X509_STORE_CTX_get_current_cert(ctx) == NULL)
      {
@@ -240,7 +235,7 @@ index 4b5273c..45ca423 100644
        {
        case X509_V_ERR_NO_EXPLICIT_POLICY:
          /* NOTE: Because we set the CHECK_POLICY_FLAG if the
-@@ -196,7 +199,7 @@ tls_session_verify_callback(int ok, X509
+@@ -196,7 +200,7 @@ tls_session_verify_callback(int ok, X509_STORE_CTX *ctx)
          break;
        default:
          msg_notice("Error occured during certificate validation",
@@ -249,7 +244,7 @@ index 4b5273c..45ca423 100644
          break;
        }
      }
-@@ -310,7 +311,7 @@ tls_context_setup_session(TLSContext *se
+@@ -310,7 +314,7 @@ tls_context_setup_session(TLSContext *self)
        if (self->crl_dir)
          verify_flags |= X509_V_FLAG_CRL_CHECK | X509_V_FLAG_CRL_CHECK_ALL;
  
@@ -259,7 +254,7 @@ index 4b5273c..45ca423 100644
        switch (self->verify_mode)
          {
 diff --git a/modules/afsocket/afinet-dest.c b/modules/afsocket/afinet-dest.c
-index 55fc57d..d153249 100644
+index c831a98..c638103 100644
 --- a/modules/afsocket/afinet-dest.c
 +++ b/modules/afsocket/afinet-dest.c
 @@ -26,6 +26,7 @@
@@ -270,7 +265,7 @@ index 55fc57d..d153249 100644
  
  #include <sys/types.h>
  #include <sys/socket.h>
-@@ -97,9 +97,13 @@ afinet_dd_verify_callback(gint ok, X509_
+@@ -97,9 +98,13 @@ afinet_dd_verify_callback(gint ok, X509_STORE_CTX *ctx, gpointer user_data)
    AFInetDestDriver *self G_GNUC_UNUSED = (AFInetDestDriver *) user_data;
    TransportMapperInet *transport_mapper_inet = (TransportMapperInet *) self->super.transport_mapper;
  
@@ -287,7 +282,7 @@ index 55fc57d..d153249 100644
  
    return ok;
 diff --git a/modules/cryptofuncs/cryptofuncs.c b/modules/cryptofuncs/cryptofuncs.c
-index ebf4d01..3ad407c 100644
+index 41897b1..6d67360 100644
 --- a/modules/cryptofuncs/cryptofuncs.c
 +++ b/modules/cryptofuncs/cryptofuncs.c
 @@ -27,6 +27,7 @@
@@ -361,7 +356,7 @@ index ebf4d01..3ad407c 100644
    // odd character numbers
    format_hex_string(hash, md_len, hash_str, sizeof(hash_str));
 diff --git a/modules/dbparser/pdbtool/pdbtool.c b/modules/dbparser/pdbtool/pdbtool.c
-index 929e153..0458178 100644
+index 5e9738e..1bccafb 100644
 --- a/modules/dbparser/pdbtool/pdbtool.c
 +++ b/modules/dbparser/pdbtool/pdbtool.c
 @@ -42,6 +42,7 @@
@@ -372,3 +367,6 @@ index 929e153..0458178 100644
  
  #include <stdio.h>
  #include <string.h>
+-- 
+2.11.0
+
