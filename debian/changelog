@@ -1,3 +1,9 @@
+syslog-ng (3.8.1-10) unstable; urgency=medium
+
+  * Fix segfault in X509_STORE_CTX_get_app_data(ctx) (closes: #850743).
+
+ -- Laszlo Boszormenyi (GCS) <gcs@debian.org>  Sun, 05 Feb 2017 08:34:41 +0000
+
 syslog-ng (3.8.1-9) unstable; urgency=medium
 
   * Fix build with OpenSSL 1.1 (closes: #848786).
