@@ -1,5 +1,5 @@
 
-DIST_SUBDIRS				= lib/ivykis
+DIST_SUBDIRS				+= @IVYKIS_SUBDIRS@
 
 include lib/transport/Makefile.am
 include lib/logproto/Makefile.am
@@ -14,6 +14,9 @@ include lib/debugger/Makefile.am
 include lib/compat/Makefile.am
 include lib/logmsg/Makefile.am
 include lib/scanner/csv-scanner/Makefile.am
+include lib/scanner/list-scanner/Makefile.am
+include lib/scanner/kv-scanner/Makefile.am
+include lib/str-repr/Makefile.am
 
 LSNG_RELEASE		= $(shell echo @PACKAGE_VERSION@ | cut -d. -f1,2)
 
@@ -238,6 +241,8 @@ lib_libsyslog_ng_la_SOURCES		= \
 	lib/block-ref-grammar.y		\
 	lib/pragma-grammar.y		\
 	$(csvscanner_sources)		\
+	$(kvscanner_sources)		\
+	$(listscanner_sources)		\
 	$(transport_sources)		\
 	$(logproto_sources)		\
 	$(filter_sources)		\
@@ -248,8 +253,9 @@ lib_libsyslog_ng_la_SOURCES		= \
 	$(stats_sources)		\
 	$(control_sources)		\
 	$(debugger_sources)		\
-	$(compat_sources)     \
-	$(logmsg_sources)
+	$(compat_sources)     		\
+	$(logmsg_sources)		\
+	$(str_repr_sources)
 
 lib_libsyslog_ng_la_CFLAGS		= \
 	$(AM_CFLAGS) \

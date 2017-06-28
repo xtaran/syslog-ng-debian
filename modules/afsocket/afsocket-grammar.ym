@@ -139,12 +139,14 @@ systemd_syslog_grammar_set_source_driver(SystemDSyslogSourceDriver *sd)
 %token KW_IP_TTL
 %token KW_SO_BROADCAST
 %token KW_IP_TOS
+%token KW_IP_FREEBIND
 %token KW_SO_SNDBUF
 %token KW_SO_RCVBUF
 %token KW_SO_KEEPALIVE
 %token KW_TCP_KEEPALIVE_TIME
 %token KW_TCP_KEEPALIVE_PROBES
 %token KW_TCP_KEEPALIVE_INTVL
+%token KW_LISTEN_BACKLOG
 %token KW_SPOOF_SOURCE
 
 %token KW_KEEP_ALIVE
@@ -357,7 +359,8 @@ source_afinet_tcp_option
 
 source_afsocket_stream_params
 	: KW_KEEP_ALIVE '(' yesno ')'		{ afsocket_sd_set_keep_alive(last_driver, $3); }
-	| KW_MAX_CONNECTIONS '(' LL_NUMBER ')'	{ afsocket_sd_set_max_connections(last_driver, $3); }
+	| KW_MAX_CONNECTIONS '(' positive_integer ')'	 { afsocket_sd_set_max_connections(last_driver, $3); }
+	| KW_LISTEN_BACKLOG '(' positive_integer ')'	{ afsocket_sd_set_listen_backlog(last_driver, $3); }
 	;
 
 source_afsyslog
@@ -433,7 +436,7 @@ source_systemd_syslog_params
 #if ! SYSLOG_NG_ENABLE_SYSTEMD
             msg_error("systemd-syslog() source cannot be enabled and it is not"
                       " functioning. Please compile your syslog-ng with --enable-systemd"
-                      " flag");
+                      " flag", cfg_lexer_format_location_tag(lexer, &@0));
             YYERROR;
 #else
             SystemDSyslogSourceDriver *d = systemd_syslog_sd_new(configuration, FALSE);
@@ -662,6 +665,12 @@ tls_option
         : KW_IFDEF {
 }
 
+	| KW_PEER_VERIFY '(' yesno ')'
+	  {
+	    last_tls_context->verify_mode = $3
+		? (TVM_REQUIRED | TVM_TRUSTED)
+		: (TVM_OPTIONAL | TVM_UNTRUSTED);
+          }
 	| KW_PEER_VERIFY '(' string ')'
 	  {
 	    last_tls_context->verify_mode = tls_lookup_verify_mode($3);
@@ -710,19 +719,28 @@ tls_option
 
 
 socket_option
-	: KW_SO_SNDBUF '(' LL_NUMBER ')'            { last_sock_options->so_sndbuf = $3; }
-	| KW_SO_RCVBUF '(' LL_NUMBER ')'            { last_sock_options->so_rcvbuf = $3; }
+	: KW_SO_SNDBUF '(' nonnegative_integer ')'
+	{
+		CHECK_ERROR($3 <= G_MAXINT, @3, "Invalid so_sndbuf, it has to be less than %d", G_MAXINT);
+		last_sock_options->so_sndbuf = $3;
+	}
+	| KW_SO_RCVBUF '(' nonnegative_integer ')'
+	{
+		CHECK_ERROR($3 <= G_MAXINT, @3, "Invalid so_rcvbuf, it has to be less than %d", G_MAXINT);
+		last_sock_options->so_rcvbuf = $3;
+	}
 	| KW_SO_BROADCAST '(' yesno ')'             { last_sock_options->so_broadcast = $3; }
 	| KW_SO_KEEPALIVE '(' yesno ')'             { last_sock_options->so_keepalive = $3; }
 	;
 
 inet_socket_option
 	: socket_option
-	| KW_IP_TTL '(' LL_NUMBER ')'               { ((SocketOptionsInet *) last_sock_options)->ip_ttl = $3; }
-	| KW_IP_TOS '(' LL_NUMBER ')'               { ((SocketOptionsInet *) last_sock_options)->ip_tos = $3; }
-	| KW_TCP_KEEPALIVE_TIME '(' LL_NUMBER ')'   { ((SocketOptionsInet *) last_sock_options)->tcp_keepalive_time = $3; }
-	| KW_TCP_KEEPALIVE_INTVL '(' LL_NUMBER ')'  { ((SocketOptionsInet *) last_sock_options)->tcp_keepalive_intvl = $3; }
-	| KW_TCP_KEEPALIVE_PROBES '(' LL_NUMBER ')' { ((SocketOptionsInet *) last_sock_options)->tcp_keepalive_probes = $3; }
+	| KW_IP_TTL '(' nonnegative_integer ')'               { ((SocketOptionsInet *) last_sock_options)->ip_ttl = $3; }
+	| KW_IP_TOS '(' nonnegative_integer ')'               { ((SocketOptionsInet *) last_sock_options)->ip_tos = $3; }
+	| KW_IP_FREEBIND '(' yesno ')'              { ((SocketOptionsInet *) last_sock_options)->ip_freebind = $3; }
+	| KW_TCP_KEEPALIVE_TIME '(' nonnegative_integer ')'   { ((SocketOptionsInet *) last_sock_options)->tcp_keepalive_time = $3; }
+	| KW_TCP_KEEPALIVE_INTVL '(' nonnegative_integer ')'  { ((SocketOptionsInet *) last_sock_options)->tcp_keepalive_intvl = $3; }
+	| KW_TCP_KEEPALIVE_PROBES '(' nonnegative_integer ')' { ((SocketOptionsInet *) last_sock_options)->tcp_keepalive_probes = $3; }
 	;
 
 inet_ip_protocol_option

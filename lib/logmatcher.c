@@ -27,8 +27,15 @@
 #include "cfg.h"
 #include "str-utils.h"
 #include "compat/string.h"
+#include "compat/pcre.h"
 
-#include <pcre.h>
+static gboolean
+_shall_set_values_indirectly(NVHandle value_handle)
+{
+  return value_handle != LM_V_NONE &&
+         !log_msg_is_handle_macro(value_handle) &&
+         !log_msg_is_handle_match(value_handle);
+}
 
 static void
 log_matcher_init(LogMatcher *self, const LogMatcherOptions *options)
@@ -52,32 +59,32 @@ log_matcher_posix_re_compile(LogMatcher *s, const gchar *re, GError **error)
   gint flags = REG_EXTENDED;
 
   g_return_val_if_fail(error == NULL || *error == NULL, FALSE);
-  
+
   if (re[0] == '(' && re[1] == '?')
     {
-       gint i;
-       
-       for (i = 2; re[i] && re[i] != ')'; i++)
-         {
-           if (re[i] == 'i')
-             {
-               /* deprecated */
-               msg_warning_once("WARNING: Your configuration file uses an obsoleted regexp option, please update your configuration",
-                                evt_tag_str("option", "(?i)"),
-                                evt_tag_str("change", "use ignore-case flag instead of (?i)"));
- 
-               flags |= REG_ICASE;
-             }
-         }
-       if (re[i])
-         {
-           re_comp = &re[i + 1];
-         }
-       else
-         {
-           g_set_error(error, LOG_MATCHER_ERROR, 0, "missing closing parentheses in regexp flags");
-           return FALSE;
-         }
+      gint i;
+
+      for (i = 2; re[i] && re[i] != ')'; i++)
+        {
+          if (re[i] == 'i')
+            {
+              /* deprecated */
+              msg_warning_once("WARNING: Your configuration file uses an obsoleted regexp option, please update your configuration",
+                               evt_tag_str("option", "(?i)"),
+                               evt_tag_str("change", "use ignore-case flag instead of (?i)"));
+
+              flags |= REG_ICASE;
+            }
+        }
+      if (re[i])
+        {
+          re_comp = &re[i + 1];
+        }
+      else
+        {
+          g_set_error(error, LOG_MATCHER_ERROR, 0, "missing closing parentheses in regexp flags");
+          return FALSE;
+        }
     }
 
   if (self->super.flags & LMF_ICASE)
@@ -91,7 +98,7 @@ log_matcher_posix_re_compile(LogMatcher *s, const gchar *re, GError **error)
   if (rc)
     {
       gchar buf[256];
-                      
+
       regerror(rc, &self->pattern, buf, sizeof(buf));
       g_set_error(error, LOG_MATCHER_ERROR, 0, "Error compiling regular expression: %s", buf);
       return FALSE;
@@ -100,13 +107,15 @@ log_matcher_posix_re_compile(LogMatcher *s, const gchar *re, GError **error)
 }
 
 static void
-log_matcher_posix_re_feed_backrefs(LogMatcher *s, LogMessage *msg, gint value_handle, regmatch_t *matches, const gchar *value)
+log_matcher_posix_re_feed_backrefs(LogMatcher *s, LogMessage *msg, gint value_handle, regmatch_t *matches,
+                                   const gchar *value)
 {
   gint i;
+  gboolean indirect = _shall_set_values_indirectly(value_handle);
 
   for (i = 0; i < RE_MAX_MATCHES && matches[i].rm_so != -1; i++)
     {
-      if (value_handle != LM_V_NONE && !log_msg_is_handle_macro(value_handle))
+      if (indirect)
         {
           log_msg_set_match_indirect(msg, i, value_handle, 0, matches[i].rm_so, matches[i].rm_eo - matches[i].rm_so);
         }
@@ -120,11 +129,11 @@ log_matcher_posix_re_feed_backrefs(LogMatcher *s, LogMessage *msg, gint value_ha
 static gboolean
 log_matcher_posix_re_match(LogMatcher *s, LogMessage *msg, gint value_handle, const gchar *value, gssize value_len)
 {
-  LogMatcherPosixRe *self = (LogMatcherPosixRe *) s; 
+  LogMatcherPosixRe *self = (LogMatcherPosixRe *) s;
   regmatch_t matches[RE_MAX_MATCHES];
   gboolean rc;
   const gchar *buf;
-  
+
   APPEND_ZERO(buf, value, value_len);
   rc = !regexec(&self->pattern, buf, RE_MAX_MATCHES, matches, 0);
   if (rc && (s->flags & LMF_STORE_MATCHES))
@@ -135,16 +144,17 @@ log_matcher_posix_re_match(LogMatcher *s, LogMessage *msg, gint value_handle, co
 }
 
 static gchar *
-log_matcher_posix_re_replace(LogMatcher *s, LogMessage *msg, gint value_handle, const gchar *value, gssize value_len, LogTemplate *replacement, gssize *new_length)
+log_matcher_posix_re_replace(LogMatcher *s, LogMessage *msg, gint value_handle, const gchar *value, gssize value_len,
+                             LogTemplate *replacement, gssize *new_length)
 {
-  LogMatcherPosixRe *self = (LogMatcherPosixRe *) s; 
+  LogMatcherPosixRe *self = (LogMatcherPosixRe *) s;
   regmatch_t matches[RE_MAX_MATCHES];
   gboolean rc;
   GString *new_value = NULL;
   gsize current_ofs = 0;
   gboolean first_round = TRUE;
   gchar *buf;
-  
+
   APPEND_ZERO(buf, value, value_len);
 
   do
@@ -210,7 +220,7 @@ log_matcher_posix_re_free(LogMatcher *s)
 }
 
 LogMatcher *
-log_matcher_posix_re_new(const LogMatcherOptions *options)
+log_matcher_posix_re_new(GlobalConfig *cfg, const LogMatcherOptions *options)
 {
   LogMatcherPosixRe *self = g_new0(LogMatcherPosixRe, 1);
 
@@ -220,9 +230,10 @@ log_matcher_posix_re_new(const LogMatcherOptions *options)
   self->super.replace = log_matcher_posix_re_replace;
   self->super.free_fn = log_matcher_posix_re_free;
 
-  if (configuration && cfg_is_config_version_older(configuration, 0x0300))
+  if (cfg_is_config_version_older(cfg, 0x0300))
     {
-      msg_warning_once("WARNING: filters do not store matches in macros by default from " VERSION_3_0 ", please update your configuration by using an explicit 'store-matches' flag to achieve that");
+      msg_warning_once("WARNING: filters do not store matches in macros by default from " VERSION_3_0
+                       ", please update your configuration by using an explicit 'store-matches' flag to achieve that");
       self->super.flags = LMF_STORE_MATCHES;
     }
   return &self->super;
@@ -238,10 +249,10 @@ typedef struct _LogMatcherString
 static gboolean
 log_matcher_string_compile(LogMatcher *s, const gchar *pattern, GError **error)
 {
-  LogMatcherString *self = (LogMatcherString *) s; 
+  LogMatcherString *self = (LogMatcherString *) s;
 
   g_return_val_if_fail(error == NULL || *error == NULL, FALSE);
-  
+
   self->pattern = g_strdup(pattern);
   self->pattern_len = strlen(self->pattern);
   return TRUE;
@@ -295,15 +306,16 @@ log_matcher_string_match_string(LogMatcherString *self, const gchar *value, gsiz
 static gboolean
 log_matcher_string_match(LogMatcher *s, LogMessage *msg, gint value_handle, const gchar *value, gssize value_len)
 {
-  LogMatcherString *self = (LogMatcherString *) s; 
-  
+  LogMatcherString *self = (LogMatcherString *) s;
+
   return log_matcher_string_match_string(self, value, value_len) != NULL;
 }
 
 static gchar *
-log_matcher_string_replace(LogMatcher *s, LogMessage *msg, gint value_handle, const gchar *value, gssize value_len, LogTemplate *replacement, gssize *new_length)
+log_matcher_string_replace(LogMatcher *s, LogMessage *msg, gint value_handle, const gchar *value, gssize value_len,
+                           LogTemplate *replacement, gssize *new_length)
 {
-  LogMatcherString *self = (LogMatcherString *) s; 
+  LogMatcherString *self = (LogMatcherString *) s;
   GString *new_value = NULL;
   gsize current_ofs = 0;
   gboolean first_round = TRUE;
@@ -378,7 +390,7 @@ log_matcher_string_free(LogMatcher *s)
 }
 
 LogMatcher *
-log_matcher_string_new(const LogMatcherOptions *options)
+log_matcher_string_new(GlobalConfig *cfg, const LogMatcherOptions *options)
 {
   LogMatcherString *self = g_new0(LogMatcherString, 1);
 
@@ -400,7 +412,7 @@ typedef struct _LogMatcherGlob
 static gboolean
 log_matcher_glob_compile(LogMatcher *s, const gchar *pattern, GError **error)
 {
-  LogMatcherGlob *self = (LogMatcherGlob *)s; 
+  LogMatcherGlob *self = (LogMatcherGlob *)s;
 
   g_return_val_if_fail(error == NULL || *error == NULL, FALSE);
 
@@ -415,15 +427,15 @@ static gboolean
 log_matcher_glob_match(LogMatcher *s, LogMessage *msg, gint value_handle, const gchar *value, gssize value_len)
 {
   LogMatcherGlob *self =  (LogMatcherGlob *) s;
-  
+
   if (G_LIKELY((msg->flags & LF_UTF8) || g_utf8_validate(value, value_len, NULL)))
     {
       static gboolean warned = FALSE;
       gchar *buf;
-      
+
       if (G_UNLIKELY(!warned && (msg->flags & LF_UTF8) == 0))
         {
-          msg_warning("Input is valid utf8, but the log message is not tagged as such, this performs worse than enabling validate-utf8 flag on input", 
+          msg_warning("Input is valid utf8, but the log message is not tagged as such, this performs worse than enabling validate-utf8 flag on input",
                       evt_tag_printf("value", "%.*s", (gint) value_len, value));
           warned = TRUE;
         }
@@ -432,7 +444,7 @@ log_matcher_glob_match(LogMatcher *s, LogMessage *msg, gint value_handle, const 
     }
   else
     {
-      msg_warning("Input is not valid utf8, glob match requires utf8 input, thus it never matches in this case", 
+      msg_warning("Input is not valid utf8, glob match requires utf8 input, thus it never matches in this case",
                   evt_tag_printf("value", "%.*s", (gint) value_len, value));
     }
   return FALSE;
@@ -441,12 +453,12 @@ log_matcher_glob_match(LogMatcher *s, LogMessage *msg, gint value_handle, const 
 static void
 log_matcher_glob_free(LogMatcher *s)
 {
-  LogMatcherGlob *self = (LogMatcherGlob*)s;
+  LogMatcherGlob *self = (LogMatcherGlob *)s;
   g_pattern_spec_free(self->pattern);
 }
 
 LogMatcher *
-log_matcher_glob_new(const LogMatcherOptions *options)
+log_matcher_glob_new(GlobalConfig *cfg, const LogMatcherOptions *options)
 {
   LogMatcherGlob *self = g_new0(LogMatcherGlob, 1);
 
@@ -478,54 +490,51 @@ log_matcher_pcre_re_compile(LogMatcher *s, const gchar *re, GError **error)
   const gchar *errptr;
   gint erroffset;
   gint flags = 0;
-  gint optflags = 0;
- 
+
   g_return_val_if_fail(error == NULL || *error == NULL, FALSE);
 
   if (self->super.flags & LMF_ICASE)
     flags |= PCRE_CASELESS;
-#ifdef PCRE_NEWLINE_ANYCRLF
+
   if (self->super.flags & LMF_NEWLINE)
-    flags |= PCRE_NEWLINE_ANYCRLF;
-#else
-  if (self->super.flags & LMF_NEWLINE)
-    msg_warning("syslog-ng was compiled against an old PCRE which doesn't support the 'newline' flag");
-#endif
+    {
+      if (!PCRE_NEWLINE_ANYCRLF)
+        msg_warning("syslog-ng was compiled against an old PCRE which doesn't support the 'newline' flag");
+      flags |= PCRE_NEWLINE_ANYCRLF;
+    }
   if (self->super.flags & LMF_UTF8)
     {
-       gint support;
-       flags |= PCRE_UTF8 | PCRE_NO_UTF8_CHECK;
-       self->match_options |= PCRE_NO_UTF8_CHECK;
- 
-       pcre_config(PCRE_CONFIG_UTF8, &support);
-       if (!support)
-         {
-           g_set_error(error, LOG_TEMPLATE_ERROR, 0, "PCRE library is compiled without UTF8 support and utf8 flag was present");
-           return FALSE;
-         }
+      gint support;
+      flags |= PCRE_UTF8 | PCRE_NO_UTF8_CHECK;
+      self->match_options |= PCRE_NO_UTF8_CHECK;
 
-       pcre_config(PCRE_CONFIG_UNICODE_PROPERTIES, &support);
-       if (!support)
-         {
-           g_set_error(error, LOG_TEMPLATE_ERROR, 0, "PCRE library is compiled without UTF8 properties support and utf8 flag was present");
-           return FALSE;
-         }
+      pcre_config(PCRE_CONFIG_UTF8, &support);
+      if (!support)
+        {
+          g_set_error(error, LOG_TEMPLATE_ERROR, 0, "PCRE library is compiled without UTF8 support and utf8 flag was present");
+          return FALSE;
+        }
+
+      pcre_config(PCRE_CONFIG_UNICODE_PROPERTIES, &support);
+      if (!support)
+        {
+          g_set_error(error, LOG_TEMPLATE_ERROR, 0,
+                      "PCRE library is compiled without UTF8 properties support and utf8 flag was present");
+          return FALSE;
+        }
     }
- 
-  /* complile the regexp */ 
+
+  /* complile the regexp */
   self->pattern = pcre_compile2(re_comp, flags, &rc, &errptr, &erroffset, NULL);
   if (!self->pattern)
     {
-      g_set_error(error, LOG_TEMPLATE_ERROR, 0, "Error while compiling PCRE expression, error=%s, error_at=%d", errptr, erroffset);
+      g_set_error(error, LOG_TEMPLATE_ERROR, 0, "Error while compiling PCRE expression, error=%s, error_at=%d", errptr,
+                  erroffset);
       return FALSE;
     }
 
-#ifdef PCRE_STUDY_JIT_COMPILE
-  optflags = PCRE_STUDY_JIT_COMPILE;
-#endif
-
   /* optimize regexp */
-  self->extra = pcre_study(self->pattern, optflags, &errptr);
+  self->extra = pcre_study(self->pattern, PCRE_STUDY_JIT_COMPILE, &errptr);
   if (errptr != NULL)
     {
       g_set_error(error, LOG_TEMPLATE_ERROR, 0, "Error while optimizing regular expression, error=%s", errptr);
@@ -536,13 +545,15 @@ log_matcher_pcre_re_compile(LogMatcher *s, const gchar *re, GError **error)
 }
 
 static void
-log_matcher_pcre_re_feed_backrefs(LogMatcher *s, LogMessage *msg, gint value_handle, int *matches, gint match_num, const gchar *value)
+log_matcher_pcre_re_feed_backrefs(LogMatcher *s, LogMessage *msg, gint value_handle, int *matches, gint match_num,
+                                  const gchar *value)
 {
   gint i;
+  gboolean indirect = _shall_set_values_indirectly(value_handle);
 
   for (i = 0; i < (RE_MAX_MATCHES) && i < match_num; i++)
     {
-      if (value_handle != LM_V_NONE && !log_msg_is_handle_macro(value_handle))
+      if (indirect)
         {
           log_msg_set_match_indirect(msg, i, value_handle, 0, matches[2 * i], matches[2 * i + 1] - matches[2 * i]);
         }
@@ -556,38 +567,38 @@ log_matcher_pcre_re_feed_backrefs(LogMatcher *s, LogMessage *msg, gint value_han
 static void
 log_matcher_pcre_re_feed_named_substrings(LogMatcher *s, LogMessage *msg, int *matches, const gchar *value)
 {
-   gchar *name_table = NULL;
-   gint i = 0;
-   gint namecount = 0;
-   gint name_entry_size = 0;
-   LogMatcherPcreRe *self = (LogMatcherPcreRe *) s;
+  gchar *name_table = NULL;
+  gint i = 0;
+  gint namecount = 0;
+  gint name_entry_size = 0;
+  LogMatcherPcreRe *self = (LogMatcherPcreRe *) s;
 
-   pcre_fullinfo(self->pattern, self->extra, PCRE_INFO_NAMECOUNT, &namecount);  
-   if (namecount > 0) 
-     { 
-       gchar *tabptr;
-       /* Before we can access the substrings, we must extract the table for
-          translating names to numbers, and the size of each entry in the table. 
-        */
-       pcre_fullinfo(self->pattern, self->extra, PCRE_INFO_NAMETABLE, &name_table);       
-       pcre_fullinfo(self->pattern, self->extra, PCRE_INFO_NAMEENTRYSIZE, &name_entry_size);
-       /* Now we can scan the table and, for each entry, print the number, the name,
-          and the substring itself. 
-        */
-       tabptr = name_table;
-       for (i = 0; i < namecount; i++)
-         {
-           int n = (tabptr[0] << 8) | tabptr[1];
-           log_msg_set_value_by_name(msg, tabptr + 2, value + matches[2*n], matches[2*n+1] - matches[2*n]);
-           tabptr += name_entry_size;
-         }
-     }  
+  pcre_fullinfo(self->pattern, self->extra, PCRE_INFO_NAMECOUNT, &namecount);
+  if (namecount > 0)
+    {
+      gchar *tabptr;
+      /* Before we can access the substrings, we must extract the table for
+         translating names to numbers, and the size of each entry in the table.
+       */
+      pcre_fullinfo(self->pattern, self->extra, PCRE_INFO_NAMETABLE, &name_table);
+      pcre_fullinfo(self->pattern, self->extra, PCRE_INFO_NAMEENTRYSIZE, &name_entry_size);
+      /* Now we can scan the table and, for each entry, print the number, the name,
+         and the substring itself.
+       */
+      tabptr = name_table;
+      for (i = 0; i < namecount; i++)
+        {
+          int n = (tabptr[0] << 8) | tabptr[1];
+          log_msg_set_value_by_name(msg, tabptr + 2, value + matches[2*n], matches[2*n+1] - matches[2*n]);
+          tabptr += name_entry_size;
+        }
+    }
 }
 
 static gboolean
 log_matcher_pcre_re_match(LogMatcher *s, LogMessage *msg, gint value_handle, const gchar *value, gssize value_len)
 {
-  LogMatcherPcreRe *self = (LogMatcherPcreRe *) s; 
+  LogMatcherPcreRe *self = (LogMatcherPcreRe *) s;
   gint *matches;
   gsize matches_size;
   gint num_matches;
@@ -637,9 +648,10 @@ log_matcher_pcre_re_match(LogMatcher *s, LogMessage *msg, gint value_handle, con
 }
 
 static gchar *
-log_matcher_pcre_re_replace(LogMatcher *s, LogMessage *msg, gint value_handle, const gchar *value, gssize value_len, LogTemplate *replacement, gssize *new_length)
+log_matcher_pcre_re_replace(LogMatcher *s, LogMessage *msg, gint value_handle, const gchar *value, gssize value_len,
+                            LogTemplate *replacement, gssize *new_length)
 {
-  LogMatcherPcreRe *self = (LogMatcherPcreRe *) s; 
+  LogMatcherPcreRe *self = (LogMatcherPcreRe *) s;
   GString *new_value = NULL;
   gint *matches;
   gsize matches_size;
@@ -743,7 +755,7 @@ log_matcher_pcre_re_replace(LogMatcher *s, LogMessage *msg, gint value_handle, c
           log_matcher_pcre_re_feed_named_substrings(s, msg, matches, value);
 
           if (!new_value)
-            new_value = g_string_sized_new(value_len); 
+            new_value = g_string_sized_new(value_len);
           /* append non-matching portion */
           g_string_append_len(new_value, &value[last_offset], matches[0] - last_offset);
           /* replacement */
@@ -756,7 +768,7 @@ log_matcher_pcre_re_replace(LogMatcher *s, LogMessage *msg, gint value_handle, c
   while (self->super.flags & LMF_GLOBAL && start_offset < value_len);
 
   if (new_value)
-    { 
+    {
       /* append the last literal */
       g_string_append_len(new_value, &value[last_offset], value_len - last_offset);
       if (new_length)
@@ -770,12 +782,12 @@ static void
 log_matcher_pcre_re_free(LogMatcher *s)
 {
   LogMatcherPcreRe *self = (LogMatcherPcreRe *) s;
-  pcre_free(self->extra);
+  pcre_free_study(self->extra);
   pcre_free(self->pattern);
 }
 
 LogMatcher *
-log_matcher_pcre_re_new(const LogMatcherOptions *options)
+log_matcher_pcre_re_new(GlobalConfig *cfg, const LogMatcherOptions *options)
 {
   LogMatcherPcreRe *self = g_new0(LogMatcherPcreRe, 1);
 
@@ -785,9 +797,10 @@ log_matcher_pcre_re_new(const LogMatcherOptions *options)
   self->super.replace = log_matcher_pcre_re_replace;
   self->super.free_fn = log_matcher_pcre_re_free;
 
-  if (configuration && cfg_is_config_version_older(configuration, 0x0300))
+  if (cfg_is_config_version_older(cfg, 0x0300))
     {
-      msg_warning_once("WARNING: filters do not store matches in macros by default from " VERSION_3_0 ", please update your configuration by using an explicit 'store-matches' flag to achieve that");
+      msg_warning_once("WARNING: filters do not store matches in macros by default from " VERSION_3_0
+                       ", please update your configuration by using an explicit 'store-matches' flag to achieve that");
       self->super.flags = LMF_STORE_MATCHES;
     }
 
@@ -795,9 +808,10 @@ log_matcher_pcre_re_new(const LogMatcherOptions *options)
   return &self->super;
 }
 
-typedef LogMatcher *(*LogMatcherConstructFunc)(const LogMatcherOptions *options);
+typedef LogMatcher *(*LogMatcherConstructFunc)(GlobalConfig *cfg, const LogMatcherOptions *options);
 
-struct {
+struct
+{
   const gchar *name;
   LogMatcherConstructFunc construct;
 } matcher_types[] =
@@ -823,12 +837,12 @@ log_matcher_lookup_construct(const gchar *type)
 }
 
 LogMatcher *
-log_matcher_new(const LogMatcherOptions *options)
+log_matcher_new(GlobalConfig *cfg, const LogMatcherOptions *options)
 {
   LogMatcherConstructFunc construct;
 
   construct = log_matcher_lookup_construct(options->type);
-  return construct(options);
+  return construct(cfg, options);
 }
 
 LogMatcher *
@@ -903,7 +917,8 @@ log_matcher_options_init(LogMatcherOptions *options, GlobalConfig *cfg)
 
       if (cfg_is_config_version_older(cfg, 0x0306))
         {
-          msg_warning_once("WARNING: syslog-ng changed the default regexp implementation to PCRE starting from " VERSION_3_6 ", please ensure your regexp works with PCRE or please specify type(\"posix\") in filters explicitly");
+          msg_warning_once("WARNING: syslog-ng changed the default regexp implementation to PCRE starting from " VERSION_3_6
+                           ", please ensure your regexp works with PCRE or please specify type(\"posix\") in filters explicitly");
           default_matcher = "posix";
         }
       if (!log_matcher_options_set_type(options, default_matcher))

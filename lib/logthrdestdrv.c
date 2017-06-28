@@ -22,6 +22,7 @@
  *
  */
 
+#include "stats/stats-views.h"
 #include "logthrdestdrv.h"
 #include "seqnum.h"
 
@@ -66,13 +67,13 @@ log_threaded_dest_driver_wake_up(gpointer data)
 }
 
 static void
-log_threaded_dest_driver_start_watches(LogThrDestDriver* self)
+log_threaded_dest_driver_start_watches(LogThrDestDriver *self)
 {
   iv_task_register(&self->do_work);
 }
 
 static void
-log_threaded_dest_driver_stop_watches(LogThrDestDriver* self)
+log_threaded_dest_driver_stop_watches(LogThrDestDriver *self)
 {
   if (iv_task_registered(&self->do_work))
     {
@@ -156,6 +157,9 @@ log_threaded_dest_driver_do_insert(LogThrDestDriver *self)
       switch (result)
         {
         case WORKER_INSERT_RESULT_DROP:
+          msg_error("Message dropped while sending message to destinaton",
+                    evt_tag_str("driver", self->super.super.id));
+
           log_threaded_dest_driver_message_drop(self, msg);
           _disconnect_and_suspend(self);
           break;
@@ -167,6 +171,11 @@ log_threaded_dest_driver_do_insert(LogThrDestDriver *self)
             {
               if (self->messages.retry_over)
                 self->messages.retry_over(self, msg);
+
+              msg_error("Multiple failures while sending message to destination, message dropped",
+                        evt_tag_str("driver", self->super.super.id),
+                        evt_tag_int("number_of_retries", self->retries.max));
+
               log_threaded_dest_driver_message_drop(self, msg);
             }
           else
@@ -220,8 +229,8 @@ log_threaded_dest_driver_do_work(gpointer data)
     }
 
   else if (log_queue_check_items(self->queue, &timeout_msec,
-                                        log_threaded_dest_driver_message_became_available_in_the_queue,
-                                        self, NULL))
+                                 log_threaded_dest_driver_message_became_available_in_the_queue,
+                                 self, NULL))
     {
       log_threaded_dest_driver_do_insert(self);
       if (!self->suspended)
@@ -238,7 +247,7 @@ log_threaded_dest_driver_do_work(gpointer data)
 }
 
 static void
-log_threaded_dest_driver_init_watches(LogThrDestDriver* self)
+log_threaded_dest_driver_init_watches(LogThrDestDriver *self)
 {
   IV_EVENT_INIT(&self->wake_up_event);
   self->wake_up_event.cookie = self;
@@ -309,6 +318,14 @@ log_threaded_dest_driver_start_thread(LogThrDestDriver *self)
                                  self, &self->worker_options);
 }
 
+static void
+_update_processed_message_counter_when_diskq_is_used(LogThrDestDriver *self)
+{
+  if (!g_strcmp0(self->queue->type, "DISK"))
+    {
+      stats_counter_add(self->processed_messages, stats_counter_get(self->queued_messages));
+    }
+}
 
 gboolean
 log_threaded_dest_driver_start(LogPipe *s)
@@ -320,38 +337,32 @@ log_threaded_dest_driver_start(LogPipe *s)
     self->time_reopen = cfg->time_reopen;
 
   self->queue = log_dest_driver_acquire_queue(
-      &self->super, self->super.super.super.generate_persist_name((const LogPipe *)self));
+                  &self->super, self->super.super.super.generate_persist_name((const LogPipe *)self));
 
   if (self->queue == NULL)
     {
       return FALSE;
     }
 
-  if (self->retries.max <= 0)
-    {
-      msg_warning("Wrong value for retries(), setting to default",
-                  evt_tag_int("value", self->retries.max),
-                  evt_tag_int("default", MAX_RETRIES_OF_FAILED_INSERT_DEFAULT),
-                  evt_tag_str("driver", self->super.super.id));
-      self->retries.max = MAX_RETRIES_OF_FAILED_INSERT_DEFAULT;
-    }
-
   stats_lock();
-  stats_register_counter(0, self->stats_source | SCS_DESTINATION, self->super.super.id,
-                         self->format.stats_instance(self),
-                         SC_TYPE_STORED, &self->stored_messages);
-  stats_register_counter(0, self->stats_source | SCS_DESTINATION, self->super.super.id,
-                         self->format.stats_instance(self),
-                         SC_TYPE_DROPPED, &self->dropped_messages);
-  stats_register_counter(0, self->stats_source | SCS_DESTINATION, self->super.super.id,
-                         self->format.stats_instance(self),
-                         SC_TYPE_PROCESSED, &self->processed_messages);
+  StatsClusterKey sc_key;
+  StatsCluster *cluster;
+  stats_cluster_logpipe_key_set(&sc_key,self->stats_source | SCS_DESTINATION,
+                                self->super.super.id,
+                                self->format.stats_instance(self));
+  cluster = stats_register_counter(0, &sc_key, SC_TYPE_QUEUED, &self->queued_messages);
+  stats_register_counter(0, &sc_key, SC_TYPE_DROPPED, &self->dropped_messages);
+  stats_register_counter(0, &sc_key, SC_TYPE_PROCESSED, &self->processed_messages);
+  stats_register_counter(1, &sc_key, SC_TYPE_MEMORY_USAGE, &self->memory_usage);
+  stats_register_written_view(cluster, self->processed_messages, self->dropped_messages, self->queued_messages);
   stats_unlock();
 
-  log_queue_set_counters(self->queue, self->stored_messages,
-                         self->dropped_messages);
+  log_queue_set_counters(self->queue, self->queued_messages,
+                         self->dropped_messages, self->memory_usage);
+  _update_processed_message_counter_when_diskq_is_used(self);
 
-  self->seq_num = GPOINTER_TO_INT(cfg_persist_config_fetch(cfg, log_threaded_dest_driver_format_seqnum_for_persist(self)));
+  self->seq_num = GPOINTER_TO_INT(cfg_persist_config_fetch(cfg,
+                                                           log_threaded_dest_driver_format_seqnum_for_persist(self)));
   if (!self->seq_num)
     init_sequence_number(&self->seq_num);
 
@@ -367,22 +378,21 @@ log_threaded_dest_driver_deinit_method(LogPipe *s)
 
   log_queue_reset_parallel_push(self->queue);
 
-  log_queue_set_counters(self->queue, NULL, NULL);
+  log_queue_set_counters(self->queue, NULL, NULL, NULL);
 
   cfg_persist_config_add(log_pipe_get_config(s),
                          log_threaded_dest_driver_format_seqnum_for_persist(self),
                          GINT_TO_POINTER(self->seq_num), NULL, FALSE);
 
   stats_lock();
-  stats_unregister_counter(self->stats_source | SCS_DESTINATION, self->super.super.id,
-                           self->format.stats_instance(self),
-                           SC_TYPE_STORED, &self->stored_messages);
-  stats_unregister_counter(self->stats_source | SCS_DESTINATION, self->super.super.id,
-                           self->format.stats_instance(self),
-                           SC_TYPE_DROPPED, &self->dropped_messages);
-  stats_unregister_counter(self->stats_source | SCS_DESTINATION, self->super.super.id,
-                           self->format.stats_instance(self),
-                           SC_TYPE_PROCESSED, &self->processed_messages);
+  StatsClusterKey sc_key;
+  stats_cluster_logpipe_key_set(&sc_key, self->stats_source | SCS_DESTINATION,
+                                self->super.super.id,
+                                self->format.stats_instance(self));
+  stats_unregister_counter(&sc_key, SC_TYPE_QUEUED, &self->queued_messages);
+  stats_unregister_counter(&sc_key, SC_TYPE_DROPPED, &self->dropped_messages);
+  stats_unregister_counter(&sc_key, SC_TYPE_PROCESSED, &self->processed_messages);
+  stats_unregister_counter(&sc_key, SC_TYPE_MEMORY_USAGE, &self->memory_usage);
   stats_unlock();
 
   if (!log_dest_driver_deinit_method(s))

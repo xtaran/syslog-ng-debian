@@ -73,7 +73,8 @@ log_queue_reset_parallel_push(LogQueue *self)
 }
 
 void
-log_queue_set_parallel_push(LogQueue *self, LogQueuePushNotifyFunc parallel_push_notify, gpointer user_data, GDestroyNotify user_data_destroy)
+log_queue_set_parallel_push(LogQueue *self, LogQueuePushNotifyFunc parallel_push_notify, gpointer user_data,
+                            GDestroyNotify user_data_destroy)
 {
   g_static_mutex_lock(&self->lock);
   self->parallel_push_notify = parallel_push_notify;
@@ -89,7 +90,8 @@ log_queue_set_parallel_push(LogQueue *self, LogQueuePushNotifyFunc parallel_push
  * @timeout: the number of milliseconds that the consumer needs to wait before we can possibly proceed
  */
 gboolean
-log_queue_check_items(LogQueue *self, gint *timeout, LogQueuePushNotifyFunc parallel_push_notify, gpointer user_data, GDestroyNotify user_data_destroy)
+log_queue_check_items(LogQueue *self, gint *timeout, LogQueuePushNotifyFunc parallel_push_notify, gpointer user_data,
+                      GDestroyNotify user_data_destroy)
 {
   gint64 num_elements;
 
@@ -167,17 +169,20 @@ log_queue_check_items(LogQueue *self, gint *timeout, LogQueuePushNotifyFunc para
 }
 
 void
-log_queue_set_counters(LogQueue *self, StatsCounterItem *stored_messages, StatsCounterItem *dropped_messages)
+log_queue_set_counters(LogQueue *self, StatsCounterItem *queued_messages, StatsCounterItem *dropped_messages,
+                       StatsCounterItem *memory_usage)
 {
-  self->stored_messages = stored_messages;
+  self->queued_messages = queued_messages;
   self->dropped_messages = dropped_messages;
-  stats_counter_set(self->stored_messages, log_queue_get_length(self));
+  self->memory_usage = memory_usage;
+  stats_counter_set(self->memory_usage, self->memory_usage_initial_value);
+  stats_counter_set(self->queued_messages, log_queue_get_length(self));
 }
 
 void
 log_queue_init_instance(LogQueue *self, const gchar *persist_name)
 {
-  self->ref_cnt = 1;
+  g_atomic_counter_set(&self->ref_cnt, 1);
   self->free_fn = log_queue_free_method;
 
   self->persist_name = persist_name ? g_strdup(persist_name) : NULL;

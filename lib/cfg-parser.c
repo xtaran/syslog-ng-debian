@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2013 Balabit
+ * Copyright (c) 2002-2017 Balabit
  * Copyright (c) 1998-2012 Balázs Scheidler
  *
  * This library is free software; you can redistribute it and/or
@@ -46,7 +46,8 @@ int main_parse(CfgLexer *lexer, gpointer *dummy, gpointer arg);
  * listed here) should be declared only once and only in cfg-grammar.y
  * and NOT in external modules.
  */
-static CfgLexerKeyword main_keywords[] = {
+static CfgLexerKeyword main_keywords[] =
+{
   /* statements */
   { "source",             KW_SOURCE },
   { "filter",             KW_FILTER },
@@ -111,14 +112,14 @@ static CfgLexerKeyword main_keywords[] = {
   { "use_dns",            KW_USE_DNS },
   { "time_reopen",        KW_TIME_REOPEN },
   { "time_reap",          KW_TIME_REAP },
-  { "time_sleep",         KW_TIME_SLEEP, KWS_OBSOLETE, "time_sleep() has been deprecated since " VERSION_3_3 },
+  { "time_sleep",         KW_TIME_SLEEP, KWS_OBSOLETE, "time_sleep() has been deprecated" },
   { "file_template",      KW_FILE_TEMPLATE },
   { "proto_template",     KW_PROTO_TEMPLATE },
   { "default_level",      KW_DEFAULT_LEVEL },
   { "default_priority",   KW_DEFAULT_LEVEL },
   { "default_facility",   KW_DEFAULT_FACILITY },
   { "threaded",           KW_THREADED },
-  { "use_rcptid",         KW_USE_RCPTID, KWS_OBSOLETE, "This has been deprecated since " VERSION_3_7  ", try use_uniqid() instead" },
+  { "use_rcptid",         KW_USE_RCPTID, KWS_OBSOLETE, "This has been deprecated, try use_uniqid() instead" },
   { "use_uniqid",         KW_USE_UNIQID },
 
   { "log_fifo_size",      KW_LOG_FIFO_SIZE },
@@ -150,7 +151,7 @@ static CfgLexerKeyword main_keywords[] = {
   { "dns_cache_expire",   KW_DNS_CACHE_EXPIRE },
   { "dns_cache_expire_failed", KW_DNS_CACHE_EXPIRE_FAILED },
   { "pass_unix_credentials",   KW_PASS_UNIX_CREDENTIALS },
-  { "persist_name",            KW_PERSIST_NAME, 0x0308 },
+  { "persist_name",            KW_PERSIST_NAME, VERSION_VALUE_3_8 },
 
   { "retries",            KW_RETRIES },
 
@@ -261,7 +262,8 @@ report_syntax_error(CfgLexer *lexer, YYLTYPE *yylloc, const char *what, const ch
   from = level - 1;
   while (from >= lexer->include_stack)
     {
-      fprintf(stderr, "%*sincluded from %s line %d, column %d\n", MAX(file_pos - 14, 0), "", from->name, from->lloc.first_line, from->lloc.first_column);
+      fprintf(stderr, "%*sincluded from %s line %d, column %d\n", MAX(file_pos - 14, 0), "", from->name,
+              from->lloc.first_line, from->lloc.first_column);
       from--;
     }
 
@@ -274,8 +276,8 @@ report_syntax_error(CfgLexer *lexer, YYLTYPE *yylloc, const char *what, const ch
       _report_buffer_location(level->buffer.content, yylloc);
     }
 
-  fprintf(stderr, "\nsyslog-ng documentation: http://www.balabit.com/support/documentation/?product=syslog-ng\n"
-                  "mailing list: https://lists.balabit.hu/mailman/listinfo/syslog-ng\n");
+  fprintf(stderr, "\nsyslog-ng documentation: https://www.balabit.com/support/documentation?product=syslog-ng-ose\n"
+          "mailing list: https://lists.balabit.hu/mailman/listinfo/syslog-ng\n");
 
 }
 

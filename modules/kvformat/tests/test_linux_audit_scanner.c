@@ -18,14 +18,16 @@
  * OpenSSL libraries as published by the OpenSSL project. See the file
  * COPYING for details.
  */
-#include "linux-audit-scanner.h"
+#include "scanner/kv-scanner/kv-scanner.h"
+#include "linux-audit-parser.h"
 #include "testutils.h"
 
 #define kv_scanner_testcase_begin(func, args)             \
   do                                                            \
     {                                                           \
       testcase_begin("%s(%s)", func, args);                     \
-      kv_scanner = linux_audit_scanner_new();                   \
+      kv_scanner = kv_scanner_new('=', 0, FALSE);      \
+      kv_scanner_set_transform_value(kv_scanner, parse_linux_audit_style_hexdump); \
     }                                                           \
   while (0)
 
@@ -39,7 +41,7 @@
 
 #define KV_SCANNER_TESTCASE(x, ...) \
   do {                                                          \
-      kv_scanner_testcase_begin(#x, #__VA_ARGS__);  		\
+      kv_scanner_testcase_begin(#x, #__VA_ARGS__);      \
       x(__VA_ARGS__);                                           \
       kv_scanner_testcase_end();                                \
   } while(0)

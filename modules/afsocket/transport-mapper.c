@@ -68,6 +68,9 @@ transport_mapper_open_socket(TransportMapper *self,
   g_fd_set_nonblock(sock, TRUE);
   g_fd_set_cloexec(sock, TRUE);
 
+  if (!socket_options_setup_socket(socket_options, sock, bind_addr, dir))
+    goto error_close;
+
   if (!transport_mapper_privileged_bind(sock, bind_addr))
     {
       gchar buf[256];
@@ -78,15 +81,12 @@ transport_mapper_open_socket(TransportMapper *self,
       goto error_close;
     }
 
-  if (!socket_options_setup_socket(socket_options, sock, bind_addr, dir))
-    goto error_close;
-
   *fd = sock;
   return TRUE;
 
- error_close:
+error_close:
   close(sock);
- error:
+error:
   *fd = -1;
   return FALSE;
 }

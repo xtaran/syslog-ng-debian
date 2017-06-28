@@ -21,7 +21,7 @@
  * COPYING for details.
  *
  */
-  
+
 #include "syslog-ng.h"
 #include "cfg.h"
 #include "messages.h"
@@ -64,11 +64,13 @@ static gboolean display_version = FALSE;
 static gboolean display_module_registry = FALSE;
 static gboolean dummy = FALSE;
 
+static MainLoopOptions main_loop_options;
+
 #ifdef YYDEBUG
 extern int cfg_parser_debug;
 #endif
 
-static GOptionEntry syslogng_options[] = 
+static GOptionEntry syslogng_options[] =
 {
   { "version",           'V',         0, G_OPTION_ARG_NONE, &display_version, "Display version number (" SYSLOG_NG_PACKAGE_NAME " " SYSLOG_NG_VERSION ")", NULL },
   { "module-path",         0,         0, G_OPTION_ARG_STRING, &resolvedConfigurablePaths.initial_module_path, "Set the list of colon separated directories to search for modules, default=" SYSLOG_NG_MODULE_PATH, "<path>" },
@@ -77,6 +79,12 @@ static GOptionEntry syslogng_options[] =
 #ifdef YYDEBUG
   { "yydebug",           'y',         0, G_OPTION_ARG_NONE, &cfg_parser_debug, "Enable configuration parser debugging", NULL },
 #endif
+  { "cfgfile",           'f',         0, G_OPTION_ARG_STRING, &resolvedConfigurablePaths.cfgfilename, "Set config file name, default=" PATH_SYSLOG_NG_CONF, "<config>" },
+  { "persist-file",      'R',         0, G_OPTION_ARG_STRING, &resolvedConfigurablePaths.persist_file, "Set the name of the persistent configuration file, default=" PATH_PERSIST_CONFIG, "<fname>" },
+  { "preprocess-into",     0,         0, G_OPTION_ARG_STRING, &main_loop_options.preprocess_into, "Write the preprocessed configuration file to the file specified and quit", "output" },
+  { "syntax-only",       's',         0, G_OPTION_ARG_NONE, &main_loop_options.syntax_only, "Only read and parse config file", NULL},
+  { "control",           'c',         0, G_OPTION_ARG_STRING, &resolvedConfigurablePaths.ctlfilename, "Set syslog-ng control socket, default=" PATH_CONTROL_SOCKET, "<ctlpath>" },
+  { "interactive",       'i',         0, G_OPTION_ARG_NONE, &main_loop_options.interactive_mode, "Enable interactive mode" },
   { NULL },
 };
 
@@ -185,12 +193,14 @@ setup_caps (void)
 
 #endif
 
-int 
+int
 main(int argc, char *argv[])
 {
   gint rc;
   GOptionContext *ctx;
   GError *error = NULL;
+
+  MainLoop *main_loop = main_loop_get_instance();
 
   z_mem_trace_init("syslog-ng.trace");
 
@@ -246,20 +256,22 @@ main(int argc, char *argv[])
       log_stderr = TRUE;
     }
 
-  if (syntax_only || debug_flag)
+  gboolean exit_before_main_loop_run = main_loop_options.syntax_only || main_loop_options.preprocess_into;
+  if (debug_flag || exit_before_main_loop_run)
     {
       g_process_set_mode(G_PM_FOREGROUND);
     }
   g_process_set_name("syslog-ng");
-  
+
   /* in this case we switch users early while retaining a limited set of
    * credentials in order to initialize/reinitialize the configuration.
    */
   g_process_start();
   app_startup();
-  main_loop_init();
-  rc = main_loop_read_and_init_config();
-  
+  main_loop_init(main_loop, &main_loop_options);
+  rc = main_loop_read_and_init_config(main_loop);
+  app_finish_app_startup_after_cfg_init();
+
   if (rc)
     {
       g_process_startup_failed(rc, TRUE);
@@ -267,7 +279,7 @@ main(int argc, char *argv[])
     }
   else
     {
-      if (syntax_only)
+      if (exit_before_main_loop_run)
         g_process_startup_failed(0, TRUE);
       else
         g_process_startup_ok();
@@ -285,9 +297,9 @@ main(int argc, char *argv[])
     }
 
   /* from now on internal messages are written to the system log as well */
-  
-  main_loop_run();
-  main_loop_deinit();
+
+  main_loop_run(main_loop);
+  main_loop_deinit(main_loop);
 
   app_shutdown();
   z_mem_trace_dump();

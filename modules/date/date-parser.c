@@ -111,9 +111,9 @@ static void
 _adjust_tvsec_to_move_it_into_given_timezone(LogStamp *timestamp, gint normalized_hour, gint unnormalized_hour)
 {
   timestamp->tv_sec = timestamp->tv_sec
-    + get_local_timezone_ofs(timestamp->tv_sec)
-    - (normalized_hour - unnormalized_hour) * 3600
-    - timestamp->zone_offset;
+                      + get_local_timezone_ofs(timestamp->tv_sec)
+                      - (normalized_hour - unnormalized_hour) * 3600
+                      - timestamp->zone_offset;
 }
 
 static glong
@@ -145,6 +145,9 @@ _convert_struct_tm_to_logstamp(DateParser *self, time_t now, struct tm *tm, glon
   /* FIRST: We convert the timestamp as it was in our local time zone. */
   unnormalized_hour = tm->tm_hour;
   target->tv_sec = cached_mktime(tm);
+
+  /* we can't parse USEC value, as strptime() does not support that */
+  target->tv_usec = 0;
 
   /* SECOND: adjust tv_sec as if we converted it according to our timezone. */
   _adjust_tvsec_to_move_it_into_given_timezone(target, tm->tm_hour, unnormalized_hour);

@@ -79,9 +79,9 @@ afsmtp_wash_string (gchar *str)
   gint i;
 
   for (i = 0; i < strlen (str); i++)
-    if (str[i] == '\n' ||
-        str[i] == '\r')
-      str[i] = ' ';
+         if (str[i] == '\n' ||
+             str[i] == '\r')
+           str[i] = ' ';
 
   return str;
 }
@@ -231,7 +231,7 @@ afsmtp_dd_format_persist_name(const LogPipe *s)
  */
 
 static void
-_smtp_message_add_recipient_header(smtp_message_t self, AFSMTPRecipient *rcpt, AFSMTPDriver *driver) 
+_smtp_message_add_recipient_header(smtp_message_t self, AFSMTPRecipient *rcpt, AFSMTPDriver *driver)
 {
   gchar *hdr;
   switch (rcpt->type)
@@ -254,7 +254,8 @@ _smtp_message_add_recipient_header(smtp_message_t self, AFSMTPRecipient *rcpt, A
 }
 
 static void
-_smtp_message_add_recipient_from_template(smtp_message_t self, AFSMTPDriver *driver, LogTemplate *template, LogMessage *msg)
+_smtp_message_add_recipient_from_template(smtp_message_t self, AFSMTPDriver *driver, LogTemplate *template,
+                                          LogMessage *msg)
 {
   log_template_format(template, msg, &driver->template_options, LTZ_SEND,
                       driver->super.seq_num, NULL, driver->str);
@@ -270,7 +271,7 @@ afsmtp_dd_msg_add_recipient(AFSMTPRecipient *rcpt, gpointer user_data)
 
   _smtp_message_add_recipient_from_template(message, self, rcpt->template, msg);
   _smtp_message_add_recipient_header(message, rcpt, self);
- }
+}
 
 static void
 afsmtp_dd_msg_add_header(AFSMTPHeader *hdr, gpointer user_data)
@@ -298,18 +299,18 @@ afsmtp_dd_log_rcpt_status(smtp_recipient_t rcpt, const char *mailbox,
     {
       status_data->success = FALSE;
       msg_error("SMTP recipient result",
-            evt_tag_str("driver", status_data->driver->super.super.super.id),
-            evt_tag_str("recipient", mailbox),
-            evt_tag_int("code", status->code),
-            evt_tag_str("text", status->text));
+                evt_tag_str("driver", status_data->driver->super.super.super.id),
+                evt_tag_str("recipient", mailbox),
+                evt_tag_int("code", status->code),
+                evt_tag_str("text", status->text));
     }
   else
     {
       msg_debug("SMTP recipient result",
-            evt_tag_str("driver", status_data->driver->super.super.super.id),
-            evt_tag_str("recipient", mailbox),
-            evt_tag_int("code", status->code),
-            evt_tag_str("text", status->text));
+                evt_tag_str("driver", status_data->driver->super.super.super.id),
+                evt_tag_str("recipient", mailbox),
+                evt_tag_int("code", status->code),
+                evt_tag_str("text", status->text));
     }
 }
 
@@ -481,16 +482,6 @@ __send_message(AFSMTPDriver *self, smtp_session_t session)
   return success;
 }
 
-static void
-__worker_message_retry_over(LogThrDestDriver *self, LogMessage *msg)
-{
-  msg_error("Multiple failures while sending message in email to the server, "
-            "message dropped",
-            evt_tag_str("driver", self->super.super.id),
-            evt_tag_int("attempts", self->retries.counter),
-            evt_tag_int("max-attempts", self->retries.max));
-}
-
 static worker_insert_result_t
 afsmtp_worker_insert(LogThrDestDriver *s, LogMessage *msg)
 {
@@ -558,8 +549,8 @@ __check_rcpt_tos(AFSMTPDriver *self)
     {
       AFSMTPRecipient *rcpt = (AFSMTPRecipient *)l->data;
       gboolean rcpt_type_accepted = rcpt->type == AFSMTP_RCPT_TYPE_BCC ||
-                                    rcpt->type == AFSMTP_RCPT_TYPE_CC  ||
-                                    rcpt->type == AFSMTP_RCPT_TYPE_TO;
+      rcpt->type == AFSMTP_RCPT_TYPE_CC  ||
+      rcpt->type == AFSMTP_RCPT_TYPE_TO;
 
       if (rcpt->template && rcpt_type_accepted)
         {
@@ -683,8 +674,6 @@ afsmtp_dd_new(GlobalConfig *cfg)
 
   self->super.format.stats_instance = afsmtp_dd_format_stats_instance;
   self->super.stats_source = SCS_SMTP;
-
-  self->super.messages.retry_over = __worker_message_retry_over;
 
   afsmtp_dd_set_host((LogDriver *)self, "127.0.0.1");
   afsmtp_dd_set_port((LogDriver *)self, 25);

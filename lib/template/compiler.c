@@ -65,7 +65,8 @@ log_template_add_value_elem(LogTemplateCompiler *self, gchar *value_name, gsize 
 }
 
 static gboolean
-log_template_prepare_function_call(LogTemplateCompiler *self, Plugin *p, LogTemplateElem *e, gint argc, gchar *argv[], GError **error)
+log_template_prepare_function_call(LogTemplateCompiler *self, Plugin *p, LogTemplateElem *e, gint argc, gchar *argv[],
+                                   GError **error)
 {
   gchar *argv_copy[argc + 1];
 
@@ -92,7 +93,8 @@ log_template_prepare_function_call(LogTemplateCompiler *self, Plugin *p, LogTemp
 }
 
 static gboolean
-log_template_lookup_and_setup_function_call(LogTemplateCompiler *self, LogTemplateElem *e, gint argc, gchar *argv[], GError **error)
+log_template_lookup_and_setup_function_call(LogTemplateCompiler *self, LogTemplateElem *e, gint argc, gchar *argv[],
+                                            GError **error)
 {
   Plugin *p;
 
@@ -110,7 +112,7 @@ log_template_lookup_and_setup_function_call(LogTemplateCompiler *self, LogTempla
     goto error;
 
   return TRUE;
- error:
+error:
   return FALSE;
 }
 
@@ -136,7 +138,7 @@ log_template_add_func_elem(LogTemplateCompiler *self, gint argc, gchar *argv[], 
     goto error;
   return TRUE;
 
- error:
+error:
   if (e->text)
     g_free(e->text);
   g_free(e);
@@ -224,8 +226,8 @@ is_macro_name(gchar c)
 
 #define STEP_BY_TRUE(p, x) while(x) p++;
 
-static void
-log_template_compiler_add_elem(LogTemplateCompiler *self, gchar *start, gint macro_len, gchar *default_value)
+                                  static void
+                                  log_template_compiler_add_elem(LogTemplateCompiler *self, gchar *start, gint macro_len, gchar *default_value)
 {
   gint macro = log_macro_lookup(start, macro_len);
   if (macro == M_NONE)
@@ -300,6 +302,7 @@ static gboolean
 log_template_compiler_process_arg_list(LogTemplateCompiler *self, GPtrArray *result)
 {
   GString *arg_buf = g_string_sized_new(32);
+  gboolean arg_buf_has_a_value = FALSE;
   gint parens = 1;
   self->cursor++;
 
@@ -332,19 +335,22 @@ log_template_compiler_process_arg_list(LogTemplateCompiler *self, GPtrArray *res
               g_string_free(arg_buf, TRUE);
               return FALSE;
             }
+          arg_buf_has_a_value = TRUE;
           continue;
         }
       else if (parens == 1 && (*self->cursor == ' ' || *self->cursor == '\t'))
         {
           g_ptr_array_add(result, g_strndup(arg_buf->str, arg_buf->len));
           g_string_truncate(arg_buf, 0);
+          arg_buf_has_a_value = FALSE;
           while (*self->cursor && (*self->cursor == ' ' || *self->cursor == '\t'))
             self->cursor++;
           continue;
         }
       log_template_compiler_append_and_increment(self, arg_buf);
+      arg_buf_has_a_value = TRUE;
     }
-  if (arg_buf->len > 0)
+  if (arg_buf_has_a_value)
     {
       g_ptr_array_add(result, g_strndup(arg_buf->str, arg_buf->len));
     }
@@ -360,7 +366,9 @@ log_template_compiler_process_template_function(LogTemplateCompiler *self, GErro
 
   if (!log_template_compiler_process_arg_list(self, strv))
     {
-      log_template_compiler_fill_compile_error(error, "Invalid template function reference, missing function name or inbalanced '('", self->cursor - self->template->template);
+      log_template_compiler_fill_compile_error(error,
+                                               "Invalid template function reference, missing function name or inbalanced '('",
+                                               self->cursor - self->template->template);
       goto error;
     }
   self->cursor++;
@@ -494,7 +502,7 @@ log_template_compiler_compile(LogTemplateCompiler *self, GList **compiled_templa
       log_template_add_macro_elem(self, M_NONE, NULL);
     }
   result = TRUE;
- error:
+error:
   *compiled_template = g_list_reverse(self->result);
   self->result = NULL;
   return result;

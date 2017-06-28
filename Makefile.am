@@ -22,6 +22,7 @@
 #############################################################################
 
 SUBDIRS			=
+DIST_SUBDIRS		=
 AM_MAKEFLAGS		= --no-print-directory
 AM_YFLAGS		= -Wno-yacc -Wno-other
 
@@ -32,6 +33,7 @@ ACLOCAL_AMFLAGS		= -I m4 --install
 EXTRA_DIST		= ${BUILT_SOURCES} VERSION NEWS.md autogen.sh \
 			  syslog-ng.spec syslog-ng.spec.in \
 			  dist.conf dist.conf.in syslog-ng.pc.in \
+			  syslog-ng-add-contextual-data.pc.in \
 			  CONTRIBUTING.md
 
 pkgconfigdir		= $(libdir)/pkgconfig
@@ -42,8 +44,9 @@ AM_CPPFLAGS		= -I$(top_srcdir)/lib -I$(top_srcdir)/modules -I$(top_builddir)/lib
 AM_CFLAGS =
 if ENABLE_EXTRA_WARNINGS
 AM_CFLAGS += \
-	-Wshadow
-
+	-Wshadow	\
+	-Wno-initializer-overrides \
+	-Wno-error=deprecated-declarations
 endif
 
 TEST_CFLAGS		= -I$(top_srcdir)/libtest $(AM_CFLAGS)
@@ -51,6 +54,11 @@ TEST_CFLAGS		= -I$(top_srcdir)/libtest $(AM_CFLAGS)
 TEST_LDADD		= $(top_builddir)/libtest/libsyslog-ng-test.a \
 			  $(top_builddir)/lib/libsyslog-ng.la \
 			  $(TOOL_DEPS_LIBS)
+
+if ENABLE_CRITERION
+TEST_CFLAGS		+= $(CRITERION_CFLAGS)
+TEST_LDADD		+= $(CRITERION_LIBS)
+endif
 
 test_ldflags		= -no-install
 
@@ -114,6 +122,12 @@ uninstall-hook: ${UNINSTALL_HOOKS}
 populate-makefiles:
 	$(top_srcdir)/Mk/populate-makefiles.sh
 
+style-check:
+	$(top_srcdir)/scripts/style-checker.sh check $(top_srcdir)
+
+style-format:
+	$(top_srcdir)/scripts/style-checker.sh format $(top_srcdir)
+
 help:
 	@echo "Welcome to the syslog-ng build system!"
 	@echo
@@ -123,9 +137,12 @@ help:
 	@echo "Apart from these, the build system supports various other,"
 	@echo "special targets:"
 	@echo
-	@echo " modules  : Builds all syslog-ng modules."
-	@echo " syslog-ng: Build syslog-ng itself, only."
-	@echo " populate-makefiles : populate build directory with stub Makefiles"
+	@echo " modules              Builds all syslog-ng modules."
+	@echo " syslog-ng            Build syslog-ng itself, only."
+	@echo " populate-makefiles   populate build directory with stub Makefiles"
+	@echo " check-copyright      check copyright/license statements in files"
+	@echo " style-check          check formatting of source files (astyle)"
+	@echo " style-format         reformat source files (astyle)"
 	@echo
 	@echo "One can also build individual modules (and their dependencies),"
 	@echo "using any of the following shortcuts:"
@@ -146,7 +163,6 @@ include tests/Makefile.am
 include doc/Makefile.am
 include contrib/Makefile.am
 include scl/Makefile.am
-include debian/Makefile.am
 include tgz2build/Makefile.am
 
 TEST_EXTENSIONS = .sh

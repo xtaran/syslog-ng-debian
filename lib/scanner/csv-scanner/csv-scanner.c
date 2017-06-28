@@ -24,6 +24,7 @@
 #include "csv-scanner.h"
 #include "str-utils.h"
 #include "string-list.h"
+#include "scratch-buffers.h"
 
 #include <string.h>
 
@@ -65,7 +66,8 @@ csv_scanner_options_set_string_delimiters(CSVScannerOptions *options, GList *str
 }
 
 void
-csv_scanner_options_set_quotes_start_and_end(CSVScannerOptions *options, const gchar *quotes_start, const gchar *quotes_end)
+csv_scanner_options_set_quotes_start_and_end(CSVScannerOptions *options, const gchar *quotes_start,
+                                             const gchar *quotes_end)
 {
   g_free(options->quotes_start);
   g_free(options->quotes_end);
@@ -391,26 +393,18 @@ csv_scanner_is_scan_finished(CSVScanner *self)
 }
 
 void
-csv_scanner_input(CSVScanner *self, const gchar *input)
+csv_scanner_init(CSVScanner *scanner, CSVScannerOptions *options, const gchar *input)
 {
-  self->src = input;
-  self->current_column = NULL;
+  memset(scanner, 0, sizeof(*scanner));
+  scanner->src = input;
+  scanner->current_value = scratch_buffers_alloc();
+  scanner->current_column = NULL;
+  scanner->options = options;
 }
 
 void
-csv_scanner_state_init(CSVScanner *self, CSVScannerOptions *options)
+csv_scanner_deinit(CSVScanner *self)
 {
-  self->options = options;
-  self->current_column = options->columns;
-  self->src = NULL;
-  self->current_value = g_string_sized_new(128);
-  self->current_quote = 0;
-}
-
-void
-csv_scanner_state_clean(CSVScanner *self)
-{
-  g_string_free(self->current_value, TRUE);
 }
 
 const gchar *
@@ -425,7 +419,7 @@ csv_scanner_get_current_value_len(CSVScanner *self)
   return self->current_value->len;
 }
 
-gchar*
+gchar *
 csv_scanner_dup_current_value(CSVScanner *self)
 {
   return g_strndup(csv_scanner_get_current_value(self),

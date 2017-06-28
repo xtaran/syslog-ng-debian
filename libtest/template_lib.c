@@ -25,6 +25,7 @@
 #include "testutils.h"
 #include "template_lib.h"
 #include "msg_parse_lib.h"
+#include "stopwatch.h"
 
 #include <string.h>
 
@@ -99,6 +100,13 @@ create_sample_message(void)
   LogMessage *msg = create_empty_message();
 
   log_msg_set_value_by_name(msg, "APP.VALUE", "value", -1);
+  log_msg_set_value_by_name(msg, "APP.VALUE2", "value", -1);
+  log_msg_set_value_by_name(msg, "APP.VALUE3", "value", -1);
+  log_msg_set_value_by_name(msg, "APP.VALUE4", "value", -1);
+  log_msg_set_value_by_name(msg, "APP.VALUE5", "value", -1);
+  log_msg_set_value_by_name(msg, "APP.VALUE6", "value", -1);
+  log_msg_set_value_by_name(msg, "APP.VALUE7", "value", -1);
+
   log_msg_set_value_by_name(msg, "APP.STRIP1", "     value", -1);
   log_msg_set_value_by_name(msg, "APP.STRIP2", "value     ", -1);
   log_msg_set_value_by_name(msg, "APP.STRIP3", "     value     ", -1);
@@ -114,6 +122,7 @@ create_sample_message(void)
   log_msg_set_value_by_name(msg, "escaping", "binary stuff follows \"\xad árvíztűrőtükörfúrógép", -1);
   log_msg_set_value_by_name(msg, "escaping2", "\xc3", -1);
   log_msg_set_value_by_name(msg, "null", "binary\0stuff", 12);
+  log_msg_set_value_by_name(msg, "comma_value", "value,with,a,comma", -1);
 
   return msg;
 }
@@ -143,7 +152,7 @@ assert_template_format(const gchar *template, const gchar *expected)
 
 void
 assert_template_format_msg(const gchar *template, const gchar *expected,
-                            LogMessage *msg)
+                           LogMessage *msg)
 {
   assert_template_format_with_escaping_msg(template, FALSE, expected, msg);
 }
@@ -151,7 +160,7 @@ assert_template_format_msg(const gchar *template, const gchar *expected,
 
 void
 assert_template_format_with_escaping_msg(const gchar *template, gboolean escaping,
-                                     const gchar *expected, LogMessage *msg)
+                                         const gchar *expected, LogMessage *msg)
 {
   LogTemplate *templ = compile_template(template, escaping);
   if (!templ)
@@ -219,9 +228,45 @@ assert_template_failure(const gchar *template, const gchar *expected_error)
                "compilation failure expected to template,"
                " but success was returned, template=%s, expected_error=%s\n",
                template, expected_error);
-  expect_true(strstr(error->message, expected_error) != NULL,
+  expect_true(strstr(error ? error->message : "", expected_error) != NULL,
               "FAIL: compilation error doesn't match, error=%s, expected_error=%s\n",
               error->message, expected_error);
   g_clear_error(&error);
   log_template_unref(templ);
+}
+
+#define BENCHMARK_COUNT 100000
+
+void
+perftest_template(gchar *template)
+{
+  LogTemplate *templ;
+  LogMessage *msg;
+  GString *res = g_string_sized_new(1024);
+  gint i;
+  GError *error = NULL;
+
+  templ = log_template_new(configuration, NULL);
+  if (!log_template_compile(templ, template, &error))
+    {
+      expect_true(FALSE, "template expected to compile cleanly,"
+                  " but it didn't, template=%s, error=%s",
+                  template, error ? error->message : "(none)");
+      return;
+    }
+  msg = create_sample_message();
+
+  start_stopwatch();
+  for (i = 0; i < BENCHMARK_COUNT; i++)
+    {
+      log_template_format(templ, msg, NULL, LTZ_LOCAL, 0, NULL, res);
+    }
+  stop_stopwatch_and_display_result(BENCHMARK_COUNT,
+                                    "      %-90.*s",
+                                    (int) strlen(template) - 1,
+                                    template);
+
+  log_template_unref(templ);
+  g_string_free(res, TRUE);
+  log_msg_unref(msg);
 }
