@@ -46,9 +46,6 @@
 #define ASSERTION_ERROR(message) "%s:%d/%s\n  #       %s", \
                                  basename(__FILE__), __LINE__, __FUNCTION__, ((message) ? (message) : "")
 
-void start_stopwatch();
-void stop_stopwatch_and_display_result(gint iterations, gchar *message_template, ...);
-
 void reset_grabbed_messages(void);
 void start_grabbing_messages(void);
 void stop_grabbing_messages(void);
@@ -74,7 +71,7 @@ gboolean assert_guint32_set_non_fatal(guint32 *actual, guint32 actual_length, gu
 gboolean assert_gpointer_non_fatal(gpointer actual, gpointer expected, const gchar *error_message, ...);
 gboolean assert_msg_field_equals_non_fatal(LogMessage *msg, gchar *field_name, gchar *expected_value, gssize expected_value_len, const gchar *error_message, ...);
 gboolean assert_msg_field_unset_non_fatal(LogMessage *msg, gchar *field_name, const gchar *error_message, ...);
-
+gboolean expect_not_reached(const gchar *error_message, ...);
 
 #define assert_guint16(actual, expected, error_message, ...) (assert_guint16_non_fatal(actual, expected, error_message, ##__VA_ARGS__) ? 1 : (exit(1),0))
 

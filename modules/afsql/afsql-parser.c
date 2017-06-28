@@ -29,7 +29,8 @@ extern int afsql_debug;
 
 int afsql_parse(CfgLexer *lexer, LogDriver **instance, gpointer arg);
 
-static CfgLexerKeyword afsql_keywords[] = {
+static CfgLexerKeyword afsql_keywords[] =
+{
   { "sql",                KW_SQL },
   { "username",           KW_USERNAME },
   { "password",           KW_PASSWORD },
@@ -52,6 +53,7 @@ static CfgLexerKeyword afsql_keywords[] = {
   { "flush_lines",        KW_FLUSH_LINES },
   { "flush_timeout",      KW_FLUSH_TIMEOUT },
   { "flags",              KW_FLAGS },
+  { "create_statement_append", KW_CREATE_STATEMENT_APPEND },
 
   { "dbd_option",         KW_DBD_OPTION },
   { NULL }

@@ -22,7 +22,9 @@
 
 #include "context-info-db.h"
 #include "atomic.h"
+#include "messages.h"
 #include <string.h>
+#include <stdio.h>
 #include <sys/types.h>
 
 struct _ContextInfoDB
@@ -31,6 +33,7 @@ struct _ContextInfoDB
   GArray *data;
   GHashTable *index;
   gboolean is_data_indexed;
+  GList *ordered_selectors;
 };
 
 typedef struct _element_range
@@ -46,6 +49,12 @@ _contextual_data_record_cmp(gconstpointer k1, gconstpointer k2)
   ContextualDataRecord *r2 = (ContextualDataRecord *) k2;
 
   return strcmp(r1->selector->str, r2->selector->str);
+}
+
+GList *
+context_info_db_ordered_selectors(ContextInfoDB *self)
+{
+  return self->ordered_selectors;
 }
 
 void
@@ -109,6 +118,7 @@ _new(ContextInfoDB *self)
   self->data = g_array_new(FALSE, FALSE, sizeof(ContextualDataRecord));
   self->index = g_hash_table_new_full(g_str_hash, g_str_equal, NULL, g_free);
   self->is_data_indexed = FALSE;
+  self->ordered_selectors = NULL;
   g_atomic_counter_set(&self->ref_cnt, 1);
 }
 
@@ -134,6 +144,10 @@ _free(ContextInfoDB *self)
   if (self->data)
     {
       _free_array(self->data);
+    }
+  if (self->ordered_selectors)
+    {
+      g_list_free(self->ordered_selectors);
     }
 }
 
@@ -191,17 +205,28 @@ context_info_db_free(ContextInfoDB *self)
     }
 }
 
+static gint
+_g_strcmp(const gconstpointer a, gconstpointer b)
+{
+  return g_strcmp0((const gchar *) a, (const gchar *) b);
+}
+
 void
 context_info_db_insert(ContextInfoDB *self,
                        const ContextualDataRecord *record)
 {
   g_array_append_val(self->data, *record);
   self->is_data_indexed = FALSE;
+  if (!g_list_find_custom(self->ordered_selectors, record->selector->str, _g_strcmp))
+    self->ordered_selectors = g_list_append(self->ordered_selectors, record->selector->str);
 }
 
 gboolean
 context_info_db_contains(ContextInfoDB *self, const gchar *selector)
 {
+  if (!selector)
+    return FALSE;
+
   _ensure_indexed_db(self);
   return (_get_range_of_records(self, selector) != NULL);
 }
@@ -260,19 +285,37 @@ context_info_db_get_selectors(ContextInfoDB *self)
   return g_hash_table_get_keys(self->index);
 }
 
+static void
+_truncate_eol(gchar *line, gsize line_len)
+{
+  if (line_len >= 2 && line[line_len - 2] == '\r' && line[line_len - 1] == '\n')
+    line[line_len - 2] = '\0';
+  else if (line_len >= 1 && line[line_len - 1] == '\n')
+    line[line_len - 1] = '\0';
+}
+
+static gboolean
+_get_line_without_eol(gchar **line_buf, gsize *line_buf_len, FILE *fp)
+{
+  gssize n;
+  if ((n = getline(line_buf, line_buf_len, fp)) == -1)
+    return FALSE;
+
+  _truncate_eol(*line_buf, n);
+
+  return TRUE;
+}
+
 gboolean
 context_info_db_import(ContextInfoDB *self, FILE *fp,
                        ContextualDataRecordScanner *scanner)
 {
-  ssize_t n;
   size_t line_buf_len;
   gchar *line_buf = NULL;
   const ContextualDataRecord *next_record;
 
-  while ((n = getline(&line_buf, &line_buf_len, fp)) != -1)
+  while (_get_line_without_eol(&line_buf, &line_buf_len, fp))
     {
-      if (line_buf[n - 1] == '\n')
-        line_buf[n - 1] = '\0';
       next_record = contextual_data_record_scanner_get_next(scanner, line_buf);
       if (!next_record)
         {

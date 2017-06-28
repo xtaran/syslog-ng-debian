@@ -35,11 +35,11 @@
 #include "afinter.h"
 #include "template/templates.h"
 #include "hostname.h"
-#include "scratch-buffers.h"
 #include "mainloop-call.h"
 #include "service-management.h"
 #include "crypto.h"
 #include "value-pairs/value-pairs.h"
+#include "scratch-buffers.h"
 
 #include <iv.h>
 #include <iv_work.h>
@@ -55,24 +55,24 @@ typedef struct _ApplicationHookEntry
 static GList *application_hooks = NULL;
 static gint current_state = AH_STARTUP;
 
-void 
+void
 register_application_hook(gint type, ApplicationHookFunc func, gpointer user_data)
 {
   if (current_state < type)
     {
       ApplicationHookEntry *entry = g_new0(ApplicationHookEntry, 1);
-      
+
       entry->type = type;
       entry->func = func;
       entry->user_data = user_data;
-      
+
       application_hooks = g_list_append(application_hooks, entry);
     }
   else
     {
       /* the requested hook has already passed, call the requested function immediately */
-      msg_debug("Application hook registered after the given point passed", 
-                evt_tag_int("current", current_state), 
+      msg_debug("Application hook registered after the given point passed",
+                evt_tag_int("current", current_state),
                 evt_tag_int("hook", type));
       func(type, user_data);
     }
@@ -82,15 +82,15 @@ static void
 run_application_hook(gint type)
 {
   GList *l, *l_next;
-  
+
   g_assert(current_state <= type);
-  
+
   msg_debug("Running application hooks", evt_tag_int("hook", type));
   current_state = type;
   for (l = application_hooks; l; l = l_next)
     {
       ApplicationHookEntry *e = l->data;
-      
+
       if (e->type == type)
         {
           l_next = l->next;
@@ -113,7 +113,7 @@ app_fatal(const char *msg)
   fprintf(stderr, "%s\n", msg);
 }
 
-void 
+void
 app_startup(void)
 {
   msg_init(FALSE);
@@ -135,6 +135,15 @@ app_startup(void)
   log_template_global_init();
   value_pairs_global_init();
   service_management_init();
+  scratch_buffers_allocator_init();
+}
+
+void
+app_finish_app_startup_after_cfg_init(void)
+{
+  log_tags_reinit_stats();
+  log_msg_stats_global_init();
+  scratch_buffers_global_init();
 }
 
 void
@@ -156,10 +165,12 @@ app_post_config_loaded(void)
   res_init();
 }
 
-void 
+void
 app_shutdown(void)
 {
   run_application_hook(AH_SHUTDOWN);
+  scratch_buffers_allocator_deinit();
+  scratch_buffers_global_deinit();
   value_pairs_global_deinit();
   log_template_global_deinit();
   log_tags_global_deinit();
@@ -175,10 +186,10 @@ app_shutdown(void)
   crypto_deinit();
   msg_deinit();
 
-  
+
   /* NOTE: the iv_deinit() call should come here, but there's some exit
    * synchronization issue in libivykis that causes use-after-free with the
-   * thread-local-state for the main thread and iv_work_pool worker threads. 
+   * thread-local-state for the main thread and iv_work_pool worker threads.
    * I've dropped a mail to Lennert about the issue, but I'm commenting this
    * out for now to avoid it biting someone. Bazsi, 2013/12/23.
    *
@@ -192,7 +203,7 @@ app_shutdown(void)
 void
 app_thread_start(void)
 {
-  scratch_buffers_init();
+  scratch_buffers_allocator_init();
   dns_caching_thread_init();
   main_loop_call_thread_init();
 }
@@ -200,7 +211,7 @@ app_thread_start(void)
 void
 app_thread_stop(void)
 {
-  dns_caching_thread_deinit();
-  scratch_buffers_free();
   main_loop_call_thread_deinit();
+  dns_caching_thread_deinit();
+  scratch_buffers_allocator_deinit();
 }

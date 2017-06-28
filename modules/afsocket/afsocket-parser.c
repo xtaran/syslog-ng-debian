@@ -30,9 +30,10 @@ extern int afsocket_debug;
 
 int afsocket_parse(CfgLexer *lexer, LogDriver **instance, gpointer arg);
 
-static CfgLexerKeyword afsocket_keywords[] = {
-  { "unix_dgram",	KW_UNIX_DGRAM },
-  { "unix_stream",	KW_UNIX_STREAM },
+static CfgLexerKeyword afsocket_keywords[] =
+{
+  { "unix_dgram", KW_UNIX_DGRAM },
+  { "unix_stream",  KW_UNIX_STREAM },
   { "udp",                KW_UDP },
   { "tcp",                KW_TCP },
   { "syslog",             KW_SYSLOG },
@@ -60,6 +61,7 @@ static CfgLexerKeyword afsocket_keywords[] = {
   { "destport",           KW_DESTPORT },
   { "ip_ttl",             KW_IP_TTL },
   { "ip_tos",             KW_IP_TOS },
+  { "ip_freebind",        KW_IP_FREEBIND },
   { "so_broadcast",       KW_SO_BROADCAST },
   { "so_rcvbuf",          KW_SO_RCVBUF },
   { "so_sndbuf",          KW_SO_SNDBUF },
@@ -73,6 +75,7 @@ static CfgLexerKeyword afsocket_keywords[] = {
   { "transport",          KW_TRANSPORT },
   { "ip_protocol",        KW_IP_PROTOCOL },
   { "max_connections",    KW_MAX_CONNECTIONS },
+  { "listen_backlog",     KW_LISTEN_BACKLOG },
   { "keep_alive",         KW_KEEP_ALIVE },
   { "systemd_syslog",     KW_SYSTEMD_SYSLOG  },
   { NULL }

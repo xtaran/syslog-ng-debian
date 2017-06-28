@@ -56,6 +56,7 @@ LIBSYSTEMD_MIN_VERSION="209"
 JAVA_MIN_VERSION="1.7"
 GRADLE_MIN_VERSION="2.2"
 HIREDIS_MIN_VERSION="0.11.0"
+CRITERION_MIN_VERSION="2.2.1"
 
 dnl ***************************************************************************
 dnl Initial setup
@@ -535,6 +536,7 @@ AC_CHECK_HEADERS(strings.h	\
 AC_CHECK_HEADERS(tcpd.h)
 
 AC_CHECK_TYPES([struct ucred, struct cmsgcred], [], [], [#define _GNU_SOURCE 1
+#define _DEFAULT_SOURCE 1
 #include <sys/types.h>
 #include <sys/socket.h>])
 
@@ -578,7 +580,7 @@ I_CONSLOG
   blb_cv_c_i_conslog=no, blb_cv_c_i_conslog=yes)])
 
 old_CPPFLAGS=$CPPFLAGS
-CPPFLAGS=-D_GNU_SOURCE
+CPPFLAGS="-D_GNU_SOURCE -D_DEFAULT_SOURCE"
 AC_CACHE_CHECK(for O_LARGEFILE, blb_cv_c_o_largefile,
   [AC_EGREP_CPP(O_LARGEFILE,
 [
@@ -676,6 +678,11 @@ old_LIBS=$LIBS
 LIBS=$BASE_LIBS
 AC_CHECK_FUNCS(clock_gettime)
 LIBS=$old_LIBS
+
+dnl ***************************************************************************
+dnl check inotify
+dnl ***************************************************************************
+AC_CHECK_FUNCS([inotify_init])
 
 dnl ***************************************************************************
 dnl libevtlog headers/libraries
@@ -854,7 +861,7 @@ dnl ***************************************************************************
 #  * TLS support
 
 dnl check OpenSSL static linking
-PKG_CHECK_MODULES(OPENSSL, 
+PKG_CHECK_MODULES(OPENSSL,
                   openssl >= $OPENSSL_MIN_VERSION,,
                   AC_MSG_ERROR(Cannot find OpenSSL libraries with version >= $OPENSSL_MIN_VERSION it is a hard dependency from syslog-ng 3.7 onwards))
 
@@ -871,6 +878,16 @@ if test -n "$OPENSSL_LIBS" -a "$linking_mode" != "dynamic"; then
 	LIBS=$old_LIBS
 fi
 
+CPPFLAGS_SAVE="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS $OPENSSL_CFLAGS"
+
+AC_CHECK_DECLS([SSL_CTX_get0_param],[], [], [[#include <openssl/ssl.h>]])
+AC_CHECK_DECLS([X509_STORE_CTX_get0_cert],[], [], [[#include <openssl/ssl.h>]])
+AC_CHECK_DECLS([X509_get_extension_flags], [], [], [[#include <openssl/x509v3.h>]])
+AC_CHECK_DECLS([EVP_MD_CTX_reset], [], [], [[#include <openssl/evp.h>]])
+AC_CHECK_DECLS([ASN1_STRING_get0_data], [], [], [[#include <openssl/asn1.h>]])
+
+CPPFLAGS="$CPPFLAGS_SAVE"
 
 dnl
 dnl Right now, openssl is never linked statically as it is only used by the
@@ -915,27 +932,46 @@ if test "x$enable_spoof_source" = "xauto"; then
 		LIBNET_CFLAGS=
 		AC_MSG_RESULT(no)
         fi
-elif test "x$enable_spoof_source" != "xyes"; then
+elif test "x$enable_spoof_source" = "xyes"; then
+  if test "x$LIBNET_LIBS" = "x"; then
+    AC_MSG_ERROR([Could not find libnet, and spoof source support was explicitly enabled.])
+  fi
+elif test "x$enable_spoof_source" = "xno"; then
 	LIBNET_CFLAGS=""
 	LIBNET_LIBS=""
 	enable_spoof_source=no
+else
+  AC_MSG_ERROR([Invalid value ($enable_spoof_source) for enable-spoof-source])
 fi
+
+dnl ***************************************************************************
+dnl Criterion headers/libraries
+dnl ***************************************************************************
+
+PKG_CHECK_MODULES(CRITERION, criterion >= $CRITERION_MIN_VERSION,
+  [with_criterion="system"],
+  [AC_MSG_WARN([pkg-config was not able to find Criterion >= $CRITERION_MIN_VERSION]); with_criterion="no"])
 
 dnl ***************************************************************************
 dnl ivykis headers/libraries
 dnl ***************************************************************************
 
+IVYKIS_INTERNAL_SOURCE_EXISTS="test -f $srcdir/lib/ivykis/src/iv_main_posix.c"
+
+if $IVYKIS_INTERNAL_SOURCE_EXISTS; then
+	AC_CONFIG_SUBDIRS([lib/ivykis])
+	IVYKIS_SUBDIRS=lib/ivykis
+fi
+
+
 INTERNAL_IVYKIS_CFLAGS=""
 if test "x$with_ivykis" = "xinternal"; then
-	if test -f "$srcdir/lib/ivykis/src/iv_main_posix.c"; then
-		AC_CONFIG_SUBDIRS([lib/ivykis])
-
+	if $IVYKIS_INTERNAL_SOURCE_EXISTS; then
 		# these can only be used in lib as it assumes
 		# the current directory just one below ivykis
 
 		IVYKIS_LIBS="-Wl,${WHOLE_ARCHIVE_OPT} -L\$(top_builddir)/lib/ivykis/src -livykis -Wl,${NO_WHOLE_ARCHIVE_OPT}"
 		IVYKIS_CFLAGS="-I\$(top_srcdir)/lib/ivykis/src/include -I\$(top_builddir)/lib/ivykis/src/include"
-		IVYKIS_SUBDIRS=lib/ivykis
                 INTERNAL_IVYKIS_CFLAGS="-I\${includedir}/syslog-ng/ivykis"
 
 		# LIBS to use when libtool is not applicable (when linking the main syslog-ng executable in mixed linking mode)
@@ -999,9 +1035,9 @@ AC_DEFINE_UNQUOTED(ENABLE_LEGACY_MONGODB_OPTIONS, [$enable_legacy_mongodb_option
 
 if test "x$with_mongoc" = "xauto"; then
   with_mongoc="system"
-  PKG_CHECK_MODULES(LIBMONGO, libmongoc >= $LMC_MIN_VERSION,,with_mongoc="auto-internal")
+  PKG_CHECK_MODULES(LIBMONGO, libmongoc-1.0 >= $LMC_MIN_VERSION,,with_mongoc="auto-internal")
 elif test "x$with_mongoc" = "xsystem"; then
-  PKG_CHECK_MODULES(LIBMONGO, libmongoc >= $LMC_MIN_VERSION)
+  PKG_CHECK_MODULES(LIBMONGO, libmongoc-1.0 >= $LMC_MIN_VERSION)
 fi
 
 if test "x$with_mongoc" = "xinternal" || test "x$with_mongoc" = "xauto-internal"; then
@@ -1133,31 +1169,35 @@ dnl ***************************************************************************
 dnl rabbitmq-c headers/libraries
 dnl ***************************************************************************
 
-if test "x$with_librabbitmq_client" = "xinternal"; then
+
+LIBRABBITMQ_INTERNAL_SOURCE_EXISTS="test -f $srcdir/modules/afamqp/rabbitmq-c/librabbitmq/amqp.h"
+
+if $LIBRABBITMQ_INTERNAL_SOURCE_EXISTS; then
     PYTHON_VERSION=`python -V 2>&1 | cut -d ' ' -f 2`
     PYTHON_MAJOR=`echo $PYTHON_VERSION | cut -d '.' -f 1`
     PYTHON_MINOR=`echo $PYTHON_VERSION | cut -d '.' -f 2`
     if test ${PYTHON} = "" || test $PYTHON_MAJOR -eq 2 && test $PYTHON_MINOR -lt 5; then
-        AC_MSG_WARN([Was about to execute rabbitmq configure script, but that requires Python >= 2.5, which you don't seem to have, disabling rabbitmq])
-        with_librabbitmq_client=no
+        AC_MSG_WARN([Was about to execute rabbitmq configure script, but that requires Python >= 2.5, which you don't seem to have, reverting to system rabbitmq])
+        with_librabbitmq_client="system"
+    else
+        AC_CONFIG_SUBDIRS([modules/afamqp/rabbitmq-c])
+        LIBRABBITMQ_SUBDIRS="modules/afamqp/rabbitmq-c"
     fi
 fi
 
 if test "x$with_librabbitmq_client" = "xinternal"; then
-    if test -f "$srcdir/modules/afamqp/rabbitmq-c/librabbitmq/amqp.h"; then
-        AC_CONFIG_SUBDIRS([modules/afamqp/rabbitmq-c])
+    if $LIBRABBITMQ_INTERNAL_SOURCE_EXISTS; then
         # these can only be used in modules/amqp as it assumes
         # the current directory just one below rabbitmq-c
 
         LIBRABBITMQ_LIBS="-L\$(top_builddir)/modules/afamqp/rabbitmq-c/librabbitmq -lrabbitmq"
         LIBRABBITMQ_CFLAGS="-I\$(top_srcdir)/modules/afamqp/rabbitmq-c/librabbitmq -I\$(top_builddir)/modules/afamqp/rabbitmq-c/librabbitmq"
-        LIBRABBITMQ_SUBDIRS="modules/afamqp/rabbitmq-c"
     else
         AC_MSG_WARN([Internal librabbitmq-client sources not found in modules/afamqp/rabbitmq-c])
         with_librabbitmq_client="no"
     fi
 elif test "x$with_librabbitmq_client" = "xsystem"; then
-    PKG_CHECK_MODULES(LIBRABBITMQ, librabbitmq >= $LIBRABBITMQ_MIN_VERSION, , enable_amqp = "no")
+    PKG_CHECK_MODULES(LIBRABBITMQ, librabbitmq >= $LIBRABBITMQ_MIN_VERSION,, enable_amqp="no")
 fi
 
 if test "x$with_librabbitmq_client" = "xno"; then
@@ -1165,12 +1205,10 @@ if test "x$with_librabbitmq_client" = "xno"; then
       AC_MSG_ERROR([Could not find librabbitmq-client, and AMQP support was explicitly enabled.])
     fi
     enable_amqp="no"
-    LIBRABBITMQ_SUBDIRS=""
 fi
 
 if test "x$enable_amqp" = "xno"; then
    with_librabbitmq_client="no"
-   LIBRABBITMQ_SUBDIRS=""
 fi
 
 if test "x$enable_native" = "xyes" -o "x$enable_native" = "xauto"; then
@@ -1216,7 +1254,7 @@ if test "x$enable_python" != "xno"; then
   if test "x$enable_python" = "xyes" -a "x$python_found" = "xno"; then
     AC_MSG_ERROR([Could not find the requested Python development libraries])
   fi
-  enable_python="$python_found" 
+  enable_python="$python_found"
 else
   with_python=""
 fi
@@ -1263,8 +1301,7 @@ AC_MSG_CHECKING(whether to enable Sun STREAMS support)
 if test "x$ac_cv_header_stropts_h" = "xyes" -a \
         "x$ac_cv_header_sys_strlog_h" = "xyes" -a \
         "x$enable_sun_streams" != "xno" -a \
-        "x$blb_cv_c_i_conslog" != "xno" -o \
-        "x$enable_sun_streams" = "xyes"; then
+        "x$blb_cv_c_i_conslog" != "xno"; then
         enable_sun_streams=yes
         AC_MSG_RESULT(yes)
 else
@@ -1305,6 +1342,8 @@ if test "x$enable_linux_caps" = "xyes" -o "x$enable_linux_caps" = "xauto"; then
         if test "x$enable_linux_caps" = "xyes" -a "x$has_linux_caps" = "xno"; then
            AC_MSG_ERROR([Cannot enable Linux capability support.])
         fi
+
+        enable_linux_caps="$has_linux_caps"
 fi
 
 if test "x$enable_mongodb" = "xauto"; then
@@ -1402,7 +1441,7 @@ if test "x$module_path" = "x"; then
 	java_module_path="$moduledir"/java-modules
 fi
 
-CPPFLAGS="$CPPFLAGS $GLIB_CFLAGS $EVTLOG_CFLAGS $PCRE_CFLAGS $OPENSSL_CFLAGS $LIBNET_CFLAGS $LIBDBI_CFLAGS $IVYKIS_CFLAGS -D_GNU_SOURCE -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64"
+CPPFLAGS="$CPPFLAGS $GLIB_CFLAGS $EVTLOG_CFLAGS $PCRE_CFLAGS $OPENSSL_CFLAGS $LIBNET_CFLAGS $LIBDBI_CFLAGS $IVYKIS_CFLAGS -D_GNU_SOURCE -D_DEFAULT_SOURCE -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64"
 
 ########################################################
 ## NOTES: on how syslog-ng is linked
@@ -1544,6 +1583,7 @@ AC_DEFINE_UNQUOTED(ENABLE_LINUX_CAPS, `enable_value $enable_linux_caps`, [Enable
 AC_DEFINE_UNQUOTED(ENABLE_ENV_WRAPPER, `enable_value $enable_env_wrapper`, [Enable environment wrapper support])
 AC_DEFINE_UNQUOTED(ENABLE_SYSTEMD, `enable_value $enable_systemd`, [Enable systemd support])
 AC_DEFINE_UNQUOTED(SYSTEMD_JOURNAL_MODE, `journald_mode`, [Systemd-journal support mode])
+AC_DEFINE_UNQUOTED(HAVE_INOTIFY, `enable_value $ac_cv_func_inotify_init`, [Have inotify])
 
 
 AM_CONDITIONAL(ENABLE_ENV_WRAPPER, [test "$enable_env_wrapper" = "yes"])
@@ -1560,10 +1600,10 @@ AM_CONDITIONAL(ENABLE_STOMP, [test "$enable_stomp" = "yes"])
 AM_CONDITIONAL(ENABLE_JSON, [test "$enable_json" = "yes"])
 AM_CONDITIONAL(ENABLE_GEOIP, [test "$enable_geoip" = "yes"])
 AM_CONDITIONAL(ENABLE_REDIS, [test "$enable_redis" = "yes"])
-AM_CONDITIONAL(IVYKIS_INTERNAL, [test "x$IVYKIS_SUBDIRS" != "x"])
+AM_CONDITIONAL(IVYKIS_INTERNAL, [test "x$with_ivykis" = "xinternal"])
 AM_CONDITIONAL(JSON_INTERNAL, [test "x$JSON_SUBDIRS" != "x"])
 AM_CONDITIONAL(LIBMONGO_INTERNAL, [test "x$LIBMONGO_SUBDIRS" != "x"])
-AM_CONDITIONAL(LIBRABBITMQ_INTERNAL, [test "x$LIBRABBITMQ_SUBDIRS" != "x"])
+AM_CONDITIONAL(LIBRABBITMQ_INTERNAL, [test "x$with_librabbitmq_client" = "xinternal"])
 AM_CONDITIONAL(ENABLE_RIEMANN, [test "$enable_riemann" != "no"])
 AM_CONDITIONAL(ENABLE_JOURNALD, [test "$with_systemd_journal" != "no"])
 AM_CONDITIONAL(ENABLE_PYTHON, [test "$enable_python" != "no"])
@@ -1573,6 +1613,8 @@ AM_CONDITIONAL(ENABLE_MANPAGES, [test "$enable_manpages" != "no"])
 AM_CONDITIONAL(ENABLE_NATIVE, [test "$enable_native" != "no"])
 AM_CONDITIONAL(ENABLE_EXTRA_WARNINGS, [test "$enable_extra_warnings" = "yes"])
 AM_CONDITIONAL(ENABLE_LEGACY_MONGODB_OPTIONS, [test x"$enable_legacy_mongodb_options" != x"no"])
+AM_CONDITIONAL(ENABLE_CRITERION, [test "$with_criterion" != "no"])
+AM_CONDITIONAL([HAVE_INOTIFY], [test x$ac_cv_func_inotify_init = xyes])
 
 AC_SUBST(timezonedir)
 AC_SUBST(pidfiledir)
@@ -1635,6 +1677,7 @@ AC_OUTPUT(dist.conf
           Makefile
 	  syslog-ng.spec
 	  syslog-ng.pc
+	  syslog-ng-add-contextual-data.pc
           libtest/syslog-ng-test.pc
 	  scripts/update-patterndb
           )
@@ -1649,6 +1692,8 @@ echo "  prefix                      : $prefix"
 echo "  linking mode                : $linking_mode"
 echo "  embedded crypto             : ${with_embedded_crypto:=no}"
 echo "  __thread keyword            : ${ac_cv_have_tls:=no}"
+echo " Test dependencies:"
+echo "  Criterion                   : ${with_criterion:=no}"
 echo " Submodules:"
 echo "  ivykis                      : $with_ivykis"
 echo "  mongoc                      : $with_mongoc"

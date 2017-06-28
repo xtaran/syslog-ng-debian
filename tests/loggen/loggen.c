@@ -22,6 +22,7 @@
  */
 
 #include "syslog-ng.h"
+#include "crypto.h"
 
 #include <syslog-ng-config.h>
 #include <stdio.h>
@@ -100,7 +101,7 @@ send_plain(void *user_data, void *buf, size_t length)
     {
       cc = send(fd, buf, length, 0);
       if (cc > 0)
-          break;
+        break;
       if (cc < 0 && errno == ENOBUFS)
         {
           /*
@@ -216,7 +217,8 @@ parse_line(const char *line, char *host, char *program, char *pid, char **msg)
       while (*(--pos) != '[')
         ;
 
-      pid_len = end - pos; /* 'end' points to the last character of the pid string (not off by one), *pos = '[' -> pid length = end - pos*/
+      pid_len = end -
+                pos; /* 'end' points to the last character of the pid string (not off by one), *pos = '[' -> pid length = end - pos*/
       memcpy(pid, pos + 1, pid_len);
       pid[pid_len] = '\0';
     }
@@ -242,73 +244,78 @@ parse_line(const char *line, char *host, char *program, char *pid, char **msg)
   memcpy(host, pos + 1, end - pos - 1);
   host[end-pos-1] = '\0';
 
-  *msg = ((char*)pos0) + 2;
+  *msg = ((char *)pos0) + 2;
 
   return 1;
+}
+
+static size_t
+_get_now_timestamp(char *stamp, gsize stamp_size)
+{
+  struct timeval now;
+  struct tm tm;
+
+  gettimeofday(&now, NULL);
+  localtime_r(&now.tv_sec, &tm);
+  return strftime(stamp, stamp_size, "%Y-%m-%dT%H:%M:%S", &tm);
 }
 
 static int
 gen_next_message(FILE *source, char *buf, int buflen)
 {
   static int lineno = 0;
-  struct tm tm;
-  struct timeval now;
-  char line[MAX_MESSAGE_LENGTH+1];
-  char stamp[32];
   int linelen;
-  int tslen;
-  char *temp;
 
   char host[128], program[128], pid[16];
   char *msg = NULL;
 
   while (1)
     {
-      temp = NULL;
       if (feof(source))
         {
           if (loop_reading)
-          {
-            // Restart reading from the beginning of the file
-            rewind(source);
-          }
+            {
+              // Restart reading from the beginning of the file
+              rewind(source);
+            }
           else
             return -1;
         }
-      temp = fgets(line, sizeof(line), source);
+      char *temp = fgets(buf, buflen, source);
       if (!temp)
         {
           if (loop_reading)
-          {
-            // Restart reading from the beginning of the file
-            rewind(source);
-            temp = fgets(line, sizeof(line), source);
-          }
+            {
+              // Restart reading from the beginning of the file
+              rewind(source);
+              temp = fgets(buf, buflen, source);
+            }
           else
             return -1;
         }
       if (dont_parse)
         break;
 
-      if (parse_line(line, host, program, pid, &msg) > 0)
+      if (parse_line(buf, host, program, pid, &msg) > 0)
         break;
 
       fprintf(stderr, "\rInvalid line %d                  \n", ++lineno);
     }
-  gettimeofday(&now, NULL);
-  localtime_r(&now.tv_sec, &tm);
-  tslen = strftime(stamp, sizeof(stamp), "%Y-%m-%dT%H:%M:%S", &tm);
 
   if (dont_parse)
     {
-      linelen = snprintf(buf, buflen-1, "%s", line);
+      linelen = strnlen(buf, buflen);
       return linelen;
     }
+
+  char stamp[32];
+  int tslen = _get_now_timestamp(stamp, sizeof(stamp));
 
   if (syslog_proto)
     {
       char tmp[11];
-      linelen = snprintf(buf + 10, buflen - 10, "<38>1 %.*s %s %s %s - - \xEF\xBB\xBF%s", tslen, stamp, host, program, (pid[0] ? pid : "-"), msg);
+      linelen = snprintf(buf + 10, buflen - 10, "<38>1 %.*s %s %s %s - - \xEF\xBB\xBF%s", tslen, stamp, host, program,
+                         (pid[0] ? pid : "-"), msg);
       snprintf(tmp, sizeof(tmp), "%09d ", linelen);
       memcpy(buf, tmp, 10);
       linelen += 10;
@@ -345,7 +352,8 @@ connect_server(void)
 }
 
 static void
-format_timezone_offset_with_colon(char *timestamp, int timestamp_size, struct tm *tm) {
+format_timezone_offset_with_colon(char *timestamp, int timestamp_size, struct tm *tm)
+{
   char offset[7];
   int len = strftime(offset, sizeof(offset), "%z", tm);
   offset[len + 1] = '\0';
@@ -384,14 +392,14 @@ gen_messages(send_data_t send_func, void *send_func_ud, int thread_id, FILE *rea
   last_ts_format = now;
   last_ts_format.tv_sec--;
 
-   if (sdata_value)
-     {
-       testsdata = strdup(sdata_value);
-     }
-   else
-     {
-       testsdata = strdup("-");
-     }
+  if (sdata_value)
+    {
+      testsdata = strdup(sdata_value);
+    }
+  else
+    {
+      testsdata = strdup("-");
+    }
 
   if (!readfrom)
     {
@@ -400,7 +408,9 @@ gen_messages(send_data_t send_func, void *send_func_ud, int thread_id, FILE *rea
           if (sock_type == SOCK_STREAM && framing)
             hdr_len = snprintf(linebuf, sizeof(linebuf), "%d ", message_length);
 
-          linelen = snprintf(linebuf + hdr_len, sizeof(linebuf) - hdr_len, "<38>1 2007-12-24T12:28:51+02:00 localhost prg%05d 1234 - %s \xEF\xBB\xBFseq: %010d, thread: %04d, runid: %-10d, stamp: %-19s ", thread_id, testsdata, 0, thread_id, run_id, "");
+          linelen = snprintf(linebuf + hdr_len, sizeof(linebuf) - hdr_len,
+                             "<38>1 2007-12-24T12:28:51+02:00 localhost prg%05d 1234 - %s \xEF\xBB\xBFseq: %010d, thread: %04d, runid: %-10d, stamp: %-19s ",
+                             thread_id, testsdata, 0, thread_id, run_id, "");
 
           pos_timestamp1 = 6 + hdr_len;
           pos_seq = 68 + hdr_len + strlen(testsdata) - 1;
@@ -408,7 +418,9 @@ gen_messages(send_data_t send_func, void *send_func_ud, int thread_id, FILE *rea
         }
       else
         {
-          linelen = snprintf(linebuf, sizeof(linebuf), "<38>2007-12-24T12:28:51 localhost prg%05d[1234]: seq: %010d, thread: %04d, runid: %-10d, stamp: %-19s ", thread_id, 0, thread_id, run_id, "");
+          linelen = snprintf(linebuf, sizeof(linebuf),
+                             "<38>2007-12-24T12:28:51 localhost prg%05d[1234]: seq: %010d, thread: %04d, runid: %-10d, stamp: %-19s ", thread_id, 0,
+                             thread_id, run_id, "");
           pos_timestamp1 = 4;
           pos_seq = 55;
           pos_timestamp2 = 107;
@@ -499,12 +511,14 @@ gen_messages(send_data_t send_func, void *send_func_ud, int thread_id, FILE *rea
           if (csv)
             {
               time_val_diff_in_timeval(&diff_tv, &now, &start);
-              printf("%d;%lu.%06lu;%.2lf;%lu\n", thread_id, (long) diff_tv.tv_sec, (long) diff_tv.tv_usec, (((double) (count - last_count) * USEC_PER_SEC) / diff_usec),count);
+              printf("%d;%lu.%06lu;%.2lf;%lu\n", thread_id, (long) diff_tv.tv_sec, (long) diff_tv.tv_usec,
+                     (((double) (count - last_count) * USEC_PER_SEC) / diff_usec),count);
 
             }
           else if (!quiet)
             {
-              fprintf(stderr, "count=%ld, rate = %.2lf msg/sec                 \r", count, ((double) (count - last_count) * USEC_PER_SEC) / diff_usec);
+              fprintf(stderr, "count=%ld, rate = %.2lf msg/sec                 \r", count,
+                      ((double) (count - last_count) * USEC_PER_SEC) / diff_usec);
             }
           last_ts_format = now;
           last_count = count;
@@ -531,14 +545,15 @@ gen_messages(send_data_t send_func, void *send_func_ud, int thread_id, FILE *rea
   diff_usec = time_val_diff_in_usec(&now, &start);
   time_val_diff_in_timeval(&diff_tv, &now, &start);
   if (csv)
-    printf("%d;%lu.%06lu;%.2lf;%lu\n", thread_id, (long) diff_tv.tv_sec, (long) diff_tv.tv_usec, (((double) (count - last_count) * USEC_PER_SEC) / diff_usec), count);
+    printf("%d;%lu.%06lu;%.2lf;%lu\n", thread_id, (long) diff_tv.tv_sec, (long) diff_tv.tv_usec,
+           (((double) (count - last_count) * USEC_PER_SEC) / diff_usec), count);
 
   if (readfrom)
     {
       if (count)
-	raw_message_length = sum_linelen/count;
+        raw_message_length = sum_linelen/count;
       else
-	raw_message_length = 0;
+        raw_message_length = 0;
     }
   free(testsdata);
   return count;
@@ -549,20 +564,14 @@ gen_messages_ssl(int sock, int id, FILE *readfrom)
 {
   int ret = 0;
   int err;
-  SSL_CTX* ctx;
+  SSL_CTX *ctx;
   SSL *ssl;
-
-  /* Initialize SSL library */
-  OpenSSL_add_ssl_algorithms();
 
   if (NULL == (ctx = SSL_CTX_new(SSLv23_client_method())))
     return 1;
 
   if (NULL == (ssl = SSL_new(ctx)))
     return 1;
-
-  SSL_load_error_strings();
-  ERR_load_crypto_strings();
 
   SSL_set_fd (ssl, sock);
   if (-1 == (err = SSL_connect(ssl)))
@@ -699,7 +708,8 @@ error:
   return NULL;
 }
 
-static GOptionEntry loggen_options[] = {
+static GOptionEntry loggen_options[] =
+{
   { "rate", 'r', 0, G_OPTION_ARG_INT, &rate, "Number of messages to generate per second", "<msg/sec/active connection>" },
   { "inet", 'i', 0, G_OPTION_ARG_NONE, &unix_socket_i, "Use IP-based transport (TCP, UDP)", NULL },
   { "unix", 'x', 0, G_OPTION_ARG_NONE, &unix_socket_x, "Use UNIX domain socket transport", NULL },
@@ -803,7 +813,9 @@ main(int argc, char *argv[])
         {
           if (active_connections > 1)
             {
-              fprintf(stderr, "Warning: more than one active connection is not allowed if reading from stdin was specified. active-connections = '%d', new active-connections = '1'\n", active_connections);
+              fprintf(stderr,
+                      "Warning: more than one active connection is not allowed if reading from stdin was specified. active-connections = '%d', new active-connections = '1'\n",
+                      active_connections);
               active_connections = 1;
             }
         }
@@ -895,6 +907,9 @@ main(int argc, char *argv[])
       return 2;
     }
 
+  if (usessl)
+    crypto_init();
+
   /* used for startup & to signal inactive threads to exit */
   thread_cond = g_cond_new();
   /* active threads signal when they are ready */
@@ -939,12 +954,16 @@ main(int argc, char *argv[])
   sum_time.tv_usec /= active_connections;
   diff_usec = sum_time.tv_sec * USEC_PER_SEC + sum_time.tv_usec;
 
-  fprintf(stderr, "average rate = %.2lf msg/sec, count=%"G_GUINT64_FORMAT", time=%ld.%03ld, (average) msg size=%d, bandwidth=%.2lf kB/sec\n",
+  fprintf(stderr,
+          "average rate = %.2lf msg/sec, count=%"G_GUINT64_FORMAT", time=%ld.%03ld, (average) msg size=%d, bandwidth=%.2lf kB/sec\n",
 
-    (double) sum_count * USEC_PER_SEC / diff_usec, sum_count, sum_time.tv_sec, sum_time.tv_usec / 1000, raw_message_length,
-    (double) sum_count * raw_message_length * (USEC_PER_SEC / 1024) / diff_usec);
+          (double) sum_count * USEC_PER_SEC / diff_usec, sum_count, sum_time.tv_sec, sum_time.tv_usec / 1000, raw_message_length,
+          (double) sum_count * raw_message_length * (USEC_PER_SEC / 1024) / diff_usec);
 
 stop_and_exit:
+  if (usessl)
+    crypto_deinit();
+
   threads_start = TRUE;
   threads_stop = TRUE;
   g_mutex_lock(thread_lock);

@@ -24,6 +24,7 @@
 #include "tlscontext.h"
 #include "str-utils.h"
 #include "messages.h"
+#include "compat/openssl_support.h"
 
 #include <arpa/inet.h>
 #include <unistd.h>
@@ -53,7 +54,7 @@ tls_get_x509_digest(X509 *x, GString *hash_string)
 int
 tls_session_verify_fingerprint(X509_STORE_CTX *ctx)
 {
-  SSL *ssl = X509_STORE_CTX_get_app_data(ctx);
+  SSL *ssl = (SSL *)X509_STORE_CTX_get_ex_data(ctx, SSL_get_ex_data_X509_STORE_CTX_idx());
   TLSSession *self = SSL_get_app_data(ssl);
   GList *current_fingerprint = self->ctx->trusted_fingerpint_list;
   GString *hash;
@@ -74,7 +75,7 @@ tls_session_verify_fingerprint(X509_STORE_CTX *ctx)
     {
       do
         {
-          if (strcmp((const gchar*)(current_fingerprint->data), hash->str) == 0)
+          if (strcmp((const gchar *)(current_fingerprint->data), hash->str) == 0)
             {
               match = TRUE;
               break;
@@ -95,7 +96,8 @@ tls_x509_format_dn(X509_NAME *name, GString *dn)
   long len;
 
   bio = BIO_new(BIO_s_mem());
-  X509_NAME_print_ex(bio, name, 0, ASN1_STRFLGS_ESC_2253 | ASN1_STRFLGS_UTF8_CONVERT | XN_FLAG_SEP_CPLUS_SPC | XN_FLAG_DN_REV);
+  X509_NAME_print_ex(bio, name, 0, ASN1_STRFLGS_ESC_2253 | ASN1_STRFLGS_UTF8_CONVERT | XN_FLAG_SEP_CPLUS_SPC |
+                     XN_FLAG_DN_REV);
   len = BIO_get_mem_data(bio, &buf);
   g_string_assign_len(dn, buf, len);
   BIO_free(bio);
@@ -104,7 +106,7 @@ tls_x509_format_dn(X509_NAME *name, GString *dn)
 int
 tls_session_verify_dn(X509_STORE_CTX *ctx)
 {
-  SSL *ssl = X509_STORE_CTX_get_app_data(ctx);
+  SSL *ssl = (SSL *)X509_STORE_CTX_get_ex_data(ctx, SSL_get_ex_data_X509_STORE_CTX_idx());
   TLSSession *self = SSL_get_app_data(ssl);
   gboolean match = FALSE;
   GList *current_dn = self->ctx->trusted_dn_list;
@@ -136,35 +138,37 @@ tls_session_verify(TLSSession *self, int ok, X509_STORE_CTX *ctx)
   if (self->ctx->verify_mode & TVM_UNTRUSTED)
     return 1;
 
+  int ctx_error_depth = X509_STORE_CTX_get_error_depth(ctx);
   /* accept certificate if its fingerprint matches, again regardless whether x509 certificate validation was successful */
-  if (ok && ctx->error_depth == 0 && !tls_session_verify_fingerprint(ctx))
+  if (ok && ctx_error_depth == 0 && !tls_session_verify_fingerprint(ctx))
     {
       msg_notice("Certificate valid, but fingerprint constraints were not met, rejecting");
       return 0;
     }
 
-  if (ok && ctx->error_depth != 0 && (ctx->current_cert->ex_flags & EXFLAG_CA) == 0)
+  X509 *current_cert = X509_STORE_CTX_get_current_cert(ctx);
+  if (ok && ctx_error_depth != 0 && (X509_get_extension_flags(current_cert) & EXFLAG_CA) == 0)
     {
       msg_notice("Invalid certificate found in chain, basicConstraints.ca is unset in non-leaf certificate");
-      ctx->error = X509_V_ERR_INVALID_CA;
+      X509_STORE_CTX_set_error(ctx, X509_V_ERR_INVALID_CA);
       return 0;
     }
 
   /* reject certificate if it is valid, but its DN is not trusted */
-  if (ok && ctx->error_depth == 0 && !tls_session_verify_dn(ctx))
+  if (ok && ctx_error_depth == 0 && !tls_session_verify_dn(ctx))
     {
       msg_notice("Certificate valid, but DN constraints were not met, rejecting");
-      ctx->error = X509_V_ERR_CERT_UNTRUSTED;
+      X509_STORE_CTX_set_error(ctx, X509_V_ERR_CERT_UNTRUSTED);
       return 0;
     }
   /* if the crl_dir is set in the configuration file but the directory is empty ignore this error */
-  if (!ok && ctx->error == X509_V_ERR_UNABLE_TO_GET_CRL)
+  if (!ok && X509_STORE_CTX_get_error(ctx) == X509_V_ERR_UNABLE_TO_GET_CRL)
     {
       msg_notice("CRL directory is set but no CRLs found");
       return 1;
     }
 
-  if (!ok && ctx->error == X509_V_ERR_INVALID_PURPOSE)
+  if (!ok && X509_STORE_CTX_get_error(ctx) == X509_V_ERR_INVALID_PURPOSE)
     {
       msg_warning("Certificate valid, but purpose is invalid");
       return 1;
@@ -175,7 +179,7 @@ tls_session_verify(TLSSession *self, int ok, X509_STORE_CTX *ctx)
 int
 tls_session_verify_callback(int ok, X509_STORE_CTX *ctx)
 {
-  SSL *ssl = X509_STORE_CTX_get_app_data(ctx);
+  SSL *ssl = (SSL *)X509_STORE_CTX_get_ex_data(ctx, SSL_get_ex_data_X509_STORE_CTX_idx());
   TLSSession *self = SSL_get_app_data(ssl);
   /* NOTE: Sometimes libssl calls this function
      with no current_cert. This happens when
@@ -184,21 +188,22 @@ tls_session_verify_callback(int ok, X509_STORE_CTX *ctx)
    */
   if (X509_STORE_CTX_get_current_cert(ctx) == NULL)
     {
-    switch (ctx->error)
-      {
-      case X509_V_ERR_NO_EXPLICIT_POLICY:
-        /* NOTE: Because we set the CHECK_POLICY_FLAG if the
-           certificate contains ExplicitPolicy constraint
-           we would get this error. But this error is because
-           we do not set the policy what we want to check for.
-         */
-        ok = 1;
-        break;
-      default:
-        msg_notice("Error occured during certificate validation",
-                    evt_tag_int("error", ctx->error));
-        break;
-      }
+      int ctx_error = X509_STORE_CTX_get_error(ctx);
+      switch (ctx_error)
+        {
+        case X509_V_ERR_NO_EXPLICIT_POLICY:
+          /* NOTE: Because we set the CHECK_POLICY_FLAG if the
+             certificate contains ExplicitPolicy constraint
+             we would get this error. But this error is because
+             we do not set the policy what we want to check for.
+           */
+          ok = 1;
+          break;
+        default:
+          msg_notice("Error occured during certificate validation",
+                     evt_tag_int("error", X509_STORE_CTX_get_error(ctx)));
+          break;
+        }
     }
   else
     {
@@ -229,11 +234,34 @@ tls_session_set_trusted_dn(TLSContext *self, GList *dn)
 }
 
 void
-tls_session_set_verify(TLSSession *self, TLSSessionVerifyFunc verify_func, gpointer verify_data, GDestroyNotify verify_destroy)
+tls_session_set_verify(TLSSession *self, TLSSessionVerifyFunc verify_func, gpointer verify_data,
+                       GDestroyNotify verify_destroy)
 {
   self->verify_func = verify_func;
   self->verify_data = verify_data;
   self->verify_data_destroy = verify_destroy;
+}
+
+void
+tls_session_info_callback(const SSL *ssl, int where, int ret)
+{
+  TLSSession *self = (TLSSession *)SSL_get_app_data(ssl);
+  if( !self->peer_info.found && where == (SSL_ST_ACCEPT|SSL_CB_LOOP) )
+    {
+      X509 *cert = SSL_get_peer_certificate(ssl);
+
+      if(cert)
+        {
+          self->peer_info.found = 1; /* mark this found so we don't keep checking on every callback */
+          X509_NAME *name = X509_get_subject_name(cert);
+
+          X509_NAME_get_text_by_NID( name, NID_commonName, self->peer_info.cn, X509_MAX_CN_LEN );
+          X509_NAME_get_text_by_NID( name, NID_organizationName, self->peer_info.o, X509_MAX_O_LEN );
+          X509_NAME_get_text_by_NID( name, NID_organizationalUnitName, self->peer_info.ou, X509_MAX_OU_LEN );
+
+          X509_free(cert);
+        }
+    }
 }
 
 static TLSSession *
@@ -246,6 +274,9 @@ tls_session_new(SSL *ssl, TLSContext *ctx)
 
   /* to set verify callback */
   tls_session_set_verify(self, NULL, NULL, NULL);
+
+  SSL_set_info_callback(ssl, tls_session_info_callback);
+
   return self;
 }
 
@@ -255,6 +286,7 @@ tls_session_free(TLSSession *self)
   if (self->verify_data && self->verify_data_destroy)
     self->verify_data_destroy(self->verify_data);
   SSL_free(self->ssl);
+
   g_free(self);
 }
 
@@ -310,7 +342,7 @@ tls_context_setup_session(TLSContext *self)
       if (self->crl_dir)
         verify_flags |= X509_V_FLAG_CRL_CHECK | X509_V_FLAG_CRL_CHECK_ALL;
 
-      X509_VERIFY_PARAM_set_flags(self->ssl_ctx->param, verify_flags);
+      X509_VERIFY_PARAM_set_flags(SSL_CTX_get0_param(self->ssl_ctx), verify_flags);
 
       switch (self->verify_mode)
         {
@@ -350,10 +382,14 @@ tls_context_setup_session(TLSContext *self)
           if(self->ssl_options & TSO_NOTLSv12)
             ssl_options |= SSL_OP_NO_TLSv1_2;
 #endif
+#ifdef SSL_OP_CIPHER_SERVER_PREFERENCE
+          if (self->mode == TM_SERVER)
+            ssl_options |= SSL_OP_CIPHER_SERVER_PREFERENCE;
+#endif
           SSL_CTX_set_options(self->ssl_ctx, ssl_options);
         }
       else
-	msg_debug("empty ssl options");
+        msg_debug("empty ssl options");
       if (self->cipher_suite)
         {
           if (!SSL_CTX_set_cipher_list(self->ssl_ctx, self->cipher_suite))
@@ -372,10 +408,11 @@ tls_context_setup_session(TLSContext *self)
   SSL_set_app_data(ssl, session);
   return session;
 
- error:
+error:
   ssl_error = ERR_get_error();
   msg_error("Error setting up TLS session context",
-            evt_tag_printf("tls_error", "%s:%s:%s", ERR_lib_error_string(ssl_error), ERR_func_error_string(ssl_error), ERR_reason_error_string(ssl_error)));
+            evt_tag_printf("tls_error", "%s:%s:%s", ERR_lib_error_string(ssl_error), ERR_func_error_string(ssl_error),
+                           ERR_reason_error_string(ssl_error)));
   ERR_clear_error();
   if (self->ssl_ctx)
     {
@@ -470,8 +507,8 @@ tls_log_certificate_validation_progress(int ok, X509_STORE_CTX *ctx)
   if (ok)
     {
       msg_debug("Certificate validation progress",
-                  evt_tag_str("subject", subject_name->str),
-                  evt_tag_str("issuer", issuer_name->str));
+                evt_tag_str("subject", subject_name->str),
+                evt_tag_str("issuer", issuer_name->str));
     }
   else
     {
@@ -515,7 +552,7 @@ tls_wildcard_match(const gchar *host_name, const gchar *pattern)
         goto exit;
     }
   success = TRUE;
- exit:
+exit:
   g_free(lower_pattern);
   g_free(lower_hostname);
   g_strfreev(pattern_parts);
@@ -551,7 +588,7 @@ tls_verify_certificate_name(X509 *cert, const gchar *host_name)
               gen_name = sk_GENERAL_NAME_value(alt_names, i);
               if (gen_name->type == GEN_DNS)
                 {
-                  guchar *dnsname = ASN1_STRING_data(gen_name->d.dNSName);
+                  const guchar *dnsname = ASN1_STRING_get0_data(gen_name->d.dNSName);
                   guint dnsname_len = ASN1_STRING_length(gen_name->d.dNSName);
 
                   if (dnsname_len > sizeof(pattern_buf) - 1)
@@ -600,8 +637,8 @@ tls_verify_certificate_name(X509 *cert, const gchar *host_name)
   else
     {
       msg_verbose("Certificate subject matches configured hostname",
-                evt_tag_str("hostname", host_name),
-                evt_tag_str("certificate", pattern_buf));
+                  evt_tag_str("hostname", host_name),
+                  evt_tag_str("certificate", pattern_buf));
     }
 
   return result;

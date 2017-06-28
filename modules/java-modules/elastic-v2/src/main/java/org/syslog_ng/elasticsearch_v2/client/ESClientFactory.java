@@ -27,7 +27,9 @@ import org.syslog_ng.elasticsearch_v2.ElasticSearchOptions;
 import org.syslog_ng.elasticsearch_v2.client.esnative.ESNodeClient;
 import org.syslog_ng.elasticsearch_v2.client.esnative.ESTransportClient;
 import org.syslog_ng.elasticsearch_v2.client.esnative.ESTransportShieldClient;
+import org.syslog_ng.elasticsearch_v2.client.esnative.ESTransportSearchGuardClient;
 import org.syslog_ng.elasticsearch_v2.client.http.ESHttpClient;
+import org.syslog_ng.elasticsearch_v2.client.http.ESHttpsClient;
 
 public class ESClientFactory {
 	public static ESClient getESClient(ElasticSearchOptions options) throws UnknownESClientModeException {
@@ -43,6 +45,12 @@ public class ESClientFactory {
         }
 		else if (client_type.equals(ElasticSearchOptions.CLIENT_MODE_HTTP)) {
 			return new ESHttpClient(options);
+		}
+		else if (client_type.equals(ElasticSearchOptions.CLIENT_MODE_HTTPS)) {
+			return new ESHttpsClient(options);
+		}
+		else if (client_type.equals(ElasticSearchOptions.CLIENT_MODE_SEARCHGUARD)) {
+			return new ESTransportSearchGuardClient(options);
 		}
 		throw new UnknownESClientModeException(client_type);
 	}

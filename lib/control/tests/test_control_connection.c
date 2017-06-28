@@ -23,6 +23,7 @@
  */
 
 #include "testutils.h"
+#include "control/control.h"
 #include "control/control-server.h"
 #include "apphook.h"
 
@@ -31,7 +32,8 @@
 #undef CONTROL_UNITTEST
 
 
-typedef struct _PositionedBuffer {
+typedef struct _PositionedBuffer
+{
   GString *buffer;
   gint pos;
 } PositionedBuffer;
@@ -135,16 +137,17 @@ control_connection_moc_new(ControlServer *server)
 }
 
 GString *
-test_command(GString *command)
+test_command(GString *command, gpointer user_data)
 {
   assert_string(command->str,"test command", "Bad command handling");
   return g_string_new("OK");
 }
 
-ControlCommand command = {
-   .command_name = "test",
-   .description = NULL,
-   .func = test_command
+ControlCommand command =
+{
+  .command_name = "test",
+  .description = NULL,
+  .func = test_command
 };
 
 void
@@ -199,7 +202,7 @@ main(int argc G_GNUC_UNUSED, char *argv[] G_GNUC_UNUSED)
   GList *commands = g_list_append(NULL, &command);
   moc_server.control_commands = commands;
   gsize  i = 0;
-  
+
   app_startup();
   for (i = 0; i < 100; i++)
     {

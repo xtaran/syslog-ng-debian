@@ -28,7 +28,7 @@
 #include "plugin-types.h"
 
 void
-msg_format_inject_parse_error(LogMessage *msg, const guchar *data, gsize length)
+msg_format_inject_parse_error(LogMessage *msg, const guchar *data, gsize length, gint problem_position)
 {
   gchar buf[2048];
 
@@ -36,7 +36,10 @@ msg_format_inject_parse_error(LogMessage *msg, const guchar *data, gsize length)
 
   msg->timestamps[LM_TS_STAMP] = msg->timestamps[LM_TS_RECVD];
   log_msg_set_value(msg, LM_V_HOST, "", 0);
-  g_snprintf(buf, sizeof(buf), "Error processing log message: %.*s", (gint) length, data);
+
+  g_snprintf(buf, sizeof(buf), "Error processing log message: %.*s>@<%.*s", (gint) problem_position-1,
+             data,(gint) (length-problem_position+1), data+problem_position-1);
+
   log_msg_set_value(msg, LM_V_MESSAGE, buf, -1);
   log_msg_set_value(msg, LM_V_PROGRAM, "syslog-ng", 9);
   g_snprintf(buf, sizeof(buf), "%d", (int) getpid());
@@ -79,6 +82,18 @@ msg_format_options_init(MsgFormatOptions *options, GlobalConfig *cfg)
   if (p)
     options->format_handler = plugin_construct(p, cfg, LL_CONTEXT_FORMAT, options->format);
   options->initialized = TRUE;
+}
+
+void
+msg_format_options_copy(MsgFormatOptions *options, const MsgFormatOptions *source)
+{
+  g_assert(!options->initialized);
+
+  options->format = g_strdup(source->format);
+  options->flags = source->flags;
+  options->default_pri = source->default_pri;
+  options->recv_time_zone = g_strdup(source->recv_time_zone);
+  options->sdata_param_value_max = source->sdata_param_value_max;
 }
 
 void

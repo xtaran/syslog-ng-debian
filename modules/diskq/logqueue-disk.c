@@ -66,7 +66,7 @@ _push_tail(LogQueue *s, LogMessage *msg, const LogPathOptions *path_options)
       if (self->push_tail(self, msg, &local_options, path_options))
         {
           log_queue_push_notify (&self->super);
-          stats_counter_inc(self->super.stored_messages);
+          stats_counter_inc(self->super.queued_messages);
           log_msg_ack(msg, &local_options, AT_PROCESSED);
           log_msg_unref(msg);
           g_static_mutex_unlock(&self->super.lock);
@@ -110,7 +110,7 @@ _pop_head(LogQueue *s, LogPathOptions *path_options)
     }
   if (msg != NULL)
     {
-      stats_counter_dec(self->super.stored_messages);
+      stats_counter_dec(self->super.queued_messages);
     }
   g_static_mutex_unlock(&self->super.lock);
   return msg;
@@ -135,7 +135,6 @@ static void
 _rewind_backlog(LogQueue *s, guint rewind_count)
 {
   LogQueueDisk *self = (LogQueueDisk *) s;
-
   g_static_mutex_lock(&self->super.lock);
 
   if (self->rewind_backlog)
@@ -241,14 +240,14 @@ _pop_disk(LogQueueDisk *self, LogMessage **msg)
   *msg = log_msg_new_empty();
 
   if (!log_msg_deserialize(*msg, sa))
-  {
+    {
       g_string_free(serialized, TRUE);
       serialize_archive_free(sa);
       log_msg_unref(*msg);
       *msg = NULL;
       msg_error("Can't read correct message from disk-queue file",evt_tag_str("filename",qdisk_get_filename(self->qdisk)));
       return TRUE;
-  }
+    }
 
   serialize_archive_free(sa);
 
@@ -337,6 +336,7 @@ log_queue_disk_init_instance(LogQueueDisk *self)
   log_queue_init_instance(&self->super,NULL);
   self->qdisk = qdisk_new();
 
+  self->super.type = log_queue_disk_type;
   self->super.get_length = _get_length;
   self->super.push_tail = _push_tail;
   self->super.push_head = _push_head;

@@ -64,7 +64,7 @@ find_eom(const guchar *s, gsize n)
 #elif GLIB_SIZEOF_LONG == 4
   magic_bits = 0x7efefeffL;
 #else
-  #error "unknown architecture"
+#error "unknown architecture"
 #endif
   memset(&charmask, c, sizeof(charmask));
 
@@ -152,6 +152,7 @@ log_proto_server_options_defaults(LogProtoServerOptions *options)
   options->max_msg_size = -1;
   options->init_buffer_size = -1;
   options->max_buffer_size = -1;
+  options->position_tracking_enabled = FALSE;
 }
 
 void
@@ -168,8 +169,13 @@ log_proto_server_options_init(LogProtoServerOptions *options, GlobalConfig *cfg)
     {
       if (options->encoding)
         {
-          /* maximum number of bytes needed to represent an utf8 character is 6 */
-          options->max_buffer_size = 6 * options->max_msg_size;
+          /* Based on the implementation of LogProtoTextServer, the buffer is yielded as
+             a complete message when max_msg_size is reached and there is no EOM in the buffer.
+             In worst case, the buffer contains max_msg_size - 1 bytes before the next fetch,
+             which can be 6 times max_msg_size due to the utf8 conversion.
+             And additional space is required because of the possible leftover bytes.
+          */
+          options->max_buffer_size = 8 * options->max_msg_size;
         }
       else
         options->max_buffer_size = options->max_msg_size;

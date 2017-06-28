@@ -37,7 +37,8 @@ log_template_append_format_recursive(LogTemplate *self, const LogTemplateInvokeA
 /* simple template functions which take templates as arguments */
 
 gboolean
-tf_simple_func_prepare(LogTemplateFunction *self, gpointer s, LogTemplate *parent, gint argc, gchar *argv[], GError **error)
+tf_simple_func_prepare(LogTemplateFunction *self, gpointer s, LogTemplate *parent, gint argc, gchar *argv[],
+                       GError **error)
 {
   TFSimpleFuncState *state = (TFSimpleFuncState *) s;
   gint i;
@@ -45,7 +46,7 @@ tf_simple_func_prepare(LogTemplateFunction *self, gpointer s, LogTemplate *paren
   g_return_val_if_fail(error == NULL || *error == NULL, FALSE);
   state->argv = g_malloc(sizeof(LogTemplate *) * (argc - 1));
 
-  /* NOTE: the argv argument con tains the function name as argv[0],
+  /* NOTE: the argv argument contains the function name as argv[0],
    * but the LogTemplate array doesn't. Thus the index is shifted by
    * one. */
   for (i = 0; i < argc - 1; i++)
@@ -57,7 +58,7 @@ tf_simple_func_prepare(LogTemplateFunction *self, gpointer s, LogTemplate *paren
     }
   state->argc = argc - 1;
   return TRUE;
- error:
+error:
   return FALSE;
 }
 

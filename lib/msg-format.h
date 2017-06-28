@@ -53,6 +53,8 @@ enum
   LP_EXPECT_HOSTNAME = 0x0100,
   /* message is locally generated and should be marked with LF_LOCAL */
   LP_LOCAL = 0x0200,
+  /* for the date part of a message, only skip it, don't fully parse - recommended for keep_timestamp(no) */
+  LP_NO_PARSE_DATE = 0x0400,
 };
 
 typedef struct _MsgFormatHandler MsgFormatHandler;
@@ -83,9 +85,10 @@ struct _MsgFormatHandler
 void msg_format_options_defaults(MsgFormatOptions *options);
 void msg_format_options_init(MsgFormatOptions *parse_options, GlobalConfig *cfg);
 void msg_format_options_destroy(MsgFormatOptions *parse_options);
+void msg_format_options_copy(MsgFormatOptions *options, const MsgFormatOptions *source);
 
 gboolean msg_format_options_process_flag(MsgFormatOptions *options, gchar *flag);
 
-void msg_format_inject_parse_error(LogMessage *msg, const guchar *data, gsize length);
+void msg_format_inject_parse_error(LogMessage *msg, const guchar *data, gsize length, gint problem_position);
 
 #endif

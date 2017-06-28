@@ -204,10 +204,11 @@ test_macros(void)
 static void
 test_nvpairs(void)
 {
-  assert_template_format("$PROGRAM/var/log/messages/$HOST/$HOST_FROM/$MONTH$DAY${QQQQQ}valami", "syslog-ng/var/log/messages/bzorp/kismacska/0211valami");
+  assert_template_format("$PROGRAM/var/log/messages/$HOST/$HOST_FROM/$MONTH$DAY${QQQQQ}valami",
+                         "syslog-ng/var/log/messages/bzorp/kismacska/0211valami");
   assert_template_format("${APP.VALUE}", "value");
   assert_template_format("${APP.VALUE:-ures}", "value");
-  assert_template_format("${APP.VALUE2:-ures}", "ures");
+  assert_template_format("${APP.VALUE99:-ures}", "ures");
   assert_template_format("${1}", "first-match");
   assert_template_format("$1", "first-match");
   assert_template_format("$$$1$$", "$first-match$");
@@ -254,11 +255,17 @@ test_compat(void)
 
   start_grabbing_messages();
   assert_template_format("$MSGHDR", "syslog-ng[23323]:");
-  assert_grabbed_messages_contain("the default value for template-escape has changed to 'no' from syslog-ng 3.0", NULL);
+  gchar *expected_msg_default_value_changed =
+    g_strdup_printf("the default value for template-escape has changed to 'no' from %s", VERSION_3_0);
+  assert_grabbed_messages_contain(expected_msg_default_value_changed, NULL);
   reset_grabbed_messages();
   assert_template_format("$MSG", "syslog-ng[23323]:árvíztűrőtükörfúrógép");
-  assert_grabbed_messages_contain("the meaning of the $MSG/$MESSAGE macros has changed from syslog-ng 3.0", NULL);
+  gchar *expected_msg_macros_changed = g_strdup_printf("the meaning of the $MSG/$MESSAGE macros has changed from %s",
+                                                       VERSION_3_0);
+  assert_grabbed_messages_contain(expected_msg_macros_changed, NULL);
   stop_grabbing_messages();
+  g_free(expected_msg_default_value_changed);
+  g_free(expected_msg_macros_changed);
   assert_template_format("$MSGONLY", "árvíztűrőtükörfúrógép");
   assert_template_format("$MESSAGE", "syslog-ng[23323]:árvíztűrőtükörfúrógép");
 
@@ -271,7 +278,8 @@ test_multi_thread(void)
   /* name-value pair */
   assert_template_format_multi_thread("alma $HOST bela", "alma bzorp bela");
   assert_template_format_multi_thread("kukac $DATE mukac", "kukac Feb 11 10:34:56.000 mukac");
-  assert_template_format_multi_thread("dani $(echo $HOST $DATE $(echo huha)) balint", "dani bzorp Feb 11 10:34:56.000 huha balint");
+  assert_template_format_multi_thread("dani $(echo $HOST $DATE $(echo huha)) balint",
+                                      "dani bzorp Feb 11 10:34:56.000 huha balint");
 }
 
 static void
@@ -297,6 +305,15 @@ test_user_template_function(void)
   log_template_unref(template);
 }
 
+static void
+test_template_function_args(void)
+{
+  assert_template_format("$(echo foo bar)", "foo bar");
+  assert_template_format("$(echo 'foobar' \"barfoo\")", "foobar barfoo");
+  assert_template_format("$(echo foo '' bar)", "foo  bar");
+  assert_template_format("$(echo foo '')", "foo ");
+}
+
 int
 main(int argc G_GNUC_UNUSED, char *argv[] G_GNUC_UNUSED)
 {
@@ -319,6 +336,7 @@ main(int argc G_GNUC_UNUSED, char *argv[] G_GNUC_UNUSED)
   test_compat();
   test_multi_thread();
   test_escaping();
+  test_template_function_args();
   test_user_template_function();
   /* multi-threaded expansion */
 
