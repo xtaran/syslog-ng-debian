@@ -46,3 +46,6 @@ Depends: syslog-ng-core, syslog-ng-mod-add-contextual-data
 Tests: upgrade
 Restrictions: needs-root
 Depends: apt-utils
+
+Tests: baseconfig
+Restrictions: needs-root
