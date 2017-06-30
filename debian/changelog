@@ -1,3 +1,29 @@
+syslog-ng (3.10.1-1) unstable; urgency=medium
+
+  * [e47c9a6] Re-generated openssl patch to make the gbp pq happy
+    And a patch were a next session start before the previous
+    is finished can be called weird anyway.
+  * [114f0e0] Try again using tagged git release as orig.tar.gz
+    Now, after some time I'm a bit more confident that using a naked git
+    release is better than the full-featured and all-including release.
+    First, it is much smaller.  Especially because it does not contain all
+    of the third party libraries which are not used in Debian.  Second
+    reason is that this can be followed much easily, because this is the
+    same as any particular state in the git repo, so a snapshot can be more
+    easily used if this is the daily routine.
+  * [9c410bb] New upstream version 3.10.1 (closes: #866056)
+  * [fa5c024] Preparing for upstream version 3.10.X
+  * [c0f99c0] Updated the patches to the new upstream version
+    This mainly means deleting patches which already
+    merged upstream.
+  * [a7b8153] Added new build dependency (autoconf-archive)
+  * [9a197e2] Removed version fixation
+  * [f52837d] Upgrade test config version
+  * [bf45a65] Upgraded default config version to 3.10
+  * [fc82e19] Added a new test to test the default config
+
+ -- SZALAY Attila <sasa@debian.org>  Fri, 30 Jun 2017 22:15:28 +0200
+
 syslog-ng (3.8.1-10) unstable; urgency=medium
 
   * Fix segfault in X509_STORE_CTX_get_app_data(ctx) (closes: #850743).
