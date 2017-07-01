@@ -4,7 +4,7 @@ Priority: extra
 Maintainer: syslog-ng maintainers <syslog-ng-maintainers@lists.alioth.debian.org>
 Uploaders: Laszlo Boszormenyi (GCS) <gcs@debian.org>,
            SZALAY Attila <sasa@debian.org>
-Build-Depends: debhelper (>= 9~),
+Build-Depends: debhelper (>= 10~),
                dh-autoreconf,
                automake (>= 1:1.11.1),
                autoconf-archive,
