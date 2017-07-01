@@ -28,6 +28,8 @@ usr/share/syslog-ng/include/scl/mbox/*
 usr/share/syslog-ng/include/scl/apache/*
 usr/share/syslog-ng/include/scl/loggly/*
 usr/share/syslog-ng/include/scl/logmatic/*
+usr/share/syslog-ng/include/scl/solaris/*
+usr/share/syslog-ng/include/scl/cisco/*
 usr/share/syslog-ng/xsd/*
 [!kfreebsd-any] lib/systemd/system/*
 
