@@ -1,3 +1,22 @@
+syslog-ng (3.10.1-2) unstable; urgency=medium
+
+  * [a776121] Added new plugins.
+      - getent
+      - stardate
+      - mod-value-pairs
+      - snmptrapd-parser
+  * [b030059] Added scl to the .install file
+  * [e4f5ac4] Bump the debhelper compat level to 10
+  * [4e27f27] Fixed debhelper dependency
+  * [ff8e0ff] Install new scl files and explicitly mention skipped ones
+  * [50b4c13] Fixed 32 bit compile issues.
+    This patch is suggested by upstream in github issue 1545.
+  * [ae5e271] Remove obsoleted files from debian/
+  * [cccc2bb] Added the new packages to the testing
+  * [8661982] Removed unneeded prebuild step
+
+ -- SZALAY Attila <sasa@debian.org>  Tue, 04 Jul 2017 22:05:34 +0200
+
 syslog-ng (3.10.1-1) unstable; urgency=medium
 
   * [e47c9a6] Re-generated openssl patch to make the gbp pq happy
