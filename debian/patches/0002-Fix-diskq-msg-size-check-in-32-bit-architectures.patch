@@ -1,0 +1,24 @@
+From: SZALAY Attila <sasa@debian.org>
+Date: Tue, 4 Jul 2017 07:33:12 +0200
+Subject: Fix diskq msg size check in 32 bit architectures
+
+It seems that this test was created 64 bit architectures
+in mind and the message sizes can be smaller in 32 bit
+architectures that is set as a lower limit.
+---
+ modules/diskq/tests/test_diskq.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/modules/diskq/tests/test_diskq.c b/modules/diskq/tests/test_diskq.c
+index 6e34745..bd922bf 100644
+--- a/modules/diskq/tests/test_diskq.c
++++ b/modules/diskq/tests/test_diskq.c
+@@ -319,7 +319,7 @@ static gboolean
+ is_valid_msg_size(guint32 one_msg_size)
+ {
+   /* 460 as of writing */
+-  return (one_msg_size < 500 && one_msg_size > 400);
++  return (one_msg_size < 500 && one_msg_size > 300);
+ }
+ 
+ struct diskq_tester_parameters;
