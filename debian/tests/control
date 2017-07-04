@@ -43,6 +43,18 @@ Depends: syslog-ng-core, syslog-ng-mod-python
 Tests: basic
 Depends: syslog-ng-core, syslog-ng-mod-add-contextual-data
 
+Tests: basic
+Depends: syslog-ng-core, syslog-ng-mod-getent
+
+Tests: basic
+Depends: syslog-ng-core, syslog-ng-mod-stardate
+
+Tests: basic
+Depends: syslog-ng-core, syslog-ng-mod-map-value-pairs
+
+Tests: basic
+Depends: syslog-ng-core, syslog-ng-mod-snmptrapd-parser
+
 Tests: upgrade
 Restrictions: needs-root
 Depends: apt-utils
