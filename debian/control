@@ -468,6 +468,7 @@ Package: syslog-ng-mod-getent
 Architecture: any
 Multi-Arch: foreign
 Depends: ${shlibs:Depends}, ${misc:Depends}
+Conflicts: syslog-ng-mod-basicfuncs-plus ( << 0.6.0)
 Description: Enhanced system logging daemon (getent plugin)
  syslog-ng is an enhanced log daemon, supporting a wide range of input
  and output methods: syslog, unstructured text, message queues,
