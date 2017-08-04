@@ -307,7 +307,7 @@ _seek_to_head(JournalReader *self)
   if (rc != 0)
     {
       msg_error("Failed to seek to the start position of the journal",
-                evt_tag_errno("error", errno));
+                evt_tag_errno("error", -rc));
       return FALSE;
     }
   else
@@ -327,7 +327,7 @@ _seek_to_saved_state(JournalReader *self)
     {
       msg_warning("Failed to seek journal to the saved cursor position",
                   evt_tag_str("cursor", state->cursor),
-                  evt_tag_errno("error", errno));
+                  evt_tag_errno("error", -rc));
       return _seek_to_head(self);
     }
   else
@@ -410,7 +410,7 @@ _fetch_log(JournalReader *self)
           if (rc < 0)
             {
               msg_error("Error occurred while getting next message from journal",
-                        evt_tag_errno("error", errno));
+                        evt_tag_errno("error", -rc));
               result = NC_READ_ERROR;
             }
           break;
@@ -493,7 +493,7 @@ _add_poll_events(JournalReader *self)
   if (fd < 0)
     {
       msg_error("Error setting up journal polling, journald_get_fd() returned failure",
-                evt_tag_errno("error", errno));
+                evt_tag_errno("error", -fd));
       journald_close(self->journal);
       return FALSE;
     }
@@ -521,7 +521,7 @@ _init(LogPipe *s)
   if (res < 0)
     {
       msg_error("Error opening the journal",
-                evt_tag_errno("error", errno));
+                evt_tag_errno("error", -res));
       return FALSE;
     }
 

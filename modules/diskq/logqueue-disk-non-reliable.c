@@ -32,7 +32,7 @@ typedef struct
 {
   guint index_in_queue;
   guint item_number_per_message;
-  gssize *memory_usage_initial_value;
+  gssize *value_accumulator;
 } DiskqMemusageLoaderState;
 
 static gboolean
@@ -49,7 +49,7 @@ _update_memory_usage_during_load(gpointer data, gpointer s)
   if (_object_is_message_in_position(state->index_in_queue, state->item_number_per_message))
     {
       LogMessage *msg = (LogMessage *)data;
-      *state->memory_usage_initial_value += log_msg_get_size(msg);
+      *state->value_accumulator += log_msg_get_size(msg);
     }
   state->index_in_queue++;
 }
@@ -61,12 +61,18 @@ _start(LogQueueDisk *s, const gchar *filename)
 
   gboolean retval = qdisk_start(s->qdisk, filename, self->qout, self->qbacklog, self->qoverflow);
 
-  DiskqMemusageLoaderState state = { .index_in_queue = 0,
-                                     .item_number_per_message = ITEM_NUMBER_PER_MESSAGE,
-                                     .memory_usage_initial_value = &self->super.super.memory_usage_initial_value
-                                   };
+  DiskqMemusageLoaderState qout_sum = { .index_in_queue = 0,
+                                        .item_number_per_message = ITEM_NUMBER_PER_MESSAGE,
+                                        .value_accumulator = &self->super.super.memory_usage_qout_initial_value
+                                      };
 
-  g_queue_foreach(self->qout, _update_memory_usage_during_load, &state);
+  DiskqMemusageLoaderState overflow_sum = { .index_in_queue = 0,
+                                            .item_number_per_message = ITEM_NUMBER_PER_MESSAGE,
+                                            .value_accumulator = &self->super.super.memory_usage_overflow_initial_value
+                                          };
+
+  g_queue_foreach(self->qout, _update_memory_usage_during_load, &qout_sum);
+  g_queue_foreach(self->qoverflow, _update_memory_usage_during_load, &overflow_sum);
 
   return retval;
 }
@@ -407,11 +413,11 @@ _set_virtual_functions (LogQueueDisk *self)
 }
 
 LogQueue *
-log_queue_disk_non_reliable_new(DiskQueueOptions *options)
+log_queue_disk_non_reliable_new(DiskQueueOptions *options, const gchar *persist_name)
 {
   g_assert(options->reliable == FALSE);
   LogQueueDiskNonReliable *self = g_new0(LogQueueDiskNonReliable, 1);
-  log_queue_disk_init_instance (&self->super);
+  log_queue_disk_init_instance(&self->super, persist_name);
   qdisk_init (self->super.qdisk, options);
   self->qbacklog = g_queue_new ();
   self->qout = g_queue_new ();

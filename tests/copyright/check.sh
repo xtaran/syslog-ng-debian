@@ -41,8 +41,6 @@ main() {
  mkdir "$WORKDIR" ||
   { echo "error: can't create $WORKDIR"; return 1 ; }
 
- [ -d "$REPO" ] ||
-  { echo "error: not a dir $REPO"; return 1 ; }
  [ -d "$BUILDDIR" ] ||
   { echo "error: not a dir $BUILDDIR"; return 1 ; }
  [ -d "$DATADIR" ] ||
@@ -56,6 +54,9 @@ main() {
 
  local SIGS="2 3 6 7 8 9 11 15"
  trap -- "rm --recursive \"$WORKDIR\" ; exit 1;" $SIGS
+
+ cd "$REPO" ||
+  { echo "error: not a dir $REPO"; return 1 ; }
 
  main_logged 2>&1 |
  if [ 0$COPYRIGHTVERBOSITY -ge 2 ]; then
@@ -102,10 +103,12 @@ main_logged() {
  MISSING="$BUILDDIR/missing.txt"
 
  find \
+  -L \
   . \
   -iname '.git' -prune \
   -o \
- -type f -print |
+ -type f \
+ -exec grep -Iq . {} \; -print |
  sed "s~^\./~~" |
  prune_ignored_paths |
  sort |
@@ -295,6 +298,13 @@ compare_expected_detected() {
 
 extract_holder_license() {
  local FILE="$1"
+
+ case "$FILE" in
+  configure.in)
+    extract_holder_license_sh
+    return $?
+ esac
+
  local EXT="`echo "$FILE" | sed -r "s~^.*\.([^.]+)$~\1~"`"
  case "$EXT" in
   c|h|ym|java)
@@ -407,7 +417,7 @@ parse_expected_licenses() {
      "
     `"
     if [ -z "$LICENSE" ]; then
-     echo "error: can't parse license: '${LINE}'" >&2
+     echo "error: can't parse expected license in policy: '${LINE}'" >&2
      local ERR=1
     fi
     ;;
@@ -561,4 +571,3 @@ preview() {
 }
 
 main "$@"
-

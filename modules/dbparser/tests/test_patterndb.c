@@ -59,7 +59,7 @@ assert_pdb_file_valid(const gchar *filename_, const gchar *pdb)
   GError *error = NULL;
   gboolean success;
 
-  success = pdb_file_validate(filename_, &error);
+  success = pdb_file_validate_in_tests(filename_, &error);
   assert_true(success, "Error validating patterndb, error=%s\n>>>\n%s\n<<<", error ? error->message : "unknown", pdb);
   g_clear_error(&error);
 }
@@ -1119,7 +1119,7 @@ main(int argc, char *argv[])
 
   msg_init(TRUE);
 
-  configuration = cfg_new(0x0302);
+  configuration = cfg_new_snippet(0x0302);
   plugin_load_module("basicfuncs", configuration, NULL);
   plugin_load_module("syslogformat", configuration, NULL);
 

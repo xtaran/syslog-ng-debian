@@ -102,6 +102,7 @@ check_PROGRAMS		=
 check_SCRIPTS		=
 TESTS			= $(check_PROGRAMS) $(check_SCRIPTS)
 bin_SCRIPTS		=
+dist_sbin_SCRIPTS	=
 bin_PROGRAMS		=
 sbin_PROGRAMS		=
 libexec_PROGRAMS	=
@@ -151,6 +152,9 @@ help:
 
 .PHONY: help populate-makefiles
 
+install_moduleLTLIBRARIES	= install-moduleLTLIBRARIES
+$(install_moduleLTLIBRARIES): install-libLTLIBRARIES
+
 include Mk/lex-rules.am
 include Mk/Makefile.am
 include libtest/Makefile.am
@@ -163,7 +167,6 @@ include tests/Makefile.am
 include doc/Makefile.am
 include contrib/Makefile.am
 include scl/Makefile.am
-include tgz2build/Makefile.am
 
 TEST_EXTENSIONS = .sh
 @VALGRIND_CHECK_RULES@

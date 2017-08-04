@@ -1,6 +1,7 @@
-
 DIST_SUBDIRS				+= @IVYKIS_SUBDIRS@
 
+include lib/eventlog/src/Makefile.am
+include lib/eventlog/tests/Makefile.am
 include lib/transport/Makefile.am
 include lib/logproto/Makefile.am
 include lib/rewrite/Makefile.am
@@ -45,8 +46,10 @@ lib_libsyslog_ng_la_LDFLAGS		= -no-undefined -release ${LSNG_RELEASE} \
 
 lib_test_subdirs			= lib_filter lib_logproto lib_parser lib_rewrite lib_template lib_stats lib_control
 
+lib_libsyslog_ng_la_DEPENDENCIES	= lib/eventlog/src/libevtlog.la
+
 if IVYKIS_INTERNAL
-lib_libsyslog_ng_la_DEPENDENCIES	= lib/ivykis/src/libivykis.la
+lib_libsyslog_ng_la_DEPENDENCIES	+= lib/ivykis/src/libivykis.la
 
 lib/ivykis/src/libivykis.la:
 	${MAKE} CFLAGS="${CFLAGS} -Wno-error" -C lib/ivykis
@@ -68,6 +71,8 @@ uninstall-ivykis:
 INSTALL_EXEC_HOOKS			+= install-ivykis
 UNINSTALL_HOOKS				+= uninstall-ivykis
 endif
+
+
 
 if JSON_INTERNAL
 lib/jsonc/libjson-c.la:
@@ -158,7 +163,8 @@ pkginclude_HEADERS			+= \
 	lib/ringbuffer.h		\
 	lib/ack_tracker.h		\
 	lib/host-id.h			\
-	lib/resolved-configurable-paths.h
+	lib/resolved-configurable-paths.h \
+	lib/pe-versioning.h
 
 # this is intentionally formatted so conflicts are less likely to arise. one name in every line.
 lib_libsyslog_ng_la_SOURCES		= \
@@ -271,7 +277,7 @@ BUILT_SOURCES += lib/cfg-lex.c lib/cfg-lex.h						\
 EXTRA_DIST += \
 	lib/block-ref-grammar.ym	\
 	lib/pragma-grammar.ym		\
-	lib/merge-grammar.pl		\
+	lib/merge-grammar.py		\
 	lib/hostname-unix.c		\
 	lib/ivykis/configure.gnu
 

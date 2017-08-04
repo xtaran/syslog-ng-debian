@@ -50,9 +50,11 @@ struct _LogThrDestDriver
   StatsCounterItem *dropped_messages;
   StatsCounterItem *queued_messages;
   StatsCounterItem *processed_messages;
+  StatsCounterItem *written_messages;
   StatsCounterItem *memory_usage;
 
   gboolean suspended;
+  gboolean under_termination;
   time_t time_reopen;
 
   LogQueue *queue;
@@ -101,8 +103,6 @@ gboolean log_threaded_dest_driver_start(LogPipe *s);
 
 void log_threaded_dest_driver_init_instance(LogThrDestDriver *self, GlobalConfig *cfg);
 void log_threaded_dest_driver_free(LogPipe *s);
-
-void log_threaded_dest_driver_suspend(LogThrDestDriver *self);
 
 void log_threaded_dest_driver_message_accept(LogThrDestDriver *self,
                                              LogMessage *msg);
