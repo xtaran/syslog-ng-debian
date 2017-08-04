@@ -25,7 +25,6 @@
 #include "logwriter.h"
 #include "messages.h"
 #include "stats/stats-registry.h"
-#include "stats/stats-views.h"
 #include "hostname.h"
 #include "host-resolve.h"
 #include "seqnum.h"
@@ -68,6 +67,7 @@ struct _LogWriter
   StatsCounterItem *suppressed_messages;
   StatsCounterItem *processed_messages;
   StatsCounterItem *queued_messages;
+  StatsCounterItem *written_messages;
   StatsCounterItem *memory_usage;
   LogPipe *control;
   LogWriterOptions *options;
@@ -1083,6 +1083,7 @@ log_writer_flush_finalize(LogWriter *self)
   if (status != LPS_SUCCESS)
     return FALSE;
 
+
   return TRUE;
 }
 
@@ -1209,6 +1210,9 @@ log_writer_flush(LogWriter *self, LogWriterFlushMode flush_mode)
           break;
         }
       scratch_buffers_reclaim_marked(mark);
+
+      if (!write_error)
+        stats_counter_inc(self->written_messages);
     }
 
   if (write_error)
@@ -1269,29 +1273,29 @@ _register_counters(LogWriter *self)
 {
   stats_lock();
   {
-    StatsCluster *cluster;
     StatsClusterKey sc_key;
     stats_cluster_logpipe_key_set(&sc_key, self->stats_source | SCS_DESTINATION, self->stats_id, self->stats_instance );
 
     if (self->options->suppress > 0)
       stats_register_counter(self->stats_level, &sc_key, SC_TYPE_SUPPRESSED, &self->suppressed_messages);
-    cluster = stats_register_counter(self->stats_level, &sc_key, SC_TYPE_DROPPED, &self->dropped_messages);
+    stats_register_counter(self->stats_level, &sc_key, SC_TYPE_DROPPED, &self->dropped_messages);
     stats_register_counter(self->stats_level, &sc_key, SC_TYPE_PROCESSED, &self->processed_messages);
     stats_register_counter(self->stats_level, &sc_key, SC_TYPE_QUEUED, &self->queued_messages);
-    stats_register_counter(STATS_LEVEL1, &sc_key, SC_TYPE_MEMORY_USAGE, &self->memory_usage);
-    if (cluster != NULL)
-      stats_register_written_view(cluster, self->processed_messages, self->dropped_messages, self->queued_messages);
+    stats_register_counter(self->stats_level, &sc_key, SC_TYPE_WRITTEN, &self->written_messages);
+    stats_register_counter_and_index(STATS_LEVEL1, &sc_key, SC_TYPE_MEMORY_USAGE, &self->memory_usage);
+
   }
   stats_unlock();
 
 }
 
 static void
-_update_processed_message_counter_when_diskq_is_used(LogWriter *self)
+_update_memory_usage_counter_when_fifo_is_used(LogWriter *self)
 {
-  if (!g_strcmp0(self->queue->type, "DISK"))
+  if (!g_strcmp0(self->queue->type, "FIFO") && self->memory_usage)
     {
-      stats_counter_add(self->processed_messages, stats_counter_get(self->queued_messages));
+      LogPipe *_pipe = &self->super;
+      load_counter_from_persistent_storage(log_pipe_get_config(_pipe), self->memory_usage);
     }
 }
 
@@ -1310,7 +1314,9 @@ log_writer_init(LogPipe *s)
     _register_counters(self);
 
   log_queue_set_counters(self->queue, self->queued_messages, self->dropped_messages, self->memory_usage);
-  _update_processed_message_counter_when_diskq_is_used(self);
+
+  _update_memory_usage_counter_when_fifo_is_used(self);
+
   if (self->proto)
     {
       LogProtoClient *proto;
@@ -1334,6 +1340,10 @@ log_writer_init(LogPipe *s)
 static void
 _unregister_counters(LogWriter *self)
 {
+
+  if (self->memory_usage)
+    save_counter_to_persistent_storage(log_pipe_get_config(&self->super), self->memory_usage);
+
   stats_lock();
   {
     StatsClusterKey sc_key;
@@ -1343,6 +1353,7 @@ _unregister_counters(LogWriter *self)
     stats_unregister_counter(&sc_key, SC_TYPE_SUPPRESSED, &self->suppressed_messages);
     stats_unregister_counter(&sc_key, SC_TYPE_PROCESSED, &self->processed_messages);
     stats_unregister_counter(&sc_key, SC_TYPE_QUEUED, &self->queued_messages);
+    stats_unregister_counter(&sc_key, SC_TYPE_WRITTEN, &self->written_messages);
     stats_unregister_counter(&sc_key, SC_TYPE_MEMORY_USAGE, &self->memory_usage);
   }
   stats_unlock();

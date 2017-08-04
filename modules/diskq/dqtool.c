@@ -83,14 +83,14 @@ open_queue(char *filename, LogQueue **lq, DiskQueueOptions *options)
     {
       options->disk_buf_size = 128;
       options->mem_buf_size = 1024 * 1024;
-      *lq = log_queue_disk_reliable_new(options);
+      *lq = log_queue_disk_reliable_new(options, NULL);
     }
   else
     {
       options->disk_buf_size = 1;
       options->mem_buf_size = 128;
       options->qout_size = 128;
-      *lq = log_queue_disk_non_reliable_new(options);
+      *lq = log_queue_disk_non_reliable_new(options, NULL);
     }
 
   if (!log_queue_disk_load_queue(*lq, filename))
@@ -290,7 +290,8 @@ main(int argc, char *argv[])
       return 0;
     }
 
-  configuration = cfg_new(VERSION_VALUE);
+  configuration = cfg_new_snippet(VERSION_VALUE);
+
   configuration->template_options.frac_digits = 3;
   configuration->template_options.time_zone_info[LTZ_LOCAL] = time_zone_info_new(NULL);
 

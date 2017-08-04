@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2017 Balabit
- * Copyright (c) 2017 Noemi Vanyi
+ * Copyright (c) 2017 Laszlo Budai
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,12 +21,4 @@
  * COPYING for details.
  *
  */
-#ifndef STATS_VIEWS_H_INCLUDED
-#define STATS_VIEWS_H_INCLUDED 1
-
-#include "stats/stats-query.h"
-
-void stats_register_written_view(StatsCluster *cluster, StatsCounterItem *processed, StatsCounterItem *dropped, StatsCounterItem *queued);
-
-#endif
 

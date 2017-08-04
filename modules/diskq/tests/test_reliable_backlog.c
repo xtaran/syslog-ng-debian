@@ -61,7 +61,7 @@ _init_diskq_for_test(gint64 size, gint64 membuf_size)
   LogQueueDiskReliable *dq;
 
   _construct_options(&options, size, membuf_size, TRUE);
-  LogQueue *q = log_queue_disk_reliable_new(&options);
+  LogQueue *q = log_queue_disk_reliable_new(&options, NULL);
   struct stat st;
   num_of_ack = 0;
   gchar *filename = FILENAME;
@@ -384,7 +384,7 @@ main(gint argc, gchar **argv)
   putenv("TZ=MET-1METDST");
   tzset();
 
-  configuration = cfg_new(0x0308);
+  configuration = cfg_new_snippet(0x0308);
   plugin_load_module("syslogformat", configuration, NULL);
   plugin_load_module("disk-buffer", configuration, NULL);
   msg_format_options_defaults(&parse_options);

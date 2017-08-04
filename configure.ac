@@ -41,7 +41,6 @@ dnl ***************************************************************************
 dnl dependencies
 
 GLIB_MIN_VERSION="2.10.1"
-EVTLOG_MIN_VERSION="0.2.12"
 OPENSSL_MIN_VERSION="0.9.8"
 LIBDBI_MIN_VERSION="0.9.0"
 LIBRABBITMQ_MIN_VERSION="0.5.3"
@@ -86,6 +85,41 @@ if test -n "$SNAPSHOT_VERSION"; then
 	PACKAGE_VERSION=$PACKAGE_VERSION+$SNAPSHOT_VERSION
 fi
 
+dnl ***************************************************************************
+dnl script snippet to generate user friendly version strings according to the
+dnl new versioning policy. All needed code are here to allow easy moving
+dnl between projects.
+if test -z "$RELEASE_TYPE"; then
+    RELEASE_TYPE=stable
+fi
+
+if test -z "$BROCHURE_VERSION"; then
+    _MAJOR=`echo $VERSION | cut -f1 -d'.'`
+    _MINOR=`echo $VERSION | cut -f2 -d'.'`
+    case "$RELEASE_TYPE" in
+        stable) BROCHURE_VERSION="$_MAJOR";;
+        feature) BROCHURE_VERSION="$_MAJOR F$_MINOR";;
+        *) BROCHURE_VERSION="$VERSION dogfood edition. Please contact your syslog-ng release manager to fix the configure scritpt";;
+    esac
+fi
+
+if test -z "$COMBINED_VERSION"; then
+    COMBINED_VERSION="$BROCHURE_VERSION ($VERSION)"
+fi
+
+TECHNICAL_VERSION=$VERSION
+
+AC_DEFINE_UNQUOTED(RELEASE_TYPE, "$RELEASE_TYPE", [type of syslog-ng release. stable or feature])
+AC_DEFINE_UNQUOTED(BROCHURE_VERSION, "$BROCHURE_VERSION", [pretty version for users depends on the release type])
+AC_DEFINE_UNQUOTED(COMBINED_VERSION, "$COMBINED_VERSION", [normal and brochure version combined])
+AC_DEFINE_UNQUOTED(SOURCE_REVISION, "$SOURCE_REVISION", [source revision])
+AC_SUBST(RELEASE_TYPE)
+AC_SUBST(BROCHURE_VERSION)
+AC_SUBST(COMBINED_VERSION)
+AC_SUBST(TECHNICAL_VERSION)
+dnl ***************************************************************************
+
+
 if test "x$prefix" = "xNONE"; then
         prefix=$ac_default_prefix
 fi
@@ -99,6 +133,7 @@ xsddir='${datadir}/syslog-ng/xsd'
 
 config_includedir='${datadir}/syslog-ng/include'
 scldir="${config_includedir}/scl"
+abs_topsrcdir=`(cd $srcdir && pwd)`
 
 AC_CONFIG_HEADERS(config.h)
 
@@ -132,6 +167,13 @@ AC_ARG_WITH(ld-library-path,
 
 AC_ARG_WITH([systemdsystemunitdir],
    AS_HELP_STRING([--with-systemdsystemunitdir=DIR], [Directory for systemd service files]))
+
+AC_ARG_WITH(package_name,
+   [  --with-package-name=package name Package name is printed out when syslog-ng started with --version],
+   PACKAGE_NAME=$with_package_name)
+
+AC_ARG_ENABLE(forced_server_mode,
+              [  --enable-forced-server-mode   Enable forced server mode.],, enable_forced_server_mode="yes")
 
 AC_ARG_ENABLE(debug,
               [  --enable-debug      Enable debugging code.],, enable_debug="no")
@@ -257,6 +299,10 @@ AC_ARG_ENABLE(geoip,
               [  --enable-geoip          Enable GeoIP support (default: auto)]
               ,,enable_geoip="auto")
 
+AC_ARG_ENABLE(geoip2,
+              [  --enable-geoip2          Enable GeoIP2 support (default: auto)]
+              ,,enable_geoip2="auto")
+
 AC_ARG_ENABLE(riemann,
               [  --disable-riemann       Disable riemann destination]
               ,,enable_riemann="auto")
@@ -303,7 +349,7 @@ if test "x$enable_all_modules" != "xauto"; then
    state="$enable_all_modules"
 
    MODULES="spoof_source sun_streams sql pacct mongodb json amqp stomp \
-            redis systemd geoip riemann ipv6 smtp native python java java_modules"
+            redis systemd geoip geoip2 riemann ipv6 smtp native python java java_modules"
    for mod in ${MODULES}; do
        modstate=$(eval echo \$enable_${mod})
        if test "x$modstate" = "xauto"; then
@@ -687,7 +733,10 @@ AC_CHECK_FUNCS([inotify_init])
 dnl ***************************************************************************
 dnl libevtlog headers/libraries
 dnl ***************************************************************************
-PKG_CHECK_MODULES(EVTLOG, eventlog >= $EVTLOG_MIN_VERSION,,)
+
+EVTLOG_LIBS="-Wl,${WHOLE_ARCHIVE_OPT} -L\$(top_builddir)/lib/eventlog/src -levtlog -Wl,${NO_WHOLE_ARCHIVE_OPT}"
+EVTLOG_NO_LIBTOOL_LIBS="-Wl,${WHOLE_ARCHIVE_OPT} -L\$(top_builddir)/lib/eventlog/src/.libs -levtlog -Wl,${NO_WHOLE_ARCHIVE_OPT}"
+EVTLOG_CFLAGS="-I\$(top_srcdir)/lib/eventlog/src -I\$(top_builddir)/lib/eventlog/src"
 
 dnl ***************************************************************************
 dnl libwrap headers/libraries
@@ -830,6 +879,31 @@ if test "x$enable_geoip" = "xyes" || test "x$enable_geoip" = "xauto"; then
                 AC_MSG_ERROR([Could not find libgeoip, and geoip support was explicitly enabled.])
         fi
         enable_geoip="$with_geoip"
+fi
+
+dnl ***************************************************************************
+dnl geoip2 headers/libraries
+dnl ***************************************************************************
+if test "x$enable_geoip2" = "xyes" || test "x$enable_geoip2" = "xauto"; then
+        if test "x$MAXMINDDB_LIBS" != "x"; then
+                AC_MSG_CHECKING([for MAXMINDDB])
+                AC_MSG_RESULT([yes (MAXMINDDB_LIBS set, will use that.)])
+                with_maxminddb="yes"
+        else
+                AC_MSG_CHECKING([for MAXMINDDB])
+                AC_CHECK_LIB(maxminddb, MMDB_open, MAXMINDDB_LIBS="-lmaxminddb"; with_maxminddb="yes", with_maxminddb="no")
+                AC_SUBST(MAXMINDDB_LIBS)
+        fi
+
+        if test "x$with_maxminddb" = "xno" && test "x$enable_geoip2" = "xyes"; then
+                AC_MSG_ERROR([Could not find libmaxminddb, and geoip2 support was explicitly enabled.])
+        fi
+
+        if test "x$with_maxminddb" = "xyes"; then
+                AC_CONFIG_LINKS([modules/geoip2/tests/test.mmdb:modules/geoip2/tests/test.mmdb])
+        fi
+
+        enable_geoip2="$with_maxminddb"
 fi
 
 dnl ***************************************************************************
@@ -1508,7 +1582,7 @@ if test "x$linking_mode" = "xdynamic"; then
 	# syslog-ng binary is linked with the default link command (e.g. libtool)
 	SYSLOGNG_LINK='$(LINK)'
 else
-	SYSLOGNG_DEPS_LIBS="$LIBS $BASE_LIBS $RESOLV_LIBS $LD_START_STATIC -Wl,${WHOLE_ARCHIVE_OPT} $GLIB_LIBS $EVTLOG_LIBS $PCRE_LIBS $REGEX_LIBS  -Wl,${NO_WHOLE_ARCHIVE_OPT} $IVYKIS_NO_LIBTOOL_LIBS $LD_END_STATIC $LIBCAP_LIBS $DL_LIBS "
+	SYSLOGNG_DEPS_LIBS="$LIBS $BASE_LIBS $RESOLV_LIBS $LD_START_STATIC -Wl,${WHOLE_ARCHIVE_OPT} $GLIB_LIBS $EVTLOG_NO_LIBTOOL_LIBS $PCRE_LIBS $REGEX_LIBS  -Wl,${NO_WHOLE_ARCHIVE_OPT} $IVYKIS_NO_LIBTOOL_LIBS $LD_END_STATIC $LIBCAP_LIBS $DL_LIBS "
 	TOOL_DEPS_LIBS="$LIBS $BASE_LIBS $GLIB_LIBS $EVTLOG_LIBS $RESOLV_LIBS $LIBCAP_LIBS $PCRE_LIBS $REGEX_LIBS $IVYKIS_LIBS $DL_LIBS"
 	CORE_DEPS_LIBS=""
 
@@ -1542,7 +1616,6 @@ AC_DEFINE_UNQUOTED(JOURNALD_OFF, 0, ["Disable systemd-journal source"])
 AC_DEFINE_UNQUOTED(JOURNALD_OPTIONAL, 1, ["Enable systemd-journal source if journald is available"])
 AC_DEFINE_UNQUOTED(JOURNALD_SYSTEM, 2, ["Force systemd-journal source to use system's journald"])
 
-AC_DEFINE_UNQUOTED(PACKAGE_NAME, "$PACKAGE_NAME", [package name])
 AC_DEFINE_UNQUOTED(VERSION, "$PACKAGE_VERSION", [version number])
 AC_DEFINE_UNQUOTED(SOURCE_REVISION, "$SOURCE_REVISION", [source revision])
 AC_DEFINE_UNQUOTED(LICENSE_VERSION, "$LICENSE_VERSION", [Required license version])
@@ -1568,10 +1641,12 @@ fi
 AC_DEFINE_UNQUOTED(PATH_MODULEDIR, "$moduledir", [module installation directory])
 AC_DEFINE_UNQUOTED(MODULE_PATH, "$module_path", [module search path])
 AC_DEFINE_UNQUOTED(JAVA_MODULE_PATH, "$java_module_path", [java module search path])
-
+AC_DEFINE_UNQUOTED(PATH_TOPSRC_DIR, "$abs_topsrcdir", [self-defined top_srcdir path])
+AC_DEFINE_UNQUOTED(PACKAGE_NAME, "$PACKAGE_NAME", [package name])
 
 
 AC_DEFINE_UNQUOTED(WITH_COMPILE_DATE, $wcmp_date, [Include the compile date in the binary])
+AC_DEFINE_UNQUOTED(ENABLE_FORCED_SERVER_MODE, `enable_value $enable_forced_server_mode`, [Enable forced server mode])
 AC_DEFINE_UNQUOTED(ENABLE_DEBUG, `enable_value $enable_debug`, [Enable debugging])
 AC_DEFINE_UNQUOTED(ENABLE_LIBUUID, `enable_value $enable_libuuid`, [Enable libuuid support])
 AC_DEFINE_UNQUOTED(ENABLE_GPROF, `enable_value $enable_gprof`, [Enable gcc profiling])
@@ -1599,6 +1674,7 @@ AM_CONDITIONAL(ENABLE_AMQP, [test "$enable_amqp" = "yes"])
 AM_CONDITIONAL(ENABLE_STOMP, [test "$enable_stomp" = "yes"])
 AM_CONDITIONAL(ENABLE_JSON, [test "$enable_json" = "yes"])
 AM_CONDITIONAL(ENABLE_GEOIP, [test "$enable_geoip" = "yes"])
+AM_CONDITIONAL(ENABLE_GEOIP2, [test "$enable_geoip2" = "yes"])
 AM_CONDITIONAL(ENABLE_REDIS, [test "$enable_redis" = "yes"])
 AM_CONDITIONAL(IVYKIS_INTERNAL, [test "x$with_ivykis" = "xinternal"])
 AM_CONDITIONAL(JSON_INTERNAL, [test "x$JSON_SUBDIRS" != "x"])
@@ -1684,6 +1760,11 @@ AC_OUTPUT(dist.conf
 
 echo
 echo "syslog-ng Open Source Edition $PACKAGE_VERSION configured"
+echo " Edition settings:"
+echo "  Release type                : $RELEASE_TYPE"
+echo "  Pretty version              : $BROCHURE_VERSION"
+echo "  Combined vers.              : $COMBINED_VERSION"
+echo "  Package name                : $PACKAGE_NAME"
 echo " Compiler options:"
 echo "  compiler                    : $CC"
 echo "  compiler options            : $CFLAGS $CPPFLAGS"
@@ -1700,6 +1781,7 @@ echo "  mongoc                      : $with_mongoc"
 echo "  librabbitmq                 : $with_librabbitmq_client"
 echo "  jsonc                       : $with_jsonc"
 echo " Features:"
+echo "  Forced server mode          : ${enable_forced_server_mode:=yes}"
 echo "  Debug symbols               : ${enable_debug:=no}"
 echo "  GCC profiling               : ${enable_gprof:=no}"
 echo "  Memtrace                    : ${enable_memtrace:=no}"
@@ -1723,6 +1805,7 @@ echo "  HTTP support (module)       : ${enable_http:=no}"
 echo "  AMQP destination (module)   : ${enable_amqp:=no}"
 echo "  STOMP destination (module)  : ${enable_stomp:=no}"
 echo "  GEOIP support (module)      : ${enable_geoip:=no}"
+echo "  GEOIP2 support (module)     : ${enable_geoip2:=no}"
 echo "  Redis support (module)      : ${enable_redis:=no}"
 echo "  Riemann destination (module): ${enable_riemann:=no}"
 echo "  python                      : ${enable_python:=no} (pkg-config package: ${with_python:=none})"

@@ -37,10 +37,12 @@ exec_prop_check() {
     build_log_cflags_propagation "$BUILDLOG"
     S=$?
     rm "$BUILDLOG"
-    return $S
+    if [ $S -ne 0 ]; then
+      return $ERROREXIT
+    fi
   else
     rm "$BUILDLOG"
-    return $ERROREXIT
+    return $S
   fi
 }
 
@@ -51,7 +53,7 @@ reduce_verbosity() {
   grep --line-buffered --invert-match --extended-regexp "^(\
 libtool: (link|relink|install): |\
 depbase=|\
-(test -z|rm|\./lib/merge-grammar.pl|\./doc/mallard2man\.py) |\
+(test -z|rm|\./lib/merge-grammar.py|\./doc/mallard2man\.py) |\
 `printf "\t"`?/bin/bash |\
 `printf "\t"`?(gcc|mv) \
 )"
