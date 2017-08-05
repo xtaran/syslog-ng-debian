@@ -11,7 +11,6 @@ Build-Depends: debhelper (>= 10~),
                tzdata,
                pkg-config, flex, bison,
                xsltproc, docbook-xsl,
-               libevtlog-dev (>= 0.2.12-5~),
                libesmtp-dev,
                libivykis-dev (>= 0.36.1~),
                libnet1-dev,
@@ -95,7 +94,7 @@ Architecture: any
 Depends: syslog-ng-core (= ${binary:Version}),
  ${misc:Depends}, ${perl:Depends},
  pkg-config, perl, flex, bison,
- libevtlog-dev (>= 0.2.12), libglib2.0-dev, libivykis-dev (>= 0.30)
+ libglib2.0-dev, libivykis-dev (>= 0.30)
 Description: Enhanced system logging daemon (development files)
  syslog-ng is an enhanced log daemon, supporting a wide range of input
  and output methods: syslog, unstructured text, message queues,
