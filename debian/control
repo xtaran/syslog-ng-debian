@@ -93,7 +93,7 @@ Section: libdevel
 Architecture: any
 Depends: syslog-ng-core (= ${binary:Version}),
  ${misc:Depends}, ${perl:Depends},
- pkg-config, perl, flex, bison,
+ pkg-config, perl, flex, bison, python,
  libglib2.0-dev, libivykis-dev (>= 0.30)
 Description: Enhanced system logging daemon (development files)
  syslog-ng is an enhanced log daemon, supporting a wide range of input
