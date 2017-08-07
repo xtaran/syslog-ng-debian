@@ -1,3 +1,20 @@
+syslog-ng (3.11.1-1) unstable; urgency=medium
+
+  * [1601fce] New upstream version 3.11.1
+  * [e33d51d] Refreshed debian/patches.
+    Removed patches merged upstream and fixed
+    a conflict caused by upstream changes.
+  * [2c0ec3c] Added python dependency for syslog-ng-dev
+  * [5584829] Re-added the old system control file.
+    The new upstream version contains an enhanced systemd control file which
+    allow one to start more than one instance.  Unfortunately this change would
+    cause issues with already installed systems.  Until that situation can be
+    enhanced, the old systemd file will be used.
+  * [4f4c274] Added the new man pages
+  * [3e5e19f] Upgrade configs version 3.11
+
+ -- SZALAY Attila <sasa@debian.org>  Mon, 07 Aug 2017 10:15:09 -0400
+
 syslog-ng (3.10.1-3) unstable; urgency=medium
 
   * [6318b4b] getent module conflicts with old incubator package.
