@@ -3,3 +3,4 @@
 0003-Fixed-line-braking-issue.patch
 0004-Fixed-OpenSSL-1.1-build.patch
 0005-fix-segfault-in-X509_STORE_CTX_get_app_data.patch
+0006-Remove-pylint-directives-not-known-by-pylint-in-jess.patch

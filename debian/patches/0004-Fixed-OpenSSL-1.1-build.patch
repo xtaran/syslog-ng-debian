@@ -1,7 +1,6 @@
-From 55f1b97fd699a925db1bd8ea4201432b66484a42 Mon Sep 17 00:00:00 2001
 From: Laszlo Budai <Laszlo.Budai@balabit.com>
 Date: Mon, 12 Dec 2016 16:11:11 +0100
-Subject: [PATCH] openssl: support 1.1
+Subject: openssl: support 1.1
 
 Fixes: #1234
 
@@ -20,7 +19,7 @@ Signed-off-by: Laszlo Budai <Laszlo.Budai@balabit.com>
  create mode 100644 lib/compat/openssl_support.h
 
 diff --git a/configure.ac b/configure.ac
-index 611e7b5..cecb7cd 100644
+index 4d517cc..4d15e4e 100644
 --- a/configure.ac
 +++ b/configure.ac
 @@ -871,6 +871,10 @@ if test -n "$OPENSSL_LIBS" -a "$linking_mode" != "dynamic"; then
@@ -367,6 +366,3 @@ index 5e9738e..1bccafb 100644
  
  #include <stdio.h>
  #include <string.h>
--- 
-2.11.0
-

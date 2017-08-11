@@ -1,0 +1,21 @@
+From: SZALAY Attila <sasa@ubainba.hu>
+Date: Fri, 11 Aug 2017 12:05:56 -0400
+Subject: Remove pylint directives not known by pylint in jessie
+
+---
+ modules/python/pylib/syslogng/debuggercli/syslognginternals.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/modules/python/pylib/syslogng/debuggercli/syslognginternals.py b/modules/python/pylib/syslogng/debuggercli/syslognginternals.py
+index db0adb9..aa7adb3 100644
+--- a/modules/python/pylib/syslogng/debuggercli/syslognginternals.py
++++ b/modules/python/pylib/syslogng/debuggercli/syslognginternals.py
+@@ -100,7 +100,7 @@ def get_value_pairs_scopes():
+ 
+ # override implementations from the module supplied by the C implementation.
+ try:
+-    # pylint: disable=import-error,wildcard-import,wrong-import-position
++    # pylint: disable=import-error,wildcard-import
+     from _syslogngdbg import *
+ except ImportError:
+     pass

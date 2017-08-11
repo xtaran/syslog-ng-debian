@@ -1,15 +1,14 @@
-From b53330f9a490249a1b5c4bdd611831856ca9eaeb Mon Sep 17 00:00:00 2001
-From: grin <Peter Gervai grin@grin.hu>
+From: "grin@grin.hu" <grin@grin.hu>
 Date: Tue, 10 Jan 2017 00:20:28 +0100
-Subject: [PATCH] Hopefully fix segfault in X509_STORE_CTX_get_app_data(ctx)
- see https://bz.apache.org/bugzilla/show_bug.cgi?id=32529
+Subject: Hopefully fix segfault in X509_STORE_CTX_get_app_data(ctx) see
+ https://bz.apache.org/bugzilla/show_bug.cgi?id=32529
 
 ---
  lib/tlscontext.c | 6 +++---
  1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/lib/tlscontext.c b/lib/tlscontext.c
-index 45ca423..e6cc021 100644
+index 956fd83..50fa819 100644
 --- a/lib/tlscontext.c
 +++ b/lib/tlscontext.c
 @@ -54,7 +54,7 @@ tls_get_x509_digest(X509 *x, GString *hash_string)
