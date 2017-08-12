@@ -1,3 +1,16 @@
+syslog-ng (3.8.1-10~bpo8+1) jessie-backports; urgency=medium
+
+  * Rebuild for stretch-backports.
+  * [2670176] Removed the packages which cannot be compiled from control
+  * [e2d3c33] Updated gbp.conf for backports
+  * [0f1a8ca] Disable packages not compiling in jessie environment
+  * [0ea7260] Re-generated openssl patch to make the gbp pq happy.
+    And a patch were a next session start before the previous
+    is finished can be called weird anyway.
+  * [d20ae29] Removed pylint drectives not known by pylint in jessie
+
+ -- SZALAY Attila <sasa@debian.org>  Fri, 11 Aug 2017 14:24:16 -0400
+
 syslog-ng (3.8.1-10) unstable; urgency=medium
 
   * Fix segfault in X509_STORE_CTX_get_app_data(ctx) (closes: #850743).
