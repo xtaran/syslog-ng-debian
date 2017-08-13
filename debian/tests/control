@@ -61,3 +61,7 @@ Depends: apt-utils
 
 Tests: baseconfig
 Restrictions: needs-root
+
+Tests: testinitscript
+Depends: @, sysvinit-core
+Restrictions: needs-root
