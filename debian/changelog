@@ -1,3 +1,18 @@
+syslog-ng (3.11.1-2) unstable; urgency=medium
+
+  * [eb1ad8a] Remove dh-autoreconf dependency.
+    This not needed any more with debhelper version >= 10
+  * [90a2d31] Removed upstart init file.
+    It does not needed any more
+  * [621acc1] Added try-restart option to the init script
+  * [0e76829] Testing SystemV init script too
+  * [c4156ea] Add libevtlog.so to the -dev package
+  * [6e4bde9] Adapt mongodb test code to the new version
+    libmongoc version 1.7.0 changed the syntax of the unix domain socket type of
+    connection. This change is to adapt the test case to the new situation.
+
+ -- SZALAY Attila <sasa@debian.org>  Fri, 01 Sep 2017 22:46:28 +0200
+
 syslog-ng (3.11.1-1) unstable; urgency=medium
 
   * [1601fce] New upstream version 3.11.1
