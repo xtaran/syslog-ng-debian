@@ -30,7 +30,8 @@ Build-Depends: debhelper (>= 10~),
                python, python-dev, pep8, pylint, dh-python,
                dh-exec (>= 0.13~),
                python-nose, python-ply,
-               libxml2-utils, geoip-database
+               libxml2-utils, geoip-database,
+               libsnappy-dev
 Build-Conflicts: autoconf2.13
 Standards-Version: 3.9.8
 Homepage: http://www.syslog-ng.org/
