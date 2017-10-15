@@ -26,8 +26,7 @@
 
 #include "driver.h"
 #include "logreader.h"
-#include "logproto/logproto-regexp-multiline-server.h"
-#include "affile-common.h"
+#include "file-opener.h"
 #include "file-reader.h"
 
 typedef struct _AFFileSourceDriver
@@ -35,12 +34,14 @@ typedef struct _AFFileSourceDriver
   LogSrcDriver super;
   GString *filename;
   FileReader *file_reader;
+  FileOpener *file_opener;
   FileReaderOptions file_reader_options;
-  /* state information to follow a set of files using a wildcard expression */
+  FileOpenerOptions file_opener_options;
 } AFFileSourceDriver;
 
+AFFileSourceDriver *affile_sd_new_instance(gchar *filename, GlobalConfig *cfg);
 LogDriver *affile_sd_new(gchar *filename, GlobalConfig *cfg);
-LogDriver *afpipe_sd_new(gchar *filename, GlobalConfig *cfg);
+
 
 void affile_sd_set_recursion(LogDriver *s, const gint recursion);
 void affile_sd_set_pri_level(LogDriver *s, const gint16 severity);

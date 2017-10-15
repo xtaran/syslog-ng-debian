@@ -99,12 +99,11 @@ afsocket_sc_init(LogPipe *s)
       log_reader_reopen(self->reader, proto, poll_fd_events_new(self->sock));
       log_reader_set_peer_addr(self->reader, self->peer_addr);
     }
-  log_reader_set_options(self->reader, s,
+  log_reader_set_options(self->reader, &self->super,
                          &self->owner->reader_options,
-                         STATS_LEVEL1,
-                         self->owner->transport_mapper->stats_source,
                          self->owner->super.super.id,
                          afsocket_sc_stats_instance(self));
+
   log_pipe_append((LogPipe *) self->reader, s);
   if (log_pipe_init((LogPipe *) self->reader))
     {
@@ -674,7 +673,8 @@ afsocket_sd_init_method(LogPipe *s)
          afsocket_sd_setup_transport(self) &&
          afsocket_sd_setup_addresses(self) &&
          afsocket_sd_restore_kept_alive_connections(self) &&
-         afsocket_sd_open_listener(self);
+         afsocket_sd_open_listener(self) &&
+         transport_mapper_init(self->transport_mapper);
 }
 
 gboolean
@@ -735,6 +735,8 @@ afsocket_sd_init_instance(AFSocketSourceDriver *self,
   self->listen_backlog = 255;
   self->connections_kept_alive_accross_reloads = TRUE;
   log_reader_options_defaults(&self->reader_options);
+  self->reader_options.super.stats_level = STATS_LEVEL1;
+  self->reader_options.super.stats_source = transport_mapper->stats_source;
 
   /* NOTE: this changes the initial window size from 100 to 1000. Reasons:
    * Starting with syslog-ng 3.3, window-size is distributed evenly between
