@@ -556,3 +556,80 @@ Description: Enhanced system logging daemon (snmptrapd-parser plugin)
  .
  This parser module can parse SNMP trap messages and convert it to key-value
  pairs.
+
+Package: syslog-ng-mod-xml-parser
+Architecture: any
+Multi-Arch: foreign
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Enhanced system logging daemon (xml parser plugin)
+ syslog-ng is an enhanced log daemon, supporting a wide range of input
+ and output methods: syslog, unstructured text, message queues,
+ databases (SQL and NoSQL alike) and more.
+ .
+ Key features:
+ .
+  * receive and send RFC3164 and RFC5424 style syslog messages
+  * work with any kind of unstructured data
+  * receive and send JSON formatted messages
+  * classify and structure logs with builtin parsers (csv-parser(),
+    db-parser(), etc.)
+  * normalize, crunch and process logs as they flow through the system
+  * hand on messages for further processing using message queues (like
+    AMQP), files or databases (like PostgreSQL or MongoDB).
+ .
+ The xml parser can process input in xml format, and adds the parsed data
+ to the message object.
+
+Package: syslog-ng-mod-extra
+Architecture: all
+Multi-Arch: foreign
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Enhanced system logging daemon (extra plugins)
+ syslog-ng is an enhanced log daemon, supporting a wide range of input
+ and output methods: syslog, unstructured text, message queues,
+ databases (SQL and NoSQL alike) and more.
+ .
+ Key features:
+ .
+  * receive and send RFC3164 and RFC5424 style syslog messages
+  * work with any kind of unstructured data
+  * receive and send JSON formatted messages
+  * classify and structure logs with builtin parsers (csv-parser(),
+    db-parser(), etc.)
+  * normalize, crunch and process logs as they flow through the system
+  * hand on messages for further processing using message queues (like
+    AMQP), files or databases (like PostgreSQL or MongoDB).
+ .
+ This package collects all the small plugins, which does not worth to have
+ a whole package. This package contains:
+ .
+  * windows event log parser
+  * tag parser
+  * Graylog2 destination
+  * default Network source driver
+  * Load balancer destination
+  * osquery destination
+  * ewmm (Enterprise wide messaging model) destination and parser
+
+Package: syslog-ng-mod-tag-parser
+Architecture: any
+Multi-Arch: foreign
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Enhanced system logging daemon (tag parser plugin)
+ syslog-ng is an enhanced log daemon, supporting a wide range of input
+ and output methods: syslog, unstructured text, message queues,
+ databases (SQL and NoSQL alike) and more.
+ .
+ Key features:
+ .
+  * receive and send RFC3164 and RFC5424 style syslog messages
+  * work with any kind of unstructured data
+  * receive and send JSON formatted messages
+  * classify and structure logs with builtin parsers (csv-parser(),
+    db-parser(), etc.)
+  * normalize, crunch and process logs as they flow through the system
+  * hand on messages for further processing using message queues (like
+    AMQP), files or databases (like PostgreSQL or MongoDB).
+ .
+ The new tags-parser() takes a value encoded by $TAGS and parses it
+ back into actual tags on the message.

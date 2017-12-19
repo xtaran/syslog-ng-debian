@@ -2,3 +2,5 @@ usr/share/syslog-ng/include/scl/pacct/plugin.conf
 usr/share/syslog-ng/include/scl/elasticsearch/plugin.conf
 usr/share/syslog-ng/include/scl/kafka/plugin.conf
 usr/share/syslog-ng/include/scl/hdfs/plugin.conf
+usr/lib/pkgconfig/syslog-ng-add-contextual-data.pc
+lib/systemd/system/syslog-ng@.service

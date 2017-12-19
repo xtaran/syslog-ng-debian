@@ -22,6 +22,7 @@ usr/lib/syslog-ng/*/libsystem-source.so
 usr/lib/syslog-ng/*/libdate.so
 usr/lib/syslog-ng/*/libcef.so
 usr/lib/syslog-ng/*/libdisk-buffer.so
+usr/lib/syslog-ng/*/libappmodel.so
 usr/share/syslog-ng/include/scl/system/*
 usr/share/syslog-ng/include/scl/syslogconf/*
 usr/share/syslog-ng/include/scl/rewrite/*
@@ -31,6 +32,8 @@ usr/share/syslog-ng/include/scl/loggly/*
 usr/share/syslog-ng/include/scl/logmatic/*
 usr/share/syslog-ng/include/scl/solaris/*
 usr/share/syslog-ng/include/scl/cisco/*
+usr/share/syslog-ng/include/scl/iptables/*
+usr/share/syslog-ng/include/scl/sudo/*
 usr/share/syslog-ng/xsd/*
 #[!kfreebsd-any] lib/systemd/system/*
 [!kfreebsd-any] debian/syslog-ng.systemd =>  lib/systemd/system/syslog-ng.service
