@@ -192,6 +192,9 @@ override_dh_python2:
 #* Other, non-override targets
 ##
 
+override_dh_missing:
+	dh_missing --fail-missing
+
 # By default, the arch:all syslog-ng package does not need anything
 # built, so build-indep shall be empty. This avoids triggering another
 # build attempt, which would fail due to autoreconf being run
@@ -201,4 +204,4 @@ build-indep: ;
 
 # And for the rest, there is debhelper!
 %:
-	dh $@ --with autoreconf,systemd,python2 --parallel --list-missing
+	dh $@ --with autoreconf,systemd,python2 --parallel
