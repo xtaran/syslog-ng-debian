@@ -1,6 +1,6 @@
 Source: syslog-ng
 Section: admin
-Priority: extra
+Priority: optional
 Maintainer: syslog-ng maintainers <syslog-ng-maintainers@lists.alioth.debian.org>
 Uploaders: Laszlo Boszormenyi (GCS) <gcs@debian.org>,
            SZALAY Attila <sasa@debian.org>
