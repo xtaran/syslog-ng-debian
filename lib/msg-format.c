@@ -78,9 +78,9 @@ msg_format_options_init(MsgFormatOptions *options, GlobalConfig *cfg)
   if (!options->format)
     options->format = g_strdup("syslog");
 
-  p = plugin_find(cfg, LL_CONTEXT_FORMAT, options->format);
+  p = cfg_find_plugin(cfg, LL_CONTEXT_FORMAT, options->format);
   if (p)
-    options->format_handler = plugin_construct(p, cfg, LL_CONTEXT_FORMAT, options->format);
+    options->format_handler = plugin_construct(p);
   options->initialized = TRUE;
 }
 
@@ -127,6 +127,7 @@ CfgFlagHandler msg_format_flag_handlers[] =
   { "sanitize-utf8",              CFH_SET, offsetof(MsgFormatOptions, flags), LP_SANITIZE_UTF8 },
   { "no-multi-line",              CFH_SET, offsetof(MsgFormatOptions, flags), LP_NO_MULTI_LINE },
   { "store-legacy-msghdr",        CFH_SET, offsetof(MsgFormatOptions, flags), LP_STORE_LEGACY_MSGHDR },
+  { "store-raw-message",          CFH_SET, offsetof(MsgFormatOptions, flags), LP_STORE_RAW_MESSAGE },
   { "dont-store-legacy-msghdr", CFH_CLEAR, offsetof(MsgFormatOptions, flags), LP_STORE_LEGACY_MSGHDR },
   { "expect-hostname",            CFH_SET, offsetof(MsgFormatOptions, flags), LP_EXPECT_HOSTNAME },
   { "no-hostname",              CFH_CLEAR, offsetof(MsgFormatOptions, flags), LP_EXPECT_HOSTNAME },

@@ -37,6 +37,8 @@ static CfgLexerKeyword riemann_keywords[] =
   { "host",                     KW_HOST },
   { "service",                  KW_SERVICE },
   { "event_time",               KW_EVENT_TIME },
+  { "seconds",                  KW_SECONDS },
+  { "microseconds",             KW_MICROSECONDS },
   { "state",                    KW_STATE },
   { "description",              KW_DESCRIPTION },
   { "metric",                   KW_METRIC },
@@ -50,6 +52,8 @@ static CfgLexerKeyword riemann_keywords[] =
   /* compatibility with original but inconsistent option naming */
   { "cacert",                   KW_CA_FILE, KWS_OBSOLETE, "The cacert() option is deprecated in favour of ca-file()" },
   { "cert",                     KW_CERT_FILE, KWS_OBSOLETE, "The cert() option is deprecated in favour of cert-file()" },
+
+  { "tls",                      KW_TLS },
 
   { NULL }
 };

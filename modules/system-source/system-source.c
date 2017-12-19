@@ -22,7 +22,7 @@
  */
 
 #include "cfg.h"
-#include "cfg-lexer.h"
+#include "cfg-block-generator.h"
 #include "messages.h"
 #include "plugin.h"
 #include "plugin-types.h"
@@ -316,52 +316,30 @@ system_generate_system_transports(GString *sysblock)
   return TRUE;
 }
 
-static gboolean
-_is_json_parser_available(GlobalConfig *cfg)
-{
-  return plugin_find(cfg, LL_CONTEXT_PARSER, "json-parser") != NULL;
-}
-
 static void
-system_generate_cim_parser(GlobalConfig *cfg, GString *sysblock)
+system_generate_app_parser(GlobalConfig *cfg, GString *sysblock, CfgArgs *args)
 {
-  if (cfg_is_config_version_older(cfg, 0x0306))
-    {
-      msg_warning_once("WARNING: Starting with " VERSION_3_6
-                       ", the system() source performs JSON parsing of messages starting with the '@cim:' prefix. No additional action is needed");
-      return;
-    }
+  gchar *varargs = cfg_args_format_varargs(args, NULL);
 
-  if (!_is_json_parser_available(cfg))
-    {
-      msg_debug("system(): json-parser() is missing, skipping the automatic JSON parsing of messages submitted via syslog(3), Please install the json module");
-      return;
-    }
-
-  g_string_append(sysblock,
-                  "channel {\n"
-                  "  channel {\n"
-                  "    parser {\n"
-                  "      json-parser(prefix('.cim.') marker('@cim:'));\n"
-                  "    };\n"
-                  "    flags(final);\n"
-                  "  };\n"
-                  "  channel { };\n"
-                  "};\n");
+  g_string_append_printf(sysblock,
+                         "channel {\n"
+                         "  channel {\n"
+                         "    parser {\n"
+                         "      app-parser(topic(system-unix) %s);\n"
+                         "      app-parser(topic(syslog) %s);\n"
+                         "    };\n"
+                         "    flags(final);\n"
+                         "  };\n"
+                         "  channel { flags(final); };\n"
+                         "};\n",
+                         varargs, varargs);
+  g_free(varargs);
 }
 
 static gboolean
-system_generate_system(CfgLexer *lexer, gint type, const gchar *name,
-                       CfgArgs *args, gpointer user_data)
+system_source_generate(CfgBlockGenerator *self, GlobalConfig *cfg, CfgArgs *args, GString *sysblock)
 {
-  gchar buf[256];
-  GString *sysblock;
   gboolean result = FALSE;
-  GlobalConfig *cfg = (GlobalConfig *) user_data;
-
-  g_snprintf(buf, sizeof(buf), "source confgen system");
-
-  sysblock = g_string_sized_new(1024);
 
   g_string_append(sysblock,
                   "channel {\n"
@@ -374,25 +352,48 @@ system_generate_system(CfgLexer *lexer, gint type, const gchar *name,
 
   g_string_append(sysblock, "    }; # source\n");
 
-  system_generate_cim_parser(cfg, sysblock);
+  system_generate_app_parser(cfg, sysblock, args);
 
   g_string_append(sysblock, "}; # channel\n");
-  result = cfg_lexer_include_buffer(lexer, buf, sysblock->str, sysblock->len);
+  result = TRUE;
 exit:
-  g_string_free(sysblock, TRUE);
   return result;
 }
 
-gboolean
-system_source_module_init(GlobalConfig *cfg, CfgArgs *args)
+
+CfgBlockGenerator *
+system_source_generator_new(gint context, const gchar *name)
 {
-  cfg_lexer_register_block_generator(cfg->lexer,
-                                     cfg_lexer_lookup_context_type_by_name("source"),
-                                     "system", system_generate_system,
-                                     cfg, NULL);
+  CfgBlockGenerator *self = g_new0(CfgBlockGenerator, 1);
+
+  cfg_block_generator_init_instance(self, context, name);
+  self->generate = system_source_generate;
+  return self;
+}
+
+gpointer
+system_source_construct(Plugin *p)
+{
+  return system_source_generator_new(p->type, p->name);
+}
+
+Plugin system_plugins[] =
+{
+  {
+    .type = LL_CONTEXT_SOURCE | LL_CONTEXT_FLAG_GENERATOR,
+    .name = "system",
+    .construct = system_source_construct
+  }
+};
+
+gboolean
+system_source_module_init(PluginContext *context, CfgArgs *args)
+{
+  plugin_register(context, system_plugins, 1);
 
   return TRUE;
 }
+
 
 const ModuleInfo module_info =
 {
@@ -400,6 +401,6 @@ const ModuleInfo module_info =
   .version = SYSLOG_NG_VERSION,
   .description = "The system-source module provides support for determining the system log sources at run time.",
   .core_revision = SYSLOG_NG_SOURCE_REVISION,
-  .plugins = NULL,
-  .plugins_len = 0,
+  .plugins = system_plugins,
+  .plugins_len = G_N_ELEMENTS(system_plugins),
 };

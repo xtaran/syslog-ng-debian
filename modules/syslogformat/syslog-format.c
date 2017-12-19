@@ -37,8 +37,13 @@
 
 static const char aix_fwd_string[] = "Message forwarded from ";
 static const char repeat_msg_string[] = "last message repeated";
-static NVHandle is_synced;
-static NVHandle cisco_seqid;
+static struct
+{
+  gboolean initialized;
+  NVHandle is_synced;
+  NVHandle cisco_seqid;
+  NVHandle raw_message;
+} handles;
 
 static gboolean
 log_msg_parse_pri(LogMessage *self, const guchar **data, gint *length, guint flags, guint16 default_pri)
@@ -196,7 +201,7 @@ log_msg_parse_seq(LogMessage *self, const guchar **data, gint *length)
   if (*src != ' ')
     return FALSE;
 
-  log_msg_set_value(self, cisco_seqid, (gchar *) *data, *length - left - 1);
+  log_msg_set_value(self, handles.cisco_seqid, (gchar *) *data, *length - left - 1);
 
   *data = src;
   *length = left;
@@ -401,25 +406,56 @@ __parse_bsd_timestamp(const guchar **data, gint *length, const GTimeVal *now, st
 }
 
 static inline void
-__set_zone_offset(LogStamp *const timestamp, glong const assumed_timezone)
+__determine_recv_timezone_offset(LogStamp *const timestamp, glong const recv_timezone_ofs)
 {
-  if(timestamp->zone_offset == -1)
-    {
-      timestamp->zone_offset = assumed_timezone;
-    }
-  if (timestamp->zone_offset == -1)
-    {
-      timestamp->zone_offset = get_local_timezone_ofs(timestamp->tv_sec);
-    }
+  if (!log_stamp_is_timezone_set(timestamp))
+    timestamp->zone_offset = recv_timezone_ofs;
+
+  if (!log_stamp_is_timezone_set(timestamp))
+    timestamp->zone_offset = get_local_timezone_ofs(timestamp->tv_sec);
 }
 
-static inline time_t
-__get_normalized_time(LogStamp const timestamp, gint const normalized_hour, gint const unnormalized_hour)
+static void
+__fixup_hour_in_struct_tm_within_transition_periods(LogStamp *stamp, struct tm *tm, glong recv_timezone_ofs)
 {
-  return timestamp.tv_sec
-         + get_local_timezone_ofs(timestamp.tv_sec)
-         - (normalized_hour - unnormalized_hour) * 3600
-         - timestamp.zone_offset;
+  /* save the tm_hour value as received from the client */
+  gint unnormalized_hour = tm->tm_hour;
+
+  /* NOTE: mktime() returns the time assuming that the timestamp we
+   * received was in local time. */
+
+  /* tell cached_mktime() that we have no clue whether Daylight Saving is enabled or not */
+  tm->tm_isdst = -1;
+  stamp->tv_sec = cached_mktime(tm);
+
+  /* We need to determine the timezone we want to assume the message was
+   * received from.  This depends on the recv-time-zone() setting and the
+   * the tv_sec value as converted by mktime() above. */
+  __determine_recv_timezone_offset(stamp, recv_timezone_ofs);
+
+  /* save the tm_hour as adjusted by mktime() */
+  gint normalized_hour = tm->tm_hour;
+
+  /* fix up the tv_sec value by transposing it into the target timezone:
+   *
+   * First we add the local time zone offset then substract the target time
+   * zone offset.  This is not trivial however, as we have to determine
+   * exactly what the local timezone offset is at the current second, as
+   * used by mktime(). It is composed of these values:
+   *
+   *  1) get_local_timezone_ofs()
+   *  2) then in transition periods, mktime() will change tm->tm_hour
+   *     according to its understanding (e.g.  sprint time, 02:01 is changed
+   *     to 03:01), which is an additional factor that needs to be taken care
+   *     of.  This is the (normalized_hour - unnormalized_hour) part below
+   *
+   */
+  stamp->tv_sec = stamp->tv_sec
+                  /* these two components are the zone offset as used by mktime() */
+                  + get_local_timezone_ofs(stamp->tv_sec)
+                  - (normalized_hour - unnormalized_hour) * 3600
+                  /* this is the zone offset value we want to be */
+                  - stamp->zone_offset;
 }
 
 /* FIXME: this function should really be exploded to a lot of smaller functions... (Bazsi) */
@@ -439,14 +475,14 @@ log_msg_parse_date_unnormalized(LogMessage *self, const guchar **data, gint *len
       if (G_UNLIKELY(src[0] == '*'))
         {
           if (!(parse_flags & LP_NO_PARSE_DATE))
-            log_msg_set_value(self, is_synced, "0", 1);
+            log_msg_set_value(self, handles.is_synced, "0", 1);
           src++;
           left--;
         }
       else if (G_UNLIKELY(src[0] == '.'))
         {
           if (!(parse_flags & LP_NO_PARSE_DATE))
-            log_msg_set_value(self, is_synced, "1", 1);
+            log_msg_set_value(self, handles.is_synced, "1", 1);
           src++;
           left--;
         }
@@ -489,18 +525,9 @@ error:
   return FALSE;
 }
 
-static void
-_normalize_time(LogStamp *stamp, struct tm *tm, glong assume_timezone)
-{
-  tm->tm_isdst = -1;
-  gint unnormalized_hour = tm->tm_hour;
-  stamp->tv_sec = cached_mktime(tm);
-  __set_zone_offset(stamp, assume_timezone);
-  stamp->tv_sec = __get_normalized_time(*stamp, tm->tm_hour, unnormalized_hour);
-}
 
 static gboolean
-log_msg_parse_date(LogMessage *self, const guchar **data, gint *length, guint parse_flags, glong assume_timezone)
+log_msg_parse_date(LogMessage *self, const guchar **data, gint *length, guint parse_flags, glong recv_timezone_ofs)
 {
   struct tm tm;
 
@@ -521,7 +548,7 @@ log_msg_parse_date(LogMessage *self, const guchar **data, gint *length, guint pa
     }
   else
     {
-      _normalize_time(stamp, &tm, assume_timezone);
+      __fixup_hour_in_struct_tm_within_transition_periods(stamp, &tm, recv_timezone_ofs);
     }
 
   return TRUE;
@@ -602,7 +629,6 @@ log_msg_parse_legacy_program_name(LogMessage *self, const guchar **data, gint *l
   if ((flags & LP_STORE_LEGACY_MSGHDR))
     {
       log_msg_set_value(self, LM_V_LEGACY_MSGHDR, (gchar *) *data, *length - left);
-      self->flags |= LF_LEGACY_MSGHDR;
     }
   *data = src;
   *length = left;
@@ -1236,6 +1262,9 @@ syslog_format_handler(const MsgFormatOptions *parse_options,
   while (length > 0 && (data[length - 1] == '\n' || data[length - 1] == '\0'))
     length--;
 
+  if (parse_options->flags & LP_STORE_RAW_MESSAGE)
+    log_msg_set_value(self, handles.raw_message, (gchar *) data, length);
+
   if (parse_options->flags & LP_NOPARSE)
     {
       log_msg_set_value(self, LM_V_MESSAGE, (gchar *) data, length);
@@ -1280,13 +1309,12 @@ syslog_format_handler(const MsgFormatOptions *parse_options,
 void
 syslog_format_init(void)
 {
-  static gboolean handles_initialized = FALSE;
-
-  if (!handles_initialized)
+  if (!handles.initialized)
     {
-      is_synced = log_msg_get_value_handle(".SDATA.timeQuality.isSynced");
-      cisco_seqid = log_msg_get_value_handle(".SDATA.meta.sequenceId");
-      handles_initialized = TRUE;
+      handles.is_synced = log_msg_get_value_handle(".SDATA.timeQuality.isSynced");
+      handles.cisco_seqid = log_msg_get_value_handle(".SDATA.meta.sequenceId");
+      handles.raw_message = log_msg_get_value_handle("RAWMSG");
+      handles.initialized = TRUE;
     }
 
   _init_parse_hostname_invalid_chars();

@@ -176,7 +176,7 @@ _assert_logwriter_output(LogWriterTestCase c)
 
 Test(logwriter, test_logwriter)
 {
-  configuration = cfg_new_snippet(0x0300);
+  configuration = cfg_new_snippet();
   LogWriterTestCase test_cases[] =
   {
     {MSG_SYSLOG_STR, TRUE, NULL, LW_SYSLOG_PROTOCOL, EXPECTED_MSG_SYSLOG_STR},
@@ -200,7 +200,7 @@ Test(logwriter, test_logwriter)
   putenv("TZ=MET-1METDST");
   tzset();
 
-  plugin_load_module("syslogformat", configuration, NULL);
+  cfg_load_module(configuration, "syslogformat");
   msg_format_options_defaults(&parse_options);
   msg_format_options_init(&parse_options, configuration);
 

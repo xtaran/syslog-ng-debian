@@ -151,8 +151,8 @@ main(int argc, char *argv[])
   putenv("TZ=MET-1METDST");
   tzset();
 
-  cfg = cfg_new_snippet(VERSION_VALUE);
-  plugin_load_module("syslogformat", cfg, NULL);
+  cfg = cfg_new_snippet();
+  cfg_load_module(cfg, "syslogformat");
   msg_format_options_defaults(&parse_options);
   msg_format_options_init(&parse_options, cfg);
   parse_options.flags |= LP_SYSLOG_PROTOCOL;

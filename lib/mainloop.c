@@ -89,6 +89,8 @@
  */
 
 ThreadId main_thread_handle;
+GCond thread_halt_cond;
+GMutex workers_running_lock = G_STATIC_MUTEX_INIT;
 
 struct _MainLoop
 {
@@ -130,6 +132,7 @@ struct _MainLoop
   struct iv_signal sigterm_poll;
   struct iv_signal sigint_poll;
   struct iv_signal sigchild_poll;
+  struct iv_signal sigusr1_poll;
 
   struct iv_event exit_requested;
   struct iv_event reload_config_requested;
@@ -297,6 +300,25 @@ main_loop_reload_config_initiate(gpointer user_data)
   main_loop_worker_sync_call(main_loop_reload_config_apply, self);
 }
 
+static void
+block_till_workers_exit()
+{
+  gint64 end_time;
+  end_time = g_get_monotonic_time() + 15*G_TIME_SPAN_SECOND;
+
+  g_mutex_lock(&workers_running_lock);
+  while (main_loop_workers_running)
+    if (!g_cond_wait_until(&thread_halt_cond, &workers_running_lock, end_time))
+      {
+        /* timeout has passed. */
+        fprintf(stderr, "Main thread timed out (15s) while waiting workers threads to exit. "
+                "workers_running: %d. Continuing ...\n", main_loop_workers_running);
+        break;
+      }
+
+  g_mutex_unlock (&workers_running_lock);
+}
+
 /************************************************************************************
  * syncronized exit
  ************************************************************************************/
@@ -382,6 +404,12 @@ sig_child_handler(gpointer user_data)
 }
 
 static void
+sig_usr1_handler(gpointer user_data)
+{
+  app_reopen();
+}
+
+static void
 _ignore_signal(gint signum)
 {
   struct sigaction sa;
@@ -410,6 +438,7 @@ setup_signals(MainLoop *self)
   _register_signal_handler(&self->sigchild_poll, SIGCHLD, sig_child_handler, self);
   _register_signal_handler(&self->sigterm_poll, SIGTERM, sig_term_handler, self);
   _register_signal_handler(&self->sigint_poll, SIGINT, sig_term_handler, self);
+  _register_signal_handler(&self->sigusr1_poll, SIGUSR1, sig_usr1_handler, self);
 }
 
 /************************************************************************************
@@ -511,6 +540,7 @@ main_loop_deinit(MainLoop *self)
   main_loop_call_deinit();
   main_loop_io_worker_deinit();
   main_loop_worker_deinit();
+  block_till_workers_exit();
   scratch_buffers_automatic_gc_deinit();
 }
 
@@ -525,7 +555,7 @@ main_loop_run(MainLoop *self)
   service_management_clear_status();
   if (self->options->interactive_mode)
     {
-      plugin_load_module("python", self->current_configuration, NULL);
+      cfg_load_module(self->current_configuration, "python");
       debugger_start(self, self->current_configuration);
     }
   iv_main();

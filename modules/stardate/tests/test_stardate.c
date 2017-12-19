@@ -48,7 +48,7 @@ stardate_assert(const gchar *msg_str, const int precision, const gchar *expected
 }
 
 void
-test_stardate()
+test_stardate(void)
 {
   stardate_assert("2012-07-15T00:00:00", 1, "2012.5"); // 2012.01.01 + 365/2 day
   stardate_assert("2013-07-01T00:00:00", 2, "2013.49");
@@ -66,7 +66,7 @@ main(int argc G_GNUC_UNUSED, char *argv[] G_GNUC_UNUSED)
 {
   app_startup();
   init_template_tests();
-  plugin_load_module("stardate", configuration, NULL);
+  cfg_load_module(configuration, "stardate");
 
   test_stardate();
 

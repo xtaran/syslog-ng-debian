@@ -128,12 +128,12 @@ test_value_pairs_walk_prefix_data(GlobalConfig *cfg)
   log_msg_unref(msg);
 };
 
-int main()
+int main(void)
 {
   app_startup();
 
-  configuration = cfg_new_snippet(0x0303);
-  plugin_load_module("syslogformat", configuration, NULL);
+  configuration = cfg_new_snippet();
+  cfg_load_module(configuration, "syslogformat");
   msg_format_options_defaults(&parse_options);
   msg_format_options_init(&parse_options, configuration);
 

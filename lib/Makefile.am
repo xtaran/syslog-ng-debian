@@ -56,6 +56,9 @@ lib/ivykis/src/libivykis.la:
 
 CLEAN_SUBDIRS				+= @IVYKIS_SUBDIRS@
 
+EXTRA_DIST += \
+	lib/ivykis/configure.gnu
+
 install-ivykis:
 	${MAKE} -C lib/ivykis/src \
 		install-includeHEADERS \
@@ -94,6 +97,8 @@ pkginclude_HEADERS			+= \
 	lib/cfg-lexer.h			\
 	lib/cfg-lexer-subst.h		\
 	lib/cfg-args.h			\
+	lib/cfg-block.h			\
+	lib/cfg-block-generator.h	\
 	lib/cfg-parser.h		\
 	lib/cfg-tree.h			\
 	lib/children.h			\
@@ -175,6 +180,8 @@ lib_libsyslog_ng_la_SOURCES		= \
 	lib/cache.c			\
 	lib/cfg.c			\
 	lib/cfg-args.c			\
+	lib/cfg-block.c			\
+	lib/cfg-block-generator.c	\
 	lib/cfg-lexer.c			\
 	lib/cfg-lexer-subst.c		\
 	lib/cfg-parser.c		\
@@ -278,8 +285,7 @@ EXTRA_DIST += \
 	lib/block-ref-grammar.ym	\
 	lib/pragma-grammar.ym		\
 	lib/merge-grammar.py		\
-	lib/hostname-unix.c		\
-	lib/ivykis/configure.gnu
+	lib/hostname-unix.c
 
 lib/plugin-types.h: lib/cfg-grammar.h
 

@@ -144,11 +144,11 @@ get_template_function_ops(const gchar *name)
 {
   Plugin *plugin;
 
-  plugin = plugin_find(configuration, LL_CONTEXT_TEMPLATE_FUNC, name);
+  plugin = cfg_find_plugin(configuration, LL_CONTEXT_TEMPLATE_FUNC, name);
   assert_not_null(plugin, "Template function %s is not found", name);
 
   if (plugin)
-    return plugin->construct(plugin, configuration, LL_CONTEXT_TEMPLATE_FUNC, name);
+    return plugin->construct(plugin);
   return NULL;
 }
 
@@ -249,7 +249,7 @@ test_colon_dash_in_braces_is_parsed_as_default_value(void)
 }
 
 static void
-test_double_dollars_is_a_literal_dollar()
+test_double_dollars_is_a_literal_dollar(void)
 {
   assert_template_compile("$$VALUE_NAME");
   assert_compiled_template(text = "$VALUE_NAME", default_value = NULL, macro = M_NONE, type = LTE_MACRO, msg_ref = 0);
@@ -343,7 +343,7 @@ test_value_name_can_be_the_empty_string_when_referenced_using_braces(void)
 }
 
 static void
-test_template_compile_value()
+test_template_compile_value(void)
 {
   TEMPLATE_TESTCASE(test_simple_value);
   TEMPLATE_TESTCASE(test_value_without_braces);
@@ -463,10 +463,10 @@ int main(int argc, char **argv)
 {
   msg_init(FALSE);
 
-  configuration = cfg_new_snippet(VERSION_VALUE);
+  configuration = cfg_new_snippet();
   log_msg_registry_init();
   log_template_global_init();
-  plugin_register(configuration, &hello_plugin, 1);
+  plugin_register(&configuration->plugin_context, &hello_plugin, 1);
 
   test_template_compile_macro();
   test_template_compile_value();

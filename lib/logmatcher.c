@@ -230,12 +230,6 @@ log_matcher_posix_re_new(GlobalConfig *cfg, const LogMatcherOptions *options)
   self->super.replace = log_matcher_posix_re_replace;
   self->super.free_fn = log_matcher_posix_re_free;
 
-  if (cfg_is_config_version_older(cfg, 0x0300))
-    {
-      msg_warning_once("WARNING: filters do not store matches in macros by default from " VERSION_3_0
-                       ", please update your configuration by using an explicit 'store-matches' flag to achieve that");
-      self->super.flags = LMF_STORE_MATCHES;
-    }
   return &self->super;
 }
 
@@ -797,14 +791,6 @@ log_matcher_pcre_re_new(GlobalConfig *cfg, const LogMatcherOptions *options)
   self->super.replace = log_matcher_pcre_re_replace;
   self->super.free_fn = log_matcher_pcre_re_free;
 
-  if (cfg_is_config_version_older(cfg, 0x0300))
-    {
-      msg_warning_once("WARNING: filters do not store matches in macros by default from " VERSION_3_0
-                       ", please update your configuration by using an explicit 'store-matches' flag to achieve that");
-      self->super.flags = LMF_STORE_MATCHES;
-    }
-
-
   return &self->super;
 }
 
@@ -934,7 +920,7 @@ log_matcher_options_destroy(LogMatcherOptions *options)
 }
 
 GQuark
-log_matcher_error_quark()
+log_matcher_error_quark(void)
 {
   return g_quark_from_static_string("log-matcher-error-quark");
 }

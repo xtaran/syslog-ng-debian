@@ -233,7 +233,7 @@ AC_ARG_ENABLE(mongodb,
 AC_ARG_WITH(mongoc,
               [  --with-mongoc=[system/internal/auto/no]
                                          Link against the system supplied or the built-in mongo-c-driver library. (default: auto)]
-              ,,with_mongoc="auto")
+              ,,with_mongoc="internal")
 
 AC_ARG_ENABLE(legacy-mongodb-options,
               [  --enable-legacy-mongodb-options=[yes/no]
@@ -243,7 +243,7 @@ AC_ARG_ENABLE(legacy-mongodb-options,
 AC_ARG_WITH(jsonc,
               [  --with-jsonc=[system/internal/auto/no]
                                          Link against the system supplied or the built-in jsonc library or explicitly disable it. (default:auto)]
-              ,,with_jsonc="auto")
+              ,,with_jsonc="internal")
 
 AC_ARG_ENABLE(json,
              [ --enable-json=[yes/no]            Enable JSON support (default: yes)]
@@ -390,6 +390,9 @@ AC_PROG_MAKE_SET
 PKG_PROG_PKG_CONFIG
 LT_INIT([dlopen disable-static])
 AC_PATH_PROG(PYTHON, python)
+if test -z "${PYTHON}"; then
+	AC_MSG_ERROR([Python interpreter is required])
+fi
 
 dnl ***************************************************************************
 dnl Validate yacc
@@ -432,6 +435,22 @@ if test $lex_ok = 0 ; then
 		AC_MSG_ERROR([syslog-ng requires flex in order to generate its config lexer. Your source tree seems to be from git, which doesn't have lib/cfg-lex.c. Please install flex or use a distribution tarball.])
 	fi
 fi
+
+dnl ***************************************************************************
+dnl Set up NO_PIE_LDFLAG: -no-pie is compatible with $CC.
+old_LDFLAGS="$LDFLAGS"
+LDFLAGS="$LDFLAGS -no-pie"
+
+AC_LINK_IFELSE([AC_LANG_SOURCE([int main(void) {return 0;}])],
+	[no_pie_option_available=yes],
+	[no_pie_option_available=no])
+
+LDFLAGS="$old_LDFLAGS"
+
+if test "$no_pie_option_available" = "yes"; then
+  NO_PIE_LDFLAG="-no-pie"
+fi
+AC_SUBST([NO_PIE_LDFLAG])
 
 dnl ***************************************************************************
 dnl Set up CFLAGS
@@ -1253,7 +1272,7 @@ if $LIBRABBITMQ_INTERNAL_SOURCE_EXISTS; then
     PYTHON_VERSION=`python -V 2>&1 | cut -d ' ' -f 2`
     PYTHON_MAJOR=`echo $PYTHON_VERSION | cut -d '.' -f 1`
     PYTHON_MINOR=`echo $PYTHON_VERSION | cut -d '.' -f 2`
-    if test ${PYTHON} = "" || test $PYTHON_MAJOR -eq 2 && test $PYTHON_MINOR -lt 5; then
+    if test $PYTHON_MAJOR -eq 2 && test $PYTHON_MINOR -lt 5; then
         AC_MSG_WARN([Was about to execute rabbitmq configure script, but that requires Python >= 2.5, which you don't seem to have, reverting to system rabbitmq])
         with_librabbitmq_client="system"
     else
@@ -1304,6 +1323,14 @@ if test "$enable_riemann" != "no"; then
    enable_riemann="no";
  else
    enable_riemann="yes";
+ fi
+
+ if test "$enable_riemann" = "yes"; then
+
+    old_CFLAGS=$CFLAGS
+    CFLAGS=`pkg-config --cflags riemann-client`
+    AC_CHECK_DECLS(RIEMANN_EVENT_FIELD_TIME_MICROS, [riemann_micros="yes"], [riemann_micros="no"], [[#include <riemann/event.h>]])
+    CFLAGS=$old_CFLAGS
  fi
 fi
 
@@ -1675,6 +1702,7 @@ AC_DEFINE_UNQUOTED(SYSTEMD_JOURNAL_MODE, `journald_mode`, [Systemd-journal suppo
 AC_DEFINE_UNQUOTED(HAVE_INOTIFY, `enable_value $ac_cv_func_inotify_init`, [Have inotify])
 AC_DEFINE_UNQUOTED(ENABLE_PYTHONv2, `(echo "$with_python" | grep -Eq "python-?2.*") && echo 1 || echo 0`, [Python2 c api])
 AC_DEFINE_UNQUOTED(ENABLE_PYTHONv3, `(echo "$with_python" | grep -Eq "python-?3.*") && echo 1 || echo 0`, [Python3 c api])
+AC_DEFINE_UNQUOTED(HAVE_RIEMANN_MICROSECONDS, `enable_value $riemann_micros`, [Riemann microseconds support])
 
 
 AM_CONDITIONAL(ENABLE_ENV_WRAPPER, [test "$enable_env_wrapper" = "yes"])
@@ -1823,7 +1851,7 @@ echo "  STOMP destination (module)  : ${enable_stomp:=no}"
 echo "  GEOIP support (module)      : ${enable_geoip:=no}"
 echo "  GEOIP2 support (module)     : ${enable_geoip2:=no}"
 echo "  Redis support (module)      : ${enable_redis:=no}"
-echo "  Riemann destination (module): ${enable_riemann:=no}"
+echo "  Riemann destination (module): ${enable_riemann:=no}, microseconds: ${riemann_micros:=no}"
 echo "  python                      : ${enable_python:=no} (pkg-config package: ${with_python:=none})"
 echo "  java                        : ${enable_java:=no}"
 echo "  java modules                : ${enable_java_modules:=no}"

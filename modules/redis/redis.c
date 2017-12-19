@@ -346,6 +346,13 @@ redis_dd_init(LogPipe *s)
   if (!log_dest_driver_init_method(s))
     return FALSE;
 
+  if (!self->key && !self->param1)
+    {
+      msg_error("Error initializing Redis destination, command option MUST be set",
+                log_pipe_location_tag(s));
+      return FALSE;
+    }
+
   log_template_options_init(&self->template_options, cfg);
 
   msg_verbose("Initializing Redis destination",
@@ -418,9 +425,9 @@ static Plugin redis_plugin =
 };
 
 gboolean
-redis_module_init(GlobalConfig *cfg, CfgArgs *args)
+redis_module_init(PluginContext *context, CfgArgs *args)
 {
-  plugin_register(cfg, &redis_plugin, 1);
+  plugin_register(context, &redis_plugin, 1);
 
   return TRUE;
 }

@@ -67,7 +67,6 @@ struct _LogProtoServer
   /* FIXME: rename to something else */
   gboolean (*is_position_tracked)(LogProtoServer *s);
   gboolean (*prepare)(LogProtoServer *s, GIOCondition *cond);
-  gboolean (*is_preemptable)(LogProtoServer *s);
   gboolean (*restart_with_state)(LogProtoServer *s, PersistState *state, const gchar *persist_name);
   LogProtoStatus (*fetch)(LogProtoServer *s, const guchar **msg, gsize *msg_len, gboolean *may_read, LogTransportAuxData *aux, Bookmark *bookmark);
   gboolean (*validate_options)(LogProtoServer *s);
@@ -90,14 +89,6 @@ static inline gboolean
 log_proto_server_prepare(LogProtoServer *s, GIOCondition *cond)
 {
   return s->prepare(s, cond);
-}
-
-static inline gboolean
-log_proto_server_is_preemptable(LogProtoServer *s)
-{
-  if (s->is_preemptable)
-    return s->is_preemptable(s);
-  return TRUE;
 }
 
 static inline gboolean
@@ -147,9 +138,7 @@ void log_proto_server_free(LogProtoServer *s);
 
 #define DEFINE_LOG_PROTO_SERVER(prefix) \
   static gpointer                                                       \
-  prefix ## _server_plugin_construct(Plugin *self,                      \
-                  GlobalConfig *cfg,                                    \
-                  gint plugin_type, const gchar *plugin_name)           \
+  prefix ## _server_plugin_construct(Plugin *self)                      \
   {                                                                     \
     static LogProtoServerFactory proto = {                              \
       .construct = prefix ## _server_new,                    		\
@@ -177,7 +166,7 @@ log_proto_server_factory_construct(LogProtoServerFactory *self, LogTransport *tr
   return self->construct(transport, options);
 }
 
-LogProtoServerFactory *log_proto_server_get_factory(GlobalConfig *cfg, const gchar *name);
+LogProtoServerFactory *log_proto_server_get_factory(PluginContext *context, const gchar *name);
 
 const guchar *find_eom(const guchar *s, gsize n);
 
