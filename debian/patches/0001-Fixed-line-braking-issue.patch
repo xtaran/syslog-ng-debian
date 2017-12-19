@@ -12,7 +12,7 @@ Signed-off-by: SZALAY Attila <sasa@debian.org>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/doc/man/syslog-ng.8.xml b/doc/man/syslog-ng.8.xml
-index c973ef8..ec32b35 100644
+index 35ad1d8..74b9b46 100644
 --- a/doc/man/syslog-ng.8.xml
 +++ b/doc/man/syslog-ng.8.xml
 @@ -104,7 +104,7 @@
@@ -20,7 +20,7 @@ index c973ef8..ec32b35 100644
            </term>
            <listitem>
 -            <para>A comma-separated list of the modules that are loaded automatically. Modules not loaded automatically can be loaded by including the <parameter>@module &lt;modulename&gt;</parameter> statement in the  configuration file. The following modules are loaded by default: . Available only in  and later.</para>
-+            <para>A comma-separated list of the modules that are loaded automatically. Modules not loaded automatically can be loaded by including the <parameter>@module &lt;modulename&gt;</parameter> statement in the syslog-ng OSE configuration file. The following modules are loaded by default: <parameter>affile, afprog, afsocket, afuser, basicfuncs, csvparser, dbparser, syslogformat, afsql</parameter>. Available only in <phrase>syslog-ng Open Source Edition 3.3</phrase> and later.</para>
++            <para>A comma-separated list of the modules that are loaded automatically. Modules not loaded automatically can be loaded by including the <parameter moreinfo="none">@module &lt;modulename&gt;</parameter> statement in the syslog-ng OSE configuration file. The following modules are loaded by default: <parameter condition="ose" moreinfo="none">affile, afprog, afsocket, afuser, basicfuncs, csvparser, dbparser, syslogformat, afsql</parameter>. Available only in <phrase condition="ose">syslog-ng Open Source Edition 3.3</phrase> and later.</para>
            </listitem>
          </varlistentry>
          <varlistentry>
