@@ -91,6 +91,9 @@
  * should reference the syslog-ng version number through these macros, in order
  * to make it relatively simple to explain PE/OSE version numbers to users. */
 
+#define PRODUCT_NAME "syslog-ng-ose"
+#define PRODUCT_CONTACT "https://lists.balabit.hu/mailman/listinfo/syslog-ng"
+
 #define VERSION_3_0 "syslog-ng 3.0"
 #define VERSION_3_1 "syslog-ng 3.1"
 #define VERSION_3_2 "syslog-ng 3.2"
@@ -104,6 +107,7 @@
 #define VERSION_3_10 "syslog-ng 3.10"
 #define VERSION_3_11 "syslog-ng 3.11"
 #define VERSION_3_12 "syslog-ng 3.12"
+#define VERSION_3_13 "syslog-ng 3.13"
 
 #define VERSION_VALUE_3_0  0x0300
 #define VERSION_VALUE_3_1  0x0301
@@ -118,11 +122,12 @@
 #define VERSION_VALUE_3_10 0x030a
 #define VERSION_VALUE_3_11 0x030b
 #define VERSION_VALUE_3_12 0x030c
+#define VERSION_VALUE_3_13 0x030d
 
 /* config version code, in the same format as GlobalConfig->version */
-#define VERSION_VALUE   0x030c
-#define VERSION_CURRENT VERSION_3_12
-#define VERSION_CURRENT_VER_ONLY "3.12"
+#define VERSION_VALUE   0x030d
+#define VERSION_CURRENT VERSION_3_13
+#define VERSION_CURRENT_VER_ONLY "3.13"
 
 #define version_convert_from_user(v)  (v)
 

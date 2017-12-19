@@ -29,6 +29,7 @@
 #include "cfg-tree.h"
 #include "cfg-lexer.h"
 #include "cfg-parser.h"
+#include "plugin.h"
 #include "persist-state.h"
 #include "template/templates.h"
 #include "host-resolve.h"
@@ -65,10 +66,10 @@ struct _GlobalConfig
    * multiple times if the user uses @version multiple times */
   gint parsed_version;
   const gchar *filename;
-  GList *plugins;
-  GList *candidate_plugins;
-  gboolean autoload_compiled_modules;
+  PluginContext plugin_context;
+  gboolean use_plugin_discovery;
   CfgLexer *lexer;
+  CfgArgs *globals;
 
   StatsOptions stats_options;
   gint mark_freq;
@@ -120,6 +121,11 @@ struct _GlobalConfig
 
 };
 
+gboolean cfg_load_module(GlobalConfig *cfg, const gchar *module_name);
+
+Plugin *cfg_find_plugin(GlobalConfig *cfg, gint plugin_type, const gchar *plugin_name);
+gpointer cfg_parse_plugin(GlobalConfig *cfg, Plugin *plugin, YYLTYPE *yylloc, gpointer arg);
+
 gboolean cfg_allow_config_dups(GlobalConfig *self);
 
 void cfg_bad_hostname_set(GlobalConfig *self, gchar *bad_hostname_re);
@@ -129,13 +135,13 @@ void cfg_set_mark_mode(GlobalConfig *self, gchar *mark_mode);
 gint cfg_tz_convert_value(gchar *convert);
 gint cfg_ts_format_value(gchar *format);
 
-void cfg_set_version(GlobalConfig *self, gint version);
+gboolean cfg_set_version(GlobalConfig *self, gint version);
 void cfg_load_candidate_modules(GlobalConfig *self);
 
 void cfg_set_global_paths(GlobalConfig *self);
 
 GlobalConfig *cfg_new(gint version);
-GlobalConfig *cfg_new_snippet(gint version);
+GlobalConfig *cfg_new_snippet(void);
 gboolean cfg_run_parser(GlobalConfig *self, CfgLexer *lexer, CfgParser *parser, gpointer *result, gpointer arg);
 gboolean cfg_read_config(GlobalConfig *cfg, const gchar *fname, gboolean syntax_only, gchar *preprocess_into);
 gboolean cfg_load_config(GlobalConfig *self, gchar *config_string, gboolean syntax_only, gchar *preprocess_into);

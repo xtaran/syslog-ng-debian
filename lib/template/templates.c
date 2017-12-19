@@ -230,12 +230,6 @@ log_template_new(GlobalConfig *cfg, const gchar *name)
   self->ref_cnt = 1;
   self->cfg = cfg;
   g_static_mutex_init(&self->arg_lock);
-  if (cfg_is_config_version_older(cfg, 0x0300))
-    {
-      msg_warning_once("WARNING: template: the default value for template-escape has changed to 'no' from " VERSION_3_0
-                       ", please update your configuration file accordingly");
-      self->escape = TRUE;
-    }
   return self;
 }
 
@@ -329,7 +323,7 @@ log_template_options_defaults(LogTemplateOptions *options)
 }
 
 GQuark
-log_template_error_quark()
+log_template_error_quark(void)
 {
   return g_quark_from_static_string("log-template-error-quark");
 }

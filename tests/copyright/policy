@@ -32,6 +32,9 @@ stamp-h1$
 tests/functional/test\.conf$
 scripts/update-patterndb$
 (contrib|debian)
+packaging/debian
+packaging/debian/(man|source)
+packaging/rhel
 doc/ChangeLog\.[0-9]$
 (\.gitmodules|AUTHORS|COPYING|INSTALL|VERSION|aclocal\.m4|compile|configure|depcomp|install-sh|libtool|ltmain\.sh|missing|test-driver|ylwrap)$
 .*/[^/.]*$
@@ -59,8 +62,9 @@ tests
 modules/java/(tools|[^/]*$)
 modules/java-modules/(dummy|elastic|elastic-v2|hdfs|http|kafka|[^/]*$)
 modules/(afamqp|affile|afmongodb|afprog|afsmtp|afsocket|afsql|afstomp|afstreams|afuser|basicfuncs|cef|confgen|cryptofuncs|csvparser|date|diskq|dbparser|geoip|geoip2|graphite|json|kvformat|linux-kmsg-format|pacctformat|pseudofile|python|redis|riemann|syslogformat|systemd-journal|getent|system-source|stardate|snmptrapd-parser|xml|[^/]*$)
-modules/(add-contextual-data|tagsparser|map-value-pairs|[^/]*$)
+modules/(add-contextual-data|tagsparser|map-value-pairs|appmodel|[^/]*$)
 scl
 scripts
  GPLv2+_SSL,non-balabit
 modules/http
+

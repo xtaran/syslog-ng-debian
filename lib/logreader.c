@@ -35,13 +35,10 @@ struct _LogReader
   LogSource super;
   LogProtoServer *proto;
   gboolean immediate_check;
-  gboolean waiting_for_preemption;
   LogPipe *control;
   LogReaderOptions *options;
   PollEvents *poll_events;
   GSockAddr *peer_addr;
-  ino_t inode;
-  gint64 size;
 
   /* NOTE: these used to be LogReaderWatch members, which were merged into
    * LogReader with the multi-thread refactorization */
@@ -331,9 +328,6 @@ log_reader_fetch_log(LogReader *self)
   gboolean may_read = TRUE;
   LogTransportAuxData aux;
 
-  if (self->waiting_for_preemption)
-    may_read = FALSE;
-
   /* NOTE: this loop is here to decrease the load on the main loop, we try
    * to fetch a couple of messages in a single run (but only up to
    * fetch_limit).
@@ -393,18 +387,7 @@ log_reader_fetch_log(LogReader *self)
         }
     }
   log_transport_aux_data_destroy(&aux);
-  if (self->options->flags & LR_PREEMPT)
-    {
-      if (log_proto_server_is_preemptable(self->proto))
-        {
-          self->waiting_for_preemption = FALSE;
-          log_pipe_notify(self->control, NC_FILE_SKIP, self);
-        }
-      else
-        {
-          self->waiting_for_preemption = TRUE;
-        }
-    }
+
   if (msg_count == self->options->fetch_limit)
     self->immediate_check = TRUE;
   return 0;
@@ -580,12 +563,6 @@ log_reader_options_defaults(LogReaderOptions *options)
   log_proto_server_options_defaults(&options->proto_options.super);
   msg_format_options_defaults(&options->parse_options);
   options->fetch_limit = 10;
-  if (configuration && cfg_is_config_version_older(configuration, 0x0300))
-    {
-      msg_warning_once("WARNING: input: sources do not remove new-line characters from messages by default from " VERSION_3_0
-                       ", please add 'no-multi-line' flag to your configuration if you want to retain this functionality");
-      options->parse_options.flags |= LP_NO_MULTI_LINE;
-    }
 }
 
 /*

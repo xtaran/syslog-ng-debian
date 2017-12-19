@@ -70,6 +70,7 @@ static Plugin basicfuncs_plugins[] =
   TEMPLATE_FUNCTION_PLUGIN(tf_uppercase, "uppercase"),
   TEMPLATE_FUNCTION_PLUGIN(tf_replace_delimiter, "replace-delimiter"),
   TEMPLATE_FUNCTION_PLUGIN(tf_string_padding, "padding"),
+  TEMPLATE_FUNCTION_PLUGIN(tf_binary, "binary"),
 
   /* fname-funcs */
   TEMPLATE_FUNCTION_PLUGIN(tf_dirname, "dirname"),
@@ -105,9 +106,9 @@ static Plugin basicfuncs_plugins[] =
 };
 
 gboolean
-basicfuncs_module_init(GlobalConfig *cfg, CfgArgs *args)
+basicfuncs_module_init(PluginContext *context, CfgArgs *args)
 {
-  plugin_register(cfg, basicfuncs_plugins, G_N_ELEMENTS(basicfuncs_plugins));
+  plugin_register(context, basicfuncs_plugins, G_N_ELEMENTS(basicfuncs_plugins));
   return TRUE;
 }
 

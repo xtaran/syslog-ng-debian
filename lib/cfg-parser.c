@@ -23,10 +23,10 @@
  */
 
 #include "cfg-parser.h"
-#include "cfg-lexer.h"
 #include "cfg-grammar.h"
 
 #include <string.h>
+#include <stdlib.h>
 
 extern int main_debug;
 
@@ -86,6 +86,7 @@ static CfgLexerKeyword main_keywords[] =
   { "stats_lifetime",     KW_STATS_LIFETIME },
   { "stats_level",        KW_STATS_LEVEL },
   { "stats",              KW_STATS_FREQ, KWS_OBSOLETE, "stats_freq" },
+  { "stats_max_dynamics", KW_STATS_MAX_DYNAMIC },
   { "flush_lines",        KW_FLUSH_LINES },
   { "flush_timeout",      KW_FLUSH_TIMEOUT },
   { "suppress",           KW_SUPPRESS },
@@ -278,10 +279,43 @@ report_syntax_error(CfgLexer *lexer, YYLTYPE *yylloc, const char *what, const ch
       _report_buffer_location(level->buffer.content, yylloc);
     }
 
-  fprintf(stderr, "\nsyslog-ng documentation: https://www.balabit.com/support/documentation?product=syslog-ng-ose\n"
-          "mailing list: https://lists.balabit.hu/mailman/listinfo/syslog-ng\n");
+  fprintf(stderr, "\nsyslog-ng documentation: https://www.balabit.com/support/documentation?product=%s\n"
+          "contact: %s\n", PRODUCT_NAME, PRODUCT_CONTACT);
 
 }
+
+/* the debug flag for the main parser will be used for all parsers */
+extern int cfg_parser_debug;
+
+
+gboolean
+cfg_parser_parse(CfgParser *self, CfgLexer *lexer, gpointer *instance, gpointer arg)
+{
+  gboolean success;
+
+  if (cfg_parser_debug)
+    {
+      fprintf(stderr, "\n\nStarting parser %s\n", self->name);
+    }
+  if (self->debug_flag)
+    (*self->debug_flag) = cfg_parser_debug;
+  cfg_lexer_push_context(lexer, self->context, self->keywords, self->name);
+  success = (self->parse(lexer, instance, arg) == 0);
+  cfg_lexer_pop_context(lexer);
+  if (cfg_parser_debug)
+    {
+      fprintf(stderr, "\nStopping parser %s, result: %d\n", self->name, success);
+    }
+  return success;
+}
+
+void
+cfg_parser_cleanup(CfgParser *self, gpointer instance)
+{
+  if (instance && self->cleanup)
+    self->cleanup(instance);
+}
+
 
 /*
  * This function can be used to parse flags in a flags(...) option. It
@@ -331,5 +365,13 @@ cfg_process_flag(CfgFlagHandler *handlers, gpointer base, const gchar *flag_)
             }
         }
     }
+  return FALSE;
+}
+
+gboolean
+cfg_process_yesno(const gchar *yesno)
+{
+  if (strcasecmp(yesno, "yes") == 0 || atoi(yesno) > 0)
+    return TRUE;
   return FALSE;
 }

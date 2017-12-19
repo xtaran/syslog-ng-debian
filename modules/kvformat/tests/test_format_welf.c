@@ -29,6 +29,7 @@ void
 test_format_welf(void)
 {
   assert_template_format("$(format-welf MSG=$MSG)", "MSG=árvíztűrőtükörfúrógép");
+  assert_template_format("xxx$(format-welf MSG=$MSG)yyy", "xxxMSG=árvíztűrőtükörfúrógépyyy");
   assert_template_format("$(format-welf MSG=$escaping)",
                          "MSG=\"binary stuff follows \\\"\\xad árvíztűrőtükörfúrógép\"");
   assert_template_format("$(format-welf MSG=$escaping2)", "MSG=\\xc3");
@@ -57,7 +58,7 @@ main(int argc G_GNUC_UNUSED, char *argv[] G_GNUC_UNUSED)
   putenv("TZ=UTC");
   tzset();
   init_template_tests();
-  plugin_load_module("kvformat", configuration, NULL);
+  cfg_load_module(configuration, "kvformat");
 
   test_format_welf();
   test_format_welf_performance();

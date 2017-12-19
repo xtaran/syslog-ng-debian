@@ -32,8 +32,8 @@ static void
 _init(void)
 {
   app_startup();
-  configuration = cfg_new_snippet(VERSION_VALUE);
-  cr_assert(plugin_load_module("affile", configuration, NULL));
+  configuration = cfg_new_snippet();
+  cr_assert(cfg_load_module(configuration, "affile"));
 }
 
 static void

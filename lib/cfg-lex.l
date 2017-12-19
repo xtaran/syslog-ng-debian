@@ -25,6 +25,7 @@
 
 #include "syslog-ng.h"
 #include "cfg-lexer.h"
+#include "cfg-lexer-subst.h"
 #include "cfg-grammar.h"
 #include "messages.h"
 #include "parse-number.h"
@@ -40,7 +41,7 @@ yy_input_run_backtick_substitution(CfgLexer *self, gchar *buf, gsize buf_size)
   GError *error = NULL;
   YYLTYPE *cur_lloc = &self->include_stack[self->include_depth].lloc;
 
-  res = cfg_lexer_subst_args(self->globals, NULL, NULL, buf, -1, &len, &error);
+  res = cfg_lexer_subst_args_in_input(self->cfg->globals, NULL, NULL, buf, -1, &len, &error);
   if (!res)
     {
       msg_error("Error performing backtick substitution in configuration file",
@@ -153,7 +154,7 @@ xdigit	[0-9a-fA-F]
 odigit  [0-7]
 alpha		[a-zA-Z]
 alphanum	[a-zA-Z0-9]
-word	[^ \#'"\(\)\{\}\\;\r\n\t,|\.@:]
+word	[^ \#'"\(\)\{\}\[\]\\;\r\n\t,|\.@:]
 
 /* block related states must be last, as we use this fact in YY_INPUT */
 %x string
@@ -208,6 +209,8 @@ word	[^ \#'"\(\)\{\}\\;\r\n\t,|\.@:]
 \;			   |
 \{			   |
 \}			   |
+\[			   |
+\]			   |
 \:			   |
 \|			   { return yytext[0]; }
 \,			   ;
@@ -306,8 +309,13 @@ word	[^ \#'"\(\)\{\}\\;\r\n\t,|\.@:]
 <INITIAL><<EOF>>           {
                              if (!cfg_lexer_start_next_include(yyextra))
                                {
-                                 *yylloc = yyextra->include_stack[0].lloc;
-                                 yyterminate();
+                                 if (yyextra->include_depth == 0)
+                                   {
+                                     *yylloc = yyextra->include_stack[0].lloc;
+                                     yyterminate();
+                                   }
+                                 else
+                                    return LL_ERROR;
                                }
                            }
 

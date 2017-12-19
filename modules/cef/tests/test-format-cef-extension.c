@@ -76,7 +76,7 @@ _expect_cef_result_format_va(const gchar *format, const gchar *expected, ...)
 }
 
 static void
-_test_null_in_value()
+_test_null_in_value(void)
 {
   LogMessage *msg = create_empty_message();
 
@@ -221,7 +221,7 @@ main(int argc, char *argv[])
   putenv("TZ=UTC");
   tzset();
   init_template_tests();
-  plugin_load_module("cef", configuration, NULL);
+  cfg_load_module(configuration, "cef");
 
   _test_filter();
   _test_multiple_properties_with_space();

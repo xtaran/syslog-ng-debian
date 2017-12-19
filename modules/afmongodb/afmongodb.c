@@ -181,12 +181,12 @@ _connect(MongoDBDestDriver *self, gboolean reconnect)
         }
     }
 
-  bson_t *status = bson_new();
+  bson_t reply;
   bson_error_t error;
   const mongoc_read_prefs_t *read_prefs = mongoc_collection_get_read_prefs(self->coll_obj);
   gboolean ok = mongoc_client_get_server_status(self->client, (mongoc_read_prefs_t *)read_prefs,
-                                                status, &error);
-  bson_destroy(status);
+                                                &reply, &error);
+  bson_destroy(&reply);
   if (!ok)
     {
       msg_error("Error connecting to MongoDB",
@@ -558,7 +558,8 @@ _free(LogPipe *d)
     mongoc_uri_destroy(self->uri_obj);
   if (self->coll_obj)
     mongoc_collection_destroy(self->coll_obj);
-  mongoc_cleanup();
+  if (self->client)
+    mongoc_cleanup();
   log_threaded_dest_driver_free(d);
 }
 
@@ -617,9 +618,9 @@ static Plugin afmongodb_plugin =
 };
 
 gboolean
-afmongodb_module_init(GlobalConfig *cfg, CfgArgs *args)
+afmongodb_module_init(PluginContext *context, CfgArgs *args)
 {
-  plugin_register(cfg, &afmongodb_plugin, 1);
+  plugin_register(context, &afmongodb_plugin, 1);
   return TRUE;
 }
 

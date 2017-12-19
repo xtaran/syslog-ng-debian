@@ -20,6 +20,10 @@
  * COPYING for details.
  */
 
+#if defined(sun) || defined(__sun)
+#define _POSIX_PTHREAD_SEMANTICS
+#endif
+
 #include "syslog-ng.h"
 #include "logmsg/logmsg.h"
 #include "plugin.h"
@@ -27,6 +31,7 @@
 #include "cfg.h"
 #include "parse-number.h"
 #include "template/simple-function.h"
+#include "compat/getent.h"
 
 #include <grp.h>
 #include <pwd.h>
@@ -48,23 +53,35 @@ typedef struct
 } formatter_map_t;
 
 static gboolean
-_getent_format_array(gchar *member_name, gpointer member, GString *result)
+_getent_format_array(gchar *name_or_gid, gpointer members, GString *result)
 {
-  int i = 0;
-  char *o = *(char **)member;
-  char *p = *(char **)o;
-  char *sep = "";
 
-  do
+  gchar **member_array = (gchar **)members;
+  int i = 0;
+
+  if (member_array[i])
     {
-      g_string_append(result, sep);
-      g_string_append(result, p);
-      sep = ",";
-      p = *((char **)o + ++i);
+      g_string_append(result, member_array[i]);
+      i++;
     }
-  while (p != NULL && p != '\0');
+  else
+    return TRUE;
+
+  while (member_array[i])
+    {
+      g_string_append(result, ",");
+      g_string_append(result, member_array[i]);
+      i++;
+    }
 
   return TRUE;
+}
+
+static gboolean
+_getent_format_array_at_location(gchar *name_or_gid, gpointer location, GString *result)
+{
+  gpointer members = *((gchar **)location);
+  return _getent_format_array(name_or_gid, members, result);
 }
 
 static gboolean
@@ -174,9 +191,9 @@ static Plugin getent_plugins[] =
 };
 
 gboolean
-getent_plugin_module_init(GlobalConfig *cfg, CfgArgs *args)
+getent_plugin_module_init(PluginContext *context, CfgArgs *args)
 {
-  plugin_register(cfg, getent_plugins, G_N_ELEMENTS(getent_plugins));
+  plugin_register(context, getent_plugins, G_N_ELEMENTS(getent_plugins));
   return TRUE;
 }
 

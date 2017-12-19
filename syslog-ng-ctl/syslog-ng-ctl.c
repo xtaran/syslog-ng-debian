@@ -137,7 +137,7 @@ static GOptionEntry stats_options[] =
 };
 
 static const gchar *
-_stats_command_builder()
+_stats_command_builder(void)
 {
   return stats_options_reset_is_set ? "RESET_STATS" : "STATS";
 }
@@ -158,6 +158,12 @@ static gint
 slng_reload(int argc, char *argv[], const gchar *mode)
 {
   return _dispatch_command("RELOAD");
+}
+
+static gint
+slng_reopen(int argc, char *argv[], const gchar *mode)
+{
+  return _dispatch_command("REOPEN");
 }
 
 const static gint QUERY_COMMAND = 0;
@@ -216,7 +222,7 @@ slng_license(int argc, char *argv[], const gchar *mode)
 }
 
 static gint
-_get_query_list_cmd()
+_get_query_list_cmd(void)
 {
   if (query_is_get_sum)
     return -1;
@@ -228,7 +234,7 @@ _get_query_list_cmd()
 }
 
 static gint
-_get_query_get_cmd()
+_get_query_get_cmd(void)
 {
   if (query_is_get_sum)
     {
@@ -258,13 +264,13 @@ _get_query_cmd(gchar *cmd)
 }
 
 static gboolean
-_is_query_params_empty()
+_is_query_params_empty(void)
 {
   return raw_query_params == NULL;
 }
 
 static gchar *
-_shift_query_command_out_of_params()
+_shift_query_command_out_of_params(void)
 {
   if (raw_query_params[QUERY_COMMAND] != NULL)
     return *(raw_query_params++);
@@ -302,7 +308,7 @@ _get_query_command_string(gint query_cmd)
 }
 
 static gchar *
-_get_dispatchable_query_command()
+_get_dispatchable_query_command(void)
 {
   gint query_cmd;
 
@@ -383,6 +389,7 @@ static struct
   { "trace", verbose_options, "Enable/query trace messages", slng_verbose },
   { "stop", no_options, "Stop syslog-ng process", slng_stop },
   { "reload", no_options, "Reload syslog-ng", slng_reload },
+  { "reopen", no_options, "Re-open of log destination files", slng_reopen },
   { "query", query_options, "Query syslog-ng statistics. Possible commands: list, get, get --sum", slng_query },
   { "show-license-info", license_options, "Show information about the license", slng_license },
   { NULL, NULL },

@@ -63,6 +63,10 @@ test_format_json(void)
   assert_template_format("$(format-json @.program=${PROGRAM})", "{\"@\":{\"program\":\"syslog-ng\"}}");
   assert_template_format("$(format-json .program.n@me=${PROGRAM})", "{\"_program\":{\"n@me\":\"syslog-ng\"}}");
   assert_template_format("$(format-json .program.@name=${PROGRAM})", "{\"_program\":{\"@name\":\"syslog-ng\"}}");
+  assert_template_format("$(format-json --leave-initial-dot .program.@name=${PROGRAM})",
+                         "{\".program\":{\"@name\":\"syslog-ng\"}}");
+  assert_template_format("$(format-json --leave-initial-dot .program.@name=${PROGRAM} .program.foo .program.bar)",
+                         "{\".program\":{\"@name\":\"syslog-ng\"}}");
 }
 
 void
@@ -158,6 +162,13 @@ test_format_json_performance(void)
                     "--exclude .SDATA.* "
                     "..RSTAMP='${R_UNIXTIME}${R_TZ}' "
                     "..TAGS=${TAGS})\n");
+  perftest_template("<$PRI>1 $ISODATE $LOGHOST @syslog-ng - - ${SDATA:--} $(format-json --leave-initial-dot --scope all-nv-pairs "
+                    "--exclude 0* --exclude 1* --exclude 2* --exclude 3* --exclude 4* --exclude 5* "
+                    "--exclude 6* --exclude 7* --exclude 8* --exclude 9* "
+                    "--exclude SOURCE "
+                    "--exclude .SDATA.* "
+                    "..RSTAMP='${R_UNIXTIME}${R_TZ}' "
+                    "..TAGS=${TAGS})\n");
 }
 
 int
@@ -167,7 +178,7 @@ main(int argc G_GNUC_UNUSED, char *argv[] G_GNUC_UNUSED)
   putenv("TZ=UTC");
   tzset();
   init_template_tests();
-  plugin_load_module("json-plugin", configuration, NULL);
+  cfg_load_module(configuration, "json-plugin");
 
   test_format_json();
   test_format_json_key();

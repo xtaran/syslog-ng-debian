@@ -420,7 +420,7 @@ pdbtool_match(int argc, char *argv[])
     {
       CfgLexer *lexer;
 
-      lexer = cfg_lexer_new_buffer(filter_string, strlen(filter_string));
+      lexer = cfg_lexer_new_buffer(configuration, filter_string, strlen(filter_string));
       if (!cfg_run_parser(configuration, lexer, &filter_expr_parser, (gpointer *) &filter, NULL))
         {
           fprintf(stderr, "Error parsing filter expression\n");
@@ -1024,7 +1024,7 @@ pdbtool_dictionary(int argc, char *argv[])
 static gboolean
 pdbtool_load_module(const gchar *option_name, const gchar *value, gpointer data, GError **error)
 {
-  return plugin_load_module(value, configuration, NULL);
+  return cfg_load_module(configuration, value);
 }
 
 static gchar *input_logfile = NULL;
@@ -1233,7 +1233,7 @@ main(int argc, char *argv[])
   pattern_db_global_init();
   crypto_init();
 
-  configuration = cfg_new_snippet(VERSION_VALUE);
+  configuration = cfg_new_snippet();
 
   if (!g_option_context_parse(ctx, &argc, &argv, &error))
     {
@@ -1244,8 +1244,8 @@ main(int argc, char *argv[])
     }
   g_option_context_free(ctx);
 
-  plugin_load_module("syslogformat", configuration, NULL);
-  plugin_load_module("basicfuncs", configuration, NULL);
+  cfg_load_module(configuration, "syslogformat");
+  cfg_load_module(configuration, "basicfuncs");
 
   if (color_out)
     colors = full_colors;

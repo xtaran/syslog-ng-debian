@@ -60,7 +60,7 @@ TEST_CFLAGS		+= $(CRITERION_CFLAGS)
 TEST_LDADD		+= $(CRITERION_LIBS)
 endif
 
-test_ldflags		= -no-install
+test_ldflags		= -no-install $(NO_PIE_LDFLAG)
 
 PREOPEN_SYSLOGFORMAT	= -dlpreopen ${top_builddir}/modules/syslogformat/libsyslogformat.la
 PREOPEN_BASICFUNCS	= -dlpreopen ${top_builddir}/modules/basicfuncs/libbasicfuncs.la
@@ -88,7 +88,7 @@ local-check:
 	${AM_v_at}${MAKE} check check_PROGRAMS="${current_tests} ${subdir_tests}" \
 				TESTS="${current_tests} ${subdir_tests}"
 
-${check_PROGRAMS}: LDFLAGS+="${test_ldflags}"
+${check_PROGRAMS}: LDFLAGS+=${test_ldflags}
 
 noinst_LIBRARIES	=
 noinst_DATA		=
@@ -167,6 +167,8 @@ include tests/Makefile.am
 include doc/Makefile.am
 include contrib/Makefile.am
 include scl/Makefile.am
+include packaging/debian/Makefile.am
+include dbld/Makefile.am
 
 TEST_EXTENSIONS = .sh
 @VALGRIND_CHECK_RULES@
