@@ -1,3 +1,23 @@
+syslog-ng (3.13.2-1~2.gbpcff2c3) UNRELEASED; urgency=medium
+
+  ** SNAPSHOT build @cff2c3e84f14f5c834bb9878d0101fbada91fc77 **
+
+  * [a088324] New upstream version 3.12.1
+  * [029bb36] Removed unneeded dh-systemd (build) dependency
+  * [aadc721] Temporally add libsnappy-dev dependency until libmongoc-dev fix it
+  * [aa6e18e] Updated config version to 3.12
+  * [eb5e839] Fixed filter expression of gbp import-orig
+  * [dea804c] New upstream version 3.13.2
+  * [abeab4a] Adapt patches to the new version
+  * [8a82a05] Fixed new pylint issues
+  * [4355398] Changed package priority to optional
+  * [831da62] Enable fail-missing option of dh_missing
+  * [251a0bc] Added new plugins
+  * [cf80b16] Update the config version
+  * [cff2c3e] Added a (disabled) test to compile incubator
+
+ -- SZALAY Attila <sasa@debian.org>  Wed, 20 Dec 2017 08:30:57 +0100
+
 syslog-ng (3.11.1-2) unstable; urgency=medium
 
   * [eb1ad8a] Remove dh-autoreconf dependency.
