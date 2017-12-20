@@ -1,6 +1,4 @@
-syslog-ng (3.13.2-1~4.gbp5e715c) UNRELEASED; urgency=medium
-
-  ** SNAPSHOT build @5e715ceac17092283eb924bb1f00cc9c6bef5f17 **
+syslog-ng (3.13.2-1) unstable; urgency=medium
 
   * [a088324] New upstream version 3.12.1
   * [029bb36] Removed unneeded dh-systemd (build) dependency
@@ -16,9 +14,9 @@ syslog-ng (3.13.2-1~4.gbp5e715c) UNRELEASED; urgency=medium
   * [cf80b16] Update the config version
   * [cff2c3e] Added a (disabled) test to compile incubator
   * [a8f4557] Remove obsoleted eventlog dependency (Closes: #881705)
-  * [5e715ce] Upgrade version because of API changes
+  * [5e715ce] Upgrade ABI version because of incompatible changes
 
- -- SZALAY Attila <sasa@debian.org>  Wed, 20 Dec 2017 08:40:44 +0100
+ -- SZALAY Attila <sasa@debian.org>  Wed, 20 Dec 2017 09:52:22 +0100
 
 syslog-ng (3.11.1-2) unstable; urgency=medium
 
