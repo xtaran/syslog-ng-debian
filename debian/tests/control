@@ -65,3 +65,6 @@ Restrictions: needs-root
 Tests: testinitscript
 Depends: @, sysvinit-core
 Restrictions: needs-root
+
+#Tests: compile-incubator
+#Depends: build-essential, syslog-ng-dev, fakeroot, debhelper, dh-autoreconf, automake, liblua5.2-dev, libperl-dev, python-dev, libgrok-dev, libtokyocabinet-dev, librdkafka-dev, libzmq3-dev, libmongo-client-dev
