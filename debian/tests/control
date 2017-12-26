@@ -55,6 +55,15 @@ Depends: syslog-ng-core, syslog-ng-mod-map-value-pairs
 Tests: basic
 Depends: syslog-ng-core, syslog-ng-mod-snmptrapd-parser
 
+Tests: basic
+Depends: syslog-ng-core, syslog-ng-mod-xml-parser
+
+Tests: basic
+Depends: syslog-ng-core, syslog-ng-mod-extra
+
+Tests: basic
+Depends: syslog-ng-core, syslog-ng-mod-tag-parser
+
 Tests: upgrade
 Restrictions: needs-root
 Depends: apt-utils
