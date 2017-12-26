@@ -1,0 +1,59 @@
+From: SZALAY Attila <sasa@debian.org>
+Date: Tue, 26 Dec 2017 13:22:13 +0100
+Subject: Removed two typo from the get_path_max code
+
+Closes: #885248
+Thanks: Aaron M. Ucko for the investigation of this bug
+---
+ modules/affile/directory-monitor.c | 38 +++++++++++++++-----------------------
+ 1 file changed, 15 insertions(+), 23 deletions(-)
+
+diff --git a/modules/affile/directory-monitor.c b/modules/affile/directory-monitor.c
+index 9af325a..cc038d0 100644
+--- a/modules/affile/directory-monitor.c
++++ b/modules/affile/directory-monitor.c
+@@ -62,29 +62,21 @@ get_path_max(void)
+ #ifdef PATH_MAX
+       path_max = PATH_MAX;
+ #else
+-      {
+-        /* This code based on example from the Advanced Programming in the UNIX environment
+-         * on how to determine the max path length
+-         */
+-        static long posix_version = 0;
+-        static long xsi_version = 0;
+-        if (posix_version == 0)
+-          posix_version = sysconf(_SC_VERSION);
+-
+-        if (xsi_version == 0)
+-          xsi_version = sysconf(_SC_XOPEN_VERSION);
+-
+-        if ((path_max = pathconf("/", _PC_PATH_MAX)) < 0)
+-          path_max = PATH_MAX_GUESS;
+-        else
+-          path_max++;    /* add one since it's relative to root */
+-
+-        /*
+-         * Before POSIX.1-2001, we aren't guaranteed that PATH_MAX includes
+-         * the terminating null byte.  Same goes for XPG3.
+-         */
+-        if ((posix_version < 200112L) && (xsi_version < 4))
+-          pathmax++;
++      /* This code based on example from the Advanced Programming in the UNIX environment
++       * on how to determine the max path length
++       */
++      static long posix_version = 0;
++      static long xsi_version = 0;
++      if (posix_version == 0)
++        posix_version = sysconf(_SC_VERSION);
++
++      if (xsi_version == 0)
++        xsi_version = sysconf(_SC_XOPEN_VERSION);
++
++      if ((path_max = pathconf("/", _PC_PATH_MAX)) < 0)
++        path_max = PATH_MAX_GUESS;
++      else
++        path_max++;    /* add one since it's relative to root */
+ #endif
+     }
+   return path_max;
