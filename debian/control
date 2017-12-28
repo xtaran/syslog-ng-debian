@@ -583,7 +583,7 @@ Description: Enhanced system logging daemon (xml parser plugin)
 Package: syslog-ng-mod-extra
 Architecture: all
 Multi-Arch: foreign
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, syslog-ng-mod-json (>= ${source:Version}), syslog-ng-mod-json (<< ${source:Version}.1~)
 Description: Enhanced system logging daemon (extra plugins)
  syslog-ng is an enhanced log daemon, supporting a wide range of input
  and output methods: syslog, unstructured text, message queues,
