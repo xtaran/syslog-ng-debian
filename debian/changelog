@@ -1,12 +1,11 @@
-syslog-ng (3.13.2-2~2.gbpe4bb74) UNRELEASED; urgency=medium
-
-  ** SNAPSHOT build @e4bb74a7064d0379d2f5b9c626162de71f933241 **
+syslog-ng (3.13.2-2) unstable; urgency=medium
 
   * [776dd44] Removed two typo from the get_path_max code.
     Thanks to Aaron M. Ucko for the investigation of this bug (Closes: #885248)
   * [e4bb74a] Added the new packages to the test suit
+  * [f8de833] Added required dependency of modules extra
 
- -- SZALAY Attila <sasa@debian.org>  Tue, 26 Dec 2017 18:07:07 +0100
+ -- SZALAY Attila <sasa@debian.org>  Thu, 28 Dec 2017 19:15:55 +0100
 
 syslog-ng (3.13.2-1) unstable; urgency=medium
 
