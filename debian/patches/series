@@ -2,3 +2,7 @@
 0002-Fixed-new-pylint-issues.patch
 0003-Remove-obsoleted-eventlog-dependency.patch
 0004-Removed-two-typo-from-the-get_path_max-code.patch
+0005-Adopt-nosetests-and-lintian-run-on-python3.patch
+0006-Temporally-ignore-__class__-is-unused-warnings.patch
+0007-Switch-to-official-naming-convention.patch
+0008-Made-debuggercli-compatible-with-python3.patch

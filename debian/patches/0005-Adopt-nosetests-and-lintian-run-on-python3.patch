@@ -1,0 +1,28 @@
+From: SZALAY Attila <sasa@ubainba.hu>
+Date: Sat, 30 Dec 2017 11:34:30 +0100
+Subject: Adopt nosetests and lintian run on python3
+
+---
+ modules/python/pylib/Makefile.am | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/modules/python/pylib/Makefile.am b/modules/python/pylib/Makefile.am
+index ef8ed3c..83ad755 100644
+--- a/modules/python/pylib/Makefile.am
++++ b/modules/python/pylib/Makefile.am
+@@ -66,13 +66,13 @@ clean-pylib:
+ python-checks: python-unit python-pep8 python-pylint
+ 
+ python-unit:
+-	nosetests $(PYLIB_SRCDIR)/syslogng
++	nosetests3 $(PYLIB_SRCDIR)/syslogng
+ 
+ python-pep8:
+ 	pep8 --ignore=E501 $(PYLIB_SRCDIR)/syslogng
+ 
+ python-pylint:
+-	pylint -r n --rcfile=$(PYLIB_SRCDIR)/pylintrc $(PYLIB_SRCDIR)/syslogng
++	pylint3 -r n --rcfile=$(PYLIB_SRCDIR)/pylintrc $(PYLIB_SRCDIR)/syslogng
+ 
+ modules_python_pylib_tests_TESTS = modules/python/pylib/test_pylib.sh
+ check_SCRIPTS += $(modules_python_pylib_tests_TESTS)

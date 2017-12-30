@@ -1,0 +1,183 @@
+From: SZALAY Attila <sasa@ubainba.hu>
+Date: Sat, 30 Dec 2017 15:01:03 +0100
+Subject: Switch to official naming convention
+
+---
+ .../syslogng/debuggercli/tests/test_completer.py   |  2 +-
+ .../debuggercli/tests/test_completerlang.py        |  4 ++--
+ .../syslogng/debuggercli/tests/test_getoptlexer.py | 16 ++++++++--------
+ .../pylib/syslogng/debuggercli/tests/test_lexer.py |  6 +++---
+ .../debuggercli/tests/test_macrocompleter.py       |  4 ++--
+ .../syslogng/debuggercli/tests/test_tablexer.py    | 22 +++++++++++-----------
+ 6 files changed, 27 insertions(+), 27 deletions(-)
+
+diff --git a/modules/python/pylib/syslogng/debuggercli/tests/test_completer.py b/modules/python/pylib/syslogng/debuggercli/tests/test_completer.py
+index 21eda3c..542b5d3 100644
+--- a/modules/python/pylib/syslogng/debuggercli/tests/test_completer.py
++++ b/modules/python/pylib/syslogng/debuggercli/tests/test_completer.py
+@@ -42,7 +42,7 @@ class CompleterTestCase(unittest.TestCase):
+ 
+     def _assert_no_completions_are_offered(self, word, entire_input=None):
+         completions = self._get_completions(word, entire_input=entire_input)
+-        self.assertEquals(completions, [])
++        self.assertEqual(completions, [])
+ 
+     def _assert_completions_offered(self, word, expected_completions, entire_input=None):
+         completions = self._get_completions(word, entire_input=entire_input)
+diff --git a/modules/python/pylib/syslogng/debuggercli/tests/test_completerlang.py b/modules/python/pylib/syslogng/debuggercli/tests/test_completerlang.py
+index cb52019..1bd0e34 100644
+--- a/modules/python/pylib/syslogng/debuggercli/tests/test_completerlang.py
++++ b/modules/python/pylib/syslogng/debuggercli/tests/test_completerlang.py
+@@ -33,9 +33,9 @@ class CompleterLangTestCase(unittest.TestCase):
+     def _assert_token_follows(self, text, tokens, pos=None, replaced_token=None):
+         (expected_tokens, rtoken, rtoken_pos) = self._get_expected_tokens(text)
+         if pos is not None:
+-            self.assertEquals(pos, rtoken_pos)
++            self.assertEqual(pos, rtoken_pos)
+         if replaced_token is not None:
+-            self.assertEquals(rtoken.value if rtoken is not None else '', replaced_token)
++            self.assertEqual(rtoken.value if rtoken is not None else '', replaced_token)
+         self.assertLessEqual(set(tokens), set(expected_tokens))
+ 
+ 
+diff --git a/modules/python/pylib/syslogng/debuggercli/tests/test_getoptlexer.py b/modules/python/pylib/syslogng/debuggercli/tests/test_getoptlexer.py
+index d14b2a9..e821d0f 100644
+--- a/modules/python/pylib/syslogng/debuggercli/tests/test_getoptlexer.py
++++ b/modules/python/pylib/syslogng/debuggercli/tests/test_getoptlexer.py
+@@ -45,7 +45,7 @@ class TestGetoptLexer(TestLexer):
+     def test_lexer_returns_command_token_for_an_unknown_command_as_the_first_token(self):
+         self._lexer.input("unknown-cmd")
+         token = self._next_token()
+-        self.assertEquals(token.type, "COMMAND")
++        self.assertEqual(token.type, "COMMAND")
+ 
+     def test_lexer_returns_specific_token_for_known_commands(self):
+         for command in self._known_commands:
+@@ -59,15 +59,15 @@ class TestGetoptLexer(TestLexer):
+ 
+     def test_known_commands_are_not_returned_as_tokens_for_non_first_arguments(self):
+         self._lexer.input("print print")
+-        self.assertEquals(self._next_token().type, "COMMAND_PRINT")
+-        self.assertEquals(self._next_token().type, "ARG")
++        self.assertEqual(self._next_token().type, "COMMAND_PRINT")
++        self.assertEqual(self._next_token().type, "ARG")
+ 
+     def test_double_quoted_arguments_are_returned_as_a_single_token(self):
+         self._lexer.input('print "foo bar"')
+-        self.assertEquals(self._next_token().type, "COMMAND_PRINT")
++        self.assertEqual(self._next_token().type, "COMMAND_PRINT")
+         token = self._next_token()
+-        self.assertEquals(token.type, "ARG")
+-        self.assertEquals(token.value, "foo bar")
++        self.assertEqual(token.type, "ARG")
++        self.assertEqual(token.value, "foo bar")
+ 
+     def test_lexer_returns_token_in_a_sequence(self):
+         self._lexer.input('''print foo bar''')
+@@ -126,5 +126,5 @@ class TestGetoptLexer(TestLexer):
+ 
+     def _assert_next_arg_equals(self, token_value):
+         token = self._next_token()
+-        self.assertEquals(token.type, "ARG")
+-        self.assertEquals(token.value, token_value)
++        self.assertEqual(token.type, "ARG")
++        self.assertEqual(token.value, token_value)
+diff --git a/modules/python/pylib/syslogng/debuggercli/tests/test_lexer.py b/modules/python/pylib/syslogng/debuggercli/tests/test_lexer.py
+index 743eaaa..398341e 100644
+--- a/modules/python/pylib/syslogng/debuggercli/tests/test_lexer.py
++++ b/modules/python/pylib/syslogng/debuggercli/tests/test_lexer.py
+@@ -37,13 +37,13 @@ class TestLexer(unittest.TestCase):
+         return self._current_token
+ 
+     def _assert_current_token_type_equals(self, token_type):
+-        self.assertEquals(self._current_token.type, token_type)
++        self.assertEqual(self._current_token.type, token_type)
+ 
+     def _assert_current_token_value_equals(self, value):
+-        self.assertEquals(self._current_token.value, value)
++        self.assertEqual(self._current_token.value, value)
+ 
+     def _assert_current_token_pos_equals(self, pos):
+-        self.assertEquals(self._current_token.lexpos, pos)
++        self.assertEqual(self._current_token.lexpos, pos)
+ 
+     def _assert_current_token_is_partial(self):
+         self.assertTrue(self._current_token.partial)
+diff --git a/modules/python/pylib/syslogng/debuggercli/tests/test_macrocompleter.py b/modules/python/pylib/syslogng/debuggercli/tests/test_macrocompleter.py
+index ce0bf42..14c7a17 100644
+--- a/modules/python/pylib/syslogng/debuggercli/tests/test_macrocompleter.py
++++ b/modules/python/pylib/syslogng/debuggercli/tests/test_macrocompleter.py
+@@ -120,6 +120,6 @@ class TestMacroCompleter(CompleterTestCase):
+ 
+     def test_nothing_is_offered_if_the_entire_input_diverged_already(self):
+         completions = self._get_completions('', entire_input='$(echo ')
+-        self.assertEquals(completions, [])
++        self.assertEqual(completions, [])
+         completions = self._get_completions('', entire_input='almafa ')
+-        self.assertEquals(completions, [])
++        self.assertEqual(completions, [])
+diff --git a/modules/python/pylib/syslogng/debuggercli/tests/test_tablexer.py b/modules/python/pylib/syslogng/debuggercli/tests/test_tablexer.py
+index 95f1f2c..b83c6f2 100644
+--- a/modules/python/pylib/syslogng/debuggercli/tests/test_tablexer.py
++++ b/modules/python/pylib/syslogng/debuggercli/tests/test_tablexer.py
+@@ -73,27 +73,27 @@ class TestTabLexer(TestLexer):
+     def test_tab_lexer_token_returns_none_if_the_underlying_lexer_is_empty(self):
+         self._lexer = self._construct_lexer(0)
+         self._assert_next_token_is_tab(tab_position=0)
+-        self.assertEquals(self._lexer.token(), None)
++        self.assertEqual(self._lexer.token(), None)
+ 
+     def test_tab_lexer_token_returns_token_if_the_underlying_lexer_has_elements(self):
+         self._lexer = self._construct_lexer(2)
+-        self.assertEquals(self._lexer.token().value, '1')
+-        self.assertEquals(self._lexer.token().value, '2')
++        self.assertEqual(self._lexer.token().value, '1')
++        self.assertEqual(self._lexer.token().value, '2')
+         self._assert_next_token_is_tab(tab_position=4)
+         self.assertIsNone(self._lexer.token())
+ 
+     def test_partial_is_replaced_by_tab(self):
+         self._lexer = self._construct_lexer(2, mark_last_partial=True)
+-        self.assertEquals(self._lexer.token().value, '1')
++        self.assertEqual(self._lexer.token().value, '1')
+         self._assert_next_token_is_tab(tab_position=2)
+         self.assertIsNone(self._lexer.token())
+-        self.assertEquals(self._lexer.get_replaced_token().value, '2')
++        self.assertEqual(self._lexer.get_replaced_token().value, '2')
+ 
+     def test_tab_is_appended_if_no_partial_token(self):
+         self._lexer = self._construct_lexer(2, mark_last_partial=False)
+         self._lexer.set_drop_last_token(False)
+-        self.assertEquals(self._lexer.token().value, '1')
+-        self.assertEquals(self._lexer.token().value, '2')
++        self.assertEqual(self._lexer.token().value, '1')
++        self.assertEqual(self._lexer.token().value, '2')
+         self._assert_next_token_is_tab(tab_position=4)
+         self.assertIsNone(self._lexer.token())
+         self.assertIsNone(self._lexer.get_replaced_token())
+@@ -101,10 +101,10 @@ class TestTabLexer(TestLexer):
+     def test_last_token_is_replaced_by_a_tab_if_theres_no_partial_and_after_last_insertion_is_not_requested(self):
+         self._lexer = self._construct_lexer(2, mark_last_partial=False)
+         self._lexer.set_drop_last_token(True)
+-        self.assertEquals(self._lexer.token().value, '1')
++        self.assertEqual(self._lexer.token().value, '1')
+         self._assert_next_token_is_tab(tab_position=2)
+         self.assertIsNone(self._lexer.token())
+-        self.assertEquals(self._lexer.get_replaced_token().value, '2')
++        self.assertEqual(self._lexer.get_replaced_token().value, '2')
+ 
+     def test_tab_lexer_returns_tab_token_at_the_end_of_the_sequence(self):
+         self._lexer = self._construct_lexer(2)
+@@ -137,10 +137,10 @@ class TestTabLexer(TestLexer):
+ 
+     def _assert_n_numbered_tokens_available(self, n):
+         for i in range(1, n + 1):
+-            self.assertEquals(self._lexer.token().value, str(i))
++            self.assertEqual(self._lexer.token().value, str(i))
+ 
+     def _assert_current_token_position_equals(self, lexpos):
+-        self.assertEquals(self._current_token.lexpos, lexpos)
++        self.assertEqual(self._current_token.lexpos, lexpos)
+ 
+     def _assert_next_token_is_tab(self, tab_position=None):
+         self._next_token()

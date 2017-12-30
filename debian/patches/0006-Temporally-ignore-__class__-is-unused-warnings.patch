@@ -1,0 +1,21 @@
+From: SZALAY Attila <sasa@ubainba.hu>
+Date: Sat, 30 Dec 2017 14:05:53 +0100
+Subject: Temporally ignore __class__ is unused warnings
+
+---
+ modules/python/pylib/pylintrc | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/modules/python/pylib/pylintrc b/modules/python/pylib/pylintrc
+index c0bf699..5b80857 100644
+--- a/modules/python/pylib/pylintrc
++++ b/modules/python/pylib/pylintrc
+@@ -40,7 +40,7 @@ load-plugins=
+ # --disable=W"
+ #disable=
+ 
+-disable=C0111,W0613,R0903,I0011,W0142,E1101,R0921,R0922,R0801,C0330,R1705,C0201,C1801
++disable=C0111,W0613,R0903,I0011,W0142,E1101,R0921,R0922,R0801,C0330,R1705,C0201,C1801,W0612
+ 
+ # C0111     missing-docstring       Our priority is to make the code document
+ #                                   itself. Docstring is required only when

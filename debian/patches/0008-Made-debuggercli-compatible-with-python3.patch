@@ -1,0 +1,18 @@
+From: SZALAY Attila <sasa@ubainba.hu>
+Date: Sat, 30 Dec 2017 15:27:12 +0100
+Subject: Made debuggercli compatible with python3
+
+---
+ modules/python/pylib/syslogng/debuggercli/__init__.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/modules/python/pylib/syslogng/debuggercli/__init__.py b/modules/python/pylib/syslogng/debuggercli/__init__.py
+index d0330eb..f00ffc6 100644
+--- a/modules/python/pylib/syslogng/debuggercli/__init__.py
++++ b/modules/python/pylib/syslogng/debuggercli/__init__.py
+@@ -26,4 +26,4 @@ from syslogng.debuggercli.readline import setup_readline
+ 
+ def fetch_command():
+     setup_readline()
+-    return raw_input("(syslog-ng) ")
++    return str(input("(syslog-ng) "))
