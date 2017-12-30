@@ -26,10 +26,10 @@ Build-Depends: debhelper (>= 10~),
                libgeoip-dev,
                libhiredis-dev,
                libriemann-client-dev (>= 1.6.0~),
-               librabbitmq-dev,
-               python, python-dev, pep8, pylint, dh-python,
+               librabbitmq-dev, python:any,
+               python3-dev:any, pep8, pylint3, dh-python,
                dh-exec (>= 0.13~),
-               python-nose, python-ply,
+               python3-nose, python3-ply,
                libxml2-utils, geoip-database,
                libsnappy-dev
 Build-Conflicts: autoconf2.13
@@ -411,10 +411,12 @@ Description: Enhanced system logging daemon (graphite plugin)
  function, $(graphite-output), which makes it possible to easily send
  metrics to Graphite from within syslog-ng.
 
-Package: syslog-ng-mod-python
+Package: syslog-ng-mod-python3
 Architecture: any
 Multi-Arch: foreign
-Depends: ${shlibs:Depends}, ${misc:Depends}, ${python:Depends}
+Breaks: syslog-ng-mod-python
+Replaces: syslog-ng-mod-python
+Depends: ${shlibs:Depends}, ${misc:Depends}, ${python3:Depends}
 Description: Enhanced system logging daemon (Python plugin)
  syslog-ng is an enhanced log daemon, supporting a wide range of input
  and output methods: syslog, unstructured text, message queues,

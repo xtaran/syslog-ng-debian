@@ -183,10 +183,10 @@ override_dh_gencontrol:
 			 -Vsng:CoreModules=$(shell debian/tools/list-modules.sh core) \
 			 -Vsng:ABI=${ABI_VERSION}
 
-# Sadly, dh_python2 barfs on --dbg-package=, so we work it around by
+# Sadly, dh_python3 barfs on --dbg-package=, so we work it around by
 # clearing DH_OPTIONS here.
-override_dh_python2:
-	DH_OPTIONS="" dh_python2
+override_dh_python3:
+	DH_OPTIONS="" dh_python3
 
 ##
 #* Other, non-override targets
@@ -204,4 +204,4 @@ build-indep: ;
 
 # And for the rest, there is debhelper!
 %:
-	dh $@ --with autoreconf,systemd,python2 --parallel
+	dh $@ --with autoreconf,systemd,python3 --parallel
