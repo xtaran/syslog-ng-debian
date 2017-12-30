@@ -1,3 +1,17 @@
+syslog-ng (3.13.2-3~1.gbp6ec511) UNRELEASED; urgency=medium
+
+  ** SNAPSHOT build @6ec511f5d21286eeebaf659f535309733fb45d39 **
+
+  * [5f9c7d7] Switch to python3
+  * [10eb4e5] Added renumber option to gbp pq
+  * [6ec511f] Added patches needed to compile with python3.
+    Although the code itself is ready to be used
+    with python3 the tests not and also there are
+    some issues revealed by the new python3 compatible
+    pylint.
+
+ -- SZALAY Attila <sasa@debian.org>  Sat, 30 Dec 2017 21:55:03 +0100
+
 syslog-ng (3.13.2-2) unstable; urgency=medium
 
   * [776dd44] Removed two typo from the get_path_max code.
