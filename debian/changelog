@@ -1,3 +1,12 @@
+syslog-ng (3.13.2-3) unstable; urgency=medium
+
+  * [afa41f8] Fixed pylint reported new issues.
+    The new version of pylint has an added
+    check which triggered by some of the
+    python code within the project. (Closes: #889303)
+
+ -- SZALAY Attila <sasa@debian.org>  Sun, 11 Feb 2018 17:06:23 +0100
+
 syslog-ng (3.13.2-2) unstable; urgency=medium
 
   * [776dd44] Removed two typo from the get_path_max code.
