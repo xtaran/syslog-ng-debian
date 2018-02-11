@@ -1,0 +1,87 @@
+From: SZALAY Attila <sasa@debian.org>
+Date: Sun, 11 Feb 2018 15:16:18 +0100
+Subject: Fixed python issue R1710
+
+This pylint issue alerts if the return statements
+are inconsistent. It also alerts when some return
+statement return with value, but at the function end
+the return statement is missing.
+---
+ modules/python/pylib/syslogng/debuggercli/commandlinelexer.py | 8 ++++++++
+ modules/python/pylib/syslogng/debuggercli/completerlang.py    | 4 ++--
+ modules/python/pylib/syslogng/debuggercli/templatelexer.py    | 2 ++
+ 3 files changed, 12 insertions(+), 2 deletions(-)
+
+diff --git a/modules/python/pylib/syslogng/debuggercli/commandlinelexer.py b/modules/python/pylib/syslogng/debuggercli/commandlinelexer.py
+index 462f224..b976326 100644
+--- a/modules/python/pylib/syslogng/debuggercli/commandlinelexer.py
++++ b/modules/python/pylib/syslogng/debuggercli/commandlinelexer.py
+@@ -82,6 +82,8 @@ class CommandLineLexer(Lexer):
+                 partial = True
+             return LexerToken('ARG', value=self._current_token, partial=partial, lexpos=start_position)
+ 
++        return None
++
+     def _skip_whitespace(self):
+         while self._current_position < len(self._input) and self._input[self._current_position].isspace():
+             self._current_position += 1
+@@ -98,6 +100,8 @@ class CommandLineLexer(Lexer):
+         else:
+             self._current_token += current_char
+ 
++        return None
++
+     def _open_paren(self, current_char):
+         self._paren_balance += 1
+         self._current_token += current_char
+@@ -109,11 +113,15 @@ class CommandLineLexer(Lexer):
+             return LexerToken('ARG', value=self._current_token)
+         self._current_token += current_char
+ 
++        return None
++
+     def _close_current_token(self, current_char):
+         if self._paren_balance == 0:
+             return LexerToken('ARG', value=self._current_token)
+         self._current_token += current_char
+ 
++        return None
++
+     def _process_string_character(self, current_char):
+         if current_char == '\\':
+             self._current_state = CLL_QUOTED_CHAR
+diff --git a/modules/python/pylib/syslogng/debuggercli/completerlang.py b/modules/python/pylib/syslogng/debuggercli/completerlang.py
+index f2bcaaf..9e36878 100644
+--- a/modules/python/pylib/syslogng/debuggercli/completerlang.py
++++ b/modules/python/pylib/syslogng/debuggercli/completerlang.py
+@@ -57,7 +57,7 @@ class CompleterLang(object):
+     def p_error(self, p):
+         if p is None:
+             # EOF
+-            return None
++            return
+         elif p.type == 'TAB':
+             # We look up the current grammar state from the local variables of the caller,
+             # as it doesn't publish this information in self.
+@@ -75,7 +75,7 @@ class CompleterLang(object):
+             elif 'state' in sys._getframe(2).f_locals:
+                 parser_state = sys._getframe(2).f_locals['state']
+             else:
+-                return None
++                return
+ 
+             # now handle the error that the TAB token caused
+             self._token_position = p.lexpos
+diff --git a/modules/python/pylib/syslogng/debuggercli/templatelexer.py b/modules/python/pylib/syslogng/debuggercli/templatelexer.py
+index 0bce89b..9169bda 100644
+--- a/modules/python/pylib/syslogng/debuggercli/templatelexer.py
++++ b/modules/python/pylib/syslogng/debuggercli/templatelexer.py
+@@ -136,6 +136,8 @@ class TemplateLexer(LexBasedLexer):
+             t.lexer.pop_state()
+             return t
+ 
++        return None
++
+     def t_dollarparen_QUOTE(self, t):
+         r'"'
+         t.lexer.current_token += t.value
