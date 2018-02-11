@@ -1,0 +1,63 @@
+From: SZALAY Attila <sasa@debian.org>
+Date: Mon, 1 Jan 2018 21:07:06 +0100
+Subject: Run python scripts with python3
+
+---
+ configure.ac                  | 10 ++++++++--
+ lib/merge-grammar.py          |  2 +-
+ modules/python/pylib/setup.py |  2 +-
+ tests/functional/func_test.py |  2 +-
+ 4 files changed, 11 insertions(+), 5 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index 533ffa9..aef30ee 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -389,9 +389,15 @@ AM_PROG_LEX
+ AC_PROG_MAKE_SET
+ PKG_PROG_PKG_CONFIG
+ LT_INIT([dlopen disable-static])
+-AC_PATH_PROG(PYTHON, python)
++AC_PATH_PROG(PYTHON, python3)
+ if test -z "${PYTHON}"; then
+-	AC_MSG_ERROR([Python interpreter is required])
++	AC_PATH_PROG(PYTHON, python2)
++	if test -z "${PYTHON}"; then
++		AC_PATH_PROG(PYTHON, python2)
++		if test -z "${PYTHON}"; then
++			AC_MSG_ERROR([Python interpreter is required])
++		fi
++	fi
+ fi
+ 
+ dnl ***************************************************************************
+diff --git a/lib/merge-grammar.py b/lib/merge-grammar.py
+index e13ceef..053d8d2 100755
+--- a/lib/merge-grammar.py
++++ b/lib/merge-grammar.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/usr/bin/env python3
+ #############################################################################
+ # Copyright (c) 2010-2017 Balabit
+ #
+diff --git a/modules/python/pylib/setup.py b/modules/python/pylib/setup.py
+index 23bb5cc..a2fa05e 100755
+--- a/modules/python/pylib/setup.py
++++ b/modules/python/pylib/setup.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/usr/bin/env python3
+ #############################################################################
+ # Copyright (c) 2015-2016 Balabit
+ #
+diff --git a/tests/functional/func_test.py b/tests/functional/func_test.py
+index f963fe3..dc01fac 100755
+--- a/tests/functional/func_test.py
++++ b/tests/functional/func_test.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/env python
++#!/usr/bin/env python3
+ #############################################################################
+ # Copyright (c) 2007-2015 Balabit
+ #

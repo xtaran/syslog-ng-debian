@@ -6,3 +6,5 @@
 0006-Temporally-ignore-__class__-is-unused-warnings.patch
 0007-Switch-to-official-naming-convention.patch
 0008-Made-debuggercli-compatible-with-python3.patch
+0009-Run-python-scripts-with-python3.patch
+0010-Make-merge-grammar.py-unicode-ready-for-python3.patch
