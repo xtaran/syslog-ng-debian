@@ -204,4 +204,4 @@ build-indep: ;
 
 # And for the rest, there is debhelper!
 %:
-	dh $@ --with autoreconf,systemd,python2 --parallel
+	dh $@ --with autoreconf,systemd,python2
