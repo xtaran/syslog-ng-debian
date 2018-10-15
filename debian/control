@@ -33,7 +33,7 @@ Build-Depends: debhelper (>= 10~),
                libxml2-utils, geoip-database,
                libsnappy-dev
 Build-Conflicts: autoconf2.13, libcurl4-openssl-dev
-Standards-Version: 3.9.8
+Standards-Version: 4.2.1
 Homepage: http://www.syslog-ng.org/
 Vcs-Git: https://github.com/gcsideal/syslog-ng-debian.git
 Vcs-Browser: https://github.com/gcsideal/syslog-ng-debian

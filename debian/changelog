@@ -1,9 +1,10 @@
-syslog-ng (3.13.2-5) UNRELEASED; urgency=medium
+syslog-ng (3.13.2-5) unstable; urgency=medium
 
   * Update maintainer email address.
   * Add libcurl4-openssl-dev to Build-Conflicts.
   * Correct wording of patch short description.
   * Don't specify parallel to debhelper.
+  * Update Standards-Version to 4.2.1 .
 
  -- Laszlo Boszormenyi (GCS) <gcs@debian.org>  Mon, 15 Oct 2018 21:32:24 +0000
 
