@@ -1,6 +1,6 @@
 From: SZALAY Attila <sasa@debian.org>
 Date: Sat, 3 Mar 2018 20:15:10 +0100
-Subject: Make the the data type explicit in transport mock
+Subject: Make the data type explicit in transport mock
 
 Previously there were a heuristic in that object
 which tried to detect if the data is a string or an
