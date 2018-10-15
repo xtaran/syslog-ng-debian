@@ -1,7 +1,7 @@
 Source: syslog-ng
 Section: admin
 Priority: optional
-Maintainer: syslog-ng maintainers <syslog-ng-maintainers@lists.alioth.debian.org>
+Maintainer: syslog-ng maintainers <syslog-ng@tracker.debian.org>
 Uploaders: Laszlo Boszormenyi (GCS) <gcs@debian.org>,
            SZALAY Attila <sasa@debian.org>
 Build-Depends: debhelper (>= 10~),
