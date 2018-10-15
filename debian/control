@@ -32,7 +32,7 @@ Build-Depends: debhelper (>= 10~),
                python-nose, python-ply,
                libxml2-utils, geoip-database,
                libsnappy-dev
-Build-Conflicts: autoconf2.13
+Build-Conflicts: autoconf2.13, libcurl4-openssl-dev
 Standards-Version: 3.9.8
 Homepage: http://www.syslog-ng.org/
 Vcs-Git: https://github.com/gcsideal/syslog-ng-debian.git

@@ -1,6 +1,7 @@
 syslog-ng (3.13.2-5) UNRELEASED; urgency=medium
 
   * Update maintainer email address.
+  * Add libcurl4-openssl-dev to Build-Conflicts.
 
  -- Laszlo Boszormenyi (GCS) <gcs@debian.org>  Mon, 15 Oct 2018 21:32:24 +0000
 
