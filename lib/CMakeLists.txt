@@ -23,6 +23,9 @@ add_subdirectory(transport)
 add_subdirectory(value-pairs)
 add_subdirectory(scanner)
 add_subdirectory(str-repr)
+add_subdirectory(eventlog)
+add_subdirectory(secret-storage)
+add_subdirectory(logthrsource)
 
 set(LIB_SUBDIR_HEADERS
     ${COMPAT_HEADERS}
@@ -41,6 +44,7 @@ set(LIB_SUBDIR_HEADERS
     ${LIST_SCANNER_HEADERS}
     ${KV_SCANNER_HEADERS}
     ${STR_REPR_HEADERS}
+    ${LOGTHRSOURCE_HEADERS}
     ${CMAKE_CURRENT_BINARY_DIR}/filter/filter-expr-grammar.h
     ${CMAKE_CURRENT_BINARY_DIR}/rewrite/rewrite-expr-grammar.h
     ${CMAKE_CURRENT_BINARY_DIR}/parser/parser-expr-grammar.h
@@ -51,6 +55,7 @@ set (LIB_HEADERS
     alarms.h
     apphook.h
     atomic.h
+    atomic-gssize.h
     block-ref-parser.h
     cache.h
     cfg.h
@@ -84,6 +89,7 @@ set (LIB_HEADERS
     logthrdestdrv.h
     logwriter.h
     mainloop.h
+    signal-handler.h
     mainloop-call.h
     mainloop-worker.h
     mainloop-io-worker.h
@@ -129,6 +135,7 @@ set (LIB_HEADERS
     ack_tracker.h
     host-id.h
     resolved-configurable-paths.h
+    window-size-counter.h
     ${PROJECT_BINARY_DIR}/lib/cfg-grammar.h
     ${PROJECT_BINARY_DIR}/lib/block-ref-grammar.h
     ${PROJECT_BINARY_DIR}/lib/cfg-lex.h
@@ -172,6 +179,7 @@ set(LIB_SOURCES
     logthrdestdrv.c
     logwriter.c
     mainloop.c
+    signal-handler.c
     mainloop-call.c
     mainloop-worker.c
     mainloop-io-worker.c
@@ -210,6 +218,7 @@ set(LIB_SOURCES
     utf8utils.c
     host-id.c
     resolved-configurable-paths.c
+    window-size-counter.c
     ${COMPAT_SOURCES}
     ${CONTROL_SOURCES}
     ${DEBUGGER_SOURCES}
@@ -222,10 +231,9 @@ set(LIB_SOURCES
     ${TEMPLATE_SOURCES}
     ${TRANSPORT_SOURCES}
     ${VALUE_PAIRS_SOURCES}
-    ${CSV_SCANNER_SOURCES}
-    ${LIST_SCANNER_SOURCES}
-    ${KV_SCANNER_SOURCES}
+    ${SCANNER_SOURCES}
     ${STR_REPR_SOURCES}
+    ${LOGTHRSOURCE_SOURCES}
     ${PROJECT_BINARY_DIR}/lib/cfg-grammar.c
     ${PROJECT_BINARY_DIR}/lib/block-ref-grammar.c
     ${PROJECT_BINARY_DIR}/lib/cfg-lex.c
@@ -270,26 +278,48 @@ bison_target(ParserExprGrammar
     COMPILE_FLAGS ${BISON_FLAGS})
 add_flex_bison_dependency(CfgLexer ParserExprGrammar)
 
-include_directories(SYSTEM ${CORE_INCLUDE_DIRS})
+set(CORE_INCLUDE_DIRS
+    ${GLIB_INCLUDE_DIRS}
+    ${Gettext_INCLUDE_DIR}
+    ${IVYKIS_INCLUDE_DIR}
+    ${LIBPCRE_INCLUDE_DIRS}
+    ${LIBCAP_INCLUDE_DIR}
+)
 
-add_library(syslog-ng
-    SHARED
-    ${LIB_SOURCES}
-    ${LIB_HEADERS}
-    ${LIB_SUBDIR_HEADERS})
+add_library(syslog-ng SHARED ${LIB_SOURCES})
 
 target_include_directories(syslog-ng
-    SYSTEM INTERFACE
-    ${CORE_INCLUDE_DIRS})
+  SYSTEM PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_BINARY_DIR}
+    ${CORE_INCLUDE_DIRS}
+)
 
 target_link_libraries(
     syslog-ng
-    LINK_PUBLIC
-        ${CORE_LIBRARIES})
+  PUBLIC
+    eventlog
+    ${GLIB_GMODULE_LIBRARIES}
+    ${GLIB_GTHREAD_LIBRARIES}
+    ${GLIB_LIBRARIES}
+    ${Gettext_LIBRARIES}
+    ${IVYKIS_LIBRARY}
+    ${RESOLV_LIBRARIES}
+    ${LIBPCRE_LIBRARIES}
+    ${LIBCAP_LIBRARY}
+    OpenSSL::SSL
+    OpenSSL::Crypto
+    Threads::Threads
+    secret-storage
+)
 
 set_target_properties(syslog-ng
     PROPERTIES VERSION ${SYSLOG_NG_VERSION}
     SOVERSION ${SYSLOG_NG_VERSION})
+
+if (${IVYKIS_INTERNAL})
+   add_dependencies(syslog-ng IVYKIS)
+endif()
 
 install(TARGETS syslog-ng LIBRARY DESTINATION lib)
 
@@ -308,6 +338,7 @@ install(FILES ${STATS_HEADERS} DESTINATION include/syslog-ng/stats)
 install(FILES ${TEMPLATE_HEADERS} DESTINATION include/syslog-ng/template)
 install(FILES ${TRANSPORT_HEADERS} DESTINATION include/syslog-ng/transport)
 install(FILES ${CSV_SCANNER_HEADERS} DESTINATION include/syslog-ng/scanner/csv-scanner)
+install(FILES ${LOGTHRSOURCE_HEADERS} DESTINATION include/syslog-ng/logthrsource)
 
 set(TOOLS
     merge-grammar.py
@@ -315,3 +346,5 @@ set(TOOLS
 )
 
 install(FILES ${TOOLS} DESTINATION share/syslog-ng/tools)
+
+add_test_subdirectory(tests)

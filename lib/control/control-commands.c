@@ -23,10 +23,13 @@
  */
 #include "control/control.h"
 #include "control/control-main.h"
+#include "secret-storage/secret-storage.h"
 #include "mainloop.h"
 #include "messages.h"
 #include "apphook.h"
 #include "stats/stats-query-commands.h"
+#include "string.h"
+#include "cfg.h"
 
 static GList *command_list = NULL;
 
@@ -47,12 +50,42 @@ void
 control_register_command(const gchar *command_name, const gchar *description, CommandFunction function,
                          gpointer user_data)
 {
+  GList *command_it = g_list_find_custom(command_list, command_name, (GCompareFunc)control_command_start_with_command);
+  if (command_it)
+    {
+      ControlCommand *cmd = (ControlCommand *)command_it->data;
+      if (cmd->func != function)
+        {
+          msg_debug("Trying to register an already registered ControlCommand with different CommandFunction.");
+        }
+      return;
+    }
   ControlCommand *new_command = g_new0(ControlCommand, 1);
   new_command->command_name = command_name;
   new_command->description = description;
   new_command->func = function;
   new_command->user_data = user_data;
   command_list = g_list_append(command_list, new_command);
+}
+
+void
+control_replace_command(const gchar *command_name, const gchar *description, CommandFunction function,
+                        gpointer user_data)
+{
+  GList *command_it =  g_list_find_custom(command_list, command_name,
+                                          (GCompareFunc)control_command_start_with_command);
+  if (!command_it)
+    {
+      msg_debug("Trying to replace a non-existent command. Command will be registered as a new command.",
+                evt_tag_str("command", command_name));
+      control_register_command(command_name, description, function, user_data);
+      return;
+    }
+
+  ControlCommand *command = (ControlCommand *)command_it->data;
+  command->description = description;
+  command->func = function;
+  command->user_data = user_data;
 }
 
 static GString *
@@ -112,6 +145,47 @@ control_connection_stop_process(GString *command, gpointer user_data)
 }
 
 static GString *
+control_connection_config(GString *command, gpointer user_data)
+{
+  MainLoop *main_loop = (MainLoop *) user_data;
+  GlobalConfig *config = main_loop_get_current_config(main_loop);
+  GString *result = g_string_sized_new(128);
+  gchar **arguments = g_strsplit(command->str, " ", 0);
+
+  if (g_str_equal(arguments[1], "GET"))
+    {
+      if (g_str_equal(arguments[2], "ORIGINAL"))
+        {
+          g_string_assign(result, config->original_config->str);
+          goto exit;
+        }
+      else if (g_str_equal(arguments[2], "PREPROCESSED"))
+        {
+          g_string_assign(result, config->preprocess_config->str);
+          goto exit;
+        }
+    }
+
+  if (g_str_equal(arguments[1], "VERIFY"))
+    {
+      main_loop_verify_config(result, main_loop);
+      goto exit;
+    }
+
+  g_string_assign(result, "Invalid arguments received");
+
+exit:
+  g_strfreev(arguments);
+  return result;
+}
+
+static GString *
+show_ose_license_info(GString *command, gpointer user_data)
+{
+  return g_string_new("You are using the Open Source Edition of syslog-ng.");
+}
+
+static GString *
 control_connection_reload(GString *command, gpointer user_data)
 {
   GString *result = g_string_new("OK Config reload initiated");
@@ -129,6 +203,90 @@ control_connection_reopen(GString *command, gpointer user_data)
   return result;
 }
 
+static const gchar *
+secret_status_to_string(SecretStorageSecretState state)
+{
+  switch (state)
+    {
+    case SECRET_STORAGE_STATUS_PENDING:
+      return "PENDING";
+    case SECRET_STORAGE_SUCCESS:
+      return "SUCCESS";
+    case SECRET_STORAGE_STATUS_FAILED:
+      return "FAILED";
+    case SECRET_STORAGE_STATUS_INVALID_PASSWORD:
+      return "INVALID_PASSWORD";
+    default:
+      g_assert_not_reached();
+    }
+  return "SHOULD NOT BE REACHED";
+}
+
+gboolean
+secret_storage_status_accumulator(SecretStatus *status, gpointer user_data)
+{
+  GString *status_str = (GString *) user_data;
+  g_string_append_printf(status_str, "%s\t%s\n", status->key, secret_status_to_string(status->state));
+  return TRUE;
+}
+
+static GString *
+process_credentials_status(GString *result)
+{
+  g_string_assign(result,"Credential storage status:\n");
+  secret_storage_status_foreach(secret_storage_status_accumulator, (gpointer) result);
+  return result;
+}
+
+static GString *
+process_credentials_add(GString *result, guint argc, gchar **arguments)
+{
+  if (argc < 4)
+    {
+      g_string_assign(result,"error: missing arguments\n");
+      return result;
+    }
+
+  gchar *id = arguments[2];
+  gchar *secret = arguments[3];
+
+  if (secret_storage_store_secret(id, secret, strlen(secret)))
+    g_string_assign(result,"Credentials stored successfully\n");
+  else
+    g_string_assign(result,"Error while saving credentials\n");
+
+  secret_storage_wipe(secret, strlen(secret));
+  return result;
+}
+
+static GString *
+process_credentials(GString *command, gpointer user_data)
+{
+  gchar **arguments = g_strsplit(command->str, " ", 4);
+  guint argc = g_strv_length(arguments);
+
+  GString *result = g_string_new(NULL);
+
+  if (argc < 1)
+    {
+      g_string_assign(result,"error: missing subcommand\n");
+      g_strfreev(arguments);
+      return result;
+    }
+
+  gchar *subcommand = arguments[1];
+
+  if (strcmp(subcommand,"status")==0)
+    result = process_credentials_status(result);
+  else if (g_strcmp0(subcommand,"add") == 0)
+    result = process_credentials_add(result, argc, arguments);
+  else
+    g_string_printf(result,"error: invalid subcommand %s\n", subcommand);
+
+  g_strfreev(arguments);
+  return result;
+}
+
 ControlCommand default_commands[] =
 {
   { "LOG", NULL, control_connection_message_log },
@@ -136,6 +294,9 @@ ControlCommand default_commands[] =
   { "RELOAD", NULL, control_connection_reload },
   { "REOPEN", NULL, control_connection_reopen },
   { "QUERY", NULL, process_query_command },
+  { "PWD", NULL, process_credentials },
+  { "CONFIG", NULL, control_connection_config },
+  { "LICENSE", NULL, show_ose_license_info },
   { NULL, NULL, NULL },
 };
 

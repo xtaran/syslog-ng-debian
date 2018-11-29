@@ -40,6 +40,10 @@
 #include "crypto.h"
 #include "value-pairs/value-pairs.h"
 #include "scratch-buffers.h"
+#include "mainloop.h"
+#include "secret-storage/nondumpable-allocator.h"
+#include "secret-storage/secret-storage.h"
+#include "transport/transport-factory-id.h"
 
 #include <iv.h>
 #include <iv_work.h>
@@ -54,6 +58,18 @@ typedef struct _ApplicationHookEntry
 
 static GList *application_hooks = NULL;
 static gint current_state = AH_STARTUP;
+
+gboolean
+app_is_starting_up(void)
+{
+  return current_state < AH_PRE_CONFIG_LOADED;
+}
+
+gboolean
+app_is_shutting_down(void)
+{
+  return current_state >= AH_PRE_SHUTDOWN;
+}
 
 void
 register_application_hook(gint type, ApplicationHookFunc func, gpointer user_data)
@@ -79,15 +95,21 @@ register_application_hook(gint type, ApplicationHookFunc func, gpointer user_dat
 }
 
 static void
-run_application_hook(gint type, gboolean remove_hook)
+_update_current_state(gint type)
+{
+  if (AH_REOPEN == type)
+    return;
+
+  g_assert(current_state <= type);
+  current_state = type;
+}
+
+static void
+run_application_hook(gint type)
 {
   GList *l, *l_next;
 
-  if (remove_hook)
-    {
-      g_assert(current_state <= type);
-      current_state = type;
-    }
+  _update_current_state(type);
 
   msg_debug("Running application hooks", evt_tag_int("hook", type));
   for (l = application_hooks; l; l = l_next)
@@ -98,12 +120,9 @@ run_application_hook(gint type, gboolean remove_hook)
         {
           l_next = l->next;
           e->func(type, e->user_data);
-          if (remove_hook)
-            {
-              application_hooks = g_list_remove_link(application_hooks, l);
-              g_free(e);
-              g_list_free_1(l);
-            }
+          application_hooks = g_list_remove_link(application_hooks, l);
+          g_free(e);
+          g_list_free_1(l);
         }
       else
         {
@@ -118,6 +137,16 @@ app_fatal(const char *msg)
 {
   fprintf(stderr, "%s\n", msg);
 }
+
+#define construct_nondumpable_logger(logger) \
+void \
+nondumpable_allocator_ ## logger (gchar *summary, gchar *reason) \
+{ \
+  logger(summary, evt_tag_str("reason", reason)); \
+}
+
+construct_nondumpable_logger(msg_debug);
+construct_nondumpable_logger(msg_fatal);
 
 void
 app_startup(void)
@@ -142,6 +171,10 @@ app_startup(void)
   value_pairs_global_init();
   service_management_init();
   scratch_buffers_allocator_init();
+  main_loop_thread_resource_init();
+  nondumpable_setlogger(nondumpable_allocator_msg_debug, nondumpable_allocator_msg_fatal);
+  secret_storage_init();
+  transport_factory_id_global_init();
 }
 
 void
@@ -155,7 +188,7 @@ app_finish_app_startup_after_cfg_init(void)
 void
 app_post_daemonized(void)
 {
-  run_application_hook(AH_POST_DAEMONIZED, TRUE);
+  run_application_hook(AH_POST_DAEMONIZED);
 }
 
 void
@@ -167,14 +200,22 @@ app_pre_config_loaded(void)
 void
 app_post_config_loaded(void)
 {
-  run_application_hook(AH_POST_CONFIG_LOADED, TRUE);
+  run_application_hook(AH_POST_CONFIG_LOADED);
   res_init();
+}
+
+void
+app_pre_shutdown(void)
+{
+  run_application_hook(AH_PRE_SHUTDOWN);
 }
 
 void
 app_shutdown(void)
 {
-  run_application_hook(AH_SHUTDOWN, TRUE);
+  run_application_hook(AH_SHUTDOWN);
+  main_loop_thread_resource_deinit();
+  secret_storage_deinit();
   scratch_buffers_allocator_deinit();
   scratch_buffers_global_deinit();
   value_pairs_global_deinit();
@@ -192,6 +233,7 @@ app_shutdown(void)
   hostname_global_deinit();
   crypto_deinit();
   msg_deinit();
+  transport_factory_id_global_deinit();
 
 
   /* NOTE: the iv_deinit() call should come here, but there's some exit
@@ -210,7 +252,7 @@ app_shutdown(void)
 void
 app_reopen(void)
 {
-  run_application_hook(AH_REOPEN, FALSE);
+  run_application_hook(AH_REOPEN);
 }
 
 void

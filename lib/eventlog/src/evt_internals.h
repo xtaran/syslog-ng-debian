@@ -36,7 +36,7 @@
  * SUCH DAMAGE.
  *
  */
-                                   
+
 #ifndef __EVT_INTERNALS_H_INCLUDED
 #define __EVT_INTERNALS_H_INCLUDED
 
@@ -53,17 +53,15 @@
 #include <sys/types.h>
 
 /* whether to add the given default tag */
-#define EF_ADD_PID	0x0001
-#define EF_ADD_PROG	0x0002
-#define EF_ADD_ISOSTAMP	0x0004
-#define EF_ADD_UTCSTAMP	0x0008
-#define EF_ADD_TIMEZONE	0x0010
-#define EF_ADD_MSGID	0x0020
-#define EF_ADD_ALL	0x003F
+#define EF_ADD_PID  0x0001
+#define EF_ADD_PROG 0x0002
+#define EF_ADD_ISOSTAMP 0x0004
+#define EF_ADD_UTCSTAMP 0x0008
+#define EF_ADD_TIMEZONE 0x0010
+#define EF_ADD_MSGID  0x0020
+#define EF_ADD_ALL  0x003F
 
 #define EF_INITIALIZED  0x8000
-
-#define __PATH_ETC_EVENTLOG_CONF "/etc/eventlog.conf"
 
 typedef struct __evttaghook EVTTAGHOOK;
 typedef struct __evtsyslogopts EVTSYSLOGOPTS;
@@ -138,8 +136,6 @@ void evt_str_free(EVTSTR *es, int free_buf);
 int evt_str_append(EVTSTR *es, char *str);
 int evt_str_append_len(EVTSTR *es, char *str, size_t len);
 int evt_str_append_escape_bs(EVTSTR *es, char *unescaped, size_t unescaped_len, char escape_char);
-int evt_str_append_escape_xml_attr(EVTSTR *es, char *unescaped, size_t unescaped_len);
-int evt_str_append_escape_xml_pcdata(EVTSTR *es, char *unescaped, size_t unescaped_len);
 char *evt_str_get_str(EVTSTR *es);
 
 /* syslog linked wrapper */

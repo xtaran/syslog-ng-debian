@@ -110,7 +110,7 @@ log_proto_file_writer_flush(LogProtoClient *s)
       self->partial = (guchar *)g_malloc(self->partial_len);
       ofs = sum - rc; /* the length of the remaning (not processed) chunk in the first message */
       pos = self->buffer[i0].iov_len - ofs;
-      memcpy(self->partial, self->buffer[i0].iov_base + pos, ofs);
+      memcpy(self->partial, (guchar *) self->buffer[i0].iov_base + pos, ofs);
       i = i0 + 1;
       while (i < self->buf_count)
         {
@@ -134,7 +134,7 @@ write_error:
     {
       msg_error("I/O error occurred while writing",
                 evt_tag_int("fd", self->super.transport->fd),
-                evt_tag_errno(EVT_TAG_OSERROR, errno));
+                evt_tag_error(EVT_TAG_OSERROR));
       return LPS_ERROR;
     }
 
@@ -154,7 +154,7 @@ write_error:
  * successfully sent this message, or if it should be resent by the caller.
  **/
 static LogProtoStatus
-log_proto_file_writer_post(LogProtoClient *s, guchar *msg, gsize msg_len, gboolean *consumed)
+log_proto_file_writer_post(LogProtoClient *s, LogMessage *logmsg, guchar *msg, gsize msg_len, gboolean *consumed)
 {
   LogProtoFileWriter *self = (LogProtoFileWriter *)s;
   LogProtoStatus result;
@@ -192,7 +192,7 @@ log_proto_file_writer_post(LogProtoClient *s, guchar *msg, gsize msg_len, gboole
 }
 
 static gboolean
-log_proto_file_writer_prepare(LogProtoClient *s, gint *fd, GIOCondition *cond)
+log_proto_file_writer_prepare(LogProtoClient *s, gint *fd, GIOCondition *cond, gint *timeout)
 {
   LogProtoFileWriter *self = (LogProtoFileWriter *) s;
 

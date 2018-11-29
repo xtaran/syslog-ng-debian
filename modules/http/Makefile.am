@@ -2,17 +2,12 @@ if ENABLE_HTTP
 
 module_LTLIBRARIES      += modules/http/libhttp.la
 modules_http_libhttp_la_SOURCES = \
-  modules/http/http-plugin.h        \
+  modules/http/http.h 		    \
   modules/http/http.c               \
   modules/http/http-grammar.y       \
   modules/http/http-parser.c        \
   modules/http/http-parser.h        \
   modules/http/http-plugin.c
-
-BUILT_SOURCES       +=      \
-  modules/http/http-grammar.y       \
-  modules/http/http-grammar.c       \
-  modules/http/http-grammar.h
 
 modules_http_libhttp_la_CPPFLAGS  =     \
   $(AM_CPPFLAGS)            \
@@ -31,8 +26,16 @@ else
 modules/http modules/http/ mod-http:
 endif
 
-EXTRA_DIST        +=      \
-  modules/http/http-grammar.ym
+BUILT_SOURCES       +=      \
+  modules/http/http-grammar.y       \
+  modules/http/http-grammar.c       \
+  modules/http/http-grammar.h
 
+EXTRA_DIST        +=      \
+  modules/http/http-grammar.ym	\
+  modules/http/CMakeLists.txt	\
+  modules/http/README.md
 
 .PHONY: modules/http/ mod-http
+
+include modules/http/tests/Makefile.am

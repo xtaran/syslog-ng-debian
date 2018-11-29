@@ -1,4 +1,4 @@
-if ENABLE_CRITERION
+EXTRA_DIST += modules/appmodel/tests/CMakeLists.txt
 
 modules_appmodel_tests_TESTS			= \
 	modules/appmodel/tests/test_appmodel	\
@@ -48,5 +48,3 @@ modules_appmodel_tests_test_application_LDFLAGS	=	\
 	-dlpreopen $(top_builddir)/modules/appmodel/libappmodel.la
 modules_appmodel_tests_test_application_DEPENDENCIES =      \
         $(top_builddir)/modules/appmodel/libappmodel.la
-
-endif

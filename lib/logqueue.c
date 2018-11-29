@@ -28,6 +28,48 @@
 
 gint log_queue_max_threads = 0;
 
+void
+log_queue_memory_usage_add(LogQueue *self, gsize value)
+{
+  stats_counter_add(self->memory_usage, value);
+  atomic_gssize_add(&self->stats_cache.memory_usage, value);
+}
+
+void
+log_queue_memory_usage_sub(LogQueue *self, gsize value)
+{
+  stats_counter_sub(self->memory_usage, value);
+  atomic_gssize_sub(&self->stats_cache.memory_usage, value);
+}
+
+void
+log_queue_queued_messages_add(LogQueue *self, gsize value)
+{
+  stats_counter_add(self->queued_messages, value);
+  atomic_gssize_add(&self->stats_cache.queued_messages, value);
+}
+
+void
+log_queue_queued_messages_sub(LogQueue *self, gsize value)
+{
+  stats_counter_sub(self->queued_messages, value);
+  atomic_gssize_sub(&self->stats_cache.queued_messages, value);
+}
+
+void
+log_queue_queued_messages_inc(LogQueue *self)
+{
+  stats_counter_inc(self->queued_messages);
+  atomic_gssize_inc(&self->stats_cache.queued_messages);
+}
+
+void
+log_queue_queued_messages_dec(LogQueue *self)
+{
+  stats_counter_dec(self->queued_messages);
+  atomic_gssize_dec(&self->stats_cache.queued_messages);
+}
+
 /*
  * When this is called, it is assumed that the output thread is currently
  * not running (since this is the function that wakes it up), thus we can
@@ -168,16 +210,43 @@ log_queue_check_items(LogQueue *self, gint *timeout, LogQueuePushNotifyFunc para
   return TRUE;
 }
 
-void
-log_queue_set_counters(LogQueue *self, StatsCounterItem *queued_messages, StatsCounterItem *dropped_messages,
-                       StatsCounterItem *memory_usage)
+static void
+_register_common_counters(LogQueue *self, gint stats_level, const StatsClusterKey *sc_key)
 {
-  self->queued_messages = queued_messages;
-  self->dropped_messages = dropped_messages;
-  self->memory_usage = memory_usage;
-  stats_counter_set(self->memory_usage,
-                    self->memory_usage_qout_initial_value + self->memory_usage_overflow_initial_value);
-  stats_counter_set(self->queued_messages, log_queue_get_length(self));
+  stats_register_counter(stats_level, sc_key, SC_TYPE_QUEUED, &self->queued_messages);
+  stats_register_counter(stats_level, sc_key, SC_TYPE_DROPPED, &self->dropped_messages);
+  stats_register_counter_and_index(STATS_LEVEL1, sc_key, SC_TYPE_MEMORY_USAGE, &self->memory_usage);
+  atomic_gssize_set(&self->stats_cache.queued_messages, log_queue_get_length(self));
+  stats_counter_add(self->queued_messages, atomic_gssize_get_unsigned(&self->stats_cache.queued_messages));
+  stats_counter_add(self->memory_usage, atomic_gssize_get_unsigned(&self->stats_cache.memory_usage));
+}
+
+void
+log_queue_register_stats_counters(LogQueue *self, gint stats_level, const StatsClusterKey *sc_key)
+{
+  _register_common_counters(self, stats_level, sc_key);
+
+  if (self->register_stats_counters)
+    self->register_stats_counters(self, stats_level, sc_key);
+}
+
+static void
+_unregister_common_counters(LogQueue *self, const StatsClusterKey *sc_key)
+{
+  stats_counter_sub(self->queued_messages, atomic_gssize_get(&self->stats_cache.queued_messages));
+  stats_counter_sub(self->memory_usage, atomic_gssize_get(&self->stats_cache.memory_usage));
+  stats_unregister_counter(sc_key, SC_TYPE_QUEUED, &self->queued_messages);
+  stats_unregister_counter(sc_key, SC_TYPE_MEMORY_USAGE, &self->memory_usage);
+  stats_unregister_counter(sc_key, SC_TYPE_DROPPED, &self->dropped_messages);
+}
+
+void
+log_queue_unregister_stats_counters(LogQueue *self, const StatsClusterKey *sc_key)
+{
+  _unregister_common_counters(self, sc_key);
+
+  if (self->unregister_stats_counters)
+    self->unregister_stats_counters(self, sc_key);
 }
 
 void

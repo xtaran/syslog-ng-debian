@@ -477,6 +477,9 @@ _pdbl_rules_start(PDBLoader *state, const gchar *element_name, const gchar **att
 
   if (strcmp(element_name, "rule") == 0)
     {
+      if (state->current_rule)
+        pdb_rule_unref(state->current_rule);
+
       state->current_rule = pdb_rule_new();
       for (i = 0; attribute_names[i]; i++)
         {
@@ -1143,7 +1146,7 @@ pdb_rule_set_load(PDBRuleSet *self, GlobalConfig *cfg, const gchar *config, GLis
     {
       msg_error("Error opening classifier configuration file",
                 evt_tag_str(EVT_TAG_FILENAME, config),
-                evt_tag_errno(EVT_TAG_OSERROR, errno));
+                evt_tag_error(EVT_TAG_OSERROR));
       return FALSE;
     }
 

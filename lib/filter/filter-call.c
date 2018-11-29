@@ -30,6 +30,7 @@ typedef struct _FilterCall
   FilterExprNode super;
   FilterExprNode *filter_expr;
   gchar *rule;
+  gboolean visited; /* Used for filter call loop detection */
 } FilterCall;
 
 static gboolean
@@ -49,14 +50,30 @@ filter_call_eval(FilterExprNode *s, LogMessage **msgs, gint num_msg)
   else
     stats_counter_inc(self->super.not_matched);
 
+  msg_trace("filter() evaluation started",
+            evt_tag_str("called-rule", self->rule),
+            evt_tag_printf("msg", "%p", msgs[num_msg - 1]));
+
   return res ^ s->comp;
 }
 
-static void
+static gboolean
 filter_call_init(FilterExprNode *s, GlobalConfig *cfg)
 {
   FilterCall *self = (FilterCall *) s;
   LogExprNode *rule;
+
+  if (self->visited)
+    {
+      msg_error("Loop detected in filter rule", evt_tag_str("rule", self->rule));
+      return FALSE;
+    }
+
+  /* skip initialize if filter_call_init already called. */
+  if (self->filter_expr)
+    return TRUE;
+
+  self->visited = TRUE;
 
   rule = cfg_tree_get_object(&cfg->tree, ENC_FILTER, self->rule);
   if (rule)
@@ -69,7 +86,8 @@ filter_call_init(FilterExprNode *s, GlobalConfig *cfg)
       LogFilterPipe *filter_pipe = (LogFilterPipe *) rule->children->object;
 
       self->filter_expr = filter_expr_ref(filter_pipe->expr);
-      filter_expr_init(self->filter_expr, cfg);
+      if (!filter_expr_init(self->filter_expr, cfg))
+        return FALSE;
       self->super.modify = self->filter_expr->modify;
 
       stats_lock();
@@ -83,7 +101,12 @@ filter_call_init(FilterExprNode *s, GlobalConfig *cfg)
     {
       msg_error("Referenced filter rule not found in filter() expression",
                 evt_tag_str("rule", self->rule));
+      return FALSE;
     }
+
+  self->visited = FALSE;
+
+  return TRUE;
 }
 
 static void

@@ -22,9 +22,9 @@
  */
 
 #include <criterion/criterion.h>
-#include "affile/file-opener.h"
-#include "affile/named-pipe.h"
-#include "affile/file-specializations.h"
+#include "file-opener.h"
+#include "named-pipe.h"
+#include "file-specializations.h"
 #include "messages.h"
 
 #include <fcntl.h>
@@ -160,7 +160,7 @@ static void
 setup(void)
 {
   msg_init(FALSE);
-  configuration = cfg_new(VERSION_VALUE);
+  configuration = cfg_new_snippet();
 }
 
 void

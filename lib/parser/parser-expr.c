@@ -77,26 +77,36 @@ log_parser_process_message(LogParser *self, LogMessage **pmsg, const LogPathOpti
 }
 
 static void
-log_parser_queue(LogPipe *s, LogMessage *msg, const LogPathOptions *path_options, gpointer user_data)
+log_parser_queue(LogPipe *s, LogMessage *msg, const LogPathOptions *path_options)
 {
   LogParser *self = (LogParser *) s;
   gboolean success;
+  gchar *parser_result;
+
+  msg_trace(">>>>>> parser rule evaluation begin",
+            evt_tag_str("rule", self->name),
+            log_pipe_location_tag(s),
+            evt_tag_printf("msg", "%p", msg));
 
   success = log_parser_process_message(self, &msg, path_options);
-  msg_debug("Message parsing complete",
-            evt_tag_int("result", success),
-            evt_tag_str("rule", self->name),
-            log_pipe_location_tag(s));
+
   if (success)
     {
+      parser_result = "Forwarding message to the next LogPipe";
       log_pipe_forward_msg(s, msg, path_options);
     }
   else
     {
+      parser_result = "Dropping message from LogPipe";
       if (path_options->matched)
         (*path_options->matched) = FALSE;
       log_msg_drop(msg, path_options, AT_PROCESSED);
     }
+  msg_trace("<<<<<< parser rule evaluation result",
+            evt_tag_str("result", parser_result),
+            evt_tag_str("rule", self->name),
+            log_pipe_location_tag(s),
+            evt_tag_printf("msg", "%p", msg));
 }
 
 gboolean

@@ -53,6 +53,9 @@ construct_cfg_args_for_args(const gchar *additional_values[])
   cfg_args_set(args, "simple_qstring", "'simple_qstring_value'");
   cfg_args_set(args, "escaped_string", "\"escaped_string\\\"\\r\\n\"");
 
+  assert_true(cfg_args_contains(args, "simple-string"), "normalize: when set, must contain: simple-string");
+  assert_true(cfg_args_contains(args, "simple_string"), "normalize: when set, must contain: simple_string");
+
   for (i = 0; additional_values && additional_values[i] && additional_values[i + 1]; i += 2)
     {
       cfg_args_set(args, additional_values[i], additional_values[i + 1]);
@@ -213,7 +216,7 @@ test_values_are_resolution_order_args_defaults_globals_env(void)
 {
   CfgLexerSubst *subst = construct_object();
 
-  putenv("env=env_for_env");
+  setenv("env", "env_for_env", TRUE);
   assert_invoke_result(subst, "foo `arg` bar", "foo arg_value bar");
   assert_invoke_result(subst, "foo `def` bar", "foo default_for_def bar");
   assert_invoke_result(subst, "foo `globl` bar", "foo global_for_globl bar");

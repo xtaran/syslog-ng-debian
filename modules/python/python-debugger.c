@@ -34,7 +34,9 @@ _add_nv_keys_to_list(gpointer key, gpointer value, gpointer user_data)
   PyObject *list = (PyObject *) user_data;
   const gchar *name = (const gchar *) key;
 
-  PyList_Append(list, PyBytes_FromString(name));
+  PyObject *py_name = PyBytes_FromString(name);
+  PyList_Append(list, py_name);
+  Py_XDECREF(py_name);
 }
 
 static PyObject *
@@ -117,10 +119,11 @@ python_fetch_debugger_command(void)
 
       msg_error("Error calling debugger fetch_command",
                 evt_tag_str("function", DEBUGGER_FETCH_COMMAND),
-                evt_tag_str("exception", _py_fetch_and_format_exception_text(buf, sizeof(buf))));
+                evt_tag_str("exception", _py_format_exception_text(buf, sizeof(buf))));
+      _py_finish_exception_handling();
       goto exit;
     }
-  if (!PyBytes_Check(ret))
+  if (!_py_is_string(ret))
     {
       msg_error("Return value from debugger fetch_command is not a string",
                 evt_tag_str("function", DEBUGGER_FETCH_COMMAND),
@@ -128,7 +131,7 @@ python_fetch_debugger_command(void)
       Py_DECREF(ret);
       goto exit;
     }
-  command = g_strdup(py_object_as_string(ret));
+  command = g_strdup(_py_get_string_as_string(ret));
   Py_DECREF(ret);
 exit:
   PyGILState_Release(gstate);

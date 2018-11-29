@@ -18,15 +18,19 @@ bison_target(xmlGrammar
     ${CMAKE_CURRENT_BINARY_DIR}/xml-grammar.c
 COMPILE_FLAGS ${BISON_FLAGS})
 
-option(ENABLE_xml "Enable xml ON")
+option(ENABLE_XML "Enable xml" ON)
 
-if (ENABLE_xml)
-  include_directories (${CMAKE_CURRENT_BINARY_DIR})
-  include_directories (${CMAKE_CURRENT_SOURCE_DIR})
-  add_library(xml MODULE ${xml_SOURCES})
+if (ENABLE_XML)
+  add_library(xml SHARED ${xml_SOURCES})
+  target_include_directories(xml
+    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
+    PRIVATE ${CMAKE_CURRENT_BINARY_DIR}
+  )
   target_link_libraries(xml PRIVATE syslog-ng)
 
   install(TARGETS xml
   LIBRARY DESTINATION lib/syslog-ng/
   COMPONENT xml)
+
+  add_test_subdirectory(tests)
 endif()

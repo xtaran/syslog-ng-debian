@@ -33,6 +33,8 @@ def format_module_path_for_intree_modules():
     module_path = ''
     for (root, dirs, files) in os.walk(os.path.abspath(os.path.join(os.environ['top_builddir'], 'modules'))):
         module_path += ':'.join(map(lambda x: root + '/' + x + '/.libs', dirs))
+        module_path += ':'
+        module_path += ':'.join(map(lambda x: root + '/' + x, dirs))
         break
     return module_path
 
@@ -77,4 +79,3 @@ try:
     src_dir = os.environ["srcdir"]
 except KeyError:
     src_dir = current_dir
-

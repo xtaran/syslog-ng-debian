@@ -117,27 +117,75 @@ yy_input_run_backtick_substitution(CfgLexer *self, gchar *buf, gsize buf_size)
       }                                                                 \
   } while (0);                                                          \
   break;
-  
+
 #define YY_FATAL_ERROR(msg)						\
   do {									\
     struct yyguts_t * __yyg = (struct yyguts_t*) yyscanner;		\
                                                                         \
     msg_error("Fatal error in configuration lexer, giving up",		\
-              evt_tag_str("error", msg),				\
-              NULL);							\
+              evt_tag_str("error", msg));							\
     longjmp(__yyg->yyextra_r->fatal_error, 1);				\
   } while(0)
 
+#define _process_commented_line(scanner,content,cond) \
+  do {                                                \
+    int ch;                                           \
+                                                      \
+    ch = input(scanner);                              \
+    while (ch != '\n' && ch != EOF && ch != 0)        \
+      {                                               \
+        if (cond)                                     \
+          g_string_append_c(content, ch);             \
+        ch = input(scanner);                          \
+      }                                               \
+    if (ch == '\n')                                   \
+      {                                               \
+        unput(ch);                                    \
+      }                                               \
+  } while (0)
+
 
 static void
-_cfg_lex_new_line(CfgLexer *lexer)
+_cfg_lex_move_token_location_to_new_line(CfgLexer *lexer)
 {
-  lexer->include_stack[lexer->include_depth].lloc.first_line++;
-  lexer->include_stack[lexer->include_depth].lloc.last_line++;
-  lexer->include_stack[lexer->include_depth].lloc.first_column = 1;
-  lexer->include_stack[lexer->include_depth].lloc.last_column = 1;
+  CfgIncludeLevel *level = &lexer->include_stack[lexer->include_depth];
+
+  /* if the last token span multiple lines (e.g.  block references), it
+   * might happen that last_line != first_line, in that case, initialize the
+   * first_line of the token to the subsequent line after last_line */
+
+  level->lloc.first_line = level->lloc.last_line + 1;
+  level->lloc.last_line = level->lloc.first_line;
+  level->lloc.first_column = 1;
+  level->lloc.last_column = 1;
 }
 
+static void
+_cfg_lex_extend_token_location_to_next_line(CfgLexer *lexer)
+{
+  CfgIncludeLevel *level = &lexer->include_stack[lexer->include_depth];
+
+  /* this function is used when encountering an NL character within a
+   * multi-line string literal.
+   *
+   * Example:
+   * |    "this is the start of the literal\
+   * |    and this is the end"
+   *
+   *
+   * In this case the string contains a escaped NL character, causing the
+   * literal to span two distinct lines in the source file, which would be
+   * dropped from the parsed string.
+   *
+   * In this case, we need to move yylloc to point from the end of the
+   * current line to the beginning of the next line.  This way, by the time
+   * we return the entire token, yylloc would be spanning the
+   * starting-ending lines of the string literal as needed.
+   * */
+
+  level->lloc.last_line++;
+  level->lloc.last_column = 1;
+}
 %}
 
 %option bison-bridge bison-locations reentrant
@@ -166,26 +214,16 @@ word	[^ \#'"\(\)\{\}\[\]\\;\r\n\t,|\.@:]
 %%
 
 \#                         {
-                             int ch;
-
-                             ch = input(yyscanner);
-                             while (ch != '\n' && ch != EOF && ch != 0)
-                               {
-                                 if (yyextra->token_text)
-                                   g_string_append_c(yyextra->token_text, ch);
-                                 ch = input(yyscanner);
-                               }
-                             if (ch == '\n')
-                               {
-                                 unput(ch);
-                               }
+                             _process_commented_line(yyscanner,yyextra->token_text,yyextra->token_text);
                            }
 ^@                         {
                              return LL_PRAGMA;
                            }
+
+<*>\\\r?\n                 { _cfg_lex_extend_token_location_to_next_line(yyextra); }
 <*>\r?\n                   {
                              *yylloc = yyextra->include_stack[yyextra->include_depth].lloc;
-                             _cfg_lex_new_line(yyextra);
+                             _cfg_lex_move_token_location_to_new_line(yyextra);
                              if (yyextra->tokenize_eol)
                                return LL_EOL;
                              else
@@ -193,6 +231,7 @@ word	[^ \#'"\(\)\{\}\[\]\\;\r\n\t,|\.@:]
                            }
 {white}+		   ;
 \.\.                       { return LL_DOTDOT; }
+\.\.\.                     { return LL_DOTDOTDOT; }
 (-|\+)?{digit}+\.{digit}+  { yylval->fnum = strtod(yytext, NULL); return LL_FLOAT; }
 0x{xdigit}+ 		   { yylval->num = strtoll(yytext + 2, NULL, 16); return LL_NUMBER; }
 0{odigit}+		   { yylval->num = strtoll(yytext + 1, NULL, 8); return LL_NUMBER; }
@@ -248,6 +287,9 @@ word	[^ \#'"\(\)\{\}\[\]\\;\r\n\t,|\.@:]
      /* rules to parse a block as a LL_BLOCK token */
 <block>{white}+            ;
 <block>[^{( \t]+           { return LL_ERROR; }
+<block>\({white}*\)        { yy_pop_state(yyscanner); yylval->cptr = NULL; return LL_BLOCK; }
+<block>\({white}*\"\"{white}*\) { yy_pop_state(yyscanner); yylval->cptr = g_strdup(""); return LL_BLOCK; }
+<block>\({white}*\'\'{white}*\) { yy_pop_state(yyscanner); yylval->cptr = g_strdup(""); return LL_BLOCK; }
 <block>[{(]                {
                              if (yytext[0] != yyextra->block_boundary[0])
                                REJECT;
@@ -264,6 +306,11 @@ word	[^ \#'"\(\)\{\}\[\]\\;\r\n\t,|\.@:]
 <block_content>\'          {
                              g_string_append_c(yyextra->string_buffer, yytext[0]);
                              yy_push_state(block_qstring, yyscanner);
+                           }
+
+<block_content>\#          {
+                             g_string_append_c(yyextra->string_buffer, yytext[0]);
+                             _process_commented_line(yyscanner, yyextra->string_buffer, TRUE);
                            }
 
 <block_string>[^"]+        { g_string_append(yyextra->string_buffer, yytext); }
@@ -337,7 +384,7 @@ cfg_lexer_unput_string(CfgLexer *self, const char *str)
 }
 
 void
-cfg_lexer_start_block_state(CfgLexer *self, gchar block_boundary[2])
+cfg_lexer_start_block_state(CfgLexer *self, const gchar block_boundary[2])
 {
   memcpy(&self->block_boundary, block_boundary, sizeof(self->block_boundary));
   yy_push_state(block, self->state);

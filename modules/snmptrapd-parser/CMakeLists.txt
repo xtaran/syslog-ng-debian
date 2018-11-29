@@ -3,9 +3,12 @@ set(snmptrapd_parser_HEADERS
     "${CMAKE_CURRENT_BINARY_DIR}/snmptrapd-parser-grammar.h"
 )
 
-set(snmptrapd_parser_SOURCES
+set(SNMPTRAPD_PARSER_SOURCES
     "snmptrapd-parser-plugin.c"
     "snmptrapd-parser-parser.c"
+    "snmptrapd-header-parser.c"
+    "snmptrapd-parser.c"
+    "varbindlist-scanner.c"
     "${CMAKE_CURRENT_BINARY_DIR}/snmptrapd-parser-grammar.c"
 )
 
@@ -16,15 +19,19 @@ bison_target(snmptrapd-parserGrammar
     ${CMAKE_CURRENT_BINARY_DIR}/snmptrapd-parser-grammar.c
 COMPILE_FLAGS ${BISON_FLAGS})
 
-option(ENABLE_snmptrapd_parser "Enable snmptrapd-parser ON")
+option(ENABLE_SNMPTRAPD_PARSER "Enable snmptrapd-parser" ON)
 
-if (ENABLE_snmptrapd_parser)
-  include_directories (${CMAKE_CURRENT_BINARY_DIR})
-  include_directories (${CMAKE_CURRENT_SOURCE_DIR})
-  add_library(snmptrapd_parser MODULE ${snmptrapd-parser_SOURCES})
+if (ENABLE_SNMPTRAPD_PARSER)
+  add_library(snmptrapd_parser SHARED ${SNMPTRAPD_PARSER_SOURCES})
+  target_include_directories(snmptrapd_parser
+    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
+    PRIVATE ${CMAKE_CURRENT_BINARY_DIR}
+  )
   target_link_libraries(snmptrapd_parser PRIVATE syslog-ng)
 
   install(TARGETS snmptrapd_parser
   LIBRARY DESTINATION lib/syslog-ng/
   COMPONENT snmptrapd_parser)
+
+  add_test_subdirectory(tests)
 endif()

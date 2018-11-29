@@ -27,6 +27,11 @@
 #include "python-dest.h"
 #include "python-tf.h"
 #include "python-logmsg.h"
+#include "python-logtemplate.h"
+#include "python-integerpointer.h"
+#include "python-source.h"
+#include "python-fetcher.h"
+#include "python-global-code-loader.h"
 #include "python-debugger.h"
 
 #include "plugin.h"
@@ -40,6 +45,16 @@ static Plugin python_plugins[] =
   {
     .type = LL_CONTEXT_DESTINATION,
     .name = "python",
+    .parser = &python_parser,
+  },
+  {
+    .type = LL_CONTEXT_SOURCE,
+    .name = "python",
+    .parser = &python_parser,
+  },
+  {
+    .type = LL_CONTEXT_SOURCE,
+    .name = "python_fetcher",
     .parser = &python_parser,
   },
   {
@@ -64,9 +79,16 @@ _py_init_interpreter(void)
       python_debugger_append_inittab();
 
       Py_Initialize();
+      py_init_argv();
 
       PyEval_InitThreads();
-      python_log_message_init();
+      py_datetime_init();
+      py_log_message_init();
+      py_log_template_init();
+      py_integer_pointer_init();
+      py_log_source_init();
+      py_log_fetcher_init();
+      py_global_code_loader_init();
       PyEval_SaveThread();
 
       interpreter_initialized = TRUE;
@@ -86,7 +108,7 @@ const ModuleInfo module_info =
 {
   .canonical_name = "python",
   .version = SYSLOG_NG_VERSION,
-  .description = "The python module provides Python scripted destination support for syslog-ng.",
+  .description = "The python ("PYTHON_MODULE_VERSION") module provides Python scripted destination support for syslog-ng.",
   .core_revision = VERSION_CURRENT_VER_ONLY,
   .plugins = python_plugins,
   .plugins_len = G_N_ELEMENTS(python_plugins),

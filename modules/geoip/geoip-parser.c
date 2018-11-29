@@ -92,13 +92,13 @@ add_geoip_record(GeoIPParser *self, LogMessage *msg, const gchar *ip)
       value = scratch_buffers_alloc();
 
       g_string_printf(value, "%f",
-                      record->latitude);
+                      (double)record->latitude);
       log_msg_set_value_by_name(msg, self->dest.latitude,
                                 value->str,
                                 value->len);
 
       g_string_printf(value, "%f",
-                      record->longitude);
+                      (double)record->longitude);
       log_msg_set_value_by_name(msg, self->dest.longitude,
                                 value->str,
                                 value->len);
@@ -126,6 +126,10 @@ geoip_parser_process(LogParser *s, LogMessage **pmsg,
 {
   GeoIPParser *self = (GeoIPParser *) s;
   LogMessage *msg = log_msg_make_writable(pmsg, path_options);
+  msg_trace("geoip-parser message processing started",
+            evt_tag_str ("input", input),
+            evt_tag_str ("prefix", self->prefix),
+            evt_tag_printf("msg", "%p", *pmsg));
 
   if (!self->dest.country_code &&
       !self->dest.latitude &&
@@ -187,13 +191,13 @@ geoip_parser_init(LogPipe *s)
   if (is_country_type(self->gi->databaseType))
     {
       msg_debug("geoip: country type database detected",
-                evt_tag_int("database type", self->gi->databaseType));
+                evt_tag_int("database_type", self->gi->databaseType));
       self->add_geoip_result = add_geoip_country_code;
     }
   else
     {
       msg_debug("geoip: city type database detected",
-                evt_tag_int("database type", self->gi->databaseType));
+                evt_tag_int("database_type", self->gi->databaseType));
       self->add_geoip_result = add_geoip_record;
     }
   return log_parser_init_method(s);

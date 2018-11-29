@@ -58,7 +58,7 @@ append_mmdb_entry_data_to_gstring(GString *target, MMDB_entry_data_s *entry_data
       g_string_append_printf(target, "%f", entry_data->double_value);
       break;
     case MMDB_DATA_TYPE_FLOAT:
-      g_string_append_printf(target, "%f", entry_data->float_value);
+      g_string_append_printf(target, "%f", (double)entry_data->float_value);
       break;
     case MMDB_DATA_TYPE_UINT16:
       g_string_append_printf(target, "%u", entry_data->uint16);
@@ -70,7 +70,7 @@ append_mmdb_entry_data_to_gstring(GString *target, MMDB_entry_data_s *entry_data
       g_string_append_printf(target, "%d", entry_data->int32);
       break;
     case MMDB_DATA_TYPE_UINT64:
-      g_string_append_printf(target, "%lu", entry_data->uint64);
+      g_string_append_printf(target, "%"G_GUINT64_FORMAT, entry_data->uint64);
       break;
     case MMDB_DATA_TYPE_BOOLEAN:
       g_string_append_printf(target, "%s", entry_data->boolean ? "true" : "false");
@@ -341,7 +341,7 @@ dump_geodata_into_msg(LogMessage *msg, MMDB_entry_data_list_s *entry_data_list, 
       break;
 
     case MMDB_DATA_TYPE_FLOAT:
-      dump_geodata_into_msg_data(msg, path, "%f", entry_data_list->entry_data.float_value);
+      dump_geodata_into_msg_data(msg, path, "%f", (double)entry_data_list->entry_data.float_value);
       entry_data_list = entry_data_list->next;
       break;
 

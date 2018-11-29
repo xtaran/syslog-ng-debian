@@ -60,6 +60,9 @@ static CfgLexerKeyword main_keywords[] =
   { "options",            KW_OPTIONS },
   { "include",            KW_INCLUDE, },
   { "block",              KW_BLOCK },
+  { "if",                 KW_IF },
+  { "else",               KW_ELSE },
+  { "elif",               KW_ELIF },
 
   /* source or destination items */
   { "internal",           KW_INTERNAL },
@@ -87,6 +90,7 @@ static CfgLexerKeyword main_keywords[] =
   { "stats_level",        KW_STATS_LEVEL },
   { "stats",              KW_STATS_FREQ, KWS_OBSOLETE, "stats_freq" },
   { "stats_max_dynamics", KW_STATS_MAX_DYNAMIC },
+  { "min_iw_size_per_reader", KW_MIN_IW_SIZE_PER_READER },
   { "flush_lines",        KW_FLUSH_LINES },
   { "flush_timeout",      KW_FLUSH_TIMEOUT },
   { "suppress",           KW_SUPPRESS },
@@ -131,7 +135,6 @@ static CfgLexerKeyword main_keywords[] =
   { "program_override",   KW_PROGRAM_OVERRIDE },
   { "host_override",      KW_HOST_OVERRIDE },
   { "throttle",           KW_THROTTLE },
-  { "jvm_options",        KW_JVM_OPTIONS },
 
   { "create_dirs",        KW_CREATE_DIRS },
   { "optional",           KW_OPTIONAL },
@@ -184,23 +187,68 @@ CfgParser main_parser =
 
 CFG_PARSER_IMPLEMENT_LEXER_BINDING(main_, gpointer *)
 
-static void
-_underline_source(YYLTYPE *yylloc, gchar *buf)
-{
-  gint i;
+/* display CONTEXT lines before and after the offending line */
+#define CONTEXT 5
 
-  if (buf[0])
+static void
+_format_source_prefix(gchar *line_prefix, gsize line_prefix_len, gint lineno, gboolean error_location)
+{
+  g_snprintf(line_prefix, line_prefix_len, "%d", lineno);
+  if (error_location)
     {
-      fprintf(stderr, "\n%s", buf);
-      if (buf[strlen(buf) - 1] != '\n')
-        fprintf(stderr, "\n");
-      for (i = 0; buf[i] && i < yylloc->first_column - 1; i++)
+      for (gint i = strlen(line_prefix); i < 6; i++)
+        g_strlcat(line_prefix, "-", line_prefix_len);
+
+      g_strlcat(line_prefix, ">", line_prefix_len);
+    }
+}
+
+static void
+_print_underline(const gchar *line, gint whitespace_before, gint number_of_carets)
+{
+  for (gint i = 0; line[i] && i < whitespace_before; i++)
+    {
+      fprintf(stderr, "%c", line[i] == '\t' ? '\t' : ' ');
+    }
+
+  /* NOTE: sometimes the yylloc has zero characters, print a caret even in
+   * this case, that's why i == 0 is there */
+
+  for (gint i = 0; i == 0 || i < number_of_carets; i++)
+    fprintf(stderr, "^");
+  fprintf(stderr, "\n");
+}
+
+static void
+_print_underlined_source_block(YYLTYPE *yylloc, gchar **lines, gint error_index)
+{
+  gint line_ndx;
+  gchar line_prefix[12];
+
+  for (line_ndx = 0; lines[line_ndx]; line_ndx++)
+    {
+      gint lineno = yylloc->first_line + line_ndx - error_index;
+      const gchar *line = lines[line_ndx];
+      gint line_len = strlen(line);
+      gboolean line_ends_with_newline = line_len > 0 && line[line_len - 1] == '\n';
+
+      _format_source_prefix(line_prefix, sizeof(line_prefix), lineno, line_ndx == error_index);
+
+      fprintf(stderr, "%-8s%s%s", line_prefix, line, line_ends_with_newline ? "" : "\n");
+
+      if (line_ndx == error_index)
         {
-          fprintf(stderr, "%c", buf[i] == '\t' ? '\t' : ' ');
+          /* print the underline right below the source line we just printed */
+          fprintf(stderr, "%-8s", line_prefix);
+
+          gboolean multi_line = yylloc->first_line != yylloc->last_line;
+
+          _print_underline(line, yylloc->first_column - 1,
+                           multi_line ? strlen(&line[yylloc->first_column]) + 1
+                           : yylloc->last_column - yylloc->first_column);
         }
-      for (i = yylloc->first_column; (i == yylloc->first_column) || (i < yylloc->last_column); i++)
-        fprintf(stderr, "^");
-      fprintf(stderr, "\n");
+      else if (line_ndx >= error_index + CONTEXT)
+        break;
     }
 }
 
@@ -208,79 +256,92 @@ static void
 _report_file_location(const gchar *filename, YYLTYPE *yylloc)
 {
   FILE *f;
-  gint lineno = 1;
+  gint lineno = 0;
   gchar buf[1024];
+  GPtrArray *context = g_ptr_array_new();
+  gint error_index = 0;
 
   f = fopen(filename, "r");
   if (f)
     {
-      while (fgets(buf, sizeof(buf), f) && lineno < yylloc->first_line)
-        lineno++;
-      if (lineno != yylloc->first_line)
-        buf[0] = 0;
+      while (fgets(buf, sizeof(buf), f))
+        {
+          lineno++;
+          if (lineno > (gint) yylloc->first_line + CONTEXT)
+            break;
+          else if (lineno < (gint) yylloc->first_line - CONTEXT)
+            continue;
+          else if (lineno == yylloc->first_line)
+            error_index = context->len;
+          g_ptr_array_add(context, g_strdup(buf));
+        }
+      /* NOTE: do we have the appropriate number of lines? */
+      if (lineno <= yylloc->first_line)
+        goto exit;
+      g_ptr_array_add(context, NULL);
       fclose(f);
     }
-  _underline_source(yylloc, buf);
+  _print_underlined_source_block(yylloc, (gchar **) context->pdata, error_index);
+
+exit:
+  g_ptr_array_foreach(context, (GFunc) g_free, NULL);
+  g_ptr_array_free(context, TRUE);
 }
 
 static void
 _report_buffer_location(const gchar *buffer_content, YYLTYPE *yylloc)
 {
-  const gchar *sol, *eol;
-  gchar buf[1024];
-  gint lineno = 1;
+  gchar **lines = g_strsplit(buffer_content, "\n", yylloc->first_line + CONTEXT + 1);
+  gint num_lines = g_strv_length(lines);
 
-  sol = buffer_content;
-  eol = strchr(sol, '\n');
-  while (eol && lineno < yylloc->first_line)
-    {
-      lineno++;
-      sol = eol + 1;
-      eol = strchr(sol, '\n');
-    }
-  if (lineno == yylloc->first_line)
-    {
-      gsize cs = MIN(eol ? eol - sol - 1 : strlen(sol), sizeof(buf) - 2);
+  if (num_lines <= yylloc->first_line)
+    goto exit;
 
-      memcpy(buf, sol, cs);
-      buf[cs] = 0;
+  gint start = yylloc->first_line - 1 - CONTEXT;
+  gint error_index = CONTEXT;
+  if (start < 0)
+    {
+      error_index += start;
+      start = 0;
     }
-  _underline_source(yylloc, buf);
+  _print_underlined_source_block(yylloc, &lines[start], error_index);
+
+exit:
+  g_strfreev(lines);
 }
 
 void
-report_syntax_error(CfgLexer *lexer, YYLTYPE *yylloc, const char *what, const char *msg)
+report_syntax_error(CfgLexer *lexer, YYLTYPE *yylloc, const char *what, const char *msg, gboolean in_main_grammar)
 {
   CfgIncludeLevel *level = yylloc->level, *from;
-  gint file_pos;
 
-  fprintf(stderr, "Error parsing %s, %s in %n%s at line %d, column %d:\n",
-          what,
-          msg,
-          &file_pos,
-          yylloc->level->name,
-          yylloc->first_line,
-          yylloc->first_column);
-
-  from = level - 1;
-  while (from >= lexer->include_stack)
+  for (from = level; from >= lexer->include_stack; from--)
     {
-      fprintf(stderr, "%*sincluded from %s line %d, column %d\n", MAX(file_pos - 14, 0), "", from->name,
-              from->lloc.first_line, from->lloc.first_column);
-      from--;
+      if (from == level)
+        {
+          fprintf(stderr, "Error parsing %s, %s in %s:\n",
+                  what,
+                  msg,
+                  yylloc->level->name);
+        }
+      else
+        {
+          fprintf(stderr, "Included from %s:\n", from->name);
+        }
+      if (from->include_type == CFGI_FILE)
+        {
+          _report_file_location(from->name, &from->lloc);
+        }
+      else if (from->include_type == CFGI_BUFFER)
+        {
+          _report_buffer_location(from->buffer.original_content, &from->lloc);
+        }
+      fprintf(stderr, "\n");
     }
 
-  if (level->include_type == CFGI_FILE)
-    {
-      _report_file_location(level->name, yylloc);
-    }
-  else if (level->include_type == CFGI_BUFFER)
-    {
-      _report_buffer_location(level->buffer.content, yylloc);
-    }
-
-  fprintf(stderr, "\nsyslog-ng documentation: https://www.balabit.com/support/documentation?product=%s\n"
-          "contact: %s\n", PRODUCT_NAME, PRODUCT_CONTACT);
+  if (in_main_grammar)
+    fprintf(stderr, "\nsyslog-ng documentation: https://www.balabit.com/support/documentation?product=%s\n"
+            "contact: %s\n", PRODUCT_NAME, PRODUCT_CONTACT);
 
 }
 
@@ -291,6 +352,7 @@ extern int cfg_parser_debug;
 gboolean
 cfg_parser_parse(CfgParser *self, CfgLexer *lexer, gpointer *instance, gpointer arg)
 {
+  enum { OK, ERROR, MEMORY_EXHAUSTED } parse_result;
   gboolean success;
 
   if (cfg_parser_debug)
@@ -300,11 +362,17 @@ cfg_parser_parse(CfgParser *self, CfgLexer *lexer, gpointer *instance, gpointer 
   if (self->debug_flag)
     (*self->debug_flag) = cfg_parser_debug;
   cfg_lexer_push_context(lexer, self->context, self->keywords, self->name);
-  success = (self->parse(lexer, instance, arg) == 0);
+  parse_result = self->parse(lexer, instance, arg);
+  success = (parse_result == OK);
   cfg_lexer_pop_context(lexer);
   if (cfg_parser_debug)
     {
-      fprintf(stderr, "\nStopping parser %s, result: %d\n", self->name, success);
+      fprintf(stderr, "\nStopping parser %s, result: %d\n", self->name, parse_result);
+    }
+  if (parse_result == MEMORY_EXHAUSTED)
+    {
+      fprintf(stderr,
+              "\nToo many tokens found during parsing, consider increasing YYMAXDEPTH in lib/cfg-grammar.y and recompiling.\n");
     }
   return success;
 }
@@ -362,6 +430,9 @@ cfg_process_flag(CfgFlagHandler *handlers, gpointer base, const gchar *flag_)
               else
                 *field = (*field) & ~handler->param;
               return TRUE;
+            default:
+              g_assert_not_reached();
+              break;
             }
         }
     }

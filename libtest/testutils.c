@@ -24,21 +24,20 @@
  */
 
 #include "testutils.h"
-#include "messages.h"
 
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdarg.h>
+#include <math.h>
 
 static gboolean testutils_global_success = TRUE;
 GString *current_testcase_description = NULL;
-gchar *current_testcase_function = NULL;
+const gchar *current_testcase_function = NULL;
 gchar *current_testcase_file = NULL;
-GList *internal_messages = NULL;
 
 static void
-print_failure(const gchar *custom_template, va_list custom_args, gchar *assertion_failure_template, ...)
+print_failure(const gchar *custom_template, va_list custom_args, const gchar *assertion_failure_template, ...)
 {
   testutils_global_success = FALSE;
   va_list assertion_failure_args;
@@ -68,72 +67,13 @@ print_failure(const gchar *custom_template, va_list custom_args, gchar *assertio
   fprintf(stderr, "  #\n  ###########################################################################\n\n");
 }
 
-
-static void
-grab_message(LogMessage *msg)
-{
-  internal_messages = g_list_append(internal_messages, msg);
-}
-
-void
-reset_grabbed_messages(void)
-{
-  g_list_foreach(internal_messages, (GFunc) log_msg_unref, NULL);
-  g_list_free(internal_messages);
-  internal_messages = NULL;
-}
-
-void
-start_grabbing_messages(void)
-{
-  reset_grabbed_messages();
-  msg_set_post_func(grab_message);
-}
-
-void
-display_grabbed_messages(void)
-{
-  GList *l;
-
-  if (internal_messages)
-    {
-      fprintf(stderr, "  # Grabbed internal messages follow:\n");
-      for (l = internal_messages; l; l = l->next)
-        {
-          LogMessage *msg = (LogMessage *) l->data;
-          const gchar *msg_text = log_msg_get_value(msg, LM_V_MESSAGE, NULL);
-
-          fprintf(stderr, "  #\t%s\n", msg_text);
-        }
-    }
-  else
-    {
-      fprintf(stderr, "  # No internal messeges grabbed!\n");
-    }
-}
-
-void
-stop_grabbing_messages(void)
-{
-  msg_set_post_func(NULL);
-}
-
 gboolean
 assert_grabbed_messages_contain_non_fatal(const gchar *pattern, const gchar *error_message, ...)
 {
-  GList *l;
   va_list args;
 
-  for (l = internal_messages; l; l = l->next)
-    {
-      LogMessage *msg = (LogMessage *) l->data;
-      const gchar *msg_text = log_msg_get_value(msg, LM_V_MESSAGE, NULL);
-
-      if (strstr(msg_text, pattern))
-        {
-          return TRUE;
-        }
-    }
+  if (find_grabbed_message(pattern))
+    return TRUE;
 
   va_start(args, error_message);
   print_failure(error_message, args, "no grabbed message contains the pattern=%s", pattern);
@@ -213,7 +153,10 @@ assert_gdouble_non_fatal(gdouble actual, gdouble expected, const gchar *error_me
 {
   va_list args;
 
-  if (actual == expected)
+  if (isinf(actual) && isinf(expected))
+    return TRUE;
+
+  if (fabs(actual - expected) < 1e-15)
     return TRUE;
 
   va_start(args, error_message);
@@ -498,8 +441,8 @@ assert_gpointer_non_fatal(gpointer actual, gpointer expected, const gchar *error
 }
 
 gboolean
-assert_msg_field_equals_non_fatal(LogMessage *msg, gchar *field_name, gchar *expected_value, gssize expected_value_len,
-                                  const gchar *error_message, ...)
+assert_msg_field_equals_non_fatal(LogMessage *msg, const gchar *field_name, const gchar *expected_value,
+                                  gssize expected_value_len, const gchar *error_message, ...)
 {
   gssize actual_value_len;
   const gchar *actual_value;
@@ -521,7 +464,7 @@ assert_msg_field_equals_non_fatal(LogMessage *msg, gchar *field_name, gchar *exp
 }
 
 gboolean
-assert_msg_field_unset_non_fatal(LogMessage *msg, gchar *field_name, const gchar *error_message, ...)
+assert_msg_field_unset_non_fatal(LogMessage *msg, const gchar *field_name, const gchar *error_message, ...)
 {
   gssize actual_value_len;
   const gchar *actual_value;

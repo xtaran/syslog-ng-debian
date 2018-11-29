@@ -36,5 +36,6 @@ typedef struct _ControlCommand
   gpointer user_data;
 } ControlCommand;
 
+gboolean control_command_start_with_command(const ControlCommand *cmd, const gchar *name);
 
 #endif

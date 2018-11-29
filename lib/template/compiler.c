@@ -99,6 +99,19 @@ log_template_lookup_and_setup_function_call(LogTemplateCompiler *self, LogTempla
   Plugin *p;
 
   g_return_val_if_fail(error == NULL || *error == NULL, FALSE);
+
+  /* the plus one denotes the function name, which'll be removed from argc
+   * during parsing */
+
+  if (argc > TEMPLATE_INVOKE_MAX_ARGS + 1)
+    {
+      g_set_error(error, LOG_TEMPLATE_ERROR, LOG_TEMPLATE_ERROR_COMPILE,
+                  "Too many arguments (%d) to template function \"%s\", "
+                  "maximum number of arguments is %d", argc - 1, argv[0],
+                  TEMPLATE_INVOKE_MAX_ARGS);
+      goto error;
+    }
+
   p = cfg_find_plugin(self->template->cfg, LL_CONTEXT_TEMPLATE_FUNC, argv[0]);
 
   if (!p)
@@ -305,7 +318,7 @@ log_template_compiler_process_arg_list(LogTemplateCompiler *self, GPtrArray *res
   gint parens = 1;
   self->cursor++;
 
-  while (*self->cursor && *self->cursor == ' ')
+  while (*self->cursor && g_ascii_isspace(*self->cursor))
     self->cursor++;
 
   while(*self->cursor)
@@ -337,12 +350,12 @@ log_template_compiler_process_arg_list(LogTemplateCompiler *self, GPtrArray *res
           arg_buf_has_a_value = TRUE;
           continue;
         }
-      else if (parens == 1 && (*self->cursor == ' ' || *self->cursor == '\t'))
+      else if (parens == 1 && g_ascii_isspace(*self->cursor))
         {
           g_ptr_array_add(result, g_strndup(arg_buf->str, arg_buf->len));
           g_string_truncate(arg_buf, 0);
           arg_buf_has_a_value = FALSE;
-          while (*self->cursor && (*self->cursor == ' ' || *self->cursor == '\t'))
+          while (*self->cursor && g_ascii_isspace(*self->cursor))
             self->cursor++;
           continue;
         }
@@ -366,7 +379,7 @@ log_template_compiler_process_template_function(LogTemplateCompiler *self, GErro
   if (!log_template_compiler_process_arg_list(self, strv))
     {
       log_template_compiler_fill_compile_error(error,
-                                               "Invalid template function reference, missing function name or inbalanced '('",
+                                               "Invalid template function reference, missing function name or imbalanced '('",
                                                self->cursor - self->template->template);
       goto error;
     }

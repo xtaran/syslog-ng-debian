@@ -45,7 +45,7 @@
 static MsgFormatOptions parse_options;
 
 gboolean
-evaluate_testcase(gchar *msg,
+evaluate_testcase(const gchar *msg,
                   FilterExprNode *filter_node)
 {
   LogMessage *log_msg;
@@ -157,7 +157,7 @@ run_testcases(const char *top_srcdir)
 int
 main(int argc G_GNUC_UNUSED, char *argv[] G_GNUC_UNUSED)
 {
-  char *top_srcdir = getenv("top_srcdir");
+  char *top_srcdir = TOP_SRCDIR;
 
   app_startup();
 

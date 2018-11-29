@@ -42,6 +42,9 @@ include modules/snmptrapd-parser/Makefile.am
 include modules/tagsparser/Makefile.am
 include modules/xml/Makefile.am
 include modules/appmodel/Makefile.am
+include modules/openbsd/Makefile.am
+include modules/hook-commands/Makefile.am
+include modules/examples/Makefile.am
 
 SYSLOG_NG_CORE_JAR=$(top_builddir)/modules/java/syslog-ng-core/libs/syslog-ng-core.jar
 
@@ -55,7 +58,7 @@ SYSLOG_NG_MODULES	=	\
 	mod-python mod-java mod-java-modules mod-kvformat mod-date \
 	mod-native mod-cef mod-add-contextual-data mod-diskq mod-getent \
 	mod-map-value-pairs mod-snmptrapd-parser mod-tags-parser mod-xml \
-	mod-appmodel
+	mod-appmodel mod-openbsd
 
 modules modules/: ${SYSLOG_NG_MODULES}
 
@@ -71,5 +74,7 @@ modules_test_subdirs	=	\
 	modules_systemd_journal modules_kvformat modules_date \
 	modules_cef modules_diskq modules-add-contextual-data modules_getent \
 	modules_map-value-pairs modules_tagsparser modules_xml modules_appmodel
+
+EXTRA_DIST += modules/CMakeLists.txt
 
 .PHONY: modules modules/

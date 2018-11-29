@@ -48,6 +48,8 @@
 #include <iv_signal.h>
 #include <iv_event.h>
 
+volatile gint main_loop_workers_running;
+
 /**
  * Processing model
  * ================
@@ -64,7 +66,7 @@
  *     configuration is reloaded
  *   - the _queue() operation for LogPipe instances can happen in
  *     multiple threads
- *   - notifications accross LogPipe instances happen in the main thread
+ *   - notifications across LogPipe instances happen in the main thread
  *
  * This boils down to:
  * ===================
@@ -89,8 +91,8 @@
  */
 
 ThreadId main_thread_handle;
-GCond thread_halt_cond;
-GMutex workers_running_lock = G_STATIC_MUTEX_INIT;
+GCond *thread_halt_cond;
+GStaticMutex workers_running_lock = G_STATIC_MUTEX_INIT;
 
 struct _MainLoop
 {
@@ -154,6 +156,7 @@ struct _MainLoop
   GlobalConfig *new_config;
 
   MainLoopOptions *options;
+  ControlServer *control_server;
 };
 
 static MainLoop main_loop;
@@ -184,11 +187,15 @@ main_loop_initialize_state(GlobalConfig *cfg, const gchar *persist_filename)
   gboolean success;
 
   cfg->state = persist_state_new(persist_filename);
+  persist_state_set_global_error_handler(cfg->state, (gpointer)main_loop_exit, (gpointer)main_loop_get_instance());
+
   if (!persist_state_start(cfg->state))
     return FALSE;
+  if (!run_id_init(cfg->state))
+    return FALSE;
+  if (!host_id_init(cfg->state))
+    return FALSE;
 
-  run_id_init(cfg->state);
-  host_id_init(cfg->state);
   success = cfg_init(cfg);
 
   if (success)
@@ -266,6 +273,7 @@ finish:
   return;
 }
 
+
 /* initiate configuration reload */
 void
 main_loop_reload_config_initiate(gpointer user_data)
@@ -301,22 +309,60 @@ main_loop_reload_config_initiate(gpointer user_data)
 }
 
 static void
-block_till_workers_exit()
+block_till_workers_exit(void)
 {
-  gint64 end_time;
-  end_time = g_get_monotonic_time() + 15*G_TIME_SPAN_SECOND;
+  GTimeVal end_time;
 
-  g_mutex_lock(&workers_running_lock);
+  g_get_current_time(&end_time);
+  g_time_val_add(&end_time, 15 * G_USEC_PER_SEC);
+
+  g_static_mutex_lock(&workers_running_lock);
   while (main_loop_workers_running)
-    if (!g_cond_wait_until(&thread_halt_cond, &workers_running_lock, end_time))
-      {
-        /* timeout has passed. */
-        fprintf(stderr, "Main thread timed out (15s) while waiting workers threads to exit. "
-                "workers_running: %d. Continuing ...\n", main_loop_workers_running);
-        break;
-      }
+    {
+      if (!g_cond_timed_wait(thread_halt_cond, g_static_mutex_get_mutex(&workers_running_lock), &end_time))
+        {
+          /* timeout has passed. */
+          fprintf(stderr, "Main thread timed out (15s) while waiting workers threads to exit. "
+                  "workers_running: %d. Continuing ...\n", main_loop_workers_running);
+          break;
+        }
+    }
 
-  g_mutex_unlock (&workers_running_lock);
+  g_static_mutex_unlock(&workers_running_lock);
+}
+
+GlobalConfig *
+main_loop_get_current_config(MainLoop *self)
+{
+  return self->current_configuration;
+}
+
+/* main_loop_verify_config
+ * compares active configuration versus config file */
+
+void
+main_loop_verify_config(GString *result, MainLoop *self)
+{
+  const gchar *file_path = resolvedConfigurablePaths.cfgfilename;
+  gchar *config_mem = self -> current_configuration -> original_config -> str;
+  GError *err = NULL;
+  gchar *file_contents;
+
+  if (!g_file_get_contents(file_path, &file_contents, NULL, &err))
+    {
+      g_string_assign(result, "Cannot read configuration file: ");
+      g_string_append(result, err -> message);
+      g_error_free(err);
+      err = NULL;
+      return;
+    }
+
+  if (strcmp(file_contents, config_mem) == 0)
+    g_string_assign(result, "Configuration file matches active configuration");
+  else
+    g_string_assign(result, "Configuration file does not match active configuration");
+
+  g_free(file_contents);
 }
 
 /************************************************************************************
@@ -350,6 +396,8 @@ main_loop_exit_initiate(gpointer user_data)
 
   if (main_loop_is_terminating(self))
     return;
+
+  app_pre_shutdown();
 
   msg_notice("syslog-ng shutting down",
              evt_tag_str("version", SYSLOG_NG_VERSION));
@@ -475,22 +523,22 @@ main_loop_reload_config(MainLoop *self)
   return;
 }
 
+
 void
 main_loop_init(MainLoop *self, MainLoopOptions *options)
 {
   service_management_publish_status("Starting up...");
 
   self->options = options;
-  main_thread_handle = get_thread_id();
   scratch_buffers_automatic_gc_init();
   main_loop_worker_init();
   main_loop_io_worker_init();
   main_loop_call_init();
 
   main_loop_init_events(self);
-  if (!self->options->syntax_only)
-    control_init(self, resolvedConfigurablePaths.ctlfilename);
   setup_signals(self);
+
+  self->current_configuration = cfg_new(0);
 }
 
 /*
@@ -501,7 +549,6 @@ main_loop_read_and_init_config(MainLoop *self)
 {
   MainLoopOptions *options = self->options;
 
-  self->current_configuration = cfg_new(0);
   if (!cfg_read_config(self->current_configuration, resolvedConfigurablePaths.cfgfilename, options->syntax_only,
                        options->preprocess_into))
     {
@@ -517,6 +564,7 @@ main_loop_read_and_init_config(MainLoop *self)
     {
       return 2;
     }
+  self->control_server = control_init(self, resolvedConfigurablePaths.ctlfilename);
   return 0;
 }
 
@@ -532,8 +580,8 @@ main_loop_deinit(MainLoop *self)
 {
   main_loop_free_config(self);
 
-  if (!self->options->syntax_only)
-    control_destroy();
+  if (self->control_server)
+    control_server_free(self->control_server);
 
   iv_event_unregister(&self->exit_requested);
   iv_event_unregister(&self->reload_config_requested);
@@ -542,6 +590,7 @@ main_loop_deinit(MainLoop *self)
   main_loop_worker_deinit();
   block_till_workers_exit();
   scratch_buffers_automatic_gc_deinit();
+  g_static_mutex_free(&workers_running_lock);
 }
 
 void
@@ -555,7 +604,7 @@ main_loop_run(MainLoop *self)
   service_management_clear_status();
   if (self->options->interactive_mode)
     {
-      cfg_load_module(self->current_configuration, "python");
+      cfg_load_module(self->current_configuration, "mod-python");
       debugger_start(self, self->current_configuration);
     }
   iv_main();
@@ -566,4 +615,16 @@ void
 main_loop_add_options(GOptionContext *ctx)
 {
   main_loop_io_worker_add_options(ctx);
+}
+
+void
+main_loop_thread_resource_init(void)
+{
+  thread_halt_cond = g_cond_new();
+  main_thread_handle = get_thread_id();
+}
+
+void main_loop_thread_resource_deinit(void)
+{
+  g_cond_free(thread_halt_cond);
 }

@@ -1,14 +1,88 @@
-3.13.2
+3.18.1
+======
 
-<!-- Tue, 05 Dec 2017 14:30:24 +0100 -->
+## Features
 
+ * HTTP batching (#2135)
+ * HTTP multi threading (#2291)
+ * HTTP framing support for batches (#2190)
+ * Python source (#2308)
+ * Template support for Python destination (#2196)
+ * HDFS time-reap (#2257)
+ * Riemann batching (#2098)
+ * flush-timeout() for HTTP (#2251)
+ * Base64 encoding template function (#2223)
+ * url-decode() template function (#2278)
+ * Allow IPv4 mapped addresses in IPv6 mode (#2312)
+ * app-parser: set ${.app.name} to the application identified (#2290)
+ * Value pairs improvements (#2287)
+ * syslog-ng-ctl config to print pre-processed configuration (#2280)
+ * Add support for whitespace in template functions (#2271)
+ * verify the configuration is the same as on the disk (#2345)
 
-# Fixes
- * Missing manpages from release tarball (#1793)
- * Package syslog-ng-mod-json is removed from (#1794)
- * Drop syslog-ng-abi virtual packages (#1797)
+## Bugfixes
 
-# Credits
+ * Fix queue counters race condition (#2316)
+ * AMQP configurable max connection and frame size (#2343)
+ * Fix wakeup in threaded sources (#2339)
+ * Fix libnet memory leak in network destinations (#2331)
+ * Fix unexpected flag check-hostname in syslog-parser (#2314)
+ * Fix memory leak in dbparser (#2311)
+ * Inline Python code comment generates syntax error (#2319)
+ * Password protected SSL keys portability (MADV_DONTDUMP) (#2341)
+ * Fixing compiler warnings from armv7l (#2301)
+ * Riemann crashes in flush (#2296)
+ * Revert sticky hook option (#2295)
+ * Small stats fixes (#2294)
+ * Detect filter loop (#2283, #2288)
+ * Fix infinite loop in threaded destinations with ivykis prior 0.39 (#2275)
+ * Fix log expr node use after free (#2269)
+ * Remove gradle from the list of "BuildRequires" (RPM packaging) (#2266)
+ * Fix wildcard-source memleak when directory removed (#2261, #2267)
+ * Missing macros: C_AMPM, C_USEC, C_MSEC, C_HOUR12 (#2259)
+ * Fix cisco timestamp parsing (#2272)
+ * Undefined filter reference (#2273)
+ * Fix the literal() type hint (#2286)
+ * logwriter, affile, afsocket: fixing "internal overflow". (#2250)
+ * lib/gsockaddr.c: modify the unix salen calculation (#2285)
+ * dbld: fix dbld/rules deb failure (#2282)
+ * Update data type to avoid conversion. (#2281)
+ * compat/getent: add support for platforms that lack the r versions (#2244)
+ * Fix memory leak caused by saving stats counter to persist config (#2279)
+ * Hdfs: disable archive when append-enabled is configured (#2235)
+ * scl: add linux-audit() SCL to make files (#2230)
+ * DebianPackaging: Add linux-audit SCL to included dirs (#2254)
+ * cap_syslog capability detection (#2227)
+ * LogProto partial write (#2194)
+
+## Other changes
+
+ * telegram, urlencode: api changes (#2299)
+ * python: include python2/3 in plugin description (#2337)
+ * Stats prepare for multiple queues per destdrv (#2302)
+ * Update deprecated use of tcp()/udp() to network(). This addresses #2322 (#2326)
+ * Message about not supported cap_syslog only at debug level (#2333)
+ * Few test leak fix (#2323)
+ * warning elimination: pointer arithmetics (#2305)
+ * templates: get rid off the args_lock (#2289)
+ * Ack tracker small refact (#2277)
+ * ElasticSearchDestination: Display deprecated warning message about us… (#2274)
+ * Improve Readme.md header structure (#2258)
+ * Rewrite json tests based on criterion (#2255)
+ * Rewrite dbparser tests based on criterion (#2252)
+ * Processed timestamp (#2243)
+ * msg parameters: remove last NULL parameter from msg macros (#2242)
+ * Fix threaded destination test cases (#2236)
+ * dbld: missing packages, deps changes (#2232, #2332, #2327, #2260, #2256)
+ * Use msg_trace() when emitting trace information (#2226)
+
+## Notes to the developers
+
+ * Threaded source and fetcher (#2247)
+ * "Examples" module (#2248)
+ * Do not ship mongo-c-driver with syslog-ng (remove as submodule) (#2245)
+
+## Credits
 
 syslog-ng is developed as a community project, and as such it relies
 on volunteers, to do the work necessarily to produce syslog-ng.
@@ -18,81 +92,8 @@ feedback are all important contributions, so please if you are a user
 of syslog-ng, contribute.
 
 We would like to thank the following people for their contribution:
-Andras Mitzki, Gergely Nagy, Laszlo Budai, Laszlo Varady, Peter Czanik.
 
-
-3.13.1
-
-<!-- Thu, 30 Nov 2017 13:38:22 +0100 -->
-
-# Features
-
- * Add app-parser() framework (automatic parsing of log messages) (#1689)
- * Support microseconds in Riemann destination (#1710)
- * Add osquery destination as an SCL plugin (#1728)
- * Add network load balancer destination (#1706)
- * Add possibility to only signal re-open of file handles (SIGUSR1) (#1530)
- * It is possible from now to limit the number of registered dynamic counters (#1743)
- * Add $(binary) template function (#1679)
- * Add experimental transport for transferring messages in whole between syslog-ng instances (EWMM) (#1689)
- * Docker based build and debian package generation (#1783)
- * Add auto-parse(yes/no) to app-paser(), system() and default-network-drivers() (#1788)
- * Add Graylog2 destination and $(format-gelf) template function (#1680)
-
-# Bugfixes
-
- * Exit when a read fails on an included config file instead of
-   starting up with an empty configuration. (#1721)
- * Fix double free (#1720)
- * Add missing discarded counter to groupingby (#1748)
- * Fix a reference leak in Python destination (#1716)
- * Fix timezone issue in snmptrapd parser (#1746)
- * Fix potential crash in stdin driver (#1741)
- * Fix a crash when initializing new config fails for socket with keep_alive off (#1723)
- * Fix filter evaluation in case of contexts with multiple elements (#1718)
- * Various grouping-by fixes (#1718)
- * Fix potential use after free around dns-cache during shutdown (#1666)
- * Fix access to indirect values within Java destination (#1732)
- * Fix a crash in affile (#1725)
- * Fix a memory leak (#1724)
- * Fix a crash when getent is used empty group (#1691)
- * Fix jvm-options() (#1704)
- * Fix a crash in Python language binding (#1694)
- * Fix a crash in afmongodb (#1765)
- * Fix a memory leak in afmongodb (#1766)
- * Fix name-to-GID calculation in the $(getent) template function (#1764)
- * Fix a crash when redis is configured without the command() option (#1767)
- * Fix a race condition in kv-parser() (#1789)
-
-# Other changes
-
- * Cleanup diskq related warning messages (#1752)
- * Provide tls block for tls options in amqp(), http(), riemann() destination drivers (#1715)
- * It it possible from now to register blocks and generators as plugins (#1657)
- * Drop compatiblity with configurations below 3.0 (#1709)
- * Do not change permissions of a file by default (#1782)
- * Allow source files to specify permissions locally (#1782)
- * Minor performance improvement (#1729)
- * The current config version can be queried with "--version" (#1740)
- * Increase the performance of kv-parser() (#1789)
-
-# Notes to the developers
-
- * Change configure default option for jsonc and mongoc from auto to internal (#1735)
- * Disable ASLR when running unit tests (#1753)
-
-# Credits
-
-syslog-ng is developed as a community project, and as such it relies
-on volunteers, to do the work necessarily to produce syslog-ng.
-
-Reporting bugs, testing changes, writing code or simply providing
-feedback are all important contributions, so please if you are a user
-of syslog-ng, contribute.
-
-We would like to thank the following people for their contribution:
-Andras Mitzki, Antal Nemes, Attila Szalay, Balazs Scheidler, Gabor Nagy,
-Jakub Jankowski, Janos Szigetvari, Laszlo Budai, Laszlo Varady, Laszlo Szemere,
-Marton Illes, Mate Farkas, Peter Kokai, Pontus Andersson, Sam Stephenson,
-Sebastian Roland, Viktor Juhasz, Zoltan Pallagi.
-
+Andras Mitzki, Antal Nemes, Balazs Scheidler, Gabor Nagy, Gergely Tonté,
+Laszlo Budai, Laszlo Szemere, László Várady, Maurice T. Meyer, Mahmoud Salama,
+Norbert Takacs, Peter Czanik, Peter Gyorko, Peter Kokai, Robert Fekete,
+Terez Nemes, Tibor Bodnar, Zoltan Pallagi, y-l-i.

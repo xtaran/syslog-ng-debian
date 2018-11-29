@@ -33,6 +33,7 @@
 #include "apphook.h"
 #include "timeutils.h"
 #include "mainloop-worker.h"
+#include "str-utils.h"
 
 #include <string.h>
 #include <errno.h>
@@ -178,6 +179,14 @@ afsql_dd_set_retries(LogDriver *s, gint num_retries)
 {
   AFSqlDestDriver *self = (AFSqlDestDriver *) s;
   self->num_retries = num_retries;
+}
+
+void
+afsql_dd_set_ignore_tns_config(LogDriver *s, const gboolean ignore_tns_config)
+{
+  AFSqlDestDriver *self = (AFSqlDestDriver *) s;
+
+  self->ignore_tns_config = ignore_tns_config;
 }
 
 void
@@ -722,6 +731,9 @@ afsql_dd_ensure_initialized_connection(AFSqlDestDriver *self)
   dbi_conn_set_option(self->dbi_ctx, "sqlite_dbdir", "");
   dbi_conn_set_option(self->dbi_ctx, "sqlite3_dbdir", "");
 
+  if (strcmp(self->type, s_oracle) == 0)
+    dbi_conn_set_option_numeric(self->dbi_ctx, "oracle_ignore_tns_config", self->ignore_tns_config);
+
   /* Set user-specified options */
   g_hash_table_foreach(self->dbd_options, afsql_dd_set_dbd_opt, self->dbi_ctx);
   g_hash_table_foreach(self->dbd_options_numeric, afsql_dd_set_dbd_opt_numeric, self->dbi_ctx);
@@ -1133,7 +1145,7 @@ afsql_dd_start_thread(AFSqlDestDriver *self)
 }
 
 
-static gchar *
+static const gchar *
 afsql_dd_format_stats_instance(AFSqlDestDriver *self)
 {
   static gchar persist_name[64];
@@ -1171,6 +1183,34 @@ afsql_dd_format_persist_sequence_number(AFSqlDestDriver *self)
   return persist_name;
 }
 
+static void
+_register_stats(AFSqlDestDriver *self)
+{
+  stats_lock();
+  {
+    StatsClusterKey sc_key;
+    stats_cluster_logpipe_key_set(&sc_key, SCS_SQL | SCS_DESTINATION, self->super.super.id,
+                                  afsql_dd_format_stats_instance(self) );
+    stats_register_counter(0, &sc_key, SC_TYPE_DROPPED, &self->dropped_messages);
+    log_queue_register_stats_counters(self->queue, 0, &sc_key);
+  }
+  stats_unlock();
+}
+
+static void
+_unregister_stats(AFSqlDestDriver *self)
+{
+  stats_lock();
+  {
+    StatsClusterKey sc_key;
+    stats_cluster_logpipe_key_set(&sc_key, SCS_SQL | SCS_DESTINATION, self->super.super.id,
+                                  afsql_dd_format_stats_instance(self) );
+    stats_unregister_counter(&sc_key, SC_TYPE_DROPPED, &self->dropped_messages);
+    log_queue_unregister_stats_counters(self->queue, &sc_key);
+  }
+  stats_unlock();
+}
+
 static gboolean
 afsql_dd_init(LogPipe *s)
 {
@@ -1184,20 +1224,15 @@ afsql_dd_init(LogPipe *s)
   if (!self->columns || !self->values)
     {
       msg_error("Default columns and values must be specified for database destinations",
-                evt_tag_str("database type", self->type));
+                evt_tag_str("type", self->type));
       return FALSE;
     }
 
-  stats_lock();
-  {
-    StatsClusterKey sc_key;
-    stats_cluster_logpipe_key_set(&sc_key, SCS_SQL | SCS_DESTINATION, self->super.super.id,
-                                  afsql_dd_format_stats_instance(self) );
-    stats_register_counter(0, &sc_key, SC_TYPE_QUEUED, &self->queued_messages);
-    stats_register_counter(0, &sc_key, SC_TYPE_DROPPED, &self->dropped_messages);
-    stats_register_counter(STATS_LEVEL1, &sc_key, SC_TYPE_MEMORY_USAGE, &self->memory_usage);
-  }
-  stats_unlock();
+  if (self->ignore_tns_config && strcmp(self->type, s_oracle) != 0)
+    {
+      msg_warning("WARNING: Option ignore_tns_config was skipped because database type is not Oracle",
+                  evt_tag_str("type", self->type));
+    }
 
   self->seq_num = GPOINTER_TO_INT(cfg_persist_config_fetch(cfg, afsql_dd_format_persist_sequence_number(self)));
   if (!self->seq_num)
@@ -1209,12 +1244,11 @@ afsql_dd_init(LogPipe *s)
     {
       return FALSE;
     }
-  else
-    {
-      if (self->flags & AFSQL_DDF_EXPLICIT_COMMITS)
-        log_queue_set_use_backlog(self->queue, TRUE);
-    }
-  log_queue_set_counters(self->queue, self->queued_messages, self->dropped_messages, self->memory_usage);
+
+  _register_stats(self);
+
+  if (self->flags & AFSQL_DDF_EXPLICIT_COMMITS)
+    log_queue_set_use_backlog(self->queue, TRUE);
   if (!self->fields)
     {
       GList *col, *value;
@@ -1301,7 +1335,7 @@ afsql_dd_init(LogPipe *s)
           /* NOTE: errno might be unreliable, but that's all we have */
           msg_error("Unable to initialize database access (DBI)",
                     evt_tag_int("rc", rc),
-                    evt_tag_errno("error", errno));
+                    evt_tag_error("error"));
           goto error;
         }
       else if (rc == 0)
@@ -1319,17 +1353,7 @@ afsql_dd_init(LogPipe *s)
   return TRUE;
 
 error:
-
-  stats_lock();
-  {
-    StatsClusterKey sc_key;
-    stats_cluster_logpipe_key_set(&sc_key, SCS_SQL | SCS_DESTINATION, self->super.super.id,
-                                  afsql_dd_format_stats_instance(self) );
-    stats_unregister_counter(&sc_key, SC_TYPE_QUEUED, &self->queued_messages);
-    stats_unregister_counter(&sc_key, SC_TYPE_DROPPED, &self->dropped_messages);
-    stats_unregister_counter(&sc_key, SC_TYPE_MEMORY_USAGE, &self->memory_usage);
-  }
-  stats_unlock();
+  _unregister_stats(self);
 
   return FALSE;
 }
@@ -1341,17 +1365,10 @@ afsql_dd_deinit(LogPipe *s)
 
   log_queue_reset_parallel_push(self->queue);
 
-  log_queue_set_counters(self->queue, NULL, NULL, NULL);
   cfg_persist_config_add(log_pipe_get_config(s), afsql_dd_format_persist_sequence_number(self),
                          GINT_TO_POINTER(self->seq_num), NULL, FALSE);
 
-  stats_lock();
-  StatsClusterKey sc_key;
-  stats_cluster_logpipe_key_set(&sc_key, SCS_SQL | SCS_DESTINATION, self->super.super.id,
-                                afsql_dd_format_stats_instance(self) );
-  stats_unregister_counter(&sc_key, SC_TYPE_QUEUED, &self->queued_messages);
-  stats_unregister_counter(&sc_key, SC_TYPE_DROPPED, &self->dropped_messages);
-  stats_unlock();
+  _unregister_stats(self);
 
   if (!log_dest_driver_deinit_method(s))
     return FALSE;
@@ -1360,7 +1377,7 @@ afsql_dd_deinit(LogPipe *s)
 }
 
 static void
-afsql_dd_queue(LogPipe *s, LogMessage *msg, const LogPathOptions *path_options, gpointer user_data)
+afsql_dd_queue(LogPipe *s, LogMessage *msg, const LogPathOptions *path_options)
 {
   AFSqlDestDriver *self = (AFSqlDestDriver *) s;
   LogPathOptions local_options;
@@ -1370,7 +1387,7 @@ afsql_dd_queue(LogPipe *s, LogMessage *msg, const LogPathOptions *path_options, 
 
   log_msg_add_ack(msg, path_options);
   log_queue_push_tail(self->queue, log_msg_ref(msg), path_options);
-  log_dest_driver_queue_method(s, msg, path_options, user_data);
+  log_dest_driver_queue_method(s, msg, path_options);
 }
 
 static void
@@ -1433,6 +1450,7 @@ afsql_dd_new(GlobalConfig *cfg)
   self->database = g_strdup("logs");
   self->encoding = g_strdup("UTF-8");
   self->transaction_active = FALSE;
+  self->ignore_tns_config = FALSE;
 
   self->table = log_template_new(configuration, NULL);
   log_template_compile(self->table, "messages", NULL);
@@ -1460,9 +1478,9 @@ afsql_dd_new(GlobalConfig *cfg)
 gint
 afsql_dd_lookup_flag(const gchar *flag)
 {
-  if (strcmp(flag, "explicit-commits") == 0 || strcmp(flag, "explicit_commits") == 0)
+  if (strcmp(flag, "explicit-commits") == 0)
     return AFSQL_DDF_EXPLICIT_COMMITS;
-  else if (strcmp(flag, "dont-create-tables") == 0 || strcmp(flag, "dont_create_tables") == 0)
+  else if (strcmp(flag, "dont-create-tables") == 0)
     return AFSQL_DDF_DONT_CREATE_TABLES;
   else
     msg_warning("Unknown SQL flag",

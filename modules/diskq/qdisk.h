@@ -42,6 +42,7 @@ typedef struct _QDisk QDisk;
 QDisk *qdisk_new(void);
 
 gboolean qdisk_is_space_avail(QDisk *self, gint at_least);
+gint64 qdisk_get_empty_space(QDisk *self);
 gboolean qdisk_push_tail(QDisk *self, GString *record);
 gboolean qdisk_pop_head(QDisk *self, GString *record);
 gboolean qdisk_start(QDisk *self, const gchar *filename, GQueue *qout, GQueue *qbacklog, GQueue *qoverflow);
@@ -53,6 +54,7 @@ void qdisk_free(QDisk *self);
 
 gboolean qdisk_save_state(QDisk *self, GQueue *qout, GQueue *qbacklog, GQueue *qoverflow);
 
+DiskQueueOptions *qdisk_get_options(QDisk *self);
 gint64 qdisk_get_length(QDisk *self);
 void qdisk_set_length(QDisk *self, gint64 new_value);
 gint64 qdisk_get_size(QDisk *self);

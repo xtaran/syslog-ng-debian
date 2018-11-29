@@ -48,7 +48,7 @@ typedef struct
 
 typedef struct
 {
-  LogThrDestDriver super;
+  LogThreadedDestDriver super;
 
   /* Shared between main/writer; only read by the writer, never
      written */
@@ -198,8 +198,8 @@ ignore_sigpipe (void)
   sigaction(SIGPIPE, &sa, NULL);
 }
 
-static gchar *
-afsmtp_dd_format_stats_instance(LogThrDestDriver *d)
+static const gchar *
+afsmtp_dd_format_stats_instance(LogThreadedDestDriver *d)
 {
   AFSMTPDriver *self = (AFSMTPDriver *)d;
   static gchar persist_name[1024];
@@ -233,7 +233,7 @@ afsmtp_dd_format_persist_name(const LogPipe *s)
 static void
 _smtp_message_add_recipient_header(smtp_message_t self, AFSMTPRecipient *rcpt, AFSMTPDriver *driver)
 {
-  gchar *hdr;
+  const gchar *hdr;
   switch (rcpt->type)
     {
     case AFSMTP_RCPT_TYPE_TO:
@@ -258,7 +258,7 @@ _smtp_message_add_recipient_from_template(smtp_message_t self, AFSMTPDriver *dri
                                           LogMessage *msg)
 {
   log_template_format(template, msg, &driver->template_options, LTZ_SEND,
-                      driver->super.seq_num, NULL, driver->str);
+                      driver->super.worker.instance.seq_num, NULL, driver->str);
   smtp_add_recipient(self, afsmtp_wash_string (driver->str->str));
 }
 
@@ -281,7 +281,7 @@ afsmtp_dd_msg_add_header(AFSMTPHeader *hdr, gpointer user_data)
   smtp_message_t message = ((gpointer *)user_data)[2];
 
   log_template_format(hdr->template, msg, &self->template_options, LTZ_LOCAL,
-                      self->super.seq_num, NULL, self->str);
+                      self->super.worker.instance.seq_num, NULL, self->str);
 
   smtp_set_header(message, hdr->name, afsmtp_wash_string (self->str->str), NULL);
   smtp_set_header_option(message, hdr->name, Hdr_OVERRIDE, 1);
@@ -398,7 +398,7 @@ __build_message(AFSMTPDriver *self, LogMessage *msg, smtp_session_t session)
   message = smtp_add_message(session);
 
   log_template_format(self->mail_from->template, msg, &self->template_options, LTZ_SEND,
-                      self->super.seq_num, NULL, self->str);
+                      self->super.worker.instance.seq_num, NULL, self->str);
   smtp_set_reverse_path(message, afsmtp_wash_string(self->str->str));
 
   /* Defaults */
@@ -406,7 +406,7 @@ __build_message(AFSMTPDriver *self, LogMessage *msg, smtp_session_t session)
   smtp_set_header(message, "From", NULL, NULL);
 
   log_template_format(self->subject_template, msg, &self->template_options, LTZ_SEND,
-                      self->super.seq_num, NULL, self->str);
+                      self->super.worker.instance.seq_num, NULL, self->str);
   smtp_set_header(message, "Subject", afsmtp_wash_string(self->str->str));
   smtp_set_header_option(message, "Subject", Hdr_OVERRIDE, 1);
 
@@ -427,7 +427,7 @@ __build_message(AFSMTPDriver *self, LogMessage *msg, smtp_session_t session)
    */
   g_string_assign(self->str, "X-Mailer: syslog-ng " SYSLOG_NG_VERSION "\r\n\r\n");
   log_template_append_format(self->body_template, msg, &self->template_options,
-                             LTZ_SEND, self->super.seq_num,
+                             LTZ_SEND, self->super.worker.instance.seq_num,
                              NULL, self->str);
   smtp_set_message_str(message, self->str->str);
   return message;
@@ -483,7 +483,7 @@ __send_message(AFSMTPDriver *self, smtp_session_t session)
 }
 
 static worker_insert_result_t
-afsmtp_worker_insert(LogThrDestDriver *s, LogMessage *msg)
+afsmtp_worker_insert(LogThreadedDestDriver *s, LogMessage *msg)
 {
   AFSMTPDriver *self = (AFSMTPDriver *)s;
   gboolean success = TRUE;
@@ -518,7 +518,7 @@ afsmtp_worker_insert(LogThrDestDriver *s, LogMessage *msg)
 }
 
 static void
-afsmtp_worker_thread_init(LogThrDestDriver *d)
+afsmtp_worker_thread_init(LogThreadedDestDriver *d)
 {
   AFSMTPDriver *self = (AFSMTPDriver *)d;
 
@@ -528,7 +528,7 @@ afsmtp_worker_thread_init(LogThrDestDriver *d)
 }
 
 static void
-afsmtp_worker_thread_deinit(LogThrDestDriver *d)
+afsmtp_worker_thread_deinit(LogThreadedDestDriver *d)
 {
   AFSMTPDriver *self = (AFSMTPDriver *)d;
 
@@ -602,7 +602,7 @@ afsmtp_dd_init(LogPipe *s)
   AFSMTPDriver *self = (AFSMTPDriver *)s;
   GlobalConfig *cfg = log_pipe_get_config(s);
 
-  if (!log_dest_driver_init_method(s))
+  if (!log_threaded_dest_driver_init_method(s))
     return FALSE;
 
   msg_verbose("Initializing SMTP destination",
@@ -614,7 +614,7 @@ afsmtp_dd_init(LogPipe *s)
     return FALSE;
 
   log_template_options_init(&self->template_options, cfg);
-  return log_threaded_dest_driver_start(s);
+  return log_threaded_dest_driver_start_workers(&self->super);
 }
 
 static void
@@ -672,7 +672,7 @@ afsmtp_dd_new(GlobalConfig *cfg)
   self->super.worker.thread_deinit = afsmtp_worker_thread_deinit;
   self->super.worker.insert = afsmtp_worker_insert;
 
-  self->super.format.stats_instance = afsmtp_dd_format_stats_instance;
+  self->super.format_stats_instance = afsmtp_dd_format_stats_instance;
   self->super.stats_source = SCS_SMTP;
 
   afsmtp_dd_set_host((LogDriver *)self, "127.0.0.1");

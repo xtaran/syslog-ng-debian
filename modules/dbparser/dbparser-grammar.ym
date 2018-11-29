@@ -57,8 +57,6 @@ SyntheticMessage *last_message;
 %token KW_DB_PARSER
 %token KW_GROUPING_BY
 %token KW_INJECT_MODE
-%token KW_KEY
-%token KW_SCOPE
 %token KW_INHERIT_MODE
 %token KW_TIMEOUT
 %token KW_TRIGGER
@@ -67,6 +65,7 @@ SyntheticMessage *last_message;
 %token KW_AGGREGATE
 %token KW_VALUE
 %token KW_DROP_UNMATCHED
+%token KW_FILE
 
 %type <num> stateful_parser_inject_mode
 %type <ptr> synthetic_message

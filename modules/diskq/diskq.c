@@ -21,19 +21,37 @@
  *
  */
 
+#include "diskq.h"
+
 #include "driver.h"
 #include "messages.h"
-
-#include "diskq.h"
 #include "logqueue-disk.h"
 #include "logqueue-disk-reliable.h"
 #include "logqueue-disk-non-reliable.h"
 #include "persist-state.h"
 
-static LogQueue *
-_acquire_queue(LogDestDriver *dd, const gchar *persist_name, gpointer user_data)
+#define DISKQ_PLUGIN_NAME "diskq"
+
+struct _DiskQDestPlugin
 {
-  DiskQDestPlugin *self = (DiskQDestPlugin *) user_data;
+  LogDriverPlugin super;
+  DiskQueueOptions options;
+};
+
+static gboolean
+log_queue_disk_is_file_in_directory(const gchar *file, const gchar *directory)
+{
+  gchar *basedir = g_path_get_dirname(file);
+  const gboolean result = (0 == strcmp(basedir, directory));
+
+  g_free(basedir);
+  return result;
+}
+
+static LogQueue *
+_acquire_queue(LogDestDriver *dd, const gchar *persist_name)
+{
+  DiskQDestPlugin *self = log_driver_get_plugin(&dd->super, DiskQDestPlugin, DISKQ_PLUGIN_NAME);
   GlobalConfig *cfg = log_pipe_get_config(&dd->super.super);
   LogQueue *queue = NULL;
   gchar *qfile_name;
@@ -55,6 +73,14 @@ _acquire_queue(LogDestDriver *dd, const gchar *persist_name, gpointer user_data)
   log_queue_set_throttle(queue, dd->throttle);
 
   qfile_name = persist_state_lookup_string(cfg->state, persist_name, NULL, NULL);
+
+  if (qfile_name && !log_queue_disk_is_file_in_directory(qfile_name, self->options.dir))
+    {
+      msg_warning("The disk buffer directory has changed in the configuration, but the disk queue file cannot be moved",
+                  evt_tag_str("qfile", qfile_name),
+                  evt_tag_str("dir", self->options.dir));
+    }
+
   success = log_queue_disk_load_queue(queue, qfile_name);
   if (!success)
     {
@@ -88,7 +114,7 @@ _acquire_queue(LogDestDriver *dd, const gchar *persist_name, gpointer user_data)
 }
 
 void
-_release_queue(LogDestDriver *dd, LogQueue *queue, gpointer user_data)
+_release_queue(LogDestDriver *dd, LogQueue *queue)
 {
   GlobalConfig *cfg = log_pipe_get_config(&dd->super.super);
   gboolean persistent;
@@ -120,17 +146,9 @@ _attach(LogDriverPlugin *s, LogDriver *d)
   if (self->options.disk_buf_size < MIN_DISK_BUF_SIZE && self->options.disk_buf_size != 0)
     {
       msg_warning("The value of 'disk_buf_size()' is too low, setting to the smallest acceptable value",
-                  evt_tag_int("min_space", MIN_DISK_BUF_SIZE));
+                  evt_tag_long("min_space", MIN_DISK_BUF_SIZE));
       self->options.disk_buf_size = MIN_DISK_BUF_SIZE;
     }
-
-  if (dd->acquire_queue_data || dd->release_queue_data)
-    if (dd->acquire_queue_data != self)
-      {
-        msg_error("Another queueing plugin is registered in this destination, unable to register diskq again",
-                  evt_tag_str("driver", dd->super.id));
-        return FALSE;
-      }
 
   if (self->options.mem_buf_length < 0)
     self->options.mem_buf_length = dd->log_fifo_size;
@@ -139,9 +157,7 @@ _attach(LogDriverPlugin *s, LogDriver *d)
   if (self->options.qout_size < 0)
     self->options.qout_size = 64;
 
-  dd->acquire_queue_data = self;
   dd->acquire_queue = _acquire_queue;
-  dd->release_queue_data = self;
   dd->release_queue = _release_queue;
   return TRUE;
 }
@@ -151,15 +167,20 @@ _free(LogDriverPlugin *s)
 {
   DiskQDestPlugin *self = (DiskQDestPlugin *)s;
   disk_queue_options_destroy(&self->options);
+  log_driver_plugin_free_method(s);
 }
 
+DiskQueueOptions *diskq_get_options(DiskQDestPlugin *self)
+{
+  return &self->options;
+}
 
 DiskQDestPlugin *
 diskq_dest_plugin_new(void)
 {
   DiskQDestPlugin *self = g_new0(DiskQDestPlugin, 1);
 
-  log_driver_plugin_init_instance(&self->super);
+  log_driver_plugin_init_instance(&self->super, DISKQ_PLUGIN_NAME);
   disk_queue_options_set_default_options(&self->options);
   self->super.attach = _attach;
   self->super.free_fn = _free;

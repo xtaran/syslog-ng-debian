@@ -125,6 +125,10 @@ csv_parser_process(LogParser *s, LogMessage **pmsg, const LogPathOptions *path_o
   CSVParser *self = (CSVParser *) s;
   LogMessage *msg = log_msg_make_writable(pmsg, path_options);
 
+  msg_trace("csv-parser message processing started",
+            evt_tag_str ("input", input),
+            evt_tag_str ("prefix", self->prefix),
+            evt_tag_printf("msg", "%p", *pmsg));
   CSVScanner scanner;
   csv_scanner_init(&scanner, &self->options, input);
 
@@ -142,8 +146,10 @@ csv_parser_process(LogParser *s, LogMessage **pmsg, const LogPathOptions *path_o
                                 csv_scanner_get_current_value_len(&scanner));
     }
 
+  gboolean result = csv_scanner_is_scan_finished(&scanner);
   csv_scanner_deinit(&scanner);
-  return csv_scanner_is_scan_finished(&scanner);
+
+  return result;
 }
 
 static LogPipe *

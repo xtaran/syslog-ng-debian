@@ -119,7 +119,7 @@ affile_dw_arm_reaper(AFFileDestWriter *self)
   /* not yet reaped, set up the next callback */
   iv_validate_now();
   self->reap_timer.expires = iv_now;
-  timespec_add_msec(&self->reap_timer.expires, self->owner->time_reap * 1000 / 2);
+  timespec_add_msec(&self->reap_timer.expires, self->owner->time_reap * 1000L);
   iv_timer_register(&self->reap_timer);
 }
 
@@ -130,20 +130,18 @@ affile_dw_reap(gpointer s)
 
   main_loop_assert_main_thread();
 
-  g_static_mutex_lock(&self->lock);
-  if (!log_writer_has_pending_writes(self->writer) &&
-      !self->queue_pending &&
-      (cached_g_current_time_sec() - self->last_msg_stamp) >= self->owner->time_reap)
+  g_static_mutex_lock(&self->owner->lock);
+  if (!log_writer_has_pending_writes((LogWriter *) self->writer) && !self->queue_pending)
     {
-      g_static_mutex_unlock(&self->lock);
       msg_verbose("Destination timed out, reaping",
                   evt_tag_str("template", self->owner->filename_template->template),
                   evt_tag_str("filename", self->filename));
       affile_dd_reap_writer(self->owner, self);
+      g_static_mutex_unlock(&self->owner->lock);
     }
   else
     {
-      g_static_mutex_unlock(&self->lock);
+      g_static_mutex_unlock(&self->owner->lock);
       affile_dw_arm_reaper(self);
     }
 }
@@ -189,7 +187,7 @@ affile_dw_reopen(AFFileDestWriter *self)
     {
       msg_error("Error opening file for writing",
                 evt_tag_str("filename", self->filename),
-                evt_tag_errno(EVT_TAG_OSERROR, errno));
+                evt_tag_error(EVT_TAG_OSERROR));
     }
 
   log_writer_reopen(self->writer, proto);
@@ -252,7 +250,7 @@ affile_dw_deinit(LogPipe *s)
  * main thread.
  */
 static void
-affile_dw_queue(LogPipe *s, LogMessage *lm, const LogPathOptions *path_options, gpointer user_data)
+affile_dw_queue(LogPipe *s, LogMessage *lm, const LogPathOptions *path_options)
 {
   if (!affile_dw_queue_enabled_for_msg(lm))
     {
@@ -379,6 +377,7 @@ static void
 affile_dd_register_reopen_hook(gint hook_type, gpointer user_data)
 {
   g_list_foreach(affile_dest_drivers, affile_dd_reopen_all_writers, NULL);
+  register_application_hook(AH_REOPEN, affile_dd_register_reopen_hook, NULL);
 }
 
 void
@@ -420,6 +419,7 @@ affile_dd_format_persist_name(const LogPipe *s)
   return persist_name;
 }
 
+/* DestDriver lock must be held before calling this function */
 static void
 affile_dd_reap_writer(AFFileDestDriver *self, AFFileDestWriter *dw)
 {
@@ -429,17 +429,13 @@ affile_dd_reap_writer(AFFileDestDriver *self, AFFileDestWriter *dw)
 
   if (self->filename_is_a_template)
     {
-      g_static_mutex_lock(&self->lock);
       /* remove from hash table */
       g_hash_table_remove(self->writer_hash, dw->filename);
-      g_static_mutex_unlock(&self->lock);
     }
   else
     {
-      g_static_mutex_lock(&self->lock);
       g_assert(dw == self->single_writer);
       self->single_writer = NULL;
-      g_static_mutex_unlock(&self->lock);
     }
 
   LogQueue *queue = log_writer_get_queue(writer);
@@ -455,7 +451,7 @@ affile_dd_reap_writer(AFFileDestDriver *self, AFFileDestWriter *dw)
  * This function is called as a g_hash_table_foreach() callback to set the
  * owner of each writer, previously connected to an AFileDestDriver instance
  * in an earlier configuration. This way AFFileDestWriter instances are
- * remembered accross reloads.
+ * remembered across reloads.
  *
  **/
 static void
@@ -678,7 +674,7 @@ affile_dd_open_writer(gpointer args[])
 }
 
 static void
-affile_dd_queue(LogPipe *s, LogMessage *msg, const LogPathOptions *path_options, gpointer user_data)
+affile_dd_queue(LogPipe *s, LogMessage *msg, const LogPathOptions *path_options)
 {
   AFFileDestDriver *self = (AFFileDestDriver *) s;
   AFFileDestWriter *next;
@@ -686,9 +682,9 @@ affile_dd_queue(LogPipe *s, LogMessage *msg, const LogPathOptions *path_options,
 
   if (!self->filename_is_a_template)
     {
-      /* no need to lock the check below, the worst case that happens is
-       * that we go to the mainloop to return the same information, but this
-       * is not fast path anyway */
+
+      /* we need to lock single_writer in order to get a reference and
+       * make sure it is not a stale pointer by the time we ref it */
 
       g_static_mutex_lock(&self->lock);
       if (!self->single_writer)
@@ -698,8 +694,6 @@ affile_dd_queue(LogPipe *s, LogMessage *msg, const LogPathOptions *path_options,
         }
       else
         {
-          /* we need to lock single_writer in order to get a reference and
-           * make sure it is not a stale pointer by the time we ref it */
           next = self->single_writer;
           next->queue_pending = TRUE;
           log_pipe_ref(&next->super);
@@ -741,7 +735,7 @@ affile_dd_queue(LogPipe *s, LogMessage *msg, const LogPathOptions *path_options,
       log_pipe_unref(&next->super);
     }
 
-  log_dest_driver_queue_method(s, msg, path_options, user_data);
+  log_dest_driver_queue_method(s, msg, path_options);
 }
 
 static void

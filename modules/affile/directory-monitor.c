@@ -62,29 +62,29 @@ get_path_max(void)
 #ifdef PATH_MAX
       path_max = PATH_MAX;
 #else
-      {
-        /* This code based on example from the Advanced Programming in the UNIX environment
-         * on how to determine the max path length
-         */
-        static long posix_version = 0;
-        static long xsi_version = 0;
-        if (posix_version == 0)
-          posix_version = sysconf(_SC_VERSION);
+      /* This code based on example from the Advanced Programming in the UNIX environment
+       * on how to determine the max path length
+       */
+      static long posix_version = 0;
+      static long xsi_version = 0;
+      if (posix_version == 0)
+        posix_version = sysconf(_SC_VERSION);
 
-        if (xsi_version == 0)
-          xsi_version = sysconf(_SC_XOPEN_VERSION);
+      if (xsi_version == 0)
+        xsi_version = sysconf(_SC_XOPEN_VERSION);
 
-        if ((path_max = pathconf("/", _PC_PATH_MAX)) < 0)
-          path_max = PATH_MAX_GUESS;
-        else
-          path_max++;    /* add one since it's relative to root */
+      if ((path_max = pathconf("/", _PC_PATH_MAX)) < 0)
+        path_max = PATH_MAX_GUESS;
+      else
+        path_max++;    /* add one since it's relative to root */
 
-        /*
-         * Before POSIX.1-2001, we aren't guaranteed that PATH_MAX includes
-         * the terminating null byte.  Same goes for XPG3.
-         */
-        if ((posix_version < 200112L) && (xsi_version < 4))
-          pathmax++;
+      /*
+       * Before POSIX.1-2001, we aren't guaranteed that PATH_MAX includes
+       * the terminating null byte.  Same goes for XPG3.
+       */
+      if ((posix_version < 200112L) && (xsi_version < 4))
+        path_max++;
+
 #endif
     }
   return path_max;
@@ -114,7 +114,9 @@ resolve_to_absolute_path(const gchar *path, const gchar *basedir)
         }
       else
         {
-          msg_error("Can't resolve to absolute path", evt_tag_str("path", path), evt_tag_errno("error", errno), NULL);
+          msg_error("Can't resolve to absolute path",
+                    evt_tag_str("path", path),
+                    evt_tag_error("error"));
           res = NULL;
         }
     }
@@ -145,6 +147,10 @@ directory_monitor_stop(DirectoryMonitor *self)
   if (iv_timer_registered(&self->check_timer))
     {
       iv_timer_unregister(&self->check_timer);
+    }
+  if (iv_task_registered(&self->scheduled_destructor))
+    {
+      iv_task_unregister(&self->scheduled_destructor);
     }
   if (self->stop_watches && self->watches_running)
     {
@@ -228,11 +234,31 @@ directory_monitor_set_callback(DirectoryMonitor *self, DirectoryMonitorEventCall
 }
 
 void
+directory_monitor_schedule_destroy(DirectoryMonitor *self)
+{
+  if (!iv_task_registered(&self->scheduled_destructor))
+    {
+      iv_task_register(&self->scheduled_destructor);
+    }
+}
+
+void
+directory_monitor_stop_and_destroy(DirectoryMonitor *self)
+{
+  msg_debug("Stopping directory monitor", evt_tag_str("dir", self->dir));
+  directory_monitor_stop(self);
+  directory_monitor_free(self);
+}
+
+void
 directory_monitor_init_instance(DirectoryMonitor *self, const gchar *dir, guint recheck_time)
 {
   self->dir = g_strdup(dir);
   self->recheck_time = recheck_time;
   IV_TIMER_INIT(&self->check_timer);
+  IV_TASK_INIT(&self->scheduled_destructor);
+  self->scheduled_destructor.cookie = self;
+  self->scheduled_destructor.handler = (GDestroyNotify)directory_monitor_stop_and_destroy;
 }
 
 DirectoryMonitor *
@@ -248,7 +274,8 @@ directory_monitor_free(DirectoryMonitor *self)
 {
   if (self)
     {
-      msg_debug("Free directory monitor", evt_tag_str("dir", self->dir));
+      msg_debug("Free directory monitor",
+                evt_tag_str("dir", self->dir));
       if (self->free_fn)
         {
           self->free_fn(self);

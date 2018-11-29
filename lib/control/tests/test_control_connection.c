@@ -22,15 +22,11 @@
  *
  */
 
-#include "testutils.h"
+#include <criterion/criterion.h>
+
 #include "control/control.h"
 #include "control/control-server.h"
 #include "apphook.h"
-
-#define CONTROL_UNITTEST 1
-#include "control/control-server.c"
-#undef CONTROL_UNITTEST
-
 
 typedef struct _PositionedBuffer
 {
@@ -119,11 +115,19 @@ control_connection_moc_free(ControlConnection *s)
   positioned_buffer_free(self->destination_buffer);
 }
 
+static void start_watches_stub(ControlConnection *s);
+static void update_watches_stub(ControlConnection *s);
+static void stop_watches_stub(ControlConnection *s);
+
 ControlConnection *
 control_connection_moc_new(ControlServer *server)
 {
   ControlConnectionMoc *self =  g_new0(ControlConnectionMoc,1);
   control_connection_init_instance(&self->super, server);
+
+  self->super.events.start_watches = start_watches_stub;
+  self->super.events.update_watches = update_watches_stub;
+  self->super.events.stop_watches = stop_watches_stub;
 
   self->source_buffer = positioned_buffer_new(128);
   self->destination_buffer = positioned_buffer_new(128);
@@ -139,7 +143,7 @@ control_connection_moc_new(ControlServer *server)
 GString *
 test_command(GString *command, gpointer user_data)
 {
-  assert_string(command->str,"test command", "Bad command handling");
+  cr_assert_str_eq(command->str,"test command", "Bad command handling");
   return g_string_new("OK");
 }
 
@@ -150,8 +154,8 @@ ControlCommand command =
   .func = test_command
 };
 
-void
-control_connection_update_watches(ControlConnection *s)
+static void
+update_watches_stub(ControlConnection *s)
 {
   if (s->output_buffer->len > s->pos)
     {
@@ -163,8 +167,8 @@ control_connection_update_watches(ControlConnection *s)
     }
 }
 
-void
-control_connection_stop_watches(ControlConnection *s)
+static void
+stop_watches_stub(ControlConnection *s)
 {
   ControlConnectionMoc *self = (ControlConnectionMoc *)s;
   if (result_string)
@@ -176,8 +180,8 @@ control_connection_stop_watches(ControlConnection *s)
   next_step = NULL;
 }
 
-void
-control_connection_start_watches(ControlConnection *s)
+static void
+start_watches_stub(ControlConnection *s)
 {
   next_step = s->handle_input;
   while(next_step)
@@ -193,11 +197,10 @@ test_control_connection(gsize transaction_size)
   g_string_assign(moc_connection->source_buffer->buffer,"test command\n");
   moc_connection->transaction_size = transaction_size;
   control_connection_start_watches((ControlConnection *)moc_connection);
-  assert_string(result_string->str, "OK\n.\n", "BAD Behaviour transaction_size: %d",transaction_size);
+  cr_assert_str_eq(result_string->str, "OK\n.\n", "BAD Behaviour transaction_size: %lu",transaction_size);
 }
 
-int
-main(int argc G_GNUC_UNUSED, char *argv[] G_GNUC_UNUSED)
+Test(control_connection, test_control_connection)
 {
   GList *commands = g_list_append(NULL, &command);
   moc_server.control_commands = commands;
@@ -210,5 +213,5 @@ main(int argc G_GNUC_UNUSED, char *argv[] G_GNUC_UNUSED)
     }
   app_shutdown();
   g_list_free(commands);
-  return 0;
 }
+

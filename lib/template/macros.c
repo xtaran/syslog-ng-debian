@@ -145,8 +145,12 @@ LogMacroDef macros[] =
   { "C_MONTH_NAME",     M_CSTAMP_OFS + M_MONTH_NAME },
   { "C_DAY",            M_CSTAMP_OFS + M_DAY },
   { "C_HOUR",           M_CSTAMP_OFS + M_HOUR },
+  { "C_HOUR12",         M_CSTAMP_OFS + M_HOUR12 },
   { "C_MIN",            M_CSTAMP_OFS + M_MIN },
   { "C_SEC",            M_CSTAMP_OFS + M_SEC },
+  { "C_MSEC",           M_CSTAMP_OFS + M_MSEC },
+  { "C_USEC",           M_CSTAMP_OFS + M_USEC },
+  { "C_AMPM",           M_CSTAMP_OFS + M_AMPM },
   { "C_WEEKDAY",        M_CSTAMP_OFS + M_WEEK_DAY_ABBREV }, /* deprecated */
   { "C_WEEK_DAY",       M_CSTAMP_OFS + M_WEEK_DAY },
   { "C_WEEK_DAY_ABBREV",M_CSTAMP_OFS + M_WEEK_DAY_ABBREV },
@@ -155,6 +159,33 @@ LogMacroDef macros[] =
   { "C_TZOFFSET",       M_CSTAMP_OFS + M_TZOFFSET },
   { "C_TZ",             M_CSTAMP_OFS + M_TZ },
   { "C_UNIXTIME",       M_CSTAMP_OFS + M_UNIXTIME },
+
+  { "P_DATE",           M_PROCESSED_OFS + M_DATE },
+  { "P_FULLDATE",       M_PROCESSED_OFS + M_FULLDATE },
+  { "P_ISODATE",        M_PROCESSED_OFS + M_ISODATE },
+  { "P_STAMP",          M_PROCESSED_OFS + M_STAMP },
+  { "P_YEAR",           M_PROCESSED_OFS + M_YEAR },
+  { "P_YEAR_DAY",       M_PROCESSED_OFS + M_YEAR_DAY },
+  { "P_MONTH",          M_PROCESSED_OFS + M_MONTH },
+  { "P_MONTH_WEEK",     M_PROCESSED_OFS + M_MONTH_WEEK },
+  { "P_MONTH_ABBREV",   M_PROCESSED_OFS + M_MONTH_ABBREV },
+  { "P_MONTH_NAME",     M_PROCESSED_OFS + M_MONTH_NAME },
+  { "P_DAY",            M_PROCESSED_OFS + M_DAY },
+  { "P_HOUR",           M_PROCESSED_OFS + M_HOUR },
+  { "P_HOUR12",         M_PROCESSED_OFS + M_HOUR12 },
+  { "P_MIN",            M_PROCESSED_OFS + M_MIN },
+  { "P_SEC",            M_PROCESSED_OFS + M_SEC },
+  { "P_MSEC",           M_PROCESSED_OFS + M_MSEC },
+  { "P_USEC",           M_PROCESSED_OFS + M_USEC },
+  { "P_AMPM",           M_PROCESSED_OFS + M_AMPM },
+  { "P_WEEKDAY",        M_PROCESSED_OFS + M_WEEK_DAY_ABBREV }, /* deprecated */
+  { "P_WEEK_DAY",       M_PROCESSED_OFS + M_WEEK_DAY },
+  { "P_WEEK_DAY_ABBREV",M_PROCESSED_OFS + M_WEEK_DAY_ABBREV },
+  { "P_WEEK_DAY_NAME",  M_PROCESSED_OFS + M_WEEK_DAY_NAME },
+  { "P_WEEK",           M_PROCESSED_OFS + M_WEEK },
+  { "P_TZOFFSET",       M_PROCESSED_OFS + M_TZOFFSET },
+  { "P_TZ",             M_PROCESSED_OFS + M_TZ },
+  { "P_UNIXTIME",       M_PROCESSED_OFS + M_UNIXTIME },
 
   { "SDATA", M_SDATA },
   { "MSGHDR", M_MSGHDR },
@@ -352,11 +383,10 @@ log_macro_expand(GString *result, gint id, gboolean escape, const LogTemplateOpt
     case M_SOURCE_IP:
     {
       gchar *ip;
+      gchar buf[MAX_SOCKADDR_STRING];
 
-      if(_is_message_source_an_ip_address(msg))
+      if (_is_message_source_an_ip_address(msg))
         {
-          gchar buf[MAX_SOCKADDR_STRING];
-
           g_sockaddr_format(msg->saddr, buf, sizeof(buf), GSA_ADDRESS_ONLY);
           ip = buf;
         }
@@ -467,6 +497,11 @@ log_macro_expand(GString *result, gint id, gboolean escape, const LogTemplateOpt
           sstamp.zone_offset = -1;
           stamp = &sstamp;
         }
+      else if (id >= M_TIME_FIRST + M_PROCESSED_OFS && id <= M_TIME_LAST + M_PROCESSED_OFS)
+        {
+          id -= M_PROCESSED_OFS;
+          stamp = &msg->timestamps[LM_TS_PROCESSED];
+        }
       else
         {
           g_assert_not_reached();
@@ -571,6 +606,9 @@ log_macro_expand(GString *result, gint id, gboolean escape, const LogTemplateOpt
           length = format_zone_info(buf, sizeof(buf), zone_ofs);
           g_string_append_len(result, buf, length);
           break;
+        default:
+          g_assert_not_reached();
+          break;
         }
       break;
     }
@@ -585,7 +623,7 @@ log_macro_expand_simple(GString *result, gint id, const LogMessage *msg)
 }
 
 guint
-log_macro_lookup(gchar *macro, gint len)
+log_macro_lookup(const gchar *macro, gint len)
 {
   gchar buf[256];
   gint macro_id;
@@ -605,10 +643,10 @@ log_macros_global_init(void)
   g_get_current_time(&app_uptime);
   log_template_options_defaults(&template_options_for_macro_expand);
 
-  macro_hash = g_hash_table_new(g_str_hash, g_str_equal);
+  macro_hash = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, NULL);
   for (i = 0; macros[i].name; i++)
     {
-      g_hash_table_insert(macro_hash, macros[i].name,
+      g_hash_table_insert(macro_hash, g_strdup(macros[i].name),
                           GINT_TO_POINTER(macros[i].id));
     }
   return;

@@ -36,7 +36,7 @@
 #include "compat/string.h"
 #include "rcptid.h"
 #include "template/macros.h"
-#include "lib/host-id.h"
+#include "host-id.h"
 #include "ack_tracker.h"
 
 #include <glib/gprintf.h>
@@ -108,7 +108,7 @@
  *      references is not represented in the refcounter).  This is solved by
  *      adding a large-enough number (so called BIAS) to the ref counter in
  *      refcache_start(), which ensures that all possible writers will see a
- *      positive value.  This is then substracted in refcache_stop() the
+ *      positive value.  This is then subtracted in refcache_stop() the
  *      same way as the other references.
  *
  * Since we use the same atomic variable to store two things, updating that
@@ -210,12 +210,6 @@ static StatsCounterItem *count_payload_reallocs;
 static StatsCounterItem *count_sdata_updates;
 static StatsCounterItem *count_allocated_bytes;
 static GStaticPrivate priv_macro_value = G_STATIC_PRIVATE_INIT;
-
-static inline gboolean
-log_msg_is_write_protected(const LogMessage *self)
-{
-  return self->protect_cnt > 0;
-}
 
 void
 log_msg_write_protect(LogMessage *self)
@@ -509,7 +503,7 @@ _log_name_value_updates(LogMessage *self)
    * log_msg_new_internal() calling log_msg_set_value(), which in turn
    * generates an internal message, again calling log_msg_set_value()
    */
-  return (!self->initial_parse && (self->flags & LF_INTERNAL) == 0);
+  return (self->flags & LF_INTERNAL) == 0;
 }
 
 void
@@ -529,10 +523,10 @@ log_msg_set_value(LogMessage *self, NVHandle handle, const gchar *value, gssize 
 
   if (_log_name_value_updates(self))
     {
-      msg_debug("Setting value",
-                evt_tag_printf("msg", "%p", self),
+      msg_trace("Setting value",
                 evt_tag_str("name", name),
-                evt_tag_printf("value", "%.*s", (gint) value_len, value));
+                evt_tag_printf("value", "%.*s", (gint) value_len, value),
+                evt_tag_printf("msg", "%p", self));
     }
 
   if (value_len < 0)
@@ -605,7 +599,7 @@ log_msg_set_value_indirect(LogMessage *self, NVHandle handle, NVHandle ref_handl
 
   if (_log_name_value_updates(self))
     {
-      msg_debug("Setting indirect value",
+      msg_trace("Setting indirect value",
                 evt_tag_printf("msg", "%p", self),
                 evt_tag_str("name", name),
                 evt_tag_int("ref_handle", ref_handle),
@@ -988,7 +982,7 @@ log_msg_append_format_sdata(const LogMessage *self, GString *result,  guint32 se
 
           /* the current SD block has changed, emit a start */
           g_string_append_c(result, '[');
-          g_string_append_len(result, sdata_elem, sdata_elem_len);
+          log_msg_sdata_append_key_escaped(result, sdata_elem, sdata_elem_len);
 
           /* update cur_elem */
           cur_elem = sdata_elem;
@@ -1089,6 +1083,9 @@ log_msg_init(LogMessage *self, GSockAddr *saddr)
   self->timestamps[LM_TS_RECVD].tv_usec = tv.tv_usec;
   self->timestamps[LM_TS_RECVD].zone_offset = get_local_timezone_ofs(self->timestamps[LM_TS_RECVD].tv_sec);
   self->timestamps[LM_TS_STAMP] = self->timestamps[LM_TS_RECVD];
+  self->timestamps[LM_TS_PROCESSED].tv_sec = 0;
+  self->timestamps[LM_TS_PROCESSED].tv_usec = 0;
+  self->timestamps[LM_TS_PROCESSED].zone_offset = LOGSTAMP_ZONE_OFFSET_UNSET;
 
   self->sdata = NULL;
   self->saddr = g_sockaddr_ref(saddr);
@@ -1103,10 +1100,9 @@ log_msg_init(LogMessage *self, GSockAddr *saddr)
 void
 log_msg_clear(LogMessage *self)
 {
-  if (log_msg_chk_flag(self, LF_STATE_OWN_PAYLOAD))
-    nv_table_clear(self->payload);
-  else
-    self->payload = nv_table_new(LM_V_MAX, 16, 256);
+  if(log_msg_chk_flag(self, LF_STATE_OWN_PAYLOAD))
+    nv_table_unref(self->payload);
+  self->payload = nv_table_new(LM_V_MAX, 16, 256);
 
   if (log_msg_chk_flag(self, LF_STATE_OWN_TAGS) && self->tags)
     {
@@ -1218,6 +1214,10 @@ log_msg_clone_cow(LogMessage *msg, const LogPathOptions *path_options)
   memcpy(self, msg, sizeof(*msg));
   msg->allocated_bytes = allocated_bytes;
 
+  msg_debug("Message was cloned",
+            evt_tag_printf("original_msg", "%p", msg),
+            evt_tag_printf("new_msg", "%p", self));
+
   /* every field _must_ be initialized explicitly if its direct
    * copying would cause problems (like copying a pointer by value) */
 
@@ -1278,6 +1278,7 @@ log_msg_new(const gchar *msg, gint length,
 
   if (G_LIKELY(parse_options->format_handler))
     {
+      msg_trace("Initial message parsing follows");
       parse_options->format_handler->parse(parse_options, (guchar *) msg, length, self);
     }
   else
@@ -1633,7 +1634,7 @@ log_msg_refcache_start_producer(LogMessage *self)
  * This function is to be called by the consumer threads (e.g. the
  * ones that consume messages).
  *
- * This function can be called from mutliple consumer threads at the
+ * This function can be called from multiple consumer threads at the
  * same time, even for the same message.
  *
  */
@@ -1852,6 +1853,8 @@ log_msg_lookup_time_stamp_name(const gchar *name)
 
 gssize log_msg_get_size(LogMessage *self)
 {
+  if(!self) return 0;
+
   return
     sizeof(LogMessage) + // msg.static fields
     + self->alloc_sdata * sizeof(self->sdata[0]) +

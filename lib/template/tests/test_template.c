@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2007-2014 Balabit
+ * Copyright (c) 2007-2018 Balabit
  * Copyright (c) 2007-2014 Balázs Scheidler <balazs.scheidler@balabit.com>
  *
  * This library is free software; you can redistribute it and/or
@@ -22,8 +22,10 @@
  *
  */
 
+#include <criterion/criterion.h>
+
 #include "syslog-ng.h"
-#include "template_lib.h"
+#include "libtest/cr_template.h"
 
 #include "logmsg/logmsg.h"
 #include "template/templates.h"
@@ -32,6 +34,7 @@
 #include "cfg.h"
 #include "timeutils.h"
 #include "plugin.h"
+#include "scratch-buffers.h"
 
 #include <time.h>
 #include <stdlib.h>
@@ -52,6 +55,9 @@ format_template_thread(gpointer s)
   GString *result;
   gint i;
 
+  scratch_buffers_allocator_init();
+
+
   g_mutex_lock(thread_lock);
   while (!thread_start)
     g_cond_wait(thread_ping, thread_lock);
@@ -61,9 +67,11 @@ format_template_thread(gpointer s)
   for (i = 0; i < 10000; i++)
     {
       log_template_format(templ, msg, NULL, LTZ_SEND, 5555, NULL, result);
-      assert_string(result->str, expected, "multi-threaded formatting yielded invalid result (iteration: %d)", i);
+      cr_assert_str_eq(result->str, expected, "multi-threaded formatting yielded invalid result (iteration: %d)", i);
+      scratch_buffers_explicit_gc();
     }
   g_string_free(result, TRUE);
+  scratch_buffers_allocator_deinit();
   return NULL;
 }
 
@@ -105,8 +113,34 @@ assert_template_format_multi_thread(const gchar *template, const gchar *expected
   log_msg_unref(msg);
 }
 
-static void
-test_macros(void)
+
+void
+setup(void)
+{
+  app_startup();
+
+  init_template_tests();
+  cfg_load_module(configuration, "basicfuncs");
+  configuration->template_options.frac_digits = 3;
+  configuration->template_options.time_zone_info[LTZ_LOCAL] = time_zone_info_new(NULL);
+
+
+  setenv("TZ", "MET-1METDST", TRUE);
+  tzset();
+}
+
+void
+teardown(void)
+{
+  scratch_buffers_explicit_gc();
+  deinit_template_tests();
+  app_shutdown();
+}
+
+TestSuite(template, .init = setup, .fini = teardown);
+
+
+Test(template, test_macros)
 {
   /* pri 3, fac 19 == local3 */
 
@@ -201,8 +235,7 @@ test_macros(void)
   assert_template_format("$UNIQID", "cafebabe@000000000000022b");
 }
 
-static void
-test_nvpairs(void)
+Test(template, test_nvpairs)
 {
   assert_template_format("$PROGRAM/var/log/messages/$HOST/$HOST_FROM/$MONTH$DAY${QQQQQ}valami",
                          "syslog-ng/var/log/messages/bzorp/kismacska/0211valami");
@@ -214,38 +247,35 @@ test_nvpairs(void)
   assert_template_format("$$$1$$", "$first-match$");
 }
 
-static void
-test_template_functions(void)
+Test(template, test_template_functions)
 {
   /* template functions */
   assert_template_format("$(echo $HOST $PID)", "bzorp 23323");
+  assert_template_format("$(echo\n$HOST\n$PID)", "bzorp 23323");
   assert_template_format("$(echo \"$(echo $HOST)\" $PID)", "bzorp 23323");
   assert_template_format("$(echo \"$(echo '$(echo $HOST)')\" $PID)", "bzorp 23323");
   assert_template_format("$(echo \"$(echo '$(echo $HOST)')\" $PID)", "bzorp 23323");
   assert_template_format("$(echo '\"$(echo $(echo $HOST))\"' $PID)", "\"bzorp\" 23323");
 }
 
-static void
-test_message_refs(void)
+Test(template, test_message_refs)
 {
   /* message refs */
   assert_template_format_with_context("$(echo ${HOST}@0 ${PID}@1)", "bzorp 23323");
   assert_template_format_with_context("$(echo $HOST $PID)@0", "bzorp 23323");
 }
 
-static void
-test_syntax_errors(void)
+Test(template, test_syntax_errors)
 {
   /* template syntax errors */
   assert_template_failure("${unbalanced_brace", "'}' is missing");
   assert_template_format("$unbalanced_brace}", "}");
   assert_template_format("$}", "$}");
-  assert_template_failure("$(unbalanced_paren", "missing function name or inbalanced '('");
+  assert_template_failure("$(unbalanced_paren", "missing function name or imbalanced '('");
   assert_template_format("$unbalanced_paren)", ")");
 }
 
-static void
-test_multi_thread(void)
+Test(template, test_multi_thread)
 {
   /* name-value pair */
   assert_template_format_multi_thread("alma $HOST bela", "alma bzorp bela");
@@ -254,8 +284,7 @@ test_multi_thread(void)
                                       "dani bzorp Feb 11 10:34:56.000 huha balint");
 }
 
-static void
-test_escaping(void)
+Test(template, test_escaping)
 {
   assert_template_format_with_escaping("${APP.QVALUE}", FALSE, "\"value\"");
   assert_template_format_with_escaping("${APP.QVALUE}", TRUE, "\\\"value\\\"");
@@ -265,8 +294,7 @@ test_escaping(void)
                                        TRUE, "\\\"value\\\"");
 }
 
-static void
-test_user_template_function(void)
+Test(template, test_user_template_function)
 {
   LogTemplate *template;
 
@@ -277,43 +305,24 @@ test_user_template_function(void)
   log_template_unref(template);
 }
 
-static void
-test_template_function_args(void)
+Test(template, test_template_function_args)
 {
   assert_template_format("$(echo foo bar)", "foo bar");
   assert_template_format("$(echo 'foobar' \"barfoo\")", "foobar barfoo");
   assert_template_format("$(echo foo '' bar)", "foo  bar");
   assert_template_format("$(echo foo '')", "foo ");
-}
 
-int
-main(int argc G_GNUC_UNUSED, char *argv[] G_GNUC_UNUSED)
-{
-  app_startup();
-
-  init_template_tests();
-  cfg_load_module(configuration, "basicfuncs");
-  configuration->template_options.frac_digits = 3;
-  configuration->template_options.time_zone_info[LTZ_LOCAL] = time_zone_info_new(NULL);
-
-
-  putenv("TZ=MET-1METDST");
-  tzset();
-
-  test_macros();
-  test_nvpairs();
-  test_template_functions();
-  test_message_refs();
-  test_syntax_errors();
-  test_multi_thread();
-  test_escaping();
-  test_template_function_args();
-  test_user_template_function();
-  /* multi-threaded expansion */
-
-
-  deinit_template_tests();
-  app_shutdown();
-
-  return 0;
+  assert_template_failure("$(echo 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 "
+                          "17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 "
+                          "33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 "
+                          "49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65)",
+                          "Too many arguments (65)");
+  assert_template_format("$(echo 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 "
+                         "17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 "
+                         "33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 "
+                         "49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64)",
+                         "1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 "
+                         "17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 "
+                         "33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 "
+                         "49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64");
 }

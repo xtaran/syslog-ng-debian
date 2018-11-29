@@ -39,7 +39,7 @@ tf_getent_passwd(gchar *key, gchar *member_name, GString *result)
   char *buf;
   long bufsize;
   int s;
-  glong d;
+  gint64 d;
   gboolean is_num, r;
 
   bufsize = sysconf(_SC_GETPW_R_SIZE_MAX);
@@ -57,8 +57,7 @@ tf_getent_passwd(gchar *key, gchar *member_name, GString *result)
     {
       msg_error("$(getent passwd) failed",
                 evt_tag_str("key", key),
-                evt_tag_errno("errno", errno),
-                NULL);
+                evt_tag_error("errno"));
       g_free(buf);
       return FALSE;
     }
@@ -83,8 +82,7 @@ tf_getent_passwd(gchar *key, gchar *member_name, GString *result)
     {
       msg_error("$(getent passwd): unknown member",
                 evt_tag_str("key", key),
-                evt_tag_str("member", member_name),
-                NULL);
+                evt_tag_str("member", member_name));
       g_free(buf);
       return FALSE;
     }

@@ -29,6 +29,7 @@
 #include "contextual-data-record-scanner.h"
 #include "add-contextual-data-selector.h"
 #include "add-contextual-data-template-selector.h"
+#include "add-contextual-data-filter-selector.h"
 #include "template/templates.h"
 #include "context-info-db.h"
 #include "pathutils.h"
@@ -44,6 +45,7 @@ typedef struct AddContextualData
   gchar *default_selector;
   gchar *filename;
   gchar *prefix;
+  gboolean ignore_case;
 } AddContextualData;
 
 void
@@ -89,6 +91,21 @@ add_contextual_data_set_selector(LogParser *p, AddContextualDataSelector *select
   self->selector = selector;
 }
 
+void
+add_contextual_data_set_selector_filter(LogParser *p, const gchar *filename)
+{
+  AddContextualData *self = (AddContextualData *) p;
+  add_contextual_data_selector_free(self->selector);
+  self->selector = add_contextual_data_selector_filter_new(log_pipe_get_config(&p->super), filename);
+}
+
+void
+add_contextual_data_set_ignore_case(LogParser *p, gboolean ignore)
+{
+  AddContextualData *self = (AddContextualData *)p;
+  self->ignore_case = ignore;
+}
+
 static gboolean
 _is_default_selector_set(const AddContextualData *self)
 {
@@ -99,7 +116,7 @@ static void
 _add_context_data_to_message(gpointer pmsg, const ContextualDataRecord *record)
 {
   LogMessage *msg = (LogMessage *) pmsg;
-  log_msg_set_value_by_name(msg, record->name->str, record->value->str, record->value->len);
+  log_msg_set_value_by_name(msg, record->name->str, record->value->str, (gssize)record->value->len);
 }
 
 static gboolean
@@ -109,6 +126,9 @@ _process(LogParser *s, LogMessage **pmsg,
 {
   AddContextualData *self = (AddContextualData *) s;
   LogMessage *msg = log_msg_make_writable(pmsg, path_options);
+  msg_trace("add-contextual-data message processing started",
+            evt_tag_str ("input", input),
+            evt_tag_printf("msg", "%p", *pmsg));
   gchar *resolved_selector = add_contextual_data_selector_resolve(self->selector, msg);
   const gchar *selector = resolved_selector;
 
@@ -146,6 +166,7 @@ _clone(LogPipe *s)
   add_contextual_data_set_filename(&cloned->super, self->filename);
   add_contextual_data_set_database_default_selector(&cloned->super,
                                                     self->default_selector);
+  add_contextual_data_set_ignore_case(&cloned->super, self->ignore_case);
   cloned->selector = add_contextual_data_selector_clone(self->selector, s->cfg);
 
   return &cloned->super.super;
@@ -253,6 +274,10 @@ _init_context_info_db(AddContextualData *self)
 {
   if (self->selector && add_contextual_data_selector_is_ordering_required(self->selector))
     context_info_db_enable_ordering(self->context_info_db);
+
+  context_info_db_set_ignore_case(self->context_info_db, self->ignore_case);
+  if (!context_info_db_is_loaded(self->context_info_db))
+    context_info_db_init(self->context_info_db);
 
   if (self->filename == NULL)
     {

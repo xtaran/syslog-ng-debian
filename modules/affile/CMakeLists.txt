@@ -1,48 +1,61 @@
 set(AFFILE_HEADERS
-    "logproto-file-writer.h"
-    "logproto-file-reader.h"
-    "poll-file-changes.h"
-    "transport-prockmsg.h"
-    "file-reader.h"
-    "file-opener.h"
-    "file-specializations.h"
-    "stdin.h"
-    "named-pipe.h"
-    "affile-source.h"
     "affile-dest.h"
+    "affile-dest-internal-queue-filter.h"
     "affile-parser.h"
-    "wildcard-source.h"
-    "directory-monitor.h"
-    "directory-monitor-inotify.h"
-    "directory-monitor-poll.h"
+    "affile-source.h"
+    "collection-comparator.h"
     "directory-monitor-factory.h"
-    "collection-comporator.h"
+    "directory-monitor.h"
+    "directory-monitor-poll.h"
+    "file-opener.h"
+    "file-reader.h"
+    "file-specializations.h"
+    "logproto-file-reader.h"
+    "logproto-file-writer.h"
+    "named-pipe.h"
+    "poll-file-changes.h"
+    "stdin.h"
+    "transport-prockmsg.h"
+    "wildcard-source.h"
+    "wildcard-file-reader.h"
+    "file-list.h"
     "${CMAKE_CURRENT_BINARY_DIR}/affile-grammar.h"
 )
 
 set(AFFILE_SOURCES
-    "logproto-file-writer.c"
-    "logproto-file-reader.c"
-    "poll-file-changes.c"
-    "transport-prockmsg.c"
-    "file-reader.c"
-    "file-opener.c"
-    "regular-files.c"
-    "named-pipe.c"
-    "linux-kmsg.c"
-    "stdin.c"
-    "affile-source.c"
     "affile-dest.c"
     "affile-parser.c"
     "affile-plugin.c"
-    "wildcard-source.c"
+    "affile-source.c"
+    "collection-comparator.c"
     "directory-monitor.c"
-    "directory-monitor-inotify.c"
-    "directory-monitor-poll.c"
     "directory-monitor-factory.c"
-    "collection-comporator.c"
+    "directory-monitor-poll.c"
+    "file-opener.c"
+    "file-reader.c"
+    "linux-kmsg.c"
+    "logproto-file-reader.c"
+    "logproto-file-writer.c"
+    "named-pipe.c"
+    "poll-file-changes.c"
+    "regular-files.c"
+    "stdin.c"
+    "transport-prockmsg.c"
+    "wildcard-source.c"
+    "wildcard-file-reader.c"
+    "file-list.c"
     "${CMAKE_CURRENT_BINARY_DIR}/affile-grammar.c"
 )
+
+if(SYSLOG_NG_HAVE_INOTIFY)
+    list(APPEND AFFILE_HEADERS
+        "directory-monitor-inotify.h"
+    )
+
+    list(APPEND AFFILE_SOURCES
+        "directory-monitor-inotify.c"
+    )
+endif()
 
 generate_y_from_ym(modules/affile/affile-grammar)
 
@@ -51,11 +64,15 @@ bison_target(AffileGrammar
     ${CMAKE_CURRENT_BINARY_DIR}/affile-grammar.c
     COMPILE_FLAGS ${BISON_FLAGS})
 
-include_directories (${CMAKE_CURRENT_BINARY_DIR})
-include_directories (${CMAKE_CURRENT_SOURCE_DIR})
-add_library(affile MODULE ${AFFILE_SOURCES})
+add_library(affile SHARED ${AFFILE_SOURCES})
+target_include_directories(affile
+  PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
+  PRIVATE ${CMAKE_CURRENT_BINARY_DIR}
+)
 target_link_libraries(affile PRIVATE syslog-ng)
 
 install(TARGETS affile
     LIBRARY DESTINATION lib/syslog-ng/
     COMPONENT affile)
+
+add_test_subdirectory(tests)

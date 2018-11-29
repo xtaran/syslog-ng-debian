@@ -34,7 +34,7 @@
 
 typedef struct
 {
-  LogThrDestDriver super;
+  LogThreadedDestDriver super;
 
   gchar *server;
   gint port;
@@ -69,7 +69,6 @@ typedef struct
   {
     riemann_event_t **list;
     gint n;
-    gint batch_size_max;
   } event;
 } RiemannDestDriver;
 
@@ -174,14 +173,6 @@ riemann_dd_set_field_attributes(LogDriver *d, ValuePairs *vp)
   self->fields.attributes = vp;
 }
 
-void
-riemann_dd_set_flush_lines(LogDriver *d, gint lines)
-{
-  RiemannDestDriver *self = (RiemannDestDriver *)d;
-
-  self->event.batch_size_max = lines;
-}
-
 gboolean
 riemann_dd_set_connection_type(LogDriver *d, const gchar *type)
 {
@@ -245,8 +236,8 @@ riemann_dd_get_template_options(LogDriver *d)
  * Utilities
  */
 
-static gchar *
-riemann_dd_format_stats_instance(LogThrDestDriver *s)
+static const gchar *
+riemann_dd_format_stats_instance(LogThreadedDestDriver *s)
 {
   RiemannDestDriver *self = (RiemannDestDriver *)s;
   static gchar persist_name[1024];
@@ -273,14 +264,6 @@ riemann_dd_format_persist_name(const LogPipe *s)
   return persist_name;
 }
 
-static void
-riemann_dd_disconnect(LogThrDestDriver *s)
-{
-  RiemannDestDriver *self = (RiemannDestDriver *)s;
-
-  riemann_client_disconnect(self->client);
-  self->client = NULL;
-}
 
 static void
 _set_timeout_on_connection(RiemannDestDriver *self)
@@ -298,10 +281,9 @@ _set_timeout_on_connection(RiemannDestDriver *self)
 }
 
 static gboolean
-riemann_dd_connect(RiemannDestDriver *self, gboolean reconnect)
+riemann_dd_connect(LogThreadedDestDriver *s)
 {
-  if (reconnect && self->client)
-    return TRUE;
+  RiemannDestDriver *self = (RiemannDestDriver *)s;
 
   self->client = riemann_client_create(self->type, self->server, self->port,
                                        RIEMANN_CLIENT_OPTION_TLS_CA_FILE, self->tls.cacert,
@@ -310,8 +292,12 @@ riemann_dd_connect(RiemannDestDriver *self, gboolean reconnect)
                                        RIEMANN_CLIENT_OPTION_NONE);
   if (!self->client)
     {
-      msg_error("Error connecting to Riemann",
-                evt_tag_errno("errno", errno));
+      msg_error("riemann: error connecting to Riemann server",
+                evt_tag_str("server", self->server),
+                evt_tag_int("port", self->port),
+                evt_tag_error("errno"),
+                evt_tag_str("driver", self->super.super.super.id),
+                log_pipe_location_tag(&self->super.super.super.super));
       return FALSE;
     }
 
@@ -320,74 +306,20 @@ riemann_dd_connect(RiemannDestDriver *self, gboolean reconnect)
   return TRUE;
 }
 
+static void
+riemann_dd_disconnect(LogThreadedDestDriver *s)
+{
+  RiemannDestDriver *self = (RiemannDestDriver *)s;
+
+  riemann_client_disconnect(self->client);
+  riemann_client_free(self->client);
+  self->client = NULL;
+}
+
 /*
  * Main thread
  */
-static void
-_value_pairs_always_exclude_properties(RiemannDestDriver *self)
-{
-  static const gchar *properties[] = {"host", "service", "description", "state",
-                                      "ttl", "metric", "tags", NULL
-                                     };
-  gint i;
 
-  if (!self->fields.attributes)
-    {
-      return;
-    }
-
-  for (i = 0; properties[i]; i++)
-    value_pairs_add_glob_pattern(self->fields.attributes, properties[i], FALSE);
-}
-
-static gboolean
-riemann_worker_init(LogPipe *s)
-{
-  RiemannDestDriver *self = (RiemannDestDriver *)s;
-  GlobalConfig *cfg = log_pipe_get_config(s);
-
-  if (!log_dest_driver_init_method(s))
-    return FALSE;
-
-  log_template_options_init(&self->template_options, cfg);
-
-  if (!self->server)
-    self->server = g_strdup("127.0.0.1");
-  if (self->port == -1)
-    self->port = 5555;
-
-  if (!self->fields.host)
-    {
-      self->fields.host = log_template_new(cfg, NULL);
-      log_template_compile(self->fields.host, "${HOST}", NULL);
-    }
-  if (!self->fields.service)
-    {
-      self->fields.service = log_template_new(cfg, NULL);
-      log_template_compile(self->fields.service, "${PROGRAM}", NULL);
-    }
-
-  if (!self->fields.event_time)
-    {
-      self->fields.event_time = log_template_new(cfg, NULL);
-      log_template_compile(self->fields.event_time, "${UNIXTIME}", NULL);
-      self->fields.event_time_unit = RIEMANN_EVENT_FIELD_TIME;
-    }
-
-  _value_pairs_always_exclude_properties(self);
-
-  if (self->event.batch_size_max <= 0)
-    self->event.batch_size_max = 1;
-  self->event.list = (riemann_event_t **)malloc (sizeof (riemann_event_t *) *
-                                                 self->event.batch_size_max);
-
-  msg_verbose("Initializing Riemann destination",
-              evt_tag_str("driver", self->super.super.super.id),
-              evt_tag_str("server", self->server),
-              evt_tag_int("port", self->port));
-
-  return log_threaded_dest_driver_start(s);
-}
 
 static void
 riemann_dd_field_string_maybe_add(riemann_event_t *event, LogMessage *msg,
@@ -467,10 +399,10 @@ static gboolean
 riemann_add_metric_to_event(RiemannDestDriver *self, riemann_event_t *event, LogMessage *msg, GString *str)
 {
   log_template_format(self->fields.metric, msg, &self->template_options,
-                      LTZ_SEND, self->super.seq_num, NULL, str);
+                      LTZ_SEND, self->super.worker.instance.seq_num, NULL, str);
 
   if (str->len == 0)
-    return FALSE;
+    return TRUE;
 
   switch (self->fields.metric->type_hint)
     {
@@ -483,8 +415,8 @@ riemann_add_metric_to_event(RiemannDestDriver *self, riemann_event_t *event, Log
         riemann_event_set(event, RIEMANN_EVENT_FIELD_METRIC_S64, i,
                           RIEMANN_EVENT_FIELD_NONE);
       else
-        return type_cast_drop_helper(self->template_options.on_error,
-                                     str->str, "int");
+        return !type_cast_drop_helper(self->template_options.on_error,
+                                      str->str, "int");
       break;
     }
     case TYPE_HINT_DOUBLE:
@@ -496,17 +428,17 @@ riemann_add_metric_to_event(RiemannDestDriver *self, riemann_event_t *event, Log
         riemann_event_set(event, RIEMANN_EVENT_FIELD_METRIC_D, d,
                           RIEMANN_EVENT_FIELD_NONE);
       else
-        return type_cast_drop_helper(self->template_options.on_error,
-                                     str->str, "double");
+        return !type_cast_drop_helper(self->template_options.on_error,
+                                      str->str, "double");
       break;
     }
     default:
-      return type_cast_drop_helper(self->template_options.on_error,
-                                   str->str, "<unknown>");
+      return !type_cast_drop_helper(self->template_options.on_error,
+                                    str->str, "<unknown>");
       break;
     }
-  return FALSE;
-};
+  return TRUE;
+}
 
 static gboolean
 riemann_add_ttl_to_event(RiemannDestDriver *self, riemann_event_t *event, LogMessage *msg, GString *str)
@@ -514,19 +446,19 @@ riemann_add_ttl_to_event(RiemannDestDriver *self, riemann_event_t *event, LogMes
   gdouble d;
 
   log_template_format(self->fields.ttl, msg, &self->template_options,
-                      LTZ_SEND, self->super.seq_num, NULL,
+                      LTZ_SEND, self->super.worker.instance.seq_num, NULL,
                       str);
 
   if (str->len == 0)
-    return FALSE;
+    return TRUE;
 
   if (type_cast_to_double (str->str, &d, NULL))
-    riemann_event_set(event, RIEMANN_EVENT_FIELD_TTL, (float) d,
+    riemann_event_set(event, RIEMANN_EVENT_FIELD_TTL, d,
                       RIEMANN_EVENT_FIELD_NONE);
   else
-    return type_cast_drop_helper(self->template_options.on_error,
-                                 str->str, "double");
-  return FALSE;
+    return !type_cast_drop_helper(self->template_options.on_error,
+                                  str->str, "double");
+  return TRUE;
 }
 
 static void
@@ -536,11 +468,11 @@ _append_event(RiemannDestDriver *self, riemann_event_t *event)
   self->event.n++;
 }
 
-static worker_insert_result_t
+static gboolean
 riemann_worker_insert_one(RiemannDestDriver *self, LogMessage *msg)
 {
   riemann_event_t *event;
-  gboolean need_drop = FALSE;
+  gboolean success = TRUE;
   GString *str;
 
   event = riemann_event_new();
@@ -549,36 +481,36 @@ riemann_worker_insert_one(RiemannDestDriver *self, LogMessage *msg)
 
   if (self->fields.metric)
     {
-      need_drop = riemann_add_metric_to_event(self, event, msg, str);
+      success = riemann_add_metric_to_event(self, event, msg, str);
     }
 
-  if (!need_drop && self->fields.ttl)
+  if (success && self->fields.ttl)
     {
-      need_drop = riemann_add_ttl_to_event(self, event, msg, str);
+      success = riemann_add_ttl_to_event(self, event, msg, str);
     }
 
-  if (!need_drop)
+  if (success)
     {
       riemann_dd_field_string_maybe_add(event, msg, self->fields.host,
                                         &self->template_options,
                                         RIEMANN_EVENT_FIELD_HOST,
-                                        self->super.seq_num, str);
+                                        self->super.worker.instance.seq_num, str);
       riemann_dd_field_string_maybe_add(event, msg, self->fields.service,
                                         &self->template_options,
                                         RIEMANN_EVENT_FIELD_SERVICE,
-                                        self->super.seq_num, str);
+                                        self->super.worker.instance.seq_num, str);
       riemann_dd_field_integer_maybe_add(event, msg, self->fields.event_time,
                                          &self->template_options,
                                          self->fields.event_time_unit,
-                                         self->super.seq_num, str);
+                                         self->super.worker.instance.seq_num, str);
       riemann_dd_field_string_maybe_add(event, msg, self->fields.description,
                                         &self->template_options,
                                         RIEMANN_EVENT_FIELD_DESCRIPTION,
-                                        self->super.seq_num, str);
+                                        self->super.worker.instance.seq_num, str);
       riemann_dd_field_string_maybe_add(event, msg, self->fields.state,
                                         &self->template_options,
                                         RIEMANN_EVENT_FIELD_STATE,
-                                        self->super.seq_num, str);
+                                        self->super.worker.instance.seq_num, str);
 
       if (self->fields.tags)
         g_list_foreach(self->fields.tags, riemann_dd_field_add_tag,
@@ -590,34 +522,44 @@ riemann_worker_insert_one(RiemannDestDriver *self, LogMessage *msg)
       if (self->fields.attributes)
         value_pairs_foreach(self->fields.attributes,
                             riemann_dd_field_add_attribute_vp,
-                            msg, self->super.seq_num, LTZ_SEND,
+                            msg, self->super.worker.instance.seq_num, LTZ_SEND,
                             &self->template_options, event);
-
+      msg_trace("riemann: adding message to Riemann event",
+                evt_tag_str("server", self->server),
+                evt_tag_int("port", self->port),
+                evt_tag_str("message", log_msg_get_value(msg, LM_V_MESSAGE, NULL)),
+                evt_tag_str("driver", self->super.super.super.id),
+                log_pipe_location_tag(&self->super.super.super.super));
       _append_event(self, event);
     }
-
-  if (need_drop)
-    return WORKER_INSERT_RESULT_DROP;
   else
-    return WORKER_INSERT_RESULT_SUCCESS;
+    riemann_event_free(event);
+
+  return success;
 }
 
 static worker_insert_result_t
-riemann_worker_batch_flush(RiemannDestDriver *self)
+riemann_worker_flush(LogThreadedDestDriver *s)
 {
+  RiemannDestDriver *self = (RiemannDestDriver *) s;
   riemann_message_t *message;
   int r;
 
   if (self->event.n == 0)
     return WORKER_INSERT_RESULT_SUCCESS;
 
-  if (!riemann_dd_connect(self, TRUE))
-    return WORKER_INSERT_RESULT_NOT_CONNECTED;
-
   message = riemann_message_new();
 
   riemann_message_set_events_n(message, self->event.n, self->event.list);
   r = riemann_client_send_message_oneshot(self->client, message);
+
+  msg_trace("riemann: flushing messages to Riemann server",
+            evt_tag_str("server", self->server),
+            evt_tag_int("port", self->port),
+            evt_tag_int("batch_size", self->event.n),
+            evt_tag_int("result", r),
+            evt_tag_str("driver", self->super.super.super.id),
+            log_pipe_location_tag(&self->super.super.super.super));
 
   /*
    * riemann_client_send_message_oneshot() will free self->event.list,
@@ -626,7 +568,7 @@ riemann_worker_batch_flush(RiemannDestDriver *self)
    */
   self->event.n = 0;
   self->event.list = (riemann_event_t **)malloc (sizeof (riemann_event_t *) *
-                                                 self->event.batch_size_max);
+                                                 MAX(1,self->super.flush_lines));
   if (r != 0)
     return WORKER_INSERT_RESULT_ERROR;
   else
@@ -634,39 +576,126 @@ riemann_worker_batch_flush(RiemannDestDriver *self)
 }
 
 static worker_insert_result_t
-riemann_worker_insert(LogThrDestDriver *s, LogMessage *msg)
+_insert_single(LogThreadedDestDriver *s, LogMessage *msg)
 {
   RiemannDestDriver *self = (RiemannDestDriver *)s;
-  worker_insert_result_t result;
 
-  if (self->event.n == self->event.batch_size_max)
+  if (!riemann_worker_insert_one(self, msg))
     {
-      result = riemann_worker_batch_flush(self);
-      if (result != WORKER_INSERT_RESULT_SUCCESS)
-        return result;
+      msg_error("riemann: error inserting message to batch, probably a type mismatch. Dropping message",
+                evt_tag_str("server", self->server),
+                evt_tag_int("port", self->port),
+                evt_tag_str("message", log_msg_get_value(msg, LM_V_MESSAGE, NULL)),
+                log_pipe_location_tag(&self->super.super.super.super),
+                evt_tag_str("driver", self->super.super.super.id));
+
+      return WORKER_INSERT_RESULT_DROP;
     }
 
-  result = riemann_worker_insert_one(self, msg);
-
-  if (self->event.n < self->event.batch_size_max)
-    return result;
-
-  return riemann_worker_batch_flush(self);
+  return log_threaded_dest_driver_flush(&self->super);
 }
 
-static void
-riemann_worker_thread_deinit(LogThrDestDriver *s)
+static worker_insert_result_t
+_insert_batch(LogThreadedDestDriver *s, LogMessage *msg)
 {
   RiemannDestDriver *self = (RiemannDestDriver *)s;
 
-  riemann_worker_batch_flush(self);
+  if (!riemann_worker_insert_one(self, msg))
+    {
+      msg_error("riemann: error inserting message to batch, probably a type mismatch. Dropping message",
+                evt_tag_str("server", self->server),
+                evt_tag_int("port", self->port),
+                evt_tag_str("message", log_msg_get_value(msg, LM_V_MESSAGE, NULL)),
+                log_pipe_location_tag(&self->super.super.super.super),
+                evt_tag_str("driver", self->super.super.super.id));
+
+      /* in this case, we don't return RESULT_DROPPED as that would drop the
+       * entire batch.  Rather, we simply don't add this message to our
+       * current batch thereby dropping it.  Should we ever get rewind the
+       * current batch we would log the same again.
+       */
+    }
+
+  if (self->super.flush_lines > 1 && self->super.worker.instance.batch_size >= self->super.flush_lines)
+    {
+      return log_threaded_dest_driver_flush(&self->super);
+    }
+  return WORKER_INSERT_RESULT_QUEUED;
+}
+
+static worker_insert_result_t
+riemann_worker_insert(LogThreadedDestDriver *self, LogMessage *msg)
+{
+  if (self->flush_lines <= 1)
+    return _insert_single(self, msg);
+  else
+    return _insert_batch(self, msg);
 }
 
 static void
-riemann_flush_queue(LogThrDestDriver *s)
+_value_pairs_always_exclude_properties(RiemannDestDriver *self)
+{
+  static const gchar *properties[] = {"host", "service", "description", "state",
+                                      "ttl", "metric", "tags", NULL
+                                     };
+  gint i;
+
+  if (!self->fields.attributes)
+    {
+      return;
+    }
+
+  for (i = 0; properties[i]; i++)
+    value_pairs_add_glob_pattern(self->fields.attributes, properties[i], FALSE);
+}
+
+static gboolean
+riemann_dd_init(LogPipe *s)
 {
   RiemannDestDriver *self = (RiemannDestDriver *)s;
-  riemann_worker_batch_flush(self);
+  GlobalConfig *cfg = log_pipe_get_config(s);
+
+  if (!log_threaded_dest_driver_init_method(s))
+    return FALSE;
+
+  log_template_options_init(&self->template_options, cfg);
+
+  if (!self->server)
+    self->server = g_strdup("127.0.0.1");
+  if (self->port == -1)
+    self->port = 5555;
+
+  if (!self->fields.host)
+    {
+      self->fields.host = log_template_new(cfg, NULL);
+      log_template_compile(self->fields.host, "${HOST}", NULL);
+    }
+  if (!self->fields.service)
+    {
+      self->fields.service = log_template_new(cfg, NULL);
+      log_template_compile(self->fields.service, "${PROGRAM}", NULL);
+    }
+
+  if (!self->fields.event_time)
+    {
+      self->fields.event_time = log_template_new(cfg, NULL);
+      log_template_compile(self->fields.event_time, "${UNIXTIME}", NULL);
+      self->fields.event_time_unit = RIEMANN_EVENT_FIELD_TIME;
+    }
+
+  _value_pairs_always_exclude_properties(self);
+
+  if (!self->event.list)
+    self->event.list = (riemann_event_t **)malloc (sizeof (riemann_event_t *) *
+                                                   MAX(1,self->super.flush_lines));
+
+  msg_verbose("Initializing Riemann destination",
+              evt_tag_str("server", self->server),
+              evt_tag_int("port", self->port),
+              evt_tag_str("driver", self->super.super.super.id),
+              log_pipe_location_tag(&self->super.super.super.super));
+
+  return log_threaded_dest_driver_start_workers(&self->super);
 }
 
 /*
@@ -685,7 +714,7 @@ riemann_dd_free(LogPipe *d)
 
   log_template_options_destroy(&self->template_options);
 
-  riemann_client_free(self->client);
+  free(self->event.list);
 
   log_template_unref(self->fields.host);
   log_template_unref(self->fields.service);
@@ -707,20 +736,21 @@ riemann_dd_new(GlobalConfig *cfg)
 
   log_threaded_dest_driver_init_instance(&self->super, cfg);
 
-  self->super.super.super.super.init = riemann_worker_init;
+  self->super.super.super.super.init = riemann_dd_init;
   self->super.super.super.super.free_fn = riemann_dd_free;
   self->super.super.super.super.generate_persist_name = riemann_dd_format_persist_name;
 
+  self->super.worker.connect = riemann_dd_connect;
   self->super.worker.disconnect = riemann_dd_disconnect;
   self->super.worker.insert = riemann_worker_insert;
-  self->super.worker.thread_deinit = riemann_worker_thread_deinit;
-  self->super.worker.worker_message_queue_empty = riemann_flush_queue;
+  self->super.worker.flush = riemann_worker_flush;
 
-  self->super.format.stats_instance = riemann_dd_format_stats_instance;
+  self->super.format_stats_instance = riemann_dd_format_stats_instance;
   self->super.stats_source = SCS_RIEMANN;
 
   self->port = -1;
   self->type = RIEMANN_CLIENT_TCP;
+  self->super.flush_lines = 0; /* don't inherit global value */
 
   log_template_options_defaults(&self->template_options);
 

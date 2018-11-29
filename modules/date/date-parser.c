@@ -35,7 +35,7 @@ typedef struct _DateParser
 } DateParser;
 
 void
-date_parser_set_format(LogParser *s, gchar *format)
+date_parser_set_format(LogParser *s, const gchar *format)
 {
   DateParser *self = (DateParser *) s;
 
@@ -183,16 +183,22 @@ date_parser_process(LogParser *s,
 {
   DateParser *self = (DateParser *) s;
   LogMessage *msg = log_msg_make_writable(pmsg, path_options);
+  msg_trace("date-parser message processing started",
+            evt_tag_str ("input", input),
+            evt_tag_str ("format", self->date_format),
+            evt_tag_printf("msg", "%p", *pmsg));
 
   /* this macro ensures zero termination by copying input to a
    * g_alloca()-d buffer if necessary. In most cases it's not though.
    */
 
   APPEND_ZERO(input, input, input_len);
-  return _convert_timestamp_to_logstamp(self,
-                                        msg->timestamps[LM_TS_RECVD].tv_sec,
-                                        &msg->timestamps[self->time_stamp],
-                                        input);
+  gboolean res = _convert_timestamp_to_logstamp(self,
+                                                msg->timestamps[LM_TS_RECVD].tv_sec,
+                                                &msg->timestamps[self->time_stamp],
+                                                input);
+
+  return res;
 }
 
 static LogPipe *
