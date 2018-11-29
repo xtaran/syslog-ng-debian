@@ -11,13 +11,13 @@ set(SYSLOG_NG_DISK_BUFFER_SOURCES
     qdisk.c
 )
 
-add_library(syslog-ng-disk-buffer ${SYSLOG_NG_DISK_BUFFER_SOURCES})
+add_library(syslog-ng-disk-buffer STATIC ${SYSLOG_NG_DISK_BUFFER_SOURCES})
+target_include_directories(syslog-ng-disk-buffer INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(syslog-ng-disk-buffer PUBLIC syslog-ng)
 
 set(DISK_BUFFER_SOURCES
     diskq.c
     diskq.h
-    diskq-grammar.y
     diskq-parser.c
     diskq-parser.h
     diskq-plugin.c
@@ -32,15 +32,19 @@ bison_target(DiskBufferGrammar
     ${CMAKE_CURRENT_BINARY_DIR}/diskq-grammar.c
     COMPILE_FLAGS ${BISON_FLAGS})
 
-add_library(disk-buffer MODULE ${DISK_BUFFER_SOURCES})
+add_library(disk-buffer SHARED ${DISK_BUFFER_SOURCES})
 target_link_libraries(disk-buffer PRIVATE syslog-ng-disk-buffer)
-target_include_directories(disk-buffer PRIVATE ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(disk-buffer
+  PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
+  PRIVATE ${CMAKE_CURRENT_BINARY_DIR}
+)
 target_link_libraries(disk-buffer PRIVATE syslog-ng)
 
-set(DQTOOL_SOURCES dqtool.c)
-add_executable(dqtool ${DQTOOL_SOURCES})
-target_link_libraries(dqtool PRIVATE syslog-ng-disk-buffer)
-target_include_directories(dqtool PRIVATE ${PROJECT_BINARY_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
+add_executable(dqtool dqtool.c)
+target_link_libraries(dqtool PRIVATE eventlog syslog-ng-disk-buffer)
+target_include_directories(dqtool PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
 install(TARGETS dqtool RUNTIME DESTINATION bin COMPONENT diskbuffer)
 install(TARGETS disk-buffer LIBRARY DESTINATION lib/syslog-ng COMPONENT diskbuffer)
+
+add_test_subdirectory(tests)

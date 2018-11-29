@@ -49,10 +49,6 @@ filter_expr_eval_with_context(FilterExprNode *self, LogMessage **msg, gint num_m
   g_assert(num_msg > 0);
 
   res = self->eval(self, msg, num_msg);
-  msg_debug("Filter node evaluation result",
-            evt_tag_printf("msg", "%p", *msg),
-            evt_tag_str("result", res ? "match" : "not-match"),
-            evt_tag_str("type", self->type));
   return res;
 }
 

@@ -36,7 +36,7 @@
  * SUCH DAMAGE.
  *
  */
- 
+
 #ifndef __EVTLOG_H_INCLUDED
 #define __EVTLOG_H_INCLUDED
 
@@ -44,6 +44,10 @@
 # include <syslog.h>
 #endif
 #include <stdarg.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 
 #include "evtmaps.h"
 
@@ -69,7 +73,7 @@
 #define EVT_FAC_AUTHPRIV    (10<<3) /* security/authorization messages (private) */
 #define EVT_FAC_FTP         (11<<3) /* ftp daemon */
 
-        /* other codes through 15 reserved for system use */
+/* other codes through 15 reserved for system use */
 #define EVT_FAC_LOCAL0      (16<<3) /* reserved for local use */
 #define EVT_FAC_LOCAL1      (17<<3) /* reserved for local use */
 #define EVT_FAC_LOCAL2      (18<<3) /* reserved for local use */
@@ -142,16 +146,18 @@ void evt_rec_free(EVTREC *e);
  **/
 EVTTAG *evt_tag_str(const char *tag, const char *value);
 EVTTAG *evt_tag_int(const char *tag, int value);
-EVTTAG *evt_tag_long(const char *tag, long value);
+EVTTAG *evt_tag_long(const char *tag, long long value);
 EVTTAG *evt_tag_errno(const char *tag, int err);
 EVTTAG *evt_tag_printf(const char *tag, const char *format, ...) EVT_GNUC_PRINTF_FUNC(2, 3);
+EVTTAG *evt_tag_inaddr(const char *tag, const struct in_addr *addr);
+EVTTAG *evt_tag_inaddr6(const char *tag, const struct in6_addr *addr);
 
 /**
  * evt_format:
  * @e: event record
  *
  * Formats the given event as specified by the current configuration.
- * 
+ *
  * Return value: returns a newly allocated string. The caller is responsible
  * for freeing the returned value.
  **/

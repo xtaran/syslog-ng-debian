@@ -106,7 +106,7 @@ _write_message(PseudoFileDestDriver *self, const GString *msg)
       msg_error("Error opening pseudo file",
                 evt_tag_str("pseudofile", self->pseudofile_name),
                 evt_tag_str("driver", self->super.super.id),
-                evt_tag_errno("error", errno),
+                evt_tag_error("error"),
                 _evt_tag_message(msg));
       goto exit;
     }
@@ -117,7 +117,7 @@ _write_message(PseudoFileDestDriver *self, const GString *msg)
       msg_error("Error writing to pseudo file",
                 evt_tag_str("pseudofile", self->pseudofile_name),
                 evt_tag_str("driver", self->super.super.id),
-                evt_tag_errno("error", errno),
+                evt_tag_error("error"),
                 _evt_tag_message(msg));
       goto exit;
     }
@@ -131,9 +131,11 @@ _write_message(PseudoFileDestDriver *self, const GString *msg)
     }
 
   success = TRUE;
-  close(fd);
 
 exit:
+  if (fd >= 0)
+    close(fd);
+
   return success;
 }
 
@@ -154,7 +156,7 @@ _suspend_output(PseudoFileDestDriver *self, time_t now)
 }
 
 static void
-pseudofile_dd_queue(LogPipe *s, LogMessage *msg, const LogPathOptions *path_options, gpointer user_data)
+pseudofile_dd_queue(LogPipe *s, LogMessage *msg, const LogPathOptions *path_options)
 {
   PseudoFileDestDriver *self = (PseudoFileDestDriver *) s;
   GString *formatted_message = scratch_buffers_alloc();
@@ -174,7 +176,7 @@ pseudofile_dd_queue(LogPipe *s, LogMessage *msg, const LogPathOptions *path_opti
     _suspend_output(self, now);
 
 finish:
-  log_dest_driver_queue_method(s, msg, path_options, user_data);
+  log_dest_driver_queue_method(s, msg, path_options);
 }
 
 static gboolean

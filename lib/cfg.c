@@ -117,7 +117,7 @@ cfg_bad_hostname_set(GlobalConfig *self, gchar *bad_hostname_re)
 }
 
 gint
-cfg_lookup_mark_mode(gchar *mark_mode)
+cfg_lookup_mark_mode(const gchar *mark_mode)
 {
   if (!strcmp(mark_mode, "internal"))
     return MM_INTERNAL;
@@ -136,7 +136,7 @@ cfg_lookup_mark_mode(gchar *mark_mode)
 }
 
 void
-cfg_set_mark_mode(GlobalConfig *self, gchar *mark_mode)
+cfg_set_mark_mode(GlobalConfig *self, const gchar *mark_mode)
 {
   self->mark_mode = cfg_lookup_mark_mode(mark_mode);
 }
@@ -195,6 +195,32 @@ cfg_load_candidate_modules(GlobalConfig *self)
     {
       _sync_plugin_module_path_with_global_define(self);
       plugin_load_candidate_modules(&self->plugin_context);
+    }
+}
+
+void
+cfg_load_forced_modules(GlobalConfig *self)
+{
+  static const gchar *module_list[] =
+  {
+#if (!SYSLOG_NG_ENABLE_FORCED_SERVER_MODE)
+    "license"
+#endif
+  };
+
+  if (!self->enable_forced_modules)
+    return;
+
+  int i;
+  for (i=0; i<sizeof(module_list)/sizeof(gchar *); ++i)
+    {
+      const gchar *name = module_list[i];
+
+      if (!cfg_load_module(self, name))
+        {
+          msg_error("Error loading module, forcing exit", evt_tag_str("module", name));
+          exit(1);
+        }
     }
 }
 
@@ -419,13 +445,15 @@ cfg_new(gint version)
   self->keep_timestamp = TRUE;
 
   self->use_uniqid = FALSE;
-  self->jvm_options = NULL;
 
   stats_options_defaults(&self->stats_options);
+
+  self->min_iw_size_per_reader = 100;
 
   cfg_tree_init_instance(&self->tree, self);
   plugin_context_init_instance(&self->plugin_context);
   self->use_plugin_discovery = TRUE;
+  self->enable_forced_modules = TRUE;
 
   cfg_register_builtin_plugins(self);
   return self;
@@ -437,6 +465,7 @@ cfg_new_snippet(void)
   GlobalConfig *self = cfg_new(VERSION_VALUE);
 
   self->use_plugin_discovery = FALSE;
+  self->enable_forced_modules = FALSE;
   return self;
 }
 
@@ -495,27 +524,19 @@ cfg_dump_processed_config(GString *preprocess_output, gchar *output_filename)
     }
 }
 
-gboolean
-cfg_load_config(GlobalConfig *self, gchar *config_string, gboolean syntax_only, gchar *preprocess_into)
+static GString *
+_load_file_into_string(const gchar *fname)
 {
-  gint res;
-  CfgLexer *lexer;
-  GString *preprocess_output = g_string_sized_new(8192);
+  gchar *buff;
+  GString *content = g_string_new("");
 
-  lexer = cfg_lexer_new_buffer(self, config_string, strlen(config_string));
-  lexer->preprocess_output = preprocess_output;
+  if (g_file_get_contents(fname, &buff, NULL, NULL))
+    {
+      g_string_append(content, buff);
+      g_free(buff);
+    }
 
-  res = cfg_run_parser(self, lexer, &main_parser, (gpointer *) &self, NULL);
-  if (preprocess_into)
-    {
-      cfg_dump_processed_config(preprocess_output, preprocess_into);
-    }
-  g_string_free(preprocess_output, TRUE);
-  if (res)
-    {
-      return TRUE;
-    }
-  return FALSE;
+  return content;
 }
 
 gboolean
@@ -529,16 +550,17 @@ cfg_read_config(GlobalConfig *self, const gchar *fname, gboolean syntax_only, gc
   if ((cfg_file = fopen(fname, "r")) != NULL)
     {
       CfgLexer *lexer;
-      GString *preprocess_output = g_string_sized_new(8192);
+      self->preprocess_config = g_string_sized_new(8192);
+      self->original_config = _load_file_into_string(fname);
 
-      lexer = cfg_lexer_new(self, cfg_file, fname, preprocess_output);
+      lexer = cfg_lexer_new(self, cfg_file, fname, self->preprocess_config);
       res = cfg_run_parser(self, lexer, &main_parser, (gpointer *) &self, NULL);
       fclose(cfg_file);
       if (preprocess_into)
         {
-          cfg_dump_processed_config(preprocess_output, preprocess_into);
+          cfg_dump_processed_config(self->preprocess_config, preprocess_into);
         }
-      g_string_free(preprocess_output, TRUE);
+
       if (res)
         {
           /* successfully parsed */
@@ -549,7 +571,7 @@ cfg_read_config(GlobalConfig *self, const gchar *fname, gboolean syntax_only, gc
     {
       msg_error("Error opening configuration file",
                 evt_tag_str(EVT_TAG_FILENAME, fname),
-                evt_tag_errno(EVT_TAG_OSERROR, errno));
+                evt_tag_error(EVT_TAG_OSERROR));
     }
 
   return FALSE;
@@ -559,8 +581,6 @@ void
 cfg_free(GlobalConfig *self)
 {
   g_assert(self->persist == NULL);
-  if (self->state)
-    persist_state_free(self->state);
 
   g_free(self->file_template_name);
   g_free(self->proto_template_name);
@@ -580,6 +600,15 @@ cfg_free(GlobalConfig *self)
   cfg_tree_free_instance(&self->tree);
   g_hash_table_unref(self->module_config);
   cfg_args_unref(self->globals);
+
+  if (self->state)
+    persist_state_free(self->state);
+
+  if (self->preprocess_config)
+    g_string_free(self->preprocess_config, TRUE);
+  if (self->original_config)
+    g_string_free(self->original_config, TRUE);
+
   g_free(self);
 }
 

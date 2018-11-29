@@ -32,7 +32,7 @@ typedef struct
   LogParser super;
 
   gchar *class;
-  GList *imports;
+  GList *loaders;
 
   GHashTable *options;
 
@@ -62,12 +62,12 @@ python_parser_set_option(LogParser *d, gchar *key, gchar *value)
 }
 
 void
-python_parser_set_imports(LogParser *d, GList *imports)
+python_parser_set_loaders(LogParser *d, GList *loaders)
 {
   PythonParser *self = (PythonParser *)d;
 
-  string_list_free(self->imports);
-  self->imports = imports;
+  string_list_free(self->loaders);
+  self->loaders = loaders;
 }
 
 static gboolean
@@ -91,7 +91,6 @@ _pp_py_invoke_bool_method_by_name_with_args(PythonParser *self, PyObject *instan
 static gboolean
 _py_invoke_parser_process(PythonParser *self, PyObject *msg)
 {
-  msg_debug("Logmessage passed to the Python parser");
   return _pp_py_invoke_bool_function(self, self->py.parser_process, msg);
 }
 
@@ -121,7 +120,8 @@ _py_init_bindings(PythonParser *self)
       msg_error("Error looking Python parser class",
                 evt_tag_str("parser", self->super.name),
                 evt_tag_str("class", self->class),
-                evt_tag_str("exception", _py_fetch_and_format_exception_text(buf, sizeof(buf))));
+                evt_tag_str("exception", _py_format_exception_text(buf, sizeof(buf))));
+      _py_finish_exception_handling();
       return FALSE;
     }
 
@@ -133,7 +133,8 @@ _py_init_bindings(PythonParser *self)
       msg_error("Error instantiating Python parser class",
                 evt_tag_str("parser", self->super.name),
                 evt_tag_str("class", self->class),
-                evt_tag_str("exception", _py_fetch_and_format_exception_text(buf, sizeof(buf))));
+                evt_tag_str("exception", _py_format_exception_text(buf, sizeof(buf))));
+      _py_finish_exception_handling();
       return FALSE;
     }
 
@@ -180,6 +181,13 @@ python_parser_process(LogParser *s, LogMessage **pmsg, const LogPathOptions *pat
   gstate = PyGILState_Ensure();
   {
     LogMessage *msg = log_msg_make_writable(pmsg, path_options);
+
+    msg_trace("python-parser message processing started",
+              evt_tag_str ("input", input),
+              evt_tag_str("parser", self->super.name),
+              evt_tag_str("class", self->class),
+              evt_tag_printf("msg", "%p", msg));
+
     PyObject *msg_object = py_log_message_new(msg);
     result = _py_invoke_parser_process(self, msg_object);
     Py_DECREF(msg_object);
@@ -207,7 +215,7 @@ python_parser_init(LogPipe *s)
 
   gstate = PyGILState_Ensure();
 
-  _py_perform_imports(self->imports);
+  _py_perform_imports(self->loaders);
   if (!_py_init_bindings(self) ||
       !_py_init_object(self))
     goto fail;
@@ -252,7 +260,7 @@ python_parser_free(LogPipe *d)
   if (self->options)
     g_hash_table_unref(self->options);
 
-  string_list_free(self->imports);
+  string_list_free(self->loaders);
 
   log_parser_free_method(d);
 }
@@ -264,7 +272,7 @@ python_parser_clone(LogPipe *s)
   PythonParser *cloned = (PythonParser *) python_parser_new(log_pipe_get_config(s));
   g_hash_table_unref(cloned->options);
   python_parser_set_class(&cloned->super, self->class);
-  cloned->imports = string_list_clone(self->imports);
+  cloned->loaders = string_list_clone(self->loaders);
   cloned->options = g_hash_table_ref(self->options);
 
   return &cloned->super.super;

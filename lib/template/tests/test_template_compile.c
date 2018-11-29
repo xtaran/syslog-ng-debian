@@ -59,17 +59,28 @@ Plugin hello_plugin = TEMPLATE_FUNCTION_PLUGIN(hello, "hello");
     element.type;  \
     element.msg_ref; }
 
-#define assert_compiled_template(text, default_value, spec, type, msg_ref) \
+#define assert_compiled_template(set_text, set_default_value, spec, type, msg_ref) \
   do { \
+    const gchar *text; \
+    set_text; \
+    gchar *text_mut = g_strdup(text); \
+    \
+    const gchar *default_value; \
+    set_default_value; \
+    gchar *default_value_mut = g_strdup(default_value); \
+    \
     LogTemplateElem expected_elem;                                \
                                                                                                                                                                 \
-    fill_expected_template_element(expected_elem, text, default_value, spec, type, msg_ref);                  \
+    fill_expected_template_element(expected_elem, text = text_mut, \
+                                   default_value = default_value_mut, spec, type, msg_ref); \
     assert_gint((current_elem->type), (expected_elem.type), ASSERTION_ERROR("Bad compiled template type"));               \
     assert_common_element(expected_elem);                               \
     if ((expected_elem.type) == LTE_MACRO) assert_gint(current_elem->macro, expected_elem.macro, ASSERTION_ERROR("Bad compiled template macro"));     \
     if ((expected_elem.type) == LTE_VALUE) assert_gint(current_elem->value_handle, expected_elem.value_handle, ASSERTION_ERROR("Bad compiled template macro")); \
     if ((expected_elem.type) == LTE_FUNC) assert_gpointer(current_elem->func.ops, expected_elem.func.ops, ASSERTION_ERROR("Bad compiled template macro"));  \
-  } while (0)
+    g_free(text_mut); \
+    g_free(default_value_mut); \
+} while (0)
 
 
 #define TEMPLATE_TESTCASE(x, ...) do { template_testcase_begin(#x, #__VA_ARGS__); x(__VA_ARGS__); template_testcase_end(); } while(0)
@@ -155,10 +166,10 @@ get_template_function_ops(const gchar *name)
 static void
 test_simple_string_literal(void)
 {
-  gchar *text = "Test String";
+  const gchar *text_ = "Test String";
 
-  assert_template_compile(text);
-  assert_compiled_template(text = text, default_value = NULL, macro = M_NONE, type = LTE_MACRO, msg_ref = 0);
+  assert_template_compile(text_);
+  assert_compiled_template(text = text_, default_value = NULL, macro = M_NONE, type = LTE_MACRO, msg_ref = 0);
 }
 
 static void
@@ -415,7 +426,7 @@ static void
 test_template_function_bad1(void)
 {
   assert_failed_template_compile("$( hello \\tes\t\t\t value(xyz \"value with spaces\" 'test value with spa\"ces')",
-                                 "Invalid template function reference, missing function name or inbalanced '(', error_pos='73'");
+                                 "Invalid template function reference, missing function name or imbalanced '(', error_pos='73'");
   assert_compiled_template(text =
                            "error in template: $( hello \\tes\t\t\t value(xyz \"value with spaces\" 'test value with spa\"ces')",
                            default_value = NULL, macro = M_NONE, type = LTE_MACRO, msg_ref = 0);
@@ -425,7 +436,7 @@ static void
 test_template_function_bad2(void)
 {
   assert_failed_template_compile("$( hello \\tes\t\t\t value xyz \"value with spaces\" 'test value with spa\"ces'",
-                                 "Invalid template function reference, missing function name or inbalanced '(', error_pos='72'");
+                                 "Invalid template function reference, missing function name or imbalanced '(', error_pos='72'");
   assert_compiled_template(text =
                            "error in template: $( hello \\tes\t\t\t value xyz \"value with spaces\" 'test value with spa\"ces'",
                            default_value = NULL, macro = M_NONE, type = LTE_MACRO, msg_ref = 0);
@@ -435,7 +446,7 @@ static void
 test_template_function_bad3(void)
 {
   assert_failed_template_compile("$(hello \"This is an unclosed quoted string)",
-                                 "Invalid template function reference, missing function name or inbalanced '(', error_pos='8'");
+                                 "Invalid template function reference, missing function name or imbalanced '(', error_pos='8'");
   assert_compiled_template(text = "error in template: $(hello \"This is an unclosed quoted string)", default_value = NULL,
                            macro = M_NONE, type = LTE_MACRO, msg_ref = 0);
 }

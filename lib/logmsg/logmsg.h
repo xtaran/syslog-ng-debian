@@ -68,6 +68,7 @@ typedef enum
 {
   LM_TS_STAMP = 0,
   LM_TS_RECVD = 1,
+  LM_TS_PROCESSED = 2,
   LM_TS_MAX
 } LogMessageTimeStamp;
 
@@ -193,7 +194,7 @@ struct _LogMessage
   guint32 flags;
   guint16 pri;
   guint8 initial_parse:1,
-    recursed:1;
+         recursed:1;
   guint8 num_matches;
   guint8 num_tags;
   guint8 alloc_sdata;
@@ -209,7 +210,7 @@ struct _LogMessage
   /* preallocated LogQueueNodes used to insert this message into a LogQueue */
   LogMessageQueueNode nodes[0];
 
-  /* a preallocated space for the inital NVTable (payload) may follow */
+  /* a preallocated space for the initial NVTable (payload) may follow */
 };
 
 extern NVRegistry *logmsg_registry;
@@ -221,6 +222,13 @@ LogMessage *log_msg_ref(LogMessage *m);
 void log_msg_unref(LogMessage *m);
 void log_msg_write_protect(LogMessage *m);
 void log_msg_write_unprotect(LogMessage *m);
+
+static inline gboolean
+log_msg_is_write_protected(const LogMessage *self)
+{
+  return self->protect_cnt > 0;
+}
+
 LogMessage *log_msg_clone_cow(LogMessage *msg, const LogPathOptions *path_options);
 LogMessage *log_msg_make_writable(LogMessage **pmsg, const LogPathOptions *path_options);
 
@@ -280,15 +288,18 @@ log_msg_get_value_name(NVHandle handle, gssize *name_len)
   return nv_registry_get_handle_name(logmsg_registry, handle, name_len);
 }
 
-typedef gboolean (*LogMessageTagsForeachFunc)(const LogMessage *self, LogTagId tag_id, const gchar *name, gpointer user_data);
+typedef gboolean (*LogMessageTagsForeachFunc)(const LogMessage *self, LogTagId tag_id, const gchar *name,
+                                              gpointer user_data);
 
 void log_msg_set_value(LogMessage *self, NVHandle handle, const gchar *new_value, gssize length);
-void log_msg_set_value_indirect(LogMessage *self, NVHandle handle, NVHandle ref_handle, guint8 type, guint16 ofs, guint16 len);
+void log_msg_set_value_indirect(LogMessage *self, NVHandle handle, NVHandle ref_handle, guint8 type, guint16 ofs,
+                                guint16 len);
 void log_msg_unset_value(LogMessage *self, NVHandle handle);
 void log_msg_unset_value_by_name(LogMessage *self, const gchar *name);
 gboolean log_msg_values_foreach(const LogMessage *self, NVTableForeachFunc func, gpointer user_data);
 void log_msg_set_match(LogMessage *self, gint index, const gchar *value, gssize value_len);
-void log_msg_set_match_indirect(LogMessage *self, gint index, NVHandle ref_handle, guint8 type, guint16 ofs, guint16 len);
+void log_msg_set_match_indirect(LogMessage *self, gint index, NVHandle ref_handle, guint8 type, guint16 ofs,
+                                guint16 len);
 void log_msg_clear_matches(LogMessage *self);
 
 static inline void
@@ -329,7 +340,8 @@ LogMessage *log_msg_new_local(void);
 void log_msg_add_ack(LogMessage *msg, const LogPathOptions *path_options);
 void log_msg_ack(LogMessage *msg, const LogPathOptions *path_options, AckType ack_type);
 void log_msg_drop(LogMessage *msg, const LogPathOptions *path_options, AckType ack_type);
-const LogPathOptions *log_msg_break_ack(LogMessage *msg, const LogPathOptions *path_options, LogPathOptions *local_options);
+const LogPathOptions *log_msg_break_ack(LogMessage *msg, const LogPathOptions *path_options,
+                                        LogPathOptions *local_options);
 
 void log_msg_refcache_start_producer(LogMessage *self);
 void log_msg_refcache_start_consumer(LogMessage *self, const LogPathOptions *path_options);

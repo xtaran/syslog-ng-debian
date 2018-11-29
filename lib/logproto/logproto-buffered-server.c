@@ -352,7 +352,7 @@ log_proto_buffered_server_convert_state(LogProtoBufferedServer *self, guint8 per
       gint64 cur_size;
       gint64 cur_inode;
       gint64 cur_pos;
-      guint16 version;
+      guint16 version = 0;
       gchar *buffer;
       gsize buffer_len;
 
@@ -527,7 +527,10 @@ error:
       if (new_state_handle)
         log_proto_buffered_server_apply_state(self, new_state_handle, persist_name);
       else
-        self->state1 = new_state;
+        {
+          self->persist_state = NULL;
+          self->state1 = new_state;
+        }
     }
   if (new_state_handle)
     {
@@ -536,8 +539,8 @@ error:
   return FALSE;
 }
 
-gboolean
-log_proto_buffered_server_prepare(LogProtoServer *s, GIOCondition *cond)
+LogProtoPrepareAction
+log_proto_buffered_server_prepare(LogProtoServer *s, GIOCondition *cond, gint *timeout G_GNUC_UNUSED)
 {
   LogProtoBufferedServer *self = (LogProtoBufferedServer *) s;
 
@@ -547,7 +550,7 @@ log_proto_buffered_server_prepare(LogProtoServer *s, GIOCondition *cond)
   if (*cond == 0)
     *cond = G_IO_IN;
 
-  return FALSE;
+  return LPPA_POLL_IO;
 }
 
 static gint
@@ -657,7 +660,7 @@ log_proto_buffered_server_fetch_into_buffer(LogProtoBufferedServer *self)
           /* an error occurred while reading */
           msg_error("I/O error occurred while reading",
                     evt_tag_int(EVT_TAG_FD, self->super.transport->fd),
-                    evt_tag_errno(EVT_TAG_OSERROR, errno));
+                    evt_tag_error(EVT_TAG_OSERROR));
           result = G_IO_STATUS_ERROR;
         }
     }

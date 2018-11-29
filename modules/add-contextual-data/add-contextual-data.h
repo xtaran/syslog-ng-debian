@@ -50,4 +50,8 @@ void add_contextual_data_set_filters_path(LogParser *p, const gchar *filename);
 
 void add_contextual_data_set_selector(LogParser *p, AddContextualDataSelector *selector);
 
+void add_contextual_data_set_selector_filter(LogParser *p, const gchar *filename);
+
+void add_contextual_data_set_ignore_case(LogParser *p, gboolean ignore);
+
 #endif

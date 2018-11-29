@@ -5,6 +5,8 @@ modules_csvparser_tests_TESTS			=	\
 check_PROGRAMS					+=	\
 	${modules_csvparser_tests_TESTS}
 
+EXTRA_DIST += modules/csvparser/tests/CMakeLists.txt
+
 modules_csvparser_tests_test_csvparser_CFLAGS	=	\
 	$(TEST_CFLAGS) -I$(top_srcdir)/modules/csvparser
 modules_csvparser_tests_test_csvparser_LDADD	=	\
@@ -21,7 +23,6 @@ modules_csvparser_tests_test_csvparser_perf_LDFLAGS	=	\
 	$(PREOPEN_SYSLOGFORMAT)				\
 	-dlpreopen $(top_builddir)/modules/csvparser/libcsvparser.la
 
-if ENABLE_CRITERION
 modules_csvparser_tests_TESTS += modules/csvparser/tests/test_csvparser_statistics
 
 modules_csvparser_tests_test_csvparser_statistics_CFLAGS	=	\
@@ -31,5 +32,3 @@ modules_csvparser_tests_test_csvparser_statistics_LDADD	=	\
 modules_csvparser_tests_test_csvparser_statistics_LDFLAGS	=	\
 	$(PREOPEN_SYSLOGFORMAT)				\
 	-dlpreopen $(top_builddir)/modules/csvparser/libcsvparser.la
-
-endif

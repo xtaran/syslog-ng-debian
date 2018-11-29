@@ -10,6 +10,8 @@ set (NATIVE_SOURCES
     native/java-parser.c
     native/java-parser.h
     native/java-plugin.c
+    native/java-config.c
+    native/java-config.h
     ${CMAKE_CURRENT_BINARY_DIR}/java-grammar.c
     ${CMAKE_CURRENT_BINARY_DIR}/java-grammar.h
 )
@@ -63,6 +65,15 @@ bison_target(ModJavaGrammar
     COMPILE_FLAGS ${BISON_FLAGS})
 
 find_package(Java 1.7)
+
+if (JAVA_FOUND AND Java_JAVAH_EXECUTABLE)
+  OPTION(ENABLE_JAVA "Enable java module" ON)
+else()
+  OPTION(ENABLE_JAVA "Enable java module" OFF)
+endif()
+
+if (ENABLE_JAVA)
+
 find_package(JNI)
 
 if (Java_JAVAH_EXECUTABLE)
@@ -71,7 +82,6 @@ else()
   OPTION(ENABLE_JAVA "Enable java module" OFF)
 endif()
 
-if (ENABLE_JAVA)
   include(UseJava)
 
   add_jar(syslog-ng-core
@@ -111,7 +121,7 @@ if (ENABLE_JAVA)
       "syslog-ng-core"
   )
 
-  add_library(mod-java MODULE ${NATIVE_SOURCES} ${PROXIES_SOURCES} ${BUILT_HEADERS})
+  add_library(mod-java SHARED ${NATIVE_SOURCES} ${PROXIES_SOURCES} ${BUILT_HEADERS})
   target_include_directories (mod-java
       PRIVATE
       ${CMAKE_CURRENT_BINARY_DIR}
@@ -121,4 +131,5 @@ if (ENABLE_JAVA)
   target_include_directories (mod-java SYSTEM PRIVATE ${JNI_INCLUDE_DIRS})
   target_link_libraries(mod-java PRIVATE syslog-ng ${JNI_LIBRARIES})
   install(FILES ${CMAKE_CURRENT_BINARY_DIR}/syslog-ng-core.jar DESTINATION lib/syslog-ng/java-modules)
+  install(TARGETS mod-java LIBRARY DESTINATION lib/syslog-ng COMPONENT java)
 endif()

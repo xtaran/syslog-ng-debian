@@ -23,6 +23,7 @@
  */
 #include "stats/stats-cluster.h"
 
+#include <assert.h>
 #include <string.h>
 
 static StatsClusterKey *
@@ -79,7 +80,7 @@ stats_cluster_get_type_name(StatsCluster *self, gint type)
 static const gchar *
 _get_module_name(gint source)
 {
-  static const gchar *module_names[SCS_MAX] =
+  static const gchar *module_names[] =
   {
     "none",
     "file",
@@ -121,8 +122,11 @@ _get_module_name(gint source)
     "python",
     "filter",
     "parser",
-    "monitoring"
+    "monitoring",
+    "stdin",
+    "openbsd"
   };
+  G_STATIC_ASSERT(sizeof(module_names)/sizeof(module_names[0])==SCS_MAX);
   return module_names[source & SCS_SOURCE_MASK];
 }
 
@@ -204,6 +208,19 @@ stats_cluster_track_counter(StatsCluster *self, gint type)
   return &self->counter_group.counters[type];
 }
 
+StatsCounterItem *
+stats_cluster_get_counter(StatsCluster *self, gint type)
+{
+  gint type_mask = 1 << type;
+
+  g_assert(type < self->counter_group.capacity);
+
+  if (!(self->live_mask & type_mask))
+    return NULL;
+
+  return &self->counter_group.counters[type];
+}
+
 void
 stats_cluster_untrack_counter(StatsCluster *self, gint type, StatsCounterItem **counter)
 {
@@ -240,7 +257,7 @@ stats_cluster_is_alive(StatsCluster *self, gint type)
 {
   g_assert(type < self->counter_group.capacity);
 
-  return ((1<<type) & self->live_mask);
+  return !!((1<<type) & self->live_mask);
 }
 
 gboolean
@@ -248,7 +265,7 @@ stats_cluster_is_indexed(StatsCluster *self, gint type)
 {
   g_assert(type < self->counter_group.capacity);
 
-  return ((1<<type) & self->indexed_mask);
+  return !!((1<<type) & self->indexed_mask);
 }
 
 StatsCluster *
@@ -282,15 +299,15 @@ stats_counter_group_free(StatsCounterGroup *self)
 
 
 static void
-stats_cluster_free_counter_name(StatsCluster *self, gint type, StatsCounterItem *item, gpointer user_data)
+stats_cluster_free_counter(StatsCluster *self, gint type, StatsCounterItem *item, gpointer user_data)
 {
-  g_free(item->name);
+  stats_counter_free(item);
 }
 
 void
 stats_cluster_free(StatsCluster *self)
 {
-  stats_cluster_foreach_counter(self, stats_cluster_free_counter_name, NULL);
+  stats_cluster_foreach_counter(self, stats_cluster_free_counter, NULL);
   _stats_cluster_key_cloned_free(&self->key);
   g_free(self->query_key);
   stats_counter_group_free(&self->counter_group);

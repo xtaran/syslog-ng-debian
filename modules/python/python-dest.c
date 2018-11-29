@@ -26,6 +26,8 @@
 #include "python-module.h"
 #include "python-value-pairs.h"
 #include "python-logmsg.h"
+#include "python-logtemplate-options.h"
+#include "python-integerpointer.h"
 #include "python-helpers.h"
 #include "logthrdestdrv.h"
 #include "stats/stats.h"
@@ -35,10 +37,10 @@
 
 typedef struct
 {
-  LogThrDestDriver super;
+  LogThreadedDestDriver super;
 
   gchar *class;
-  GList *imports;
+  GList *loaders;
 
   LogTemplateOptions template_options;
   GHashTable *options;
@@ -49,8 +51,9 @@ typedef struct
     PyObject *class;
     PyObject *instance;
     PyObject *is_opened;
-    PyObject *retry_error;
     PyObject *send;
+    PyObject *log_template_options;
+    PyObject *seqnum;
   } py;
 } PythonDestDriver;
 
@@ -83,12 +86,12 @@ python_dd_set_value_pairs(LogDriver *d, ValuePairs *vp)
 }
 
 void
-python_dd_set_imports(LogDriver *d, GList *imports)
+python_dd_set_loaders(LogDriver *d, GList *loaders)
 {
   PythonDestDriver *self = (PythonDestDriver *)d;
 
-  string_list_free(self->imports);
-  self->imports = imports;
+  string_list_free(self->loaders);
+  self->loaders = loaders;
 }
 
 PyObject *
@@ -107,8 +110,8 @@ python_dd_get_template_options(LogDriver *d)
 
 /** Helpers for stats & persist_name formatting **/
 
-static gchar *
-python_dd_format_stats_instance(LogThrDestDriver *d)
+static const gchar *
+python_dd_format_stats_instance(LogThreadedDestDriver *d)
 {
   PythonDestDriver *self = (PythonDestDriver *)d;
   static gchar persist_name[1024];
@@ -142,13 +145,6 @@ _dd_py_invoke_bool_function(PythonDestDriver *self, PyObject *func, PyObject *ar
 }
 
 static void
-_dd_py_invoke_void_function(PythonDestDriver *self, PyObject *func, PyObject *arg)
-{
-  _py_invoke_void_function(func, arg, self->class, self->super.super.super.id);
-}
-
-
-static void
 _dd_py_invoke_void_method_by_name(PythonDestDriver *self, const gchar *method_name)
 {
   _py_invoke_void_method_by_name(self->py.instance, method_name, self->class, self->super.super.super.id);
@@ -175,14 +171,6 @@ _py_invoke_is_opened(PythonDestDriver *self)
     return TRUE;
 
   return _dd_py_invoke_bool_function(self, self->py.is_opened, NULL);
-}
-
-static void
-_py_invoke_retry_error(PythonDestDriver *self, PyObject *dict)
-{
-  if (!self->py.retry_error)
-    return;
-  _dd_py_invoke_void_function(self, self->py.retry_error, dict);
 }
 
 static gboolean
@@ -226,9 +214,16 @@ _py_init_bindings(PythonDestDriver *self)
       msg_error("Error looking Python driver class",
                 evt_tag_str("driver", self->super.super.super.id),
                 evt_tag_str("class", self->class),
-                evt_tag_str("exception", _py_fetch_and_format_exception_text(buf, sizeof(buf))));
+                evt_tag_str("exception", _py_format_exception_text(buf, sizeof(buf))));
+      _py_finish_exception_handling();
       return FALSE;
     }
+
+  self->py.log_template_options = py_log_template_options_new(&self->template_options);
+  PyObject_SetAttrString(self->py.class, "template_options", self->py.log_template_options);
+  self->py.seqnum = py_integer_pointer_new(&self->super.worker.instance.seq_num);
+  PyObject_SetAttrString(self->py.class, "seqnum", self->py.seqnum);
+  Py_DECREF(self->py.log_template_options);
 
   self->py.instance = _py_invoke_function(self->py.class, NULL, self->class, self->super.super.super.id);
   if (!self->py.instance)
@@ -238,13 +233,13 @@ _py_init_bindings(PythonDestDriver *self)
       msg_error("Error instantiating Python driver class",
                 evt_tag_str("driver", self->super.super.super.id),
                 evt_tag_str("class", self->class),
-                evt_tag_str("exception", _py_fetch_and_format_exception_text(buf, sizeof(buf))));
+                evt_tag_str("exception", _py_format_exception_text(buf, sizeof(buf))));
+      _py_finish_exception_handling();
       return FALSE;
     }
 
   /* these are fast paths, store references to be faster */
   self->py.is_opened = _py_get_attr_or_null(self->py.instance, "is_opened");
-  self->py.retry_error = _py_get_attr_or_null(self->py.instance, "retry_error");
   self->py.send = _py_get_attr_or_null(self->py.instance, "send");
   if (!self->py.send)
     {
@@ -262,12 +257,21 @@ _py_free_bindings(PythonDestDriver *self)
   Py_CLEAR(self->py.instance);
   Py_CLEAR(self->py.is_opened);
   Py_CLEAR(self->py.send);
-  Py_CLEAR(self->py.retry_error);
+  Py_CLEAR(self->py.log_template_options);
+  Py_CLEAR(self->py.seqnum);
 }
 
 static gboolean
 _py_init_object(PythonDestDriver *self)
 {
+  if (!_py_get_attr_or_null(self->py.instance, "init"))
+    {
+      msg_debug("Missing Python method, init()",
+                evt_tag_str("driver", self->super.super.super.id),
+                evt_tag_str("class", self->class));
+      return TRUE;
+    }
+
   if (!_py_invoke_init(self))
     {
       msg_error("Error initializing Python driver object, init() returned FALSE",
@@ -286,7 +290,7 @@ _py_construct_message(PythonDestDriver *self, LogMessage *msg, PyObject **msg_ob
 
   if (self->vp)
     {
-      success = py_value_pairs_apply(self->vp, &self->template_options, self->super.seq_num, msg, msg_object);
+      success = py_value_pairs_apply(self->vp, &self->template_options, self->super.worker.instance.seq_num, msg, msg_object);
       if (!success && (self->template_options.on_error & ON_ERROR_DROP_MESSAGE))
         return FALSE;
     }
@@ -300,7 +304,7 @@ _py_construct_message(PythonDestDriver *self, LogMessage *msg, PyObject **msg_ob
 
 
 static worker_insert_result_t
-python_dd_insert(LogThrDestDriver *d, LogMessage *msg)
+python_dd_insert(LogThreadedDestDriver *d, LogMessage *msg)
 {
   PythonDestDriver *self = (PythonDestDriver *)d;
   worker_insert_result_t result = WORKER_INSERT_RESULT_ERROR;
@@ -352,23 +356,6 @@ python_dd_open(PythonDestDriver *self)
 }
 
 static void
-python_dd_retry_error(PythonDestDriver *self, LogMessage *msg)
-{
-  PyGILState_STATE gstate;
-  PyObject *msg_object;
-
-  gstate = PyGILState_Ensure();
-  if(_py_construct_message(self, msg, &msg_object))
-    {
-      _py_invoke_retry_error(self, msg_object);
-      Py_DECREF(msg_object);
-    }
-
-  PyGILState_Release(gstate);
-}
-
-
-static void
 python_dd_close(PythonDestDriver *self)
 {
   PyGILState_STATE gstate;
@@ -380,7 +367,7 @@ python_dd_close(PythonDestDriver *self)
 }
 
 static void
-python_dd_worker_init(LogThrDestDriver *d)
+python_dd_worker_init(LogThreadedDestDriver *d)
 {
   PythonDestDriver *self = (PythonDestDriver *)d;
 
@@ -388,26 +375,11 @@ python_dd_worker_init(LogThrDestDriver *d)
 }
 
 static void
-python_dd_worker_deinit(LogThrDestDriver *d)
-{
-  PythonDestDriver *self = (PythonDestDriver *)d;
-
-  python_dd_close(self);
-}
-
-static void
-python_dd_disconnect(LogThrDestDriver *d)
+python_dd_disconnect(LogThreadedDestDriver *d)
 {
   PythonDestDriver *self = (PythonDestDriver *) d;
 
   python_dd_close(self);
-}
-
-static void
-python_dd_over_message(LogThrDestDriver *s, LogMessage *msg)
-{
-  PythonDestDriver *self = (PythonDestDriver *)s;
-  python_dd_retry_error(self, msg);
 }
 
 static gboolean
@@ -424,7 +396,7 @@ python_dd_init(LogPipe *d)
       return FALSE;
     }
 
-  if (!log_dest_driver_init_method(d))
+  if (!log_threaded_dest_driver_init_method(d))
     return FALSE;
 
   log_template_options_init(&self->template_options, cfg);
@@ -432,7 +404,7 @@ python_dd_init(LogPipe *d)
 
   gstate = PyGILState_Ensure();
 
-  _py_perform_imports(self->imports);
+  _py_perform_imports(self->loaders);
   if (!_py_init_bindings(self) ||
       !_py_init_object(self))
     goto fail;
@@ -443,7 +415,7 @@ python_dd_init(LogPipe *d)
               evt_tag_str("driver", self->super.super.super.id),
               evt_tag_str("class", self->class));
 
-  return log_threaded_dest_driver_start(d);
+  return log_threaded_dest_driver_start_workers(&self->super);
 
 fail:
   PyGILState_Release(gstate);
@@ -482,6 +454,8 @@ python_dd_free(LogPipe *d)
   if (self->options)
     g_hash_table_unref(self->options);
 
+  string_list_free(self->loaders);
+
   log_threaded_dest_driver_free(d);
 }
 
@@ -498,14 +472,11 @@ python_dd_new(GlobalConfig *cfg)
   self->super.super.super.super.free_fn = python_dd_free;
   self->super.super.super.super.generate_persist_name = python_dd_format_persist_name;
 
-  self->super.messages.retry_over = python_dd_over_message;
-
   self->super.worker.thread_init = python_dd_worker_init;
-  self->super.worker.thread_deinit = python_dd_worker_deinit;
   self->super.worker.disconnect = python_dd_disconnect;
   self->super.worker.insert = python_dd_insert;
 
-  self->super.format.stats_instance = python_dd_format_stats_instance;
+  self->super.format_stats_instance = python_dd_format_stats_instance;
   self->super.stats_source = SCS_PYTHON;
 
   self->options = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_free);

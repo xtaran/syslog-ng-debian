@@ -18,6 +18,8 @@ include lib/scanner/csv-scanner/Makefile.am
 include lib/scanner/list-scanner/Makefile.am
 include lib/scanner/kv-scanner/Makefile.am
 include lib/str-repr/Makefile.am
+include lib/secret-storage/Makefile.am
+include lib/logthrsource/Makefile.am
 
 LSNG_RELEASE		= $(shell echo @PACKAGE_VERSION@ | cut -d. -f1,2)
 
@@ -40,13 +42,13 @@ LSNG_REVISION		= 0
 LSNG_AGE		= 0
 
 lib_LTLIBRARIES				+= lib/libsyslog-ng.la
-lib_libsyslog_ng_la_LIBADD		= @CORE_DEPS_LIBS@ $(libsystemd_LIBS)
+lib_libsyslog_ng_la_LIBADD		= @CORE_DEPS_LIBS@ $(libsystemd_LIBS) $(top_builddir)/lib/secret-storage/libsecret-storage.la
 lib_libsyslog_ng_la_LDFLAGS		= -no-undefined -release ${LSNG_RELEASE} \
 					  -version-info ${LSNG_CURRENT}:${LSNG_REVISION}:${LSNG_AGE}
 
 lib_test_subdirs			= lib_filter lib_logproto lib_parser lib_rewrite lib_template lib_stats lib_control
 
-lib_libsyslog_ng_la_DEPENDENCIES	= lib/eventlog/src/libevtlog.la
+lib_libsyslog_ng_la_DEPENDENCIES       = lib/eventlog/src/libevtlog.la lib/secret-storage/libsecret-storage.la
 
 if IVYKIS_INTERNAL
 lib_libsyslog_ng_la_DEPENDENCIES	+= lib/ivykis/src/libivykis.la
@@ -57,7 +59,8 @@ lib/ivykis/src/libivykis.la:
 CLEAN_SUBDIRS				+= @IVYKIS_SUBDIRS@
 
 EXTRA_DIST += \
-	lib/ivykis/configure.gnu
+	lib/ivykis/configure.gnu	\
+	lib/CMakeLists.txt
 
 install-ivykis:
 	${MAKE} -C lib/ivykis/src \
@@ -79,7 +82,7 @@ endif
 
 if JSON_INTERNAL
 lib/jsonc/libjson-c.la:
-	${MAKE} -C lib/jsonc
+	${MAKE} CFLAGS="${CFLAGS} -Wno-error" -C lib/jsonc
 
 CLEAN_SUBDIRS				+= @JSON_SUBDIRS@
 endif
@@ -90,6 +93,7 @@ pkginclude_HEADERS			+= \
 	lib/alarms.h			\
 	lib/apphook.h			\
 	lib/atomic.h			\
+	lib/atomic-gssize.h \
 	lib/block-ref-parser.h		\
 	lib/cache.h			\
 	lib/cfg.h			\
@@ -124,6 +128,7 @@ pkginclude_HEADERS			+= \
 	lib/logthrdestdrv.h		\
 	lib/logwriter.h			\
 	lib/mainloop.h			\
+	lib/signal-handler.h		\
 	lib/mainloop-call.h		\
 	lib/mainloop-worker.h		\
 	lib/mainloop-io-worker.h	\
@@ -154,6 +159,7 @@ pkginclude_HEADERS			+= \
 	lib/str-utils.h			\
 	lib/syslog-names.h		\
 	lib/syslog-ng.h			\
+	lib/misc.h                      \
 	lib/string-list.h		\
 	lib/timeutils.h			\
 	lib/tls-support.h		\
@@ -167,9 +173,11 @@ pkginclude_HEADERS			+= \
 	lib/bookmark.h			\
 	lib/ringbuffer.h		\
 	lib/ack_tracker.h		\
+	lib/late_ack_tracker.h \
 	lib/host-id.h			\
 	lib/resolved-configurable-paths.h \
-	lib/pe-versioning.h
+	lib/pe-versioning.h \
+	lib/window-size-counter.h
 
 # this is intentionally formatted so conflicts are less likely to arise. one name in every line.
 lib_libsyslog_ng_la_SOURCES		= \
@@ -209,6 +217,7 @@ lib_libsyslog_ng_la_SOURCES		= \
 	lib/logthrdestdrv.c		\
 	lib/logwriter.c			\
 	lib/mainloop.c			\
+	lib/signal-handler.c		\
 	lib/mainloop-call.c		\
 	lib/mainloop-worker.c		\
 	lib/mainloop-io-worker.c	\
@@ -248,6 +257,7 @@ lib_libsyslog_ng_la_SOURCES		= \
 	$(transport_crypto_sources)	\
 	lib/host-id.c			\
 	lib/resolved-configurable-paths.c \
+	lib/window-size-counter.c \
 					\
 	lib/cfg-lex.l			\
 	lib/cfg-grammar.y		\
@@ -268,7 +278,8 @@ lib_libsyslog_ng_la_SOURCES		= \
 	$(debugger_sources)		\
 	$(compat_sources)     		\
 	$(logmsg_sources)		\
-	$(str_repr_sources)
+	$(str_repr_sources)		\
+	$(logthrsource_sources)
 
 lib_libsyslog_ng_la_CFLAGS		= \
 	$(AM_CFLAGS) \

@@ -83,6 +83,20 @@ g_sockaddr_new(struct sockaddr *sa, int salen)
   return addr;
 }
 
+GSockAddr *
+g_sockaddr_new_from_peer_fd(gint fd)
+{
+  GSockAddr *result = NULL;
+  struct sockaddr_storage addr;
+  socklen_t len =  sizeof(addr);
+
+  if (getpeername(fd, (struct sockaddr *)&addr, &len) == 0)
+    {
+      result = g_sockaddr_new((struct sockaddr *)&addr, len);
+    }
+  return result;
+}
+
 /**
  * g_sockaddr_format:
  * @a        instance pointer of a GSockAddr
@@ -114,6 +128,42 @@ g_sockaddr_set_port(GSockAddr *a, guint16 port)
 {
   g_assert(a->sa_funcs->set_port != NULL);
   return a->sa_funcs->set_port(a, port);
+}
+
+guint8 *
+g_sockaddr_get_address(GSockAddr *self, guint8 *buffer, socklen_t buffer_size)
+{
+  if (self->sa.sa_family == AF_INET)
+    {
+      struct in_addr addr = g_sockaddr_inet_get_address(self);
+      socklen_t len = sizeof(addr);
+      if (buffer_size < len)
+        {
+          errno = EINVAL;
+          return NULL;
+        }
+      memcpy(buffer, &addr, len);
+      return buffer;
+    }
+#if SYSLOG_NG_ENABLE_IPV6
+  else if (self->sa.sa_family == AF_INET6)
+    {
+      struct in6_addr *addr = g_sockaddr_inet6_get_address(self);
+      socklen_t len = sizeof(struct in6_addr);
+      if (buffer_size < len)
+        {
+          errno = EINVAL;
+          return NULL;
+        }
+      memcpy(buffer, addr, len);
+      return buffer;
+    }
+#endif
+  else
+    {
+      errno = EAFNOSUPPORT;
+      return NULL;
+    }
 }
 
 /*+
@@ -505,7 +555,7 @@ g_sockaddr_unix_new(const gchar *name)
     {
       strncpy(addr->saun.sun_path, name, sizeof(addr->saun.sun_path) - 1);
       addr->saun.sun_path[sizeof(addr->saun.sun_path) - 1] = 0;
-      addr->salen = sizeof(addr->saun) - sizeof(addr->saun.sun_path) + strlen(addr->saun.sun_path) + 1;
+      addr->salen = SUN_LEN(&(addr->saun));
     }
   else
     {
@@ -518,7 +568,7 @@ g_sockaddr_unix_new(const gchar *name)
 /*+
 
   Allocate and initialize a GSockAddrUnix instance, using libc
-  sockaddr_un strucutre.
+  sockaddr_un structure.
 
   Parameters:
     saun        sockaddr_un structure to convert

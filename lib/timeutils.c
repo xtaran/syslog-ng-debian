@@ -347,16 +347,16 @@ timespec_add_msec(struct timespec *ts, glong msec)
 {
   ts->tv_sec += msec / 1000;
   msec = msec % 1000;
-  ts->tv_nsec += msec * 1e6;
+  ts->tv_nsec += (glong) (msec * 1e6);
   if (ts->tv_nsec > 1e9)
     {
-      ts->tv_nsec -= 1e9;
+      ts->tv_nsec -= (glong) 1e9;
       ts->tv_sec++;
     }
 }
 
 glong
-timspec_diff_msec(struct timespec *t1, struct timespec *t2)
+timespec_diff_msec(const struct timespec *t1, const struct timespec *t2)
 {
   return (t1->tv_sec - t2->tv_sec) * 1e3 + (t1->tv_nsec - t2->tv_nsec) / 1e6;
 }
@@ -364,7 +364,7 @@ timspec_diff_msec(struct timespec *t1, struct timespec *t2)
 glong
 timespec_diff_nsec(struct timespec *t1, struct timespec *t2)
 {
-  return (t1->tv_sec - t2->tv_sec) * 1e9 + (t1->tv_nsec - t2->tv_nsec);
+  return (glong)((t1->tv_sec - t2->tv_sec) * 1e9) + (t1->tv_nsec - t2->tv_nsec);
 }
 
 /* Determine (guess) the year for the month.

@@ -44,28 +44,46 @@ log_source_wakeup(LogSource *self)
   msg_debug("Source has been resumed", log_pipe_location_tag(&self->super));
 }
 
-static inline void
-_flow_control_window_size_adjust(LogSource *self, guint32 window_size_increment)
+void
+log_source_window_empty(LogSource *self)
 {
-  guint32 old_window_size;
+  if (self->window_empty_cb)
+    self->window_empty_cb(self);
+  msg_debug("LogSource window is empty");
+}
 
-  window_size_increment += g_atomic_counter_get(&self->suspended_window_size);
-  old_window_size = g_atomic_counter_exchange_and_add(&self->window_size, window_size_increment);
-  g_atomic_counter_set(&self->suspended_window_size, 0);
+static inline void
+_flow_control_window_size_adjust(LogSource *self, guint32 window_size_increment, gboolean last_ack_type_is_suspended)
+{
+  gboolean suspended;
+  gsize old_window_size = window_size_counter_add(&self->window_size, window_size_increment, &suspended);
 
-  if (old_window_size == 0)
+  msg_trace("Window size adjustment",
+            evt_tag_int("old_window_size", old_window_size),
+            evt_tag_int("window_size_increment", window_size_increment),
+            evt_tag_str("suspended_before_increment", suspended ? "TRUE" : "FALSE"),
+            evt_tag_str("last_ack_type_is_suspended", last_ack_type_is_suspended ? "TRUE" : "FALSE"));
+
+
+  gboolean need_to_resume_counter = !last_ack_type_is_suspended && suspended;
+  if (need_to_resume_counter)
+    window_size_counter_resume(&self->window_size);
+  if (old_window_size == 0 || need_to_resume_counter)
     log_source_wakeup(self);
+
+  if (old_window_size+window_size_increment == self->options->init_window_size)
+    log_source_window_empty(self);
 }
 
 static void
 _flow_control_rate_adjust(LogSource *self)
 {
+#ifdef SYSLOG_NG_HAVE_CLOCK_GETTIME
   guint32 cur_ack_count, last_ack_count;
   /* NOTE: this is racy. msg_ack may be executing in different writer
    * threads. I don't want to lock, all we need is an approximate value of
    * the ACK rate of the last couple of seconds.  */
 
-#ifdef SYSLOG_NG_HAVE_CLOCK_GETTIME
   if (accurate_nanosleep && self->threaded)
     {
       cur_ack_count = ++self->ack_count;
@@ -123,7 +141,14 @@ _flow_control_rate_adjust(LogSource *self)
 void
 log_source_flow_control_adjust(LogSource *self, guint32 window_size_increment)
 {
-  _flow_control_window_size_adjust(self, window_size_increment);
+  _flow_control_window_size_adjust(self, window_size_increment, FALSE);
+  _flow_control_rate_adjust(self);
+}
+
+void
+log_source_flow_control_adjust_when_suspended(LogSource *self, guint32 window_size_increment)
+{
+  _flow_control_window_size_adjust(self, window_size_increment, TRUE);
   _flow_control_rate_adjust(self);
 }
 
@@ -143,11 +168,11 @@ log_source_msg_ack(LogMessage *msg, AckType ack_type)
 void
 log_source_flow_control_suspend(LogSource *self)
 {
-  msg_debug("Source has been suspended", log_pipe_location_tag(&self->super));
+  msg_debug("Source has been suspended",
+            log_pipe_location_tag(&self->super),
+            evt_tag_str("function", __FUNCTION__));
 
-  g_atomic_counter_set(&self->suspended_window_size, g_atomic_counter_get(&self->window_size));
-  g_atomic_counter_set(&self->window_size, 0);
-  _flow_control_rate_adjust(self);
+  window_size_counter_suspend(&self->window_size);
 }
 
 void
@@ -218,6 +243,7 @@ log_source_init(LogPipe *s)
                          SC_TYPE_PROCESSED, &self->recvd_messages);
   stats_register_counter(self->options->stats_level, &sc_key, SC_TYPE_STAMP, &self->last_message_seen);
   stats_unlock();
+
   return TRUE;
 }
 
@@ -232,6 +258,7 @@ log_source_deinit(LogPipe *s)
   stats_unregister_counter(&sc_key, SC_TYPE_PROCESSED, &self->recvd_messages);
   stats_unregister_counter(&sc_key, SC_TYPE_STAMP, &self->last_message_seen);
   stats_unlock();
+
   return TRUE;
 }
 
@@ -249,10 +276,14 @@ log_source_post(LogSource *self, LogMessage *msg)
   log_msg_add_ack(msg, &path_options);
   msg->ack_func = log_source_msg_ack;
 
-  old_window_size = g_atomic_counter_exchange_and_add(&self->window_size, -1);
+  old_window_size = window_size_counter_sub(&self->window_size, 1, NULL);
 
   if (G_UNLIKELY(old_window_size == 1))
-    msg_debug("Source has been suspended", log_pipe_location_tag(&self->super));
+    {
+      msg_debug("Source has been suspended",
+                log_pipe_location_tag(&self->super),
+                evt_tag_str("function", __FUNCTION__));
+    }
 
   /*
    * NOTE: this assertion validates that the source is not overflowing its
@@ -287,11 +318,61 @@ _invoke_mangle_callbacks(LogPipe *s, LogMessage *msg, const LogPathOptions *path
   return TRUE;
 }
 
+static inline void
+_increment_dynamic_stats_counters(const gchar *source_id, const LogMessage *msg)
+{
+  if (stats_check_level(2))
+    {
+      stats_lock();
+
+      StatsClusterKey sc_key;
+      stats_cluster_logpipe_key_set(&sc_key, SCS_HOST | SCS_SOURCE, NULL, log_msg_get_value(msg, LM_V_HOST, NULL) );
+      stats_register_and_increment_dynamic_counter(2, &sc_key, msg->timestamps[LM_TS_RECVD].tv_sec);
+
+      if (stats_check_level(3))
+        {
+          stats_cluster_logpipe_key_set(&sc_key, SCS_SENDER | SCS_SOURCE, NULL, log_msg_get_value(msg, LM_V_HOST_FROM, NULL) );
+          stats_register_and_increment_dynamic_counter(3, &sc_key, msg->timestamps[LM_TS_RECVD].tv_sec);
+          stats_cluster_logpipe_key_set(&sc_key, SCS_PROGRAM | SCS_SOURCE, NULL, log_msg_get_value(msg, LM_V_PROGRAM, NULL) );
+          stats_register_and_increment_dynamic_counter(3, &sc_key, msg->timestamps[LM_TS_RECVD].tv_sec);
+
+          stats_cluster_logpipe_key_set(&sc_key, SCS_HOST | SCS_SOURCE, source_id, log_msg_get_value(msg, LM_V_HOST, NULL));
+          stats_register_and_increment_dynamic_counter(3, &sc_key, msg->timestamps[LM_TS_RECVD].tv_sec);
+          stats_cluster_logpipe_key_set(&sc_key, SCS_SENDER | SCS_SOURCE, source_id, log_msg_get_value(msg, LM_V_HOST_FROM,
+                                        NULL));
+          stats_register_and_increment_dynamic_counter(3, &sc_key, msg->timestamps[LM_TS_RECVD].tv_sec);
+        }
+
+      stats_unlock();
+    }
+}
+
 static void
-log_source_queue(LogPipe *s, LogMessage *msg, const LogPathOptions *path_options, gpointer user_data)
+log_source_override_host(LogSource *self, LogMessage *msg)
+{
+  if (self->options->host_override_len < 0)
+    self->options->host_override_len = strlen(self->options->host_override);
+  log_msg_set_value(msg, LM_V_HOST, self->options->host_override, self->options->host_override_len);
+}
+
+static void
+log_source_override_program(LogSource *self, LogMessage *msg)
+{
+  if (self->options->program_override_len < 0)
+    self->options->program_override_len = strlen(self->options->program_override);
+  log_msg_set_value(msg, LM_V_PROGRAM, self->options->program_override, self->options->program_override_len);
+}
+
+static void
+log_source_queue(LogPipe *s, LogMessage *msg, const LogPathOptions *path_options)
 {
   LogSource *self = (LogSource *) s;
   gint i;
+
+  msg_trace(">>>>>> Source side message processing begin",
+            evt_tag_str("instance", self->stats_instance ? self->stats_instance : "internal"),
+            log_pipe_location_tag(s),
+            evt_tag_printf("msg", "%p", msg));
 
   msg_set_context(msg);
 
@@ -302,22 +383,6 @@ log_source_queue(LogPipe *s, LogMessage *msg, const LogPathOptions *path_options
 
   /* $HOST setup */
   log_source_mangle_hostname(self, msg);
-
-  /* $PROGRAM override */
-  if (self->options->program_override)
-    {
-      if (self->options->program_override_len < 0)
-        self->options->program_override_len = strlen(self->options->program_override);
-      log_msg_set_value(msg, LM_V_PROGRAM, self->options->program_override, self->options->program_override_len);
-    }
-
-  /* $HOST override */
-  if (self->options->host_override)
-    {
-      if (self->options->host_override_len < 0)
-        self->options->host_override_len = strlen(self->options->host_override);
-      log_msg_set_value(msg, LM_V_HOST, self->options->host_override, self->options->host_override_len);
-    }
 
   /* source specific tags */
   if (self->options->tags)
@@ -330,31 +395,20 @@ log_source_queue(LogPipe *s, LogMessage *msg, const LogPathOptions *path_options
 
   log_msg_set_tag_by_id(msg, self->options->source_group_tag);
 
-  /* stats counters */
-  if (stats_check_level(2))
-    {
-      stats_lock();
-
-      StatsClusterKey sc_key;
-      stats_cluster_logpipe_key_set(&sc_key, SCS_HOST | SCS_SOURCE, NULL,  log_msg_get_value(msg, LM_V_HOST, NULL) );
-
-      stats_register_and_increment_dynamic_counter(2, &sc_key, msg->timestamps[LM_TS_RECVD].tv_sec);
-      if (stats_check_level(3))
-        {
-          stats_cluster_logpipe_key_set(&sc_key, SCS_SENDER | SCS_SOURCE, NULL, log_msg_get_value(msg, LM_V_HOST_FROM, NULL) );
-          stats_register_and_increment_dynamic_counter(3, &sc_key, msg->timestamps[LM_TS_RECVD].tv_sec);
-          stats_cluster_logpipe_key_set(&sc_key, SCS_PROGRAM | SCS_SOURCE, NULL, log_msg_get_value(msg, LM_V_PROGRAM, NULL) );
-          stats_register_and_increment_dynamic_counter(3, &sc_key, msg->timestamps[LM_TS_RECVD].tv_sec);
-        }
-
-      stats_unlock();
-    }
-  stats_syslog_process_message_pri(msg->pri);
-
-  /* message setup finished, send it out */
 
   if (!_invoke_mangle_callbacks(s, msg, path_options))
     return;
+
+  if (self->options->host_override)
+    log_source_override_host(self, msg);
+
+  if (self->options->program_override)
+    log_source_override_program(self, msg);
+
+  _increment_dynamic_stats_counters(self->stats_id, msg);
+  stats_syslog_process_message_pri(msg->pri);
+
+  /* message setup finished, send it out */
 
   stats_counter_inc(self->recvd_messages);
   stats_counter_set(self->last_message_seen, msg->timestamps[LM_TS_RECVD].tv_sec);
@@ -371,6 +425,10 @@ log_source_queue(LogPipe *s, LogMessage *msg, const LogPathOptions *path_options
       ts.tv_nsec = self->window_full_sleep_nsec;
       nanosleep(&ts, NULL);
     }
+  msg_trace("<<<<<< Source side message processing finish",
+            evt_tag_str("instance", self->stats_instance ? self->stats_instance : "internal"),
+            log_pipe_location_tag(s),
+            evt_tag_printf("msg", "%p", msg));
 
 }
 
@@ -395,8 +453,8 @@ log_source_set_options(LogSource *self, LogSourceOptions *options,
    * configuration and we received a SIGHUP.  This means that opened
    * connections will not have their window_size changed. */
 
-  if (g_atomic_counter_get(&self->window_size) == -1)
-    g_atomic_counter_set(&self->window_size, options->init_window_size);
+  if ((gint)window_size_counter_get(&self->window_size, NULL) == -1)
+    window_size_counter_set(&self->window_size, options->init_window_size);
   self->options = options;
   if (self->stats_id)
     g_free(self->stats_id);
@@ -406,7 +464,9 @@ log_source_set_options(LogSource *self, LogSourceOptions *options,
   self->stats_instance = stats_instance ? g_strdup(stats_instance): NULL;
   self->threaded = threaded;
   self->pos_tracked = pos_tracked;
-  self->super.expr_node = expr_node;
+  log_pipe_detach_expr_node(&self->super);
+  log_pipe_attach_expr_node(&self->super, expr_node);
+
   _create_ack_tracker_if_not_exists(self, pos_tracked);
 }
 
@@ -418,7 +478,7 @@ log_source_init_instance(LogSource *self, GlobalConfig *cfg)
   self->super.free_fn = log_source_free;
   self->super.init = log_source_init;
   self->super.deinit = log_source_deinit;
-  g_atomic_counter_set(&self->window_size, -1);
+  window_size_counter_set(&self->window_size, (gsize)-1);
   self->ack_tracker = NULL;
 }
 
@@ -429,6 +489,7 @@ log_source_free(LogPipe *s)
 
   g_free(self->stats_id);
   g_free(self->stats_instance);
+  log_pipe_detach_expr_node(&self->super);
   log_pipe_free_method(s);
 
   ack_tracker_free(self->ack_tracker);

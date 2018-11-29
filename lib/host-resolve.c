@@ -144,6 +144,7 @@ resolve_hostname_to_sockaddr_using_getaddrinfo(GSockAddr **addr, gint family, co
   hints.ai_family = family;
   hints.ai_socktype = 0;
   hints.ai_protocol = 0;
+  hints.ai_flags = AI_V4MAPPED | AI_ADDRCONFIG;
 
   if (getaddrinfo(name, NULL, &hints, &res) == 0)
     {
@@ -291,9 +292,15 @@ sockaddr_to_dnscache_key(GSockAddr *saddr)
   if (saddr->sa.sa_family == AF_INET)
     return &((struct sockaddr_in *) &saddr->sa)->sin_addr;
 #if SYSLOG_NG_ENABLE_IPV6
-  else
+  else if (saddr->sa.sa_family == AF_INET6)
     return &((struct sockaddr_in6 *) &saddr->sa)->sin6_addr;
 #endif
+  else
+    {
+      msg_warning("Socket address is neither IPv4 nor IPv6",
+                  evt_tag_int("sa_family", saddr->sa.sa_family));
+      return NULL;
+    }
 }
 
 static const gchar *
@@ -388,6 +395,14 @@ host_resolve_options_global_defaults(HostResolveOptions *options)
 static void
 _init_options(HostResolveOptions *options)
 {
+  if (options->use_dns == 0)
+    {
+      if (options->use_dns_cache != 0)
+        {
+          msg_warning("WARNING: With use-dns(no), dns-cache() will be forced to 'no' too!");
+        }
+      options->use_dns_cache = 0;
+    }
 }
 
 void

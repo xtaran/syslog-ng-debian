@@ -60,6 +60,7 @@ LogProtoFileReaderOptions *last_log_proto_options;
 
 /* INCLUDE_DECLS */
 
+%token KW_FILE
 %token KW_PIPE
 
 %token KW_FSYNC
@@ -81,7 +82,6 @@ LogProtoFileReaderOptions *last_log_proto_options;
 %type	<ptr> source_affile
 %type	<ptr> source_affile_params
 %type	<ptr> source_afpipe_params
-%type   <ptr> source_wildcard_params
 %type	<ptr> source_stdin_params
 %type   <ptr> dest_affile
 %type	<ptr> dest_affile_params
@@ -153,6 +153,7 @@ source_affile_option
 	| multi_line_option
 	| file_perm_option
         | source_reader_option
+	| source_driver_option
         ;
 
 source_wildcard_option
@@ -191,6 +192,7 @@ source_afpipe_option
 	| multi_line_option
 	| file_perm_option
 	| source_reader_option
+	| source_driver_option
 	;
 
 /* NOTE: don't copy this to other drivers blindly, but make it general and

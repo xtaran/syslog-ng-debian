@@ -150,7 +150,7 @@ _move_message_from_qbacklog_to_qreliable(LogQueueDiskReliable *self)
   g_queue_push_head(self->qreliable, ptr_msg);
   g_queue_push_head(self->qreliable, ptr_pos);
 
-  stats_counter_add(self->super.super.memory_usage, log_msg_get_size(ptr_msg));
+  log_queue_memory_usage_add(&self->super.super, log_msg_get_size(ptr_msg));
 }
 
 static void
@@ -188,7 +188,7 @@ _rewind_backlog(LogQueueDisk *s, guint rewind_count)
   qdisk_set_reader_head (self->super.qdisk, new_read_head);
   qdisk_set_length (self->super.qdisk, qdisk_get_length (self->super.qdisk) + rewind_count);
 
-  stats_counter_add (self->super.super.queued_messages, rewind_count);
+  log_queue_queued_messages_add(&self->super.super, rewind_count);
 }
 
 static LogMessage *
@@ -203,7 +203,7 @@ _pop_head(LogQueueDisk *s, LogPathOptions *path_options)
       if (pos == qdisk_get_reader_head (self->super.qdisk))
         {
           msg = g_queue_pop_head (self->qreliable);
-          stats_counter_sub(self->super.super.memory_usage, log_msg_get_size(msg));
+          log_queue_memory_usage_sub(&self->super.super, log_msg_get_size(msg));
 
           POINTER_TO_LOG_PATH_OPTIONS (g_queue_pop_head (self->qreliable), path_options);
           _skip_message (s);
@@ -260,25 +260,16 @@ _push_tail(LogQueueDisk *s, LogMessage *msg, LogPathOptions *local_options, cons
       /* we were not able to store the msg, warn */
       msg_error("Destination reliable queue full, dropping message",
                 evt_tag_str("filename", qdisk_get_filename (self->super.qdisk)),
-                evt_tag_int("queue_len", _get_length(s)),
+                evt_tag_long("queue_len", _get_length(s)),
                 evt_tag_int("mem_buf_size", qdisk_get_memory_size (self->super.qdisk)),
-                evt_tag_int("disk_buf_size", qdisk_get_size (self->super.qdisk)),
+                evt_tag_long("disk_buf_size", qdisk_get_size (self->super.qdisk)),
                 evt_tag_str("persist_name", self->super.super.persist_name));
 
       return FALSE;
     }
 
   /* check the remaining space: if it is less than the mem_buf_size, the message cannot be acked */
-  gint64 wpos = qdisk_get_writer_head (self->super.qdisk);
-  gint64 bpos = qdisk_get_backlog_head (self->super.qdisk);
-  gint64 diff;
-  if (wpos > bpos)
-    diff = qdisk_get_size (self->super.qdisk) - wpos + bpos - QDISK_RESERVED_SPACE;
-  else
-    diff = bpos - wpos;
-  gboolean overflow = diff < qdisk_get_memory_size (self->super.qdisk);
-
-  if (overflow)
+  if (qdisk_get_empty_space(self->super.qdisk) < qdisk_get_memory_size (self->super.qdisk))
     {
       /* we have reached the reserved buffer size, keep the msg in memory
        * the message is written but into the overflow area
@@ -290,7 +281,7 @@ _push_tail(LogQueueDisk *s, LogMessage *msg, LogPathOptions *local_options, cons
       g_queue_push_tail (self->qreliable, LOG_PATH_OPTIONS_TO_POINTER(path_options));
       log_msg_ref (msg);
 
-      stats_counter_add(self->super.super.memory_usage, log_msg_get_size(msg));
+      log_queue_memory_usage_add(&self->super.super, log_msg_get_size(msg));
       local_options->ack_needed = FALSE;
     }
 

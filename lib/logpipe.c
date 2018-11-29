@@ -34,6 +34,20 @@ log_pipe_location_tag(LogPipe *pipe)
 }
 
 void
+log_pipe_attach_expr_node(LogPipe *self, LogExprNode *expr_node)
+{
+  self->expr_node = log_expr_node_ref(expr_node);
+}
+
+void log_pipe_detach_expr_node(LogPipe *self)
+{
+  if (!self->expr_node)
+    return;
+  log_expr_node_unref(self->expr_node);
+  self->expr_node = NULL;
+}
+
+void
 log_pipe_init_instance(LogPipe *self, GlobalConfig *cfg)
 {
   g_atomic_counter_set(&self->ref_cnt, 1);
@@ -83,6 +97,7 @@ _free(LogPipe *self)
 {
   if (self->free_fn)
     self->free_fn(self);
+  g_free((gpointer)self->persist_name);
   g_free(self->plugin_name);
   g_free(self);
 }
@@ -108,7 +123,7 @@ void
 log_pipe_set_persist_name(LogPipe *self, const gchar *persist_name)
 {
   g_free((gpointer)self->persist_name);
-  self->persist_name = persist_name;
+  self->persist_name = g_strdup(persist_name);
 }
 
 const gchar *

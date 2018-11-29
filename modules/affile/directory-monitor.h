@@ -25,25 +25,29 @@
 #include <syslog-ng.h>
 #include <iv.h>
 
-typedef enum {
+typedef enum
+{
   FILE_CREATED,
   DIRECTORY_CREATED,
-  DELETED,
+  FILE_DELETED,
+  DIRECTORY_DELETED,
   UNKNOWN
 } DirectoryMonitorEventType;
 
-typedef struct _DirectoryMonitorEvent {
+typedef struct _DirectoryMonitorEvent
+{
   const gchar *name;
   gchar *full_path;
   DirectoryMonitorEventType event_type;
 } DirectoryMonitorEvent;
 
 typedef  void (*DirectoryMonitorEventCallback)(const DirectoryMonitorEvent *event,
-                                        gpointer user_data);
+                                               gpointer user_data);
 
 typedef struct _DirectoryMonitor DirectoryMonitor;
 
-struct _DirectoryMonitor {
+struct _DirectoryMonitor
+{
   gchar *dir;
   gchar *real_path;
   DirectoryMonitorEventCallback callback;
@@ -51,6 +55,7 @@ struct _DirectoryMonitor {
 
   guint recheck_time;
   struct iv_timer check_timer;
+  struct iv_task scheduled_destructor;
 
   gboolean watches_running;
   void (*start_watches)(DirectoryMonitor *self);
@@ -58,13 +63,16 @@ struct _DirectoryMonitor {
   void (*free_fn)(DirectoryMonitor *self);
 };
 
-DirectoryMonitor* directory_monitor_new(const gchar *dir, guint recheck_time);
+DirectoryMonitor *directory_monitor_new(const gchar *dir, guint recheck_time);
 void directory_monitor_init_instance(DirectoryMonitor *self, const gchar *dir, guint recheck_time);
 void directory_monitor_free(DirectoryMonitor *self);
 void directory_monitor_set_callback(DirectoryMonitor *self, DirectoryMonitorEventCallback callback, gpointer user_data);
 
 void directory_monitor_start(DirectoryMonitor *self);
 void directory_monitor_stop(DirectoryMonitor *self);
+
+void directory_monitor_stop_and_destroy(DirectoryMonitor *self);
+void directory_monitor_schedule_destroy(DirectoryMonitor *self);
 
 gchar *build_filename(const gchar *basedir, const gchar *path);
 

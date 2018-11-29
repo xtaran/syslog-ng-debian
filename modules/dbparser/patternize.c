@@ -70,7 +70,7 @@ ptz_str2hash(gchar *string, guint modulo, guint seed)
 }
 
 gchar *
-ptz_find_delimiters(gchar *str, gchar *delimdef)
+ptz_find_delimiters(gchar *str, const gchar *delimdef)
 {
   gchar *remainder;
   GString *delimiters = g_string_sized_new(32);
@@ -96,7 +96,7 @@ ptz_find_frequent_words_remove_key_predicate(gpointer key, gpointer value, gpoin
 }
 
 GHashTable *
-ptz_find_frequent_words(GPtrArray *logs, guint support, gchar *delimiters, gboolean two_pass)
+ptz_find_frequent_words(GPtrArray *logs, guint support, const gchar *delimiters, gboolean two_pass)
 {
   int i, j, pass;
   guint *curr_count;
@@ -230,7 +230,7 @@ cluster_free(Cluster *cluster)
 }
 
 GHashTable *
-ptz_find_clusters_slct(GPtrArray *logs, guint support, gchar *delimiters, guint num_of_samples)
+ptz_find_clusters_slct(GPtrArray *logs, guint support, const gchar *delimiters, guint num_of_samples)
 {
   GHashTable *wordlist;
   GHashTable *clusters;
@@ -346,12 +346,14 @@ ptz_merge_clusterlists(gpointer _key, gpointer _value, gpointer _target)
 GHashTable *
 ptz_find_clusters_step(Patternizer *self, GPtrArray *logs, guint support, guint num_of_samples)
 {
-  msg_progress("Searching clusters", evt_tag_int("input lines", logs->len));
+  msg_progress("Searching clusters",
+               evt_tag_int("input_lines", logs->len));
   if (self->algo == PTZ_ALGO_SLCT)
     return ptz_find_clusters_slct(logs, support, self->delimiters, num_of_samples);
   else
     {
-      msg_error("Unknown clustering algorithm", evt_tag_int("algo_id", self->algo));
+      msg_error("Unknown clustering algorithm",
+                evt_tag_int("algo_id", self->algo));
       return NULL;
     }
 }
@@ -405,7 +407,7 @@ ptz_find_clusters(Patternizer *self)
                   g_ptr_array_add(curr_logs, msg);
                 }
             }
-          curr_support = curr_logs->len * (self->support_treshold / 100.0);
+          curr_support = (guint) (curr_logs->len * (self->support_treshold / 100.0));
 
           if (prev_logs != self->logs)
             {
@@ -422,7 +424,8 @@ ptz_find_clusters(Patternizer *self)
       return ret_clusters;
     }
 
-  msg_error("Invalid iteration type", evt_tag_int("iteration_type", self->iterate));
+  msg_error("Invalid iteration type",
+            evt_tag_int("iteration_type", self->iterate));
   return NULL;
 
 }
@@ -550,7 +553,7 @@ ptz_print_patterndb_rule(gpointer key, gpointer value, gpointer user_data)
 }
 
 void
-ptz_print_patterndb(GHashTable *clusters, gchar *delimiters, gboolean named_parsers)
+ptz_print_patterndb(GHashTable *clusters, const gchar *delimiters, gboolean named_parsers)
 {
   char date[12], uuid_string[37];
   time_t currtime;
@@ -618,13 +621,13 @@ ptz_load_file(Patternizer *self, gchar *input_file, gboolean no_parse, GError **
       g_ptr_array_add(self->logs, msg);
     }
 
-  self->support = (self->logs->len * (self->support_treshold / 100.0));
+  self->support = (guint)(self->logs->len * (self->support_treshold / 100.0));
   msg_format_options_destroy(&parse_options);
   return TRUE;
 }
 
 Patternizer *
-ptz_new(gdouble support_treshold, guint algo, guint iterate, guint num_of_samples, gchar *delimiters)
+ptz_new(gdouble support_treshold, guint algo, guint iterate, guint num_of_samples, const gchar *delimiters)
 {
   Patternizer *self = g_new0(Patternizer, 1);
 

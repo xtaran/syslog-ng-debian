@@ -26,7 +26,22 @@
 
 #include <Python.h>
 #include "syslog-ng.h"
+#include "logstamp.h"
 
-gboolean py_is_string(PyObject *object);
-const gchar *py_object_as_string(PyObject *object);
+#if (SYSLOG_NG_ENABLE_PYTHONv2)
+#define PYTHON_BUILTIN_MODULE_NAME "__builtin__"
+#define PYTHON_MODULE_VERSION "python2"
+#endif
+
+#if (SYSLOG_NG_ENABLE_PYTHONv3)
+#define PYTHON_BUILTIN_MODULE_NAME "builtins"
+#define PYTHON_MODULE_VERSION "python3"
+#endif
+
+void py_init_argv(void);
+PyObject *int_as_pyobject(gint num);
+
+void py_datetime_init(void);
+gboolean py_datetime_to_logstamp(PyObject *py_timestamp, LogStamp *logstamp);
+
 #endif

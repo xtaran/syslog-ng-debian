@@ -184,7 +184,8 @@ _reader_open_file(LogPipe *s, gboolean recover_state)
   file_opened = file_opener_open_fd(self->opener, self->filename->str, AFFILE_DIR_READ, &fd);
   if (!file_opened && self->options->follow_freq > 0)
     {
-      msg_info("Follow-mode file source not found, deferring open", evt_tag_str("filename", self->filename->str));
+      msg_info("Follow-mode file source not found, deferring open",
+               evt_tag_str("filename", self->filename->str));
       open_deferred = TRUE;
       fd = -1;
     }
@@ -207,7 +208,8 @@ _reader_open_file(LogPipe *s, gboolean recover_state)
       _setup_logreader(s, poll_events, proto, check_immediately);
       if (!log_pipe_init((LogPipe *) self->reader))
         {
-          msg_error("Error initializing log_reader, closing fd", evt_tag_int("fd", fd));
+          msg_error("Error initializing log_reader, closing fd",
+                    evt_tag_int("fd", fd));
           log_pipe_unref((LogPipe *) self->reader);
           self->reader = NULL;
           close(fd);
@@ -220,7 +222,7 @@ _reader_open_file(LogPipe *s, gboolean recover_state)
     {
       msg_error("Error opening file for reading",
                 evt_tag_str("filename", self->filename->str),
-                evt_tag_errno(EVT_TAG_OSERROR, errno));
+                evt_tag_error(EVT_TAG_OSERROR));
       return self->owner->super.optional;
     }
   return TRUE;
@@ -237,8 +239,8 @@ _reopen_on_notify(LogPipe *s, gboolean recover_state)
 }
 
 /* NOTE: runs in the main thread */
-static void
-_notify(LogPipe *s, gint notify_code, gpointer user_data)
+void
+file_reader_notify_method(LogPipe *s, gint notify_code, gpointer user_data)
 {
   FileReader *self = (FileReader *) s;
 
@@ -266,8 +268,8 @@ _notify(LogPipe *s, gint notify_code, gpointer user_data)
     }
 }
 
-static void
-_queue(LogPipe *s, LogMessage *msg, const LogPathOptions *path_options, gpointer user_data)
+void
+file_reader_queue_method(LogPipe *s, LogMessage *msg, const LogPathOptions *path_options)
 {
   FileReader *self = (FileReader *)s;
   static NVHandle filename_handle = 0;
@@ -279,14 +281,14 @@ _queue(LogPipe *s, LogMessage *msg, const LogPathOptions *path_options, gpointer
   log_pipe_forward_msg(s, msg, path_options);
 }
 
-static gboolean
-_init(LogPipe *s)
+gboolean
+file_reader_init_method(LogPipe *s)
 {
   return _reader_open_file(s, TRUE);
 }
 
-static gboolean
-_deinit(LogPipe *s)
+gboolean
+file_reader_deinit_method(LogPipe *s)
 {
   FileReader *self = (FileReader *)s;
   if (self->reader)
@@ -294,13 +296,12 @@ _deinit(LogPipe *s)
   return TRUE;
 }
 
-static void
-_free(LogPipe *s)
+void
+file_reader_free_method(LogPipe *s)
 {
   FileReader *self = (FileReader *) s;
 
   g_assert(!self->reader);
-
   g_string_free(self->filename, TRUE);
 }
 
@@ -310,8 +311,36 @@ file_reader_remove_persist_state(FileReader *self)
   GlobalConfig *cfg = log_pipe_get_config(&self->super);
   const gchar *old_persist_name = _format_persist_name(&self->super);
   gchar *new_persist_name = g_strdup_printf("%s_REMOVED", old_persist_name);
+  /* This is required to clean the persist entry from file during restart */
+  persist_state_remove_entry(cfg->state, old_persist_name);
+  /* This is required to clean the runtime persist state */
   persist_state_rename_entry(cfg->state, old_persist_name, new_persist_name);
   g_free(new_persist_name);
+}
+
+void
+file_reader_stop_follow_file(FileReader *self)
+{
+  log_reader_close_proto(self->reader);
+}
+
+void
+file_reader_init_instance (FileReader *self, const gchar *filename,
+                           FileReaderOptions *options, FileOpener *opener,
+                           LogSrcDriver *owner, GlobalConfig *cfg)
+{
+  log_pipe_init_instance (&self->super, cfg);
+  self->super.init = file_reader_init_method;
+  self->super.queue = file_reader_queue_method;
+  self->super.deinit = file_reader_deinit_method;
+  self->super.notify = file_reader_notify_method;
+  self->super.free_fn = file_reader_free_method;
+  self->super.generate_persist_name = _format_persist_name;
+  self->filename = g_string_new (filename);
+  self->options = options;
+  self->opener = opener;
+  self->owner = owner;
+  self->super.expr_node = owner->super.super.expr_node;
 }
 
 FileReader *
@@ -320,18 +349,7 @@ file_reader_new(const gchar *filename, FileReaderOptions *options, FileOpener *o
 {
   FileReader *self = g_new0(FileReader, 1);
 
-  log_pipe_init_instance(&self->super, cfg);
-  self->super.init = _init;
-  self->super.queue = _queue;
-  self->super.deinit = _deinit;
-  self->super.notify = _notify;
-  self->super.free_fn = _free;
-  self->super.generate_persist_name = _format_persist_name;
-
-  self->filename = g_string_new(filename);
-  self->options = options;
-  self->opener = opener;
-  self->owner = owner;
+  file_reader_init_instance (self, filename, options, opener, owner, cfg);
   return self;
 }
 

@@ -90,11 +90,11 @@ evt_tag_int(const char *tag, int value)
 }
 
 EVTTAG *
-evt_tag_long(const char *tag, long value)
+evt_tag_long(const char *tag, long long value)
 {
   char buf[32]; /* a 64 bit int fits into 20 characters */
 
-  snprintf(buf, sizeof(buf), "%ld", value);
+  snprintf(buf, sizeof(buf), "%lld", value);
   return evt_tag_str(tag, buf);
 }
 
@@ -116,5 +116,30 @@ evt_tag_printf(const char *tag, const char *format, ...)
   va_start(ap, format);
   vsnprintf(buf, sizeof(buf), format, ap);
   va_end(ap);
+  return evt_tag_str(tag, buf);
+}
+
+EVTTAG *
+evt_tag_inaddr(const char *tag, const struct in_addr *addr)
+{
+  char buf[64];
+
+  if (addr)
+    inet_ntop(AF_INET, addr, buf, sizeof(buf));
+  else
+    strncpy(buf, "none", sizeof(buf));
+
+  return evt_tag_str(tag, buf);
+}
+
+EVTTAG *
+evt_tag_inaddr6(const char *tag, const struct in6_addr *addr)
+{
+  char buf[128];
+
+  if (addr)
+    inet_ntop(AF_INET6, addr, buf, sizeof(buf));
+  else
+    strncpy(buf, "none", sizeof(buf));
   return evt_tag_str(tag, buf);
 }

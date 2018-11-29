@@ -40,7 +40,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-const QueueType log_queue_disk_type = "DISK";
+QueueType log_queue_disk_type = "DISK";
 
 static gint64
 _get_length(LogQueue *s)
@@ -66,7 +66,7 @@ _push_tail(LogQueue *s, LogMessage *msg, const LogPathOptions *path_options)
       if (self->push_tail(self, msg, &local_options, path_options))
         {
           log_queue_push_notify (&self->super);
-          stats_counter_inc(self->super.queued_messages);
+          log_queue_queued_messages_inc(&self->super);
           log_msg_ack(msg, &local_options, AT_PROCESSED);
           log_msg_unref(msg);
           g_static_mutex_unlock(&self->super.lock);
@@ -110,7 +110,7 @@ _pop_head(LogQueue *s, LogPathOptions *path_options)
     }
   if (msg != NULL)
     {
-      stats_counter_dec(self->super.queued_messages);
+      log_queue_queued_messages_dec(&self->super);
     }
   g_static_mutex_unlock(&self->super.lock);
   return msg;
@@ -246,7 +246,8 @@ _pop_disk(LogQueueDisk *self, LogMessage **msg)
       serialize_archive_free(sa);
       log_msg_unref(*msg);
       *msg = NULL;
-      msg_error("Can't read correct message from disk-queue file",evt_tag_str("filename",qdisk_get_filename(self->qdisk)));
+      msg_error("Can't read correct message from disk-queue file",
+                evt_tag_str("filename", qdisk_get_filename(self->qdisk)));
       return TRUE;
     }
 
@@ -269,7 +270,7 @@ _read_message(LogQueueDisk *self, LogPathOptions *path_options)
       if (!_pop_disk (self, &msg))
         {
           msg_error("Error reading from disk-queue file, dropping disk queue",
-                    evt_tag_str ("filename", qdisk_get_filename (self->qdisk)));
+                    evt_tag_str("filename", qdisk_get_filename(self->qdisk)));
           self->restart_corrupted(self);
           if (msg)
             log_msg_unref (msg);
@@ -304,6 +305,8 @@ _restart_diskq(LogQueueDisk *self, gboolean corrupted)
 {
   gchar *filename = g_strdup(qdisk_get_filename(self->qdisk));
   gchar *new_file = NULL;
+  DiskQueueOptions *options = qdisk_get_options(self->qdisk);
+
   qdisk_deinit(self->qdisk);
   if (corrupted)
     {
@@ -311,6 +314,7 @@ _restart_diskq(LogQueueDisk *self, gboolean corrupted)
       rename(filename,new_file);
       g_free(new_file);
     }
+  qdisk_init(self->qdisk, options);
   if (self->start)
     {
       self->start(self, filename);

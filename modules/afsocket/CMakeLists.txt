@@ -13,6 +13,8 @@ set(AFSOCKET_SOURCES
     afinet.h
     afinet-source.c
     afinet-source.h
+    afinet-dest-failover.c
+    afinet-dest-failover.h
     afinet-dest.c
     afinet-dest.h
     socket-options-inet.c
@@ -40,8 +42,6 @@ set(AFSOCKET_SOURCES
     ${CMAKE_CURRENT_BINARY_DIR}/afsocket-grammar.h
 )
 
-check_struct_member ("struct msghdr" "msg_control" "sys/types.h;sys/socket.h" SYSLOG_NG_HAVE_CTRLBUF_IN_MSGHDR)
-
 generate_y_from_ym(modules/afsocket/afsocket-grammar)
 
 bison_target(AFSocketGrammar
@@ -53,14 +53,18 @@ find_package(ZLIB REQUIRED)
 find_package(OpenSSL REQUIRED)
 find_package(systemd)
 
-include_directories (${CMAKE_CURRENT_BINARY_DIR})
-include_directories (${CMAKE_CURRENT_SOURCE_DIR})
-add_library(afsocket MODULE ${AFSOCKET_SOURCES})
-target_link_libraries(afsocket PUBLIC ${WRAP_LIBRARIES} ${ZLIB_LIBRARIES} ${OPENSSL_LIBRARIES} ${LIBNET_LIBRARIES} ${Libsystemd_LIBRARIES})
-target_link_libraries(afsocket PUBLIC syslog-ng)
+add_library(afsocket SHARED ${AFSOCKET_SOURCES})
+target_include_directories(afsocket
+  PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
+  PRIVATE ${CMAKE_CURRENT_BINARY_DIR}
+)
+target_link_libraries(afsocket PRIVATE ${WRAP_LIBRARIES} ${ZLIB_LIBRARIES} ${OPENSSL_LIBRARIES} ${LIBNET_LIBRARIES} ${Libsystemd_LIBRARIES})
+target_link_libraries(afsocket PRIVATE syslog-ng)
 target_include_directories(afsocket PRIVATE SYSTEM ${ZLIB_INCLUDE_DIRS})
 target_include_directories(afsocket PRIVATE SYSTEM ${WRAP_INCLUDE_DIRS})
 target_include_directories(afsocket PRIVATE SYSTEM ${Libsystemd_INCLUDE_DIRS})
 target_compile_definitions(afsocket PRIVATE ${LIBNET_DEFINES})
 
 install(TARGETS afsocket LIBRARY DESTINATION lib/syslog-ng/ COMPONENT afsocket)
+
+add_test_subdirectory(tests)

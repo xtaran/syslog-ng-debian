@@ -23,11 +23,29 @@
  */
 
 #include "cfg-block-generator.h"
+#include "cfg-lexer.h"
+
+const gchar *
+cfg_block_generator_format_name_method(CfgBlockGenerator *self, gchar *buf, gsize buf_len)
+{
+  g_snprintf(buf, buf_len, "%s generator %s",
+             cfg_lexer_lookup_context_name_by_type(self->context),
+             self->name);
+  return buf;
+}
 
 gboolean
-cfg_block_generator_generate(CfgBlockGenerator *self, GlobalConfig *cfg, CfgArgs *args, GString *result)
+cfg_block_generator_generate(CfgBlockGenerator *self, GlobalConfig *cfg, CfgArgs *args, GString *result,
+                             const gchar *reference)
 {
-  return self->generate(self, cfg, args, result);
+  gchar block_name[1024];
+  cfg_block_generator_format_name(self, block_name, sizeof(block_name)/sizeof(block_name[0]));
+
+  g_string_append_printf(result, "\n#Start Block %s\n", block_name);
+  const gboolean res = self->generate(self, cfg, args, result, reference);
+  g_string_append_printf(result, "\n#End Block %s\n", block_name);
+
+  return res;
 }
 
 void
@@ -35,6 +53,7 @@ cfg_block_generator_init_instance(CfgBlockGenerator *self, gint context, const g
 {
   self->context = context;
   self->name = g_strdup(name);
+  self->format_name = cfg_block_generator_format_name_method;
   self->free_fn = cfg_block_generator_free_instance;
 }
 

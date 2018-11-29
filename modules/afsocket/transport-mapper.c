@@ -39,8 +39,8 @@ transport_mapper_privileged_bind(gint sock, GSockAddr *bind_addr)
   GIOStatus status;
 
   saved_caps = g_process_cap_save();
-  g_process_cap_modify(CAP_NET_BIND_SERVICE, TRUE);
-  g_process_cap_modify(CAP_DAC_OVERRIDE, TRUE);
+  g_process_enable_cap("cap_net_bind_service");
+  g_process_enable_cap("cap_dac_override");
 
   status = g_bind(sock, bind_addr);
 
@@ -61,7 +61,7 @@ transport_mapper_open_socket(TransportMapper *self,
   if (sock < 0)
     {
       msg_error("Error creating socket",
-                evt_tag_errno(EVT_TAG_OSERROR, errno));
+                evt_tag_error(EVT_TAG_OSERROR));
       goto error;
     }
 
@@ -77,7 +77,7 @@ transport_mapper_open_socket(TransportMapper *self,
 
       msg_error("Error binding socket",
                 evt_tag_str("addr", g_sockaddr_format(bind_addr, buf, sizeof(buf), GSA_FULL)),
-                evt_tag_errno(EVT_TAG_OSERROR, errno));
+                evt_tag_error(EVT_TAG_OSERROR));
       goto error_close;
     }
 

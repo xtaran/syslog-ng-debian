@@ -44,11 +44,20 @@ struct _CfgBlockGenerator
   gint context;
   gchar *name;
   gboolean suppress_backticks;
-  gboolean (*generate)(CfgBlockGenerator *self, GlobalConfig *cfg, CfgArgs *args, GString *result);
+  const gchar *(*format_name)(CfgBlockGenerator *self, gchar *buf, gsize buf_len);
+  gboolean (*generate)(CfgBlockGenerator *self, GlobalConfig *cfg, CfgArgs *args, GString *result,
+                       const gchar *reference);
   void (*free_fn)(CfgBlockGenerator *self);
 };
 
-gboolean cfg_block_generator_generate(CfgBlockGenerator *self, GlobalConfig *cfg, CfgArgs *args, GString *result);
+static inline const gchar *
+cfg_block_generator_format_name(CfgBlockGenerator *self, gchar *buf, gsize buf_len)
+{
+  return self->format_name(self, buf, buf_len);
+}
+
+gboolean cfg_block_generator_generate(CfgBlockGenerator *self, GlobalConfig *cfg, CfgArgs *args, GString *result,
+                                      const gchar *reference);
 void cfg_block_generator_init_instance(CfgBlockGenerator *self, gint context, const gchar *name);
 void cfg_block_generator_free_instance(CfgBlockGenerator *self);
 void cfg_block_generator_free(CfgBlockGenerator *self);

@@ -27,7 +27,7 @@
 #include "syslog-ng.h"
 #include "thread-utils.h"
 
-volatile gint main_loop_workers_running;
+extern volatile gint main_loop_workers_running;
 
 typedef struct _MainLoop MainLoop;
 
@@ -40,8 +40,8 @@ typedef struct _MainLoopOptions
 } MainLoopOptions;
 
 extern ThreadId main_thread_handle;
-extern GCond thread_halt_cond;
-extern GMutex workers_running_lock;
+extern GCond *thread_halt_cond;
+extern GStaticMutex workers_running_lock;
 
 typedef gpointer (*MainLoopTaskFunc)(gpointer user_data);
 
@@ -60,12 +60,14 @@ main_loop_is_main_thread(void)
 }
 
 void main_loop_reload_config(MainLoop *self);
+void main_loop_verify_config(GString *result, MainLoop *self);
 void main_loop_exit(MainLoop *self);
 
 int main_loop_read_and_init_config(MainLoop *self);
 void main_loop_run(MainLoop *self);
 
 MainLoop *main_loop_get_instance(void);
+GlobalConfig *main_loop_get_current_config(MainLoop *self);
 void main_loop_init(MainLoop *self, MainLoopOptions *options);
 void main_loop_deinit(MainLoop *self);
 
@@ -74,6 +76,9 @@ gboolean main_loop_is_server_mode(MainLoop *self);
 void main_loop_set_server_mode(MainLoop *self, gboolean server_mode);
 
 gboolean main_loop_initialize_state(GlobalConfig *cfg, const gchar *persist_filename);
+
+void main_loop_thread_resource_init(void);
+void main_loop_thread_resource_deinit(void);
 
 
 #endif

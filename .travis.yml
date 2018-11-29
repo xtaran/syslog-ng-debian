@@ -10,8 +10,8 @@ cache:
   apt: true
 
 install:
-  - curl -4 http://download.opensuse.org/repositories/home:/laszlo_budai:/syslog-ng/xUbuntu_12.04/Release.key | sudo apt-key add -
-  - echo "deb http://download.opensuse.org/repositories/home:/laszlo_budai:/syslog-ng/xUbuntu_12.04 ./" | sudo tee --append /etc/apt/sources.list.d/syslog-ng-obs.list
+  - curl -4 http://download.opensuse.org/repositories/home:/laszlo_budai:/syslog-ng/xUbuntu_14.04/Release.key | sudo apt-key add -
+  - echo "deb http://download.opensuse.org/repositories/home:/laszlo_budai:/syslog-ng/xUbuntu_14.04 ./" | sudo tee --append /etc/apt/sources.list.d/syslog-ng-obs.list
   - sudo apt-get update -qq
   - sudo apt-get install -qq
       autoconf-archive
@@ -23,11 +23,12 @@ install:
       libdbd-sqlite3
       libdbi0-dev
       libesmtp-dev
-      libevtlog-dev
       libgeoip-dev
       libglib2.0-dev
       libhiredis-dev
       libivykis-dev
+      librabbitmq-dev
+      libmongoc-dev
       libjson0-dev
       libnet1-dev
       libriemann-client-dev
@@ -38,18 +39,19 @@ install:
       criterion-dev
       libmaxminddb-dev
       libxml2-utils
-  - sudo pip install -r requirements.txt
+  - sudo pip install -r dbld/images/required-pip/devshell.txt
 before_script:
   - echo 'Europe/Budapest' | sudo tee /etc/timezone
   - sudo dpkg-reconfigure --frontend noninteractive tzdata
   - ./autogen.sh
   - unset PYTHON_CFLAGS # HACK
+  - if [ "$CC" = "gcc" ]; then
+      EXTRA_WARN="--enable-extra-warnings";
+    fi
   - CONFIGURE_FLAGS="
       CFLAGS=-Werror
       --prefix=$HOME/install/syslog-ng
       --with-ivykis=internal
-      --with-mongoc=internal
-      --with-librabbitmq=internal
       --with-jsonc=system
       --disable-env-wrapper
       --disable-memtrace
@@ -62,11 +64,9 @@ before_script:
       --enable-manpages
       --with-python=2
       --with-docbook=/usr/share/xml/docbook/stylesheet/docbook-xsl/manpages/docbook.xsl
-      --enable-extra-warnings
+      $EXTRA_WARN
+      $DISABLE_MONGODB
       "
-  - if [ "$CC" = "clang" ]; then
-      CONFIGURE_FLAGS="$CONFIGURE_FLAGS --disable-mongodb" ;
-    fi
   - ./configure $CONFIGURE_FLAGS
 script:
   - . tests/build-log-cflags-propagation.sh;
@@ -76,12 +76,12 @@ script:
       {
         S=$?;
         make V=1 distcheck;
-        find . -name test-suite.log |
-        xargs cat;
+        find . -name test-suite.log | xargs cat;
         return $S;
       };
+      find . -name test-suite.log | xargs cat;
     else
-      make --keep-going -j 3;
+      make --keep-going -j $(nproc);
       S=$?;
       if [ "$S" = "0" ]; then
         make install
@@ -100,9 +100,6 @@ compiler:
   - clang
 
 matrix:
-  fast_finish: true
-  allow_failures:
-    - os: osx
   include:
     - env: B=style-check
       dist: trusty
@@ -114,6 +111,7 @@ matrix:
       - sudo apt-get install -qq
           astyle
       before_script:
+      - astyle --version
       script:
       - scripts/style-checker.sh format
       - git diff --exit-code
@@ -125,6 +123,23 @@ matrix:
       script:
         - export COPYRIGHTVERBOSITY=1
         - tests/copyright/check.sh . .
+    - env: B=trusty-cmake-internal
+      compiler: gcc
+      dist: trusty
+      sudo: required
+      before_script:
+      git:
+        submodules: true
+      script:
+        - mkdir build
+        - cd build
+        - cmake
+            -DCMAKE_C_FLAGS=-Werror
+            -DPYTHON_VERSION=2
+            -DCMAKE_INSTALL_PREFIX=$HOME/install/syslog-ng
+            ..
+        - make --keep-going -j $(nproc) ARGS="-j $(nproc)" all test install
+        - make VERBOSE=1 func-test
     - env: B=trusty-cmake
       compiler: clang
       dist: trusty
@@ -135,58 +150,48 @@ matrix:
         - cd build
         - cmake
             -DCMAKE_C_FLAGS=-Werror
+            -DPYTHON_VERSION=2
             -DCMAKE_INSTALL_PREFIX=$HOME/install/syslog-ng
+            -DENABLE_EXTRA_WARNINGS=no
             ..
-        - make --keep-going -j 3 install ||
-          {
-            S=$?;
-            make V=1 install;
-            return $S;
-          }
+        - make --keep-going -j $(nproc) ARGS="-j $(nproc)" all test install
     - env: B=check
       os: osx
-      osx_image: xcode8
+      osx_image: xcode9.3
       compiler: clang
       install:
-        - brew update
-        - brew install
-            autoconf-archive
-            binutils
-            bison
-            eventlog
-            geoip
-            geoipupdate
-            glib
-            gradle
-            hiredis
-            libdbi
-            libnet
-            riemann-client
-        - geoipupdate
-        - pip install -r requirements.txt
-        - export PATH=/usr/local/opt/bison/bin:/usr/local/opt/libnet/bin:$PATH
+        - export PYTHONUSERBASE=$HOME/python_packages
+        - export PATH=/usr/local/opt/bison/bin:/usr/local/opt/libnet/bin:$PYTHONUSERBASE/bin:$PATH
         - export PKG_CONFIG_PATH=/usr/local/opt/openssl/lib/pkgconfig:$PKG_CONFIG_PATH
+        - brew update > /dev/null
+        - brew install python@2 &> /dev/null || brew link --overwrite python@2
+        - pip2 install --user -r dbld/images/required-pip/devshell.txt
+        - brew bundle --file=contrib/Brewfile
       before_script:
         - ./autogen.sh
         - ./configure
+            --with-ivykis=system
             --disable-sun-streams
             --disable-systemd
             --disable-pacct
-            --enable-all-modules
             --disable-smtp
-        - make --keep-going -j 3 ||
+            --disable-geoip
+            --enable-all-modules
+        - make --keep-going -j $(sysctl -n hw.physicalcpu) ||
           {
             S=$?;
             make V=1;
             return $S;
           }
       script:
-        - make --keep-going check ||
+        - make --keep-going check -j $(sysctl -n hw.physicalcpu) ||
           {
             S=$?;
+            echo "Output of first test invocation:";
+            find . -name test-suite.log | xargs cat;
             make V=1 check;
-            find . -name test-suite.log |
-            xargs cat;
+            echo "Output of second test invocation:";
+            find . -name test-suite.log | xargs cat;
             return $S;
           }
 
