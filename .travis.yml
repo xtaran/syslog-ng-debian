@@ -39,7 +39,7 @@ install:
       criterion-dev
       libmaxminddb-dev
       libxml2-utils
-  - sudo pip install -r dbld/images/required-pip/devshell.txt
+  - pip install --user -r requirements.txt
 before_script:
   - echo 'Europe/Budapest' | sudo tee /etc/timezone
   - sudo dpkg-reconfigure --frontend noninteractive tzdata
@@ -88,6 +88,8 @@ script:
         . scripts/get-libjvm-path.sh || return $?;
         export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$JNI_LIBDIR";
         make func-test V=1;
+        make pytest-self-check;
+        make pytest-check;
       elif [ "$S" = "42" ]; then
         return $S;
       else
@@ -140,6 +142,8 @@ matrix:
             ..
         - make --keep-going -j $(nproc) ARGS="-j $(nproc)" all test install
         - make VERBOSE=1 func-test
+        - make pytest-self-check
+        - make pytest-check
     - env: B=trusty-cmake
       compiler: clang
       dist: trusty
@@ -165,7 +169,7 @@ matrix:
         - export PKG_CONFIG_PATH=/usr/local/opt/openssl/lib/pkgconfig:$PKG_CONFIG_PATH
         - brew update > /dev/null
         - brew install python@2 &> /dev/null || brew link --overwrite python@2
-        - pip2 install --user -r dbld/images/required-pip/devshell.txt
+        - pip2 install --user -r requirements.txt
         - brew bundle --file=contrib/Brewfile
       before_script:
         - ./autogen.sh

@@ -25,9 +25,10 @@
 #include "str-repr/encode.h"
 
 static void
-_append_comma(GString *result)
+_append_comma_between_list_elements_if_needed(GString *result, gsize initial_len)
 {
-  if (result->len == 0)
+  /* we won't insert a comma at the very first position we were invoked at */
+  if (result->len == initial_len)
     return;
 
   if (result->str[result->len - 1] != ',')
@@ -38,12 +39,13 @@ static void
 tf_list_concat(LogMessage *msg, gint argc, GString *argv[], GString *result)
 {
   ListScanner scanner;
+  gsize initial_len = result->len;
 
   list_scanner_init(&scanner);
   list_scanner_input_gstring_array(&scanner, argc, argv);
   while (list_scanner_scan_next(&scanner))
     {
-      _append_comma(result);
+      _append_comma_between_list_elements_if_needed(result, initial_len);
       str_repr_encode_append(result, list_scanner_get_current_value(&scanner), -1, ",");
     }
   list_scanner_deinit(&scanner);
@@ -54,12 +56,14 @@ TEMPLATE_FUNCTION_SIMPLE(tf_list_concat);
 static void
 tf_list_append(LogMessage *msg, gint argc, GString *argv[], GString *result)
 {
+  gsize initial_len = result->len;
+
   if (argc == 0)
     return;
   g_string_append_len(result, argv[0]->str, argv[0]->len);
   for (gint i = 1; i < argc; i++)
     {
-      _append_comma(result);
+      _append_comma_between_list_elements_if_needed(result, initial_len);
       str_repr_encode_append(result, argv[i]->str, argv[i]->len, ",");
     }
 }
@@ -106,6 +110,7 @@ _list_slice(gint argc, GString *argv[], GString *result,
             gint first_ndx, gint last_ndx)
 {
   ListScanner scanner;
+  gsize initial_len = result->len;
   gint i;
 
   if (argc == 0)
@@ -132,7 +137,7 @@ _list_slice(gint argc, GString *argv[], GString *result,
          i < last_ndx &&
          list_scanner_scan_next(&scanner))
     {
-      _append_comma(result);
+      _append_comma_between_list_elements_if_needed(result, initial_len);
       str_repr_encode_append(result, list_scanner_get_current_value(&scanner), -1, ",");
       i++;
     }
@@ -194,7 +199,7 @@ tf_list_nth(LogMessage *msg, gint argc, GString *argv[], GString *result)
 
   ndx_spec = argv[0]->str;
   /* get start position from first argument */
-  if (!parse_number(ndx_spec, &ndx))
+  if (!parse_dec_number(ndx_spec, &ndx))
     {
       msg_error("$(list-nth) parsing failed, index must be the first argument",
                 evt_tag_str("ndx", ndx_spec));
@@ -250,7 +255,7 @@ tf_list_slice(LogMessage *msg, gint argc, GString *argv[], GString *result)
 
   /* get start position from first argument */
   if (first_spec && first_spec[0] &&
-      !parse_number(first_spec, &first_ndx))
+      !parse_dec_number(first_spec, &first_ndx))
     {
       msg_error("$(list-slice) parsing failed, first could not be parsed",
                 evt_tag_str("start", first_spec));
@@ -259,7 +264,7 @@ tf_list_slice(LogMessage *msg, gint argc, GString *argv[], GString *result)
 
   /* get last position from second argument */
   if (last_spec && last_spec[0] &&
-      !parse_number(last_spec, &last_ndx))
+      !parse_dec_number(last_spec, &last_ndx))
     {
       msg_error("$(list-slice) parsing failed, last could not be parsed",
                 evt_tag_str("last", last_spec));

@@ -57,9 +57,11 @@ static CfgLexerKeyword afsocket_keywords[] =
   { "ecdh_curve_list",    KW_ECDH_CURVE_LIST },
   { "curve_list",         KW_ECDH_CURVE_LIST, KWS_OBSOLETE, "ecdh_curve_list"},
   { "ssl_options",        KW_SSL_OPTIONS },
+  { "allow_compress",     KW_ALLOW_COMPRESS },
 
   { "localip",            KW_LOCALIP },
   { "ip",                 KW_IP },
+  { "interface",          KW_INTERFACE },
   { "localport",          KW_LOCALPORT },
   { "port",               KW_PORT },
   { "destport",           KW_DESTPORT },
@@ -70,6 +72,7 @@ static CfgLexerKeyword afsocket_keywords[] =
   { "so_rcvbuf",          KW_SO_RCVBUF },
   { "so_sndbuf",          KW_SO_SNDBUF },
   { "so_keepalive",       KW_SO_KEEPALIVE },
+  { "so_reuseport",       KW_SO_REUSEPORT },
   { "tcp_keep_alive",     KW_SO_KEEPALIVE }, /* old, once deprecated form, but revived in 3.4 */
   { "tcp_keepalive",      KW_SO_KEEPALIVE }, /* alias for so-keepalive, as tcp is the only option actually using it */
   { "tcp_keepalive_time", KW_TCP_KEEPALIVE_TIME },
