@@ -62,13 +62,11 @@ transport_mapper_inet_validate_tls_options(TransportMapperInet *self)
   if (!self->tls_context && _is_tls_required(self))
     {
       msg_error("transport(tls) was specified, but tls() options missing");
-      // evt_tag_str("id", self->super.super.super.id),
       return FALSE;
     }
   else if (self->tls_context && !_is_tls_allowed(self))
     {
       msg_error("tls() options specified for a transport that doesn't allow TLS encryption",
-                //evt_tag_str("id", self->super.super.super.id),
                 evt_tag_str("transport", self->super.transport));
       return FALSE;
     }
@@ -89,7 +87,7 @@ transport_mapper_inet_apply_transport_method(TransportMapper *s, GlobalConfig *c
 static LogTransport *
 _construct_multitransport_with_tls_factory(TransportMapperInet *self, gint fd)
 {
-  TransportFactory *default_factory = transport_factory_tls_new(self->tls_context, self->tls_verifier);
+  TransportFactory *default_factory = transport_factory_tls_new(self->tls_context, self->tls_verifier, self->flags);
   return multitransport_new(default_factory, fd);
 }
 
@@ -103,6 +101,7 @@ _construct_tls_transport(TransportMapperInet *self, gint fd)
   if (!tls_session)
     return NULL;
 
+  tls_session_configure_allow_compress(tls_session, self->flags & TMI_ALLOW_COMPRESS);
   tls_session_set_verifier(tls_session, self->tls_verifier);
 
   return log_transport_tls_new(tls_session, fd);
@@ -121,7 +120,7 @@ _construct_multitransport_with_plain_and_tls_factories(TransportMapperInet *self
 {
   LogTransport *transport = _construct_multitransport_with_plain_tcp_factory(self, fd);
 
-  TransportFactory *tls_factory = transport_factory_tls_new(self->tls_context, self->tls_verifier);
+  TransportFactory *tls_factory = transport_factory_tls_new(self->tls_context, self->tls_verifier, self->flags);
   multitransport_add_factory((MultiTransport *)transport, tls_factory);
 
   return transport;
