@@ -1,0 +1,29 @@
+Description: Remove outdated documentation segment
+ syslog-ng loads modules on-demand the argument is gone.
+Origin: Balazs Scheidler
+Author: Laszlo Boszormenyi (GCS) <gcs@debian.org>
+Last-Update: 2018-12-29
+
+--- syslog-ng-3.19.1.orig/doc/man/syslog-ng.8.xml
++++ syslog-ng-3.19.1/doc/man/syslog-ng.8.xml
+@@ -95,20 +95,6 @@
+         </varlistentry>
+         <varlistentry>
+           <term>
+-            <command>--default-modules</command>
+-            <indexterm type="parameter">
+-              <primary>--default-modules</primary>
+-            </indexterm>
+-            <indexterm type="parameter">
+-              <primary>default-modules</primary>
+-            </indexterm>
+-          </term>
+-          <listitem>
+-            <para>A comma-separated list of the modules that are loaded automatically. Modules not loaded automatically can be loaded by including the <parameter>@module &lt;modulename&gt;</parameter> statement in the  configuration file. The following modules are loaded by default: . Available only in  and later.</para>
+-          </listitem>
+-        </varlistentry>
+-        <varlistentry>
+-          <term>
+             <command>--enable-core</command>
+             <indexterm type="parameter">
+               <primary>--enable-core</primary>

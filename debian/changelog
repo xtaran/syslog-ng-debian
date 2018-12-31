@@ -14,6 +14,7 @@ syslog-ng (3.19.1-1) UNRELEASED; urgency=medium
   * Remove own compression option.
   * Prepare for Python 3 module.
   * Build with libcurl4-openssl-dev.
+  * Patch to remove outdated documentation.
 
  -- Laszlo Boszormenyi (GCS) <gcs@debian.org>  Tue, 25 Dec 2018 09:40:28 +0000
 
