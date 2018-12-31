@@ -9,6 +9,7 @@ syslog-ng (3.19.1-1) UNRELEASED; urgency=medium
   * Add syslog-ng-mod-examples module.
   * Update syslog-ng-mod-extra install.
   * Install all SCL files.
+  * Update configuration version.
 
  -- Laszlo Boszormenyi (GCS) <gcs@debian.org>  Tue, 25 Dec 2018 09:40:28 +0000
 
