@@ -14,6 +14,7 @@ usr/lib/syslog-ng/*/libconfgen.so
 usr/lib/syslog-ng/*/libcryptofuncs.so
 usr/lib/syslog-ng/*/libcsvparser.so
 usr/lib/syslog-ng/*/libdbparser.so
+usr/lib/syslog-ng/*/libjson-plugin.so
 usr/lib/syslog-ng/*/libkvformat.so
 usr/lib/syslog-ng/*/liblinux-kmsg-format.so
 usr/lib/syslog-ng/*/libpseudofile.so
@@ -27,7 +28,9 @@ usr/share/syslog-ng/include/scl/system/*
 usr/share/syslog-ng/include/scl/syslogconf/*
 usr/share/syslog-ng/include/scl/rewrite/*
 usr/share/syslog-ng/include/scl/mbox/*
+usr/share/syslog-ng/include/scl/nodejs/*
 usr/share/syslog-ng/include/scl/apache/*
+usr/share/syslog-ng/include/scl/cim/*
 usr/share/syslog-ng/include/scl/loggly/*
 usr/share/syslog-ng/include/scl/logmatic/*
 usr/share/syslog-ng/include/scl/solaris/*
