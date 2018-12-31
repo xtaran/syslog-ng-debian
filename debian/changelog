@@ -1,3 +1,9 @@
+syslog-ng (3.19.1-1) UNRELEASED; urgency=medium
+
+  * New upstream release.
+
+ -- Laszlo Boszormenyi (GCS) <gcs@debian.org>  Tue, 25 Dec 2018 09:40:28 +0000
+
 syslog-ng (3.13.2-5) unstable; urgency=medium
 
   * Update maintainer email address.
