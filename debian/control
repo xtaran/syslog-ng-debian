@@ -315,6 +315,28 @@ Description: Enhanced system logging daemon (GeoIP2 plugin)
  allows one to do non-DNS IP-to-country resolving from syslog-ng
  templates. GeoIP2 uses MaxMind DB.
 
+Package: syslog-ng-mod-pacctformat
+Architecture: any
+Multi-Arch: foreign
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Enhanced system logging daemon (getent)
+ syslog-ng is an enhanced log daemon, supporting a wide range of input
+ and output methods: syslog, unstructured text, message queues,
+ databases (SQL and NoSQL alike) and more.
+ .
+ Key features:
+ .
+  * receive and send RFC3164 and RFC5424 style syslog messages
+  * work with any kind of unstructured data
+  * receive and send JSON formatted messages
+  * classify and structure logs with builtin parsers (csv-parser(),
+    db-parser(), etc.)
+  * normalize, crunch and process logs as they flow through the system
+  * hand on messages for further processing using message queues (like
+    AMQP), files or databases (like PostgreSQL or MongoDB).
+ .
+ This package provides the pacctformat module for syslog-ng.
+
 Package: syslog-ng-mod-redis
 Architecture: any
 Multi-Arch: foreign

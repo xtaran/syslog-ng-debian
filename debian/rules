@@ -98,6 +98,7 @@ override_dh_auto_configure:
 		--disable-java \
 		--enable-manpages \
 		--enable-amqp \
+		--enable-pacct \
 		\
 		--with-mongoc=system \
 		--with-ivykis=system \

@@ -5,6 +5,7 @@ syslog-ng (3.19.1-1) UNRELEASED; urgency=medium
   * Don't try to run self-tests until its Criterion dependency packaged.
   * Merge syslog-ng-mod-json into syslog-ng-core.
   * Add syslog-ng-mod-geoip2 module.
+  * Add syslog-ng-mod-pacctformat module.
 
  -- Laszlo Boszormenyi (GCS) <gcs@debian.org>  Tue, 25 Dec 2018 09:40:28 +0000
 
