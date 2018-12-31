@@ -35,8 +35,8 @@ Build-Depends: debhelper (>= 10~),
                libcurl4-openssl-dev,
                libsnappy-dev
 Build-Conflicts: autoconf2.13
-Standards-Version: 4.2.1
-Homepage: http://www.syslog-ng.org/
+Standards-Version: 4.3.0
+Homepage: https://www.syslog-ng.com/
 Vcs-Git: https://github.com/gcsideal/syslog-ng-debian.git
 Vcs-Browser: https://github.com/gcsideal/syslog-ng-debian
 
@@ -437,6 +437,7 @@ Package: syslog-ng-mod-python
 Architecture: any
 Multi-Arch: foreign
 Depends: ${shlibs:Depends}, ${misc:Depends}, ${python:Depends}
+XB-Python-Version: ${python:Versions}
 Description: Enhanced system logging daemon (Python plugin)
  syslog-ng is an enhanced log daemon, supporting a wide range of input
  and output methods: syslog, unstructured text, message queues,
