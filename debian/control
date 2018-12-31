@@ -31,6 +31,7 @@ Build-Depends: debhelper (>= 10~),
                dh-exec (>= 0.13~),
                python-nose, python-ply,
                libxml2-utils, geoip-database,
+               libmaxminddb-dev,
                libsnappy-dev
 Build-Conflicts: autoconf2.13, libcurl4-openssl-dev
 Standards-Version: 4.2.1
@@ -289,6 +290,30 @@ Description: Enhanced system logging daemon (GeoIP plugin)
  This package provides the GeoIP template function plugin, which
  allows one to do non-DNS IP-to-country resolving from syslog-ng
  templates.
+
+Package: syslog-ng-mod-geoip2
+Architecture: any
+Multi-Arch: foreign
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Enhanced system logging daemon (GeoIP2 plugin)
+ syslog-ng is an enhanced log daemon, supporting a wide range of input
+ and output methods: syslog, unstructured text, message queues,
+ databases (SQL and NoSQL alike) and more.
+ .
+ Key features:
+ .
+  * receive and send RFC3164 and RFC5424 style syslog messages
+  * work with any kind of unstructured data
+  * receive and send JSON formatted messages
+  * classify and structure logs with builtin parsers (csv-parser(),
+    db-parser(), etc.)
+  * normalize, crunch and process logs as they flow through the system
+  * hand on messages for further processing using message queues (like
+    AMQP), files or databases (like PostgreSQL or MongoDB).
+ .
+ This package provides the GeoIP2 template function plugin, which
+ allows one to do non-DNS IP-to-country resolving from syslog-ng
+ templates. GeoIP2 uses MaxMind DB.
 
 Package: syslog-ng-mod-redis
 Architecture: any
