@@ -99,6 +99,7 @@ override_dh_auto_configure:
 		--enable-manpages \
 		--enable-amqp \
 		--enable-pacct \
+		--enable-python \
 		\
 		--with-mongoc=system \
 		--with-ivykis=system \
@@ -189,6 +190,11 @@ override_dh_gencontrol:
 # clearing DH_OPTIONS here.
 override_dh_python2:
 	DH_OPTIONS="" dh_python2
+
+# Sadly, dh_python3 barfs on --dbg-package=, so we work it around by
+# clearing DH_OPTIONS here.
+override_dh_python3:
+	DH_OPTIONS="" dh_python3
 
 ##
 #* Other, non-override targets
