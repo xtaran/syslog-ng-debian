@@ -122,8 +122,7 @@ Multi-Arch: foreign
 Depends: ${shlibs:Depends}, ${misc:Depends}, syslog-ng-mod-journal [linux-any], util-linux (>= 2.12-10), lsb-base (>= 3.0-6)
 Recommends: logrotate
 Suggests: ${sng:CoreModules}, ${sng:Modules}
-Provides: system-log-daemon, linux-kernel-log-daemon, libsyslog-ng-dev,
- syslog-ng-abi-${sng:ABI}
+Provides: system-log-daemon, linux-kernel-log-daemon, libsyslog-ng-dev
 Conflicts: system-log-daemon, linux-kernel-log-daemon
 Replaces: syslog-ng (<< 3.3.0~), libsyslog-ng-dev, syslog-ng-mod-json (<< 3.19.1~)
 Breaks: syslog-ng (<< 3.3.0~), libsyslog-ng-dev, syslog-ng-mod-json (<< 3.19.1~)
@@ -149,7 +148,7 @@ Description: Enhanced system logging daemon (core)
 Package: syslog-ng-mod-journal
 Architecture: linux-any
 Multi-Arch: foreign
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, syslog-ng-core (>= ${source:Version}), syslog-ng-core (<< ${source:Version}.1~)
 Recommends: systemd
 Replaces: syslog-ng-core (<= 3.6.1+git20141206-g4d90138-2)
 Description: Enhanced system logging daemon (systemd journal plugin)
@@ -174,7 +173,7 @@ Description: Enhanced system logging daemon (systemd journal plugin)
 Package: syslog-ng-mod-mongodb
 Architecture: any
 Multi-Arch: foreign
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, syslog-ng-core (>= ${source:Version}), syslog-ng-core (<< ${source:Version}.1~)
 Suggests: mongodb-server
 Description: Enhanced system logging daemon (MongoDB plugin)
  syslog-ng is an enhanced log daemon, supporting a wide range of input
@@ -198,7 +197,7 @@ Description: Enhanced system logging daemon (MongoDB plugin)
 Package: syslog-ng-mod-sql
 Architecture: any
 Multi-Arch: foreign
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, syslog-ng-core (>= ${source:Version}), syslog-ng-core (<< ${source:Version}.1~)
 Suggests: libdbd-mysql, libdbd-pgsql, libdbd-sqlite3
 Description: Enhanced system logging daemon (SQL plugin)
  syslog-ng is an enhanced log daemon, supporting a wide range of input
@@ -223,7 +222,7 @@ Description: Enhanced system logging daemon (SQL plugin)
 Package: syslog-ng-mod-smtp
 Architecture: any
 Multi-Arch: foreign
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, syslog-ng-core (>= ${source:Version}), syslog-ng-core (<< ${source:Version}.1~)
 Description: Enhanced system logging daemon (SMTP plugin)
  syslog-ng is an enhanced log daemon, supporting a wide range of input
  and output methods: syslog, unstructured text, message queues,
@@ -246,7 +245,7 @@ Description: Enhanced system logging daemon (SMTP plugin)
 Package: syslog-ng-mod-amqp
 Architecture: any
 Multi-Arch: foreign
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, syslog-ng-core (>= ${source:Version}), syslog-ng-core (<< ${source:Version}.1~)
 Suggests: rabbitmq-server
 Description: Enhanced system logging daemon (AMQP plugin)
  syslog-ng is an enhanced log daemon, supporting a wide range of input
@@ -270,7 +269,7 @@ Description: Enhanced system logging daemon (AMQP plugin)
 Package: syslog-ng-mod-geoip
 Architecture: any
 Multi-Arch: foreign
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, syslog-ng-core (>= ${source:Version}), syslog-ng-core (<< ${source:Version}.1~)
 Recommends: geoip-database
 Description: Enhanced system logging daemon (GeoIP plugin)
  syslog-ng is an enhanced log daemon, supporting a wide range of input
@@ -295,7 +294,7 @@ Description: Enhanced system logging daemon (GeoIP plugin)
 Package: syslog-ng-mod-geoip2
 Architecture: any
 Multi-Arch: foreign
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, syslog-ng-core (>= ${source:Version}), syslog-ng-core (<< ${source:Version}.1~)
 Description: Enhanced system logging daemon (GeoIP2 plugin)
  syslog-ng is an enhanced log daemon, supporting a wide range of input
  and output methods: syslog, unstructured text, message queues,
@@ -319,7 +318,7 @@ Description: Enhanced system logging daemon (GeoIP2 plugin)
 Package: syslog-ng-mod-pacctformat
 Architecture: any
 Multi-Arch: foreign
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, syslog-ng-core (>= ${source:Version}), syslog-ng-core (<< ${source:Version}.1~)
 Description: Enhanced system logging daemon (getent)
  syslog-ng is an enhanced log daemon, supporting a wide range of input
  and output methods: syslog, unstructured text, message queues,
@@ -341,7 +340,7 @@ Description: Enhanced system logging daemon (getent)
 Package: syslog-ng-mod-redis
 Architecture: any
 Multi-Arch: foreign
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, syslog-ng-core (>= ${source:Version}), syslog-ng-core (<< ${source:Version}.1~)
 Description: Enhanced system logging daemon (Redis plugin)
  syslog-ng is an enhanced log daemon, supporting a wide range of input
  and output methods: syslog, unstructured text, message queues,
@@ -364,7 +363,7 @@ Description: Enhanced system logging daemon (Redis plugin)
 Package: syslog-ng-mod-stomp
 Architecture: any
 Multi-Arch: foreign
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, syslog-ng-core (>= ${source:Version}), syslog-ng-core (<< ${source:Version}.1~)
 Suggests: activemq
 Description: Enhanced system logging daemon (STOMP plugin)
  syslog-ng is an enhanced log daemon, supporting a wide range of input
@@ -388,7 +387,7 @@ Description: Enhanced system logging daemon (STOMP plugin)
 Package: syslog-ng-mod-riemann
 Architecture: any
 Multi-Arch: foreign
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, syslog-ng-core (>= ${source:Version}), syslog-ng-core (<< ${source:Version}.1~)
 Description: Enhanced system logging daemon (Riemann destination)
  syslog-ng is an enhanced log daemon, supporting a wide range of input
  and output methods: syslog, unstructured text, message queues,
@@ -411,7 +410,7 @@ Description: Enhanced system logging daemon (Riemann destination)
 Package: syslog-ng-mod-graphite
 Architecture: any
 Multi-Arch: foreign
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, syslog-ng-core (>= ${source:Version}), syslog-ng-core (<< ${source:Version}.1~)
 Suggests: graphite-web
 Description: Enhanced system logging daemon (graphite plugin)
  syslog-ng is an enhanced log daemon, supporting a wide range of input
@@ -436,7 +435,7 @@ Description: Enhanced system logging daemon (graphite plugin)
 Package: syslog-ng-mod-python
 Architecture: any
 Multi-Arch: foreign
-Depends: ${shlibs:Depends}, ${misc:Depends}, ${python:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, ${python:Depends}, syslog-ng-core (>= ${source:Version}), syslog-ng-core (<< ${source:Version}.1~)
 XB-Python-Version: ${python:Versions}
 Description: Enhanced system logging daemon (Python plugin)
  syslog-ng is an enhanced log daemon, supporting a wide range of input
@@ -460,7 +459,7 @@ Description: Enhanced system logging daemon (Python plugin)
 Package: syslog-ng-mod-add-contextual-data
 Architecture: any
 Multi-Arch: foreign
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, syslog-ng-core (>= ${source:Version}), syslog-ng-core (<< ${source:Version}.1~)
 Description: Enhanced system logging daemon (add-contextual-data plugin)
  syslog-ng is an enhanced log daemon, supporting a wide range of input
  and output methods: syslog, unstructured text, message queues,
@@ -488,7 +487,7 @@ Description: Enhanced system logging daemon (add-contextual-data plugin)
 Package: syslog-ng-mod-getent
 Architecture: any
 Multi-Arch: foreign
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, syslog-ng-core (>= ${source:Version}), syslog-ng-core (<< ${source:Version}.1~)
 Conflicts: syslog-ng-mod-basicfuncs-plus ( << 0.6.0)
 Description: Enhanced system logging daemon (getent plugin)
  syslog-ng is an enhanced log daemon, supporting a wide range of input
@@ -513,7 +512,7 @@ Description: Enhanced system logging daemon (getent plugin)
 Package: syslog-ng-mod-stardate
 Architecture: any
 Multi-Arch: foreign
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, syslog-ng-core (>= ${source:Version}), syslog-ng-core (<< ${source:Version}.1~)
 Description: Enhanced system logging daemon (stardate plugin)
  syslog-ng is an enhanced log daemon, supporting a wide range of input
  and output methods: syslog, unstructured text, message queues,
@@ -537,7 +536,7 @@ Description: Enhanced system logging daemon (stardate plugin)
 Package: syslog-ng-mod-map-value-pairs
 Architecture: any
 Multi-Arch: foreign
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, syslog-ng-core (>= ${source:Version}), syslog-ng-core (<< ${source:Version}.1~)
 Description: Enhanced system logging daemon (map-value-pairs plugin)
  syslog-ng is an enhanced log daemon, supporting a wide range of input
  and output methods: syslog, unstructured text, message queues,
@@ -560,7 +559,7 @@ Description: Enhanced system logging daemon (map-value-pairs plugin)
 Package: syslog-ng-mod-snmptrapd-parser
 Architecture: any
 Multi-Arch: foreign
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, syslog-ng-core (>= ${source:Version}), syslog-ng-core (<< ${source:Version}.1~)
 Description: Enhanced system logging daemon (snmptrapd-parser plugin)
  syslog-ng is an enhanced log daemon, supporting a wide range of input
  and output methods: syslog, unstructured text, message queues,
@@ -583,7 +582,7 @@ Description: Enhanced system logging daemon (snmptrapd-parser plugin)
 Package: syslog-ng-mod-xml-parser
 Architecture: any
 Multi-Arch: foreign
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, syslog-ng-core (>= ${source:Version}), syslog-ng-core (<< ${source:Version}.1~)
 Description: Enhanced system logging daemon (xml parser plugin)
  syslog-ng is an enhanced log daemon, supporting a wide range of input
  and output methods: syslog, unstructured text, message queues,
@@ -637,7 +636,7 @@ Description: Enhanced system logging daemon (extra plugins)
 Package: syslog-ng-mod-tag-parser
 Architecture: any
 Multi-Arch: foreign
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, syslog-ng-core (>= ${source:Version}), syslog-ng-core (<< ${source:Version}.1~)
 Description: Enhanced system logging daemon (tag parser plugin)
  syslog-ng is an enhanced log daemon, supporting a wide range of input
  and output methods: syslog, unstructured text, message queues,
@@ -660,7 +659,7 @@ Description: Enhanced system logging daemon (tag parser plugin)
 Package: syslog-ng-mod-examples
 Architecture: any
 Multi-Arch: foreign
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, syslog-ng-core (>= ${source:Version}), syslog-ng-core (<< ${source:Version}.1~)
 Description: Enhanced system logging daemon (map-value-pairs plugin)
  syslog-ng is an enhanced log daemon, supporting a wide range of input
  and output methods: syslog, unstructured text, message queues,
