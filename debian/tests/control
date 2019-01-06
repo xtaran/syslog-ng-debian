@@ -11,7 +11,7 @@ Depends: @
 Restrictions: allow-stderr
 
 Tests: basic
-Depends: syslog-ng-core, syslog-ng-mod-json
+Depends: syslog-ng-core
 Restrictions: allow-stderr
 
 Tests: basic

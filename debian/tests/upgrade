@@ -6,7 +6,6 @@ apt_line=""
 for pkg in syslog-ng \
                 syslog-ng-core \
                 syslog-ng-mod-journal \
-                syslog-ng-mod-json \
                 syslog-ng-mod-mongodb \
                 syslog-ng-mod-sql \
                 syslog-ng-mod-smtp \
