@@ -20,6 +20,7 @@ syslog-ng (3.19.1-1) UNRELEASED; urgency=medium
   * Add hook commands module to -core.
   * Add loggen modules to -core.
   * Add secret storage module to -core.
+  * Install pkg-config files to MultiArch directory.
   * Update Standards-Version to 4.3.0 .
 
  -- Laszlo Boszormenyi (GCS) <gcs@debian.org>  Tue, 25 Dec 2018 09:40:28 +0000

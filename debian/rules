@@ -41,6 +41,7 @@ export DH_OPTIONS += -O-Bdebian/build-tree --dbg-package=syslog-ng-dbg
 CFLAGS		?= $(shell dpkg-buildflags --get CFLAGS)
 LDFLAGS		?= $(shell dpkg-buildflags --get LDFLAGS)
 
+MULTIARCH_PATH = $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
 
 # We want to enforce systemd support on Linux, but disable it
 # everywhere else.
@@ -117,8 +118,10 @@ override_dh_auto_configure:
 # Also removing .la files, these files don't needed and just confuse
 # the list-missing option
 override_dh_auto_install:
-	dh_auto_install -- pkgconfigdir=/usr/lib/pkgconfig \
-			   PYSETUP_OPTIONS="--install-layout=deb --root=$(CURDIR)/debian/tmp/"
+	dh_auto_install -- \
+		pkgconfigdir=/usr/lib/$(MULTIARCH_PATH)/pkgconfig \
+		PYSETUP_OPTIONS="--install-layout=deb \
+		--root=$(CURDIR)/debian/tmp/"
 	find . -name \*.la | xargs --no-run-if-empty rm
 
 # To get better test results, and actually see failing tests, we need
