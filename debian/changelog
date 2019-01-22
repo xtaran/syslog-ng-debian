@@ -1,4 +1,4 @@
-syslog-ng (3.19.1-1) UNRELEASED; urgency=medium
+syslog-ng (3.19.1-1) experimental; urgency=medium
 
   * New upstream release.
   * Remove merged in patches.
