@@ -1,3 +1,9 @@
+syslog-ng (3.19.1-2) UNRELEASED; urgency=medium
+
+  * Install SCL files from source (closes: #920512).
+
+ -- Laszlo Boszormenyi (GCS) <gcs@debian.org>  Sat, 26 Jan 2019 13:57:58 +0000
+
 syslog-ng (3.19.1-1) experimental; urgency=medium
 
   * New upstream release.
