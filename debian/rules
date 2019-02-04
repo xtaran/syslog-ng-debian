@@ -47,8 +47,10 @@ MULTIARCH_PATH = $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
 # everywhere else.
 ifeq ($(shell dpkg-architecture -qDEB_HOST_ARCH_OS),linux)
 SYSTEMD_CONFIGURE_OPTS = --enable-systemd --with-systemd-journal=system
+PACCT_CONFIGURE_OPTS   = --enable-pacct
 else
 SYSTEMD_CONFIGURE_OPTS = --disable-systemd
+PACCT_CONFIGURE_OPTS   = --disable-pacct
 endif
 
 # If DH_QUIET is set, then we want silent mode.
@@ -94,7 +96,7 @@ override_dh_auto_configure:
 		--disable-java \
 		--enable-manpages \
 		--enable-amqp \
-		--enable-pacct \
+		$(PACCT_CONFIGURE_OPTS) \
 		--enable-python \
 		\
 		--with-mongoc=system \
