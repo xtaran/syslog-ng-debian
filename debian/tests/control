@@ -86,9 +86,9 @@ Tests: basic
 Depends: syslog-ng-core, syslog-ng-mod-tag-parser
 Restrictions: allow-stderr
 
-Tests: upgrade
-Restrictions: needs-root, allow-stderr
-Depends: apt-utils
+#Tests: upgrade
+#Restrictions: needs-root, allow-stderr
+#Depends: apt-utils
 
 Tests: baseconfig
 Restrictions: needs-root, allow-stderr
