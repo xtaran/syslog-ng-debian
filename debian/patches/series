@@ -1,2 +1,4 @@
 0001-Remove-outdated-documentation.patch
 0007-Ignore-PEP8-W504-warning.patch
+0010-Fix_app-parser_per_reload_memory_leak_part1.patch
+0011-Fix_app-parser_per_reload_memory_leak_part2.patch

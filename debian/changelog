@@ -1,3 +1,10 @@
+syslog-ng (3.19.1-5) UNRELEASED; urgency=high
+
+  * Backport security fixes:
+    - fix app-parser() per reload memory leak,
+
+ -- Laszlo Boszormenyi (GCS) <gcs@debian.org>  Sun, 19 May 2019 11:03:30 +0000
+
 syslog-ng (3.19.1-4) unstable; urgency=medium
 
   * Add dns_cache(no) to options (closes: #922524).
