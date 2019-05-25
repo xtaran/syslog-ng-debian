@@ -13,3 +13,4 @@
 0020-test_file_list_fix_leak.patch
 0021-template_tf_simple_func_prepare_leak_fix.patch
 0022-gorupingby_fix_memory_leak.patch
+0023-groupingby_fix_invalid_memory_access.patch

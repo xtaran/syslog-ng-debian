@@ -1,4 +1,4 @@
-syslog-ng (3.19.1-5) UNRELEASED; urgency=high
+syslog-ng (3.19.1-5) unstable; urgency=high
 
   * Backport security fixes:
     - fix app-parser() per reload memory leak,
@@ -13,6 +13,7 @@ syslog-ng (3.19.1-5) UNRELEASED; urgency=high
     - test_file_list: fix leak,
     - template: tf_simple_func_prepare leak fix,
     - gorupingby: fix memory leak,
+    - groupingby: fix invalid memory access.
 
  -- Laszlo Boszormenyi (GCS) <gcs@debian.org>  Sun, 19 May 2019 11:03:30 +0000
 
