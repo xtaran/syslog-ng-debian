@@ -5,6 +5,7 @@ syslog-ng (3.19.1-5) UNRELEASED; urgency=high
     - logger: fix leaking file handlers,
     - DNS memory leak/segfault fix,
     - cmake: add missing detection for O_LARGEFILE,
+    - threaded-dest: fix integer overflow,
 
  -- Laszlo Boszormenyi (GCS) <gcs@debian.org>  Sun, 19 May 2019 11:03:30 +0000
 
