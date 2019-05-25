@@ -3,3 +3,4 @@
 0010-Fix_app-parser_per_reload_memory_leak_part1.patch
 0011-Fix_app-parser_per_reload_memory_leak_part2.patch
 0012-Fix_leaking_file_handlers.patch
+0013-DNS_memory_leak_segfault_fix.patch
