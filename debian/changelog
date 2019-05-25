@@ -12,6 +12,7 @@ syslog-ng (3.19.1-5) UNRELEASED; urgency=high
     - test_pathutils: fix leak,
     - test_file_list: fix leak,
     - template: tf_simple_func_prepare leak fix,
+    - gorupingby: fix memory leak,
 
  -- Laszlo Boszormenyi (GCS) <gcs@debian.org>  Sun, 19 May 2019 11:03:30 +0000
 
