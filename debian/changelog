@@ -8,6 +8,7 @@ syslog-ng (3.19.1-5) UNRELEASED; urgency=high
     - threaded-dest: fix integer overflow,
     - threaded-dest: move last_worker to DestDriver,
     - cmake: fix typo in HAVE_STRNLEN,
+    - http: add missing free for self->body_template,
 
  -- Laszlo Boszormenyi (GCS) <gcs@debian.org>  Sun, 19 May 2019 11:03:30 +0000
 

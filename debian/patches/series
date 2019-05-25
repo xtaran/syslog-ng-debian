@@ -8,3 +8,4 @@
 0015-threaded-dest_Fix_integer_overflow.patch
 0016-threaded-dest_move_last_worker_to_DestDriver.patch
 0017-cmake_fix_typo_in_HAVE_STRNLEN.patch
+0018-http_add_missing_free_for_self-body_template.patch
