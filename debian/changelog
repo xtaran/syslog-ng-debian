@@ -1,3 +1,12 @@
+syslog-ng (3.19.1-6) unstable; urgency=medium
+
+  * Sync with Ubuntu.
+
+  [ Dimitri John Ledkov <xnox@ubuntu.com> ]
+  * Fix FTBFS with bison 3.4.1 (closes: #931302).
+
+ -- Laszlo Boszormenyi (GCS) <gcs@debian.org>  Tue, 09 Jul 2019 16:37:13 +0000
+
 syslog-ng (3.19.1-5) unstable; urgency=high
 
   * Backport security fixes:
