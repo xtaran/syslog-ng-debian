@@ -8,6 +8,7 @@ syslog-ng (3.25.1-1) UNRELEASED; urgency=medium
   * Backport upstream bison update.
   * Install all SCL files.
   * Update configuration version.
+  * Update self-tests.
 
  -- Laszlo Boszormenyi (GCS) <gcs@debian.org>  Sat, 21 Dec 2019 08:42:10 +0000
 
