@@ -105,8 +105,7 @@ log_threaded_source_worker_set_options(LogThreadedSourceWorker *self, LogThreade
                                        LogThreadedSourceWorkerOptions *options,
                                        const gchar *stats_id, const gchar *stats_instance)
 {
-  /* TODO: support position tracking */
-  log_source_set_options(&self->super, &options->super, stats_id, stats_instance, TRUE, FALSE,
+  log_source_set_options(&self->super, &options->super, stats_id, stats_instance, TRUE, options->position_tracked,
                          control->super.super.super.expr_node);
 
   log_pipe_unref(&self->control->super.super.super);
@@ -204,11 +203,8 @@ log_threaded_source_worker_init(LogPipe *s)
   if (!log_source_init(s))
     return FALSE;
 
-  g_assert(self->run);
-  g_assert(self->request_exit);
-
   /* The worker thread has to be started after CfgTree is completely initialized. */
-  register_application_hook(AH_POST_CONFIG_LOADED, _start_worker_thread, self);
+  register_application_hook(AH_CONFIG_CHANGED, _start_worker_thread, self);
 
   return TRUE;
 }
@@ -243,12 +239,14 @@ log_threaded_source_worker_new(GlobalConfig *cfg)
   return self;
 }
 
-
 gboolean
 log_threaded_source_driver_init_method(LogPipe *s)
 {
   LogThreadedSourceDriver *self = (LogThreadedSourceDriver *) s;
   GlobalConfig *cfg = log_pipe_get_config(s);
+
+  self->worker = log_threaded_source_worker_new(cfg);
+  self->worker->wakeup = log_threaded_source_wakeup;
 
   if (!log_src_driver_init_method(s))
     return FALSE;
@@ -354,9 +352,6 @@ log_threaded_source_driver_init_instance(LogThreadedSourceDriver *self, GlobalCo
   log_src_driver_init_instance(&self->super, cfg);
 
   log_threaded_source_worker_options_defaults(&self->worker_options);
-
-  self->worker = log_threaded_source_worker_new(cfg);
-  self->worker->wakeup = log_threaded_source_wakeup;
 
   self->super.super.super.init = log_threaded_source_driver_init_method;
   self->super.super.super.deinit = log_threaded_source_driver_deinit_method;

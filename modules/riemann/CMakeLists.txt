@@ -19,13 +19,11 @@ bison_target(RiemannGrammar
     COMPILE_FLAGS ${BISON_FLAGS})
 
 find_package(RiemannClient)
-
-if (Riemann_FOUND)
-    option(ENABLE_RIEMANN "Enable riemann destination" ON)
-else()
-    option(ENABLE_RIEMANN "Enable riemann destination" OFF)
+if (HAVE_RIEMANN_MICROSECONDS)
+  add_definitions("-DSYSLOG_NG_HAVE_RIEMANN_MICROSECONDS")
 endif()
 
+module_switch(ENABLE_RIEMANN "Enable riemann destination" Riemann_FOUND)
 if (NOT ENABLE_RIEMANN)
   return()
 endif()

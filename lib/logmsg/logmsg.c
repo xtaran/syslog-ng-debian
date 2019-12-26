@@ -27,7 +27,8 @@
 #include "str-repr/encode.h"
 #include "messages.h"
 #include "logpipe.h"
-#include "timeutils.h"
+#include "timeutils/cache.h"
+#include "timeutils/misc.h"
 #include "logmsg/nvtable.h"
 #include "stats/stats-registry.h"
 #include "stats/stats-cluster-single.h"
@@ -37,7 +38,8 @@
 #include "rcptid.h"
 #include "template/macros.h"
 #include "host-id.h"
-#include "ack_tracker.h"
+#include "ack-tracker/ack_tracker.h"
+#include "apphook.h"
 
 #include <glib/gprintf.h>
 #include <sys/types.h>
@@ -46,6 +48,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <syslog.h>
 
 /*
  * Reference/ACK counting for LogMessage structures
@@ -506,6 +509,12 @@ _log_name_value_updates(LogMessage *self)
   return (self->flags & LF_INTERNAL) == 0;
 }
 
+static inline gboolean
+_value_invalidates_legacy_header(NVHandle handle)
+{
+  return handle == LM_V_PROGRAM || handle == LM_V_PID;
+}
+
 void
 log_msg_set_value(LogMessage *self, NVHandle handle, const gchar *value, gssize value_len)
 {
@@ -563,7 +572,8 @@ log_msg_set_value(LogMessage *self, NVHandle handle, const gchar *value, gssize 
 
   if (new_entry)
     log_msg_update_sdata(self, handle, name, name_len);
-  if (handle == LM_V_PROGRAM || handle == LM_V_PID)
+
+  if (_value_invalidates_legacy_header(handle))
     log_msg_unset_value(self, LM_V_LEGACY_MSGHDR);
 }
 
@@ -571,6 +581,9 @@ void
 log_msg_unset_value(LogMessage *self, NVHandle handle)
 {
   nv_table_unset_value(self->payload, handle);
+
+  if (_value_invalidates_legacy_header(handle))
+    log_msg_unset_value(self, LM_V_LEGACY_MSGHDR);
 }
 
 void
@@ -990,13 +1003,13 @@ log_msg_append_format_sdata(const LogMessage *self, GString *result,  guint32 se
         }
       /* if message hasn't sequenceId and the cur_elem is the meta block Append the sequenceId for the result
          if seq_num isn't 0 */
-      if (!has_seq_num && seq_num!=0 && strncmp(sdata_elem,"meta.",5) == 0)
+      if (!has_seq_num && seq_num!=0 && strncmp(sdata_elem, "meta.", 5) == 0)
         {
           gchar sequence_id[16];
           g_snprintf(sequence_id, sizeof(sequence_id), "%d", seq_num);
           g_string_append_c(result, ' ');
-          g_string_append_len(result,"sequenceId=\"",12);
-          g_string_append_len(result,sequence_id,strlen(sequence_id));
+          g_string_append_len(result, "sequenceId=\"", 12);
+          g_string_append_len(result, sequence_id, strlen(sequence_id));
           g_string_append_c(result, '"');
           has_seq_num = TRUE;
         }
@@ -1025,9 +1038,9 @@ log_msg_append_format_sdata(const LogMessage *self, GString *result,  guint32 se
       gchar sequence_id[16];
       g_snprintf(sequence_id, sizeof(sequence_id), "%d", seq_num);
       g_string_append_c(result, '[');
-      g_string_append_len(result,"meta sequenceId=\"",17);
-      g_string_append_len(result,sequence_id,strlen(sequence_id));
-      g_string_append_len(result, "\"]",2);
+      g_string_append_len(result, "meta sequenceId=\"", 17);
+      g_string_append_len(result, sequence_id, strlen(sequence_id));
+      g_string_append_len(result, "\"]", 2);
     }
 }
 
@@ -1079,19 +1092,18 @@ log_msg_init(LogMessage *self, GSockAddr *saddr)
   /* ref is set to 1, ack is set to 0 */
   self->ack_and_ref_and_abort_and_suspended = LOGMSG_REFCACHE_REF_TO_VALUE(1);
   cached_g_current_time(&tv);
-  self->timestamps[LM_TS_RECVD].tv_sec = tv.tv_sec;
-  self->timestamps[LM_TS_RECVD].tv_usec = tv.tv_usec;
-  self->timestamps[LM_TS_RECVD].zone_offset = get_local_timezone_ofs(self->timestamps[LM_TS_RECVD].tv_sec);
+  self->timestamps[LM_TS_RECVD].ut_sec = tv.tv_sec;
+  self->timestamps[LM_TS_RECVD].ut_usec = tv.tv_usec;
+  self->timestamps[LM_TS_RECVD].ut_gmtoff = get_local_timezone_ofs(self->timestamps[LM_TS_RECVD].ut_sec);
   self->timestamps[LM_TS_STAMP] = self->timestamps[LM_TS_RECVD];
-  self->timestamps[LM_TS_PROCESSED].tv_sec = 0;
-  self->timestamps[LM_TS_PROCESSED].tv_usec = 0;
-  self->timestamps[LM_TS_PROCESSED].zone_offset = LOGSTAMP_ZONE_OFFSET_UNSET;
+  unix_time_unset(&self->timestamps[LM_TS_PROCESSED]);
 
   self->sdata = NULL;
   self->saddr = g_sockaddr_ref(saddr);
 
   self->original = NULL;
   self->flags |= LF_STATE_OWN_MASK;
+  self->pri = LOG_USER | LOG_NOTICE;
 
   self->rcptid = rcptid_generate_id();
   log_msg_set_host_id(self);
@@ -1275,16 +1287,7 @@ log_msg_new(const gchar *msg, gint length,
   LogMessage *self = log_msg_alloc(_determine_payload_size(length, parse_options));
 
   log_msg_init(self, saddr);
-
-  if (G_LIKELY(parse_options->format_handler))
-    {
-      msg_trace("Initial message parsing follows");
-      parse_options->format_handler->parse(parse_options, (guchar *) msg, length, self);
-    }
-  else
-    {
-      log_msg_set_value(self, LM_V_MESSAGE, "Error parsing message, format module is not loaded", -1);
-    }
+  msg_format_parse(parse_options, (guchar *) msg, length, self);
   return self;
 }
 
@@ -1804,14 +1807,8 @@ log_msg_registry_foreach(GHFunc func, gpointer user_data)
   nv_registry_foreach(logmsg_registry, func, user_data);
 }
 
-void
-log_msg_global_init(void)
-{
-  log_msg_registry_init();
-}
-
-void
-log_msg_stats_global_init(void)
+static void
+log_msg_register_stats(void)
 {
   stats_lock();
   StatsClusterKey sc_key;
@@ -1828,6 +1825,18 @@ log_msg_stats_global_init(void)
   stats_register_counter(1, &sc_key, SC_TYPE_SINGLE_VALUE, &count_allocated_bytes);
   stats_unlock();
 }
+
+void
+log_msg_global_init(void)
+{
+  log_msg_registry_init();
+
+  /* NOTE: we always initialize counters as they are on stats-level(0),
+   * however we need to defer that as the stats subsystem may not be
+   * operational yet */
+  register_application_hook(AH_RUNNING, (ApplicationHookFunc) log_msg_register_stats, NULL);
+}
+
 
 const gchar *
 log_msg_get_handle_name(NVHandle handle, gssize *length)

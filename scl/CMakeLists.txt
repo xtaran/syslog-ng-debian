@@ -1,7 +1,9 @@
 set(SCL_DIRS
     apache
     cim
+    checkpoint
     cisco
+    collectd
     default-network-drivers
     elasticsearch
     ewmm
@@ -9,12 +11,14 @@ set(SCL_DIRS
     graylog2
     hdfs
     iptables
+    junos
     kafka
     linux-audit
     loadbalancer
     loggly
     logmatic
     mbox
+    netskope
     nodejs
     osquery
     pacct
@@ -26,6 +30,7 @@ set(SCL_DIRS
     syslogconf
     system
     telegram
+    websense
     windowseventlog
 )
 

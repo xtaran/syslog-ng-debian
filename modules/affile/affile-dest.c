@@ -36,6 +36,8 @@
 #include "affile-dest-internal-queue-filter.h"
 #include "file-specializations.h"
 #include "apphook.h"
+#include "timeutils/cache.h"
+#include "timeutils/misc.h"
 
 #include <iv.h>
 #include <sys/types.h>
@@ -116,6 +118,7 @@ static void affile_dd_reap_writer(AFFileDestDriver *self, AFFileDestWriter *dw);
 static void
 affile_dw_arm_reaper(AFFileDestWriter *self)
 {
+  g_assert(self->owner->time_reap > 0);
   /* not yet reaped, set up the next callback */
   iv_validate_now();
   self->reap_timer.expires = iv_now;
@@ -181,7 +184,7 @@ affile_dw_reopen(AFFileDestWriter *self)
       proto = file_opener_construct_dst_proto(self->owner->file_opener, transport,
                                               &self->owner->writer_options.proto_options.super);
 
-      if (!iv_timer_registered(&self->reap_timer))
+      if (self->owner->time_reap > 0 && !iv_timer_registered(&self->reap_timer))
         main_loop_call((void *(*)(void *)) affile_dw_arm_reaper, self, TRUE);
     }
   else
@@ -378,7 +381,8 @@ static void
 affile_dd_register_reopen_hook(gint hook_type, gpointer user_data)
 {
   g_list_foreach(affile_dest_drivers, affile_dd_reopen_all_writers, NULL);
-  register_application_hook(AH_REOPEN, affile_dd_register_reopen_hook, NULL);
+
+  register_application_hook(AH_REOPEN_FILES, affile_dd_register_reopen_hook, NULL);
 }
 
 void
@@ -403,6 +407,14 @@ affile_dd_set_fsync(LogDriver *s, gboolean use_fsync)
   AFFileDestDriver *self = (AFFileDestDriver *) s;
 
   self->use_fsync = use_fsync;
+}
+
+void
+affile_dd_set_time_reap(LogDriver *s, gint time_reap)
+{
+  AFFileDestDriver *self = (AFFileDestDriver *) s;
+
+  self->time_reap = time_reap;
 }
 
 static inline const gchar *
@@ -480,8 +492,6 @@ affile_dd_init(LogPipe *s)
   if (!log_dest_driver_init_method(s))
     return FALSE;
 
-  if (self->file_opener_options.create_dirs == -1)
-    self->file_opener_options.create_dirs = cfg->create_dirs;
   if (self->time_reap == -1)
     self->time_reap = cfg->time_reap;
 
@@ -781,7 +791,7 @@ affile_dd_new_instance(gchar *filename, GlobalConfig *cfg)
     }
   file_opener_options_defaults(&self->file_opener_options);
 
-  self->time_reap = -1;
+  self->time_reap = self->filename_is_a_template ? -1 : 0;
   g_static_mutex_init(&self->lock);
 
   affile_dest_drivers = g_list_append(affile_dest_drivers, self);
@@ -795,7 +805,7 @@ affile_dd_new(gchar *filename, GlobalConfig *cfg)
   AFFileDestDriver *self = affile_dd_new_instance(filename, cfg);
 
   self->writer_flags |= LW_SOFT_FLOW_CONTROL;
-  self->writer_options.stats_source = SCS_FILE;
+  self->writer_options.stats_source = stats_register_type("file");
   self->file_opener = file_opener_for_regular_dest_files_new(&self->writer_options, &self->use_fsync);
   return &self->super.super;
 }
@@ -803,5 +813,5 @@ affile_dd_new(gchar *filename, GlobalConfig *cfg)
 void
 affile_dd_global_init(void)
 {
-  register_application_hook(AH_REOPEN, affile_dd_register_reopen_hook, NULL);
+  register_application_hook(AH_REOPEN_FILES, affile_dd_register_reopen_hook, NULL);
 }

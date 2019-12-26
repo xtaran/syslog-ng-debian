@@ -23,6 +23,7 @@
  */
 
 #include "cr_template.h"
+#include "timeutils/misc.h"
 #include "stopwatch.h"
 #include "logmsg/logmsg.h"
 #include "gsockaddr.h"
@@ -90,9 +91,9 @@ create_empty_message(void)
 
   /* fix some externally or automatically defined values */
   log_msg_set_value(msg, LM_V_HOST_FROM, "kismacska", -1);
-  msg->timestamps[LM_TS_RECVD].tv_sec = 1139684315;
-  msg->timestamps[LM_TS_RECVD].tv_usec = 639000;
-  msg->timestamps[LM_TS_RECVD].zone_offset = get_local_timezone_ofs(1139684315);
+  msg->timestamps[LM_TS_RECVD].ut_sec = 1139684315;
+  msg->timestamps[LM_TS_RECVD].ut_usec = 639000;
+  msg->timestamps[LM_TS_RECVD].ut_gmtoff = get_local_timezone_ofs(1139684315);
 
   return msg;
 }
@@ -126,6 +127,8 @@ create_sample_message(void)
   log_msg_set_value_by_name(msg, "escaping2", "\xc3", -1);
   log_msg_set_value_by_name(msg, "null", "binary\0stuff", 12);
   log_msg_set_value_by_name(msg, "comma_value", "value,with,a,comma", -1);
+  log_msg_set_value_by_name(msg, "empty_value", "", -1);
+  log_msg_set_value_by_name(msg, "template_name", "dummy", -1);
 
   return msg;
 }

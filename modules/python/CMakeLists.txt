@@ -1,9 +1,4 @@
-if (PYTHONLIBS_FOUND)
-  option(ENABLE_PYTHON "Enable Python module" ON)
-else()
-  option(ENABLE_PYTHON "Enable Python module" OFF)
-endif()
-
+module_switch(ENABLE_PYTHON "Enable Python module" PYTHONLIBS_FOUND)
 if (NOT ENABLE_PYTHON)
   return()
 endif ()
@@ -11,8 +6,6 @@ endif ()
 if (NOT PYTHONLIBS_FOUND)
   message(FATAL_ERROR "Python module enabled, but python library not found.")
 endif()
-
-MESSAGE(STATUS "Found python ${PYTHONLIBS_VERSION_STRING}")
 
 set(PYTHON_SOURCES
     python-module.h
@@ -45,6 +38,8 @@ set(PYTHON_SOURCES
     python-logparser.c
     python-integerpointer.h
     python-integerpointer.c
+    python-logger.h
+    python-logger.c
     python-source.h
     python-source.c
     python-fetcher.h
@@ -69,13 +64,6 @@ target_include_directories (mod-python PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 target_include_directories (mod-python PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_include_directories (mod-python PRIVATE ${PYTHON_INCLUDE_DIRS})
 target_link_libraries(mod-python PRIVATE syslog-ng ${PYTHON_LIBRARIES} ${Eventlog_LIBRARIES} ${IVYKIS_LIBRARIES})
-
-include(CheckFunctionExists)
-if (PYTHONLIBS_VERSION_STRING VERSION_LESS 3)
-  target_compile_definitions(mod-python PRIVATE SYSLOG_NG_ENABLE_PYTHONv2=1)
-else ()
-  target_compile_definitions(mod-python PRIVATE SYSLOG_NG_ENABLE_PYTHONv3=1)
-endif ()
 
 add_dependencies(mod-python SetupPylib)
 install(TARGETS mod-python DESTINATION lib/syslog-ng/)

@@ -35,6 +35,21 @@
 #include <errno.h>
 #include <string.h>
 
+/* helper functions available for all modules */
+
+void
+_append_args_with_separator(gint argc, GString *argv[], GString *result, gchar separator)
+{
+  gint i;
+
+  for (i = 0; i < argc; i++)
+    {
+      g_string_append_len(result, argv[i]->str, argv[i]->len);
+      if (i < argc - 1)
+        g_string_append_c(result, separator);
+    }
+}
+
 /* in order to avoid having to declare all construct functions, we
  * include them all here. If it causes compilation times to increase
  * drastically, we should probably make them into separate compilation
@@ -73,6 +88,8 @@ static Plugin basicfuncs_plugins[] =
   TEMPLATE_FUNCTION_PLUGIN(tf_replace_delimiter, "replace-delimiter"),
   TEMPLATE_FUNCTION_PLUGIN(tf_string_padding, "padding"),
   TEMPLATE_FUNCTION_PLUGIN(tf_binary, "binary"),
+  TEMPLATE_FUNCTION_PLUGIN(tf_implode, "implode"),
+  TEMPLATE_FUNCTION_PLUGIN(tf_explode, "explode"),
 
   /* fname-funcs */
   TEMPLATE_FUNCTION_PLUGIN(tf_dirname, "dirname"),
@@ -97,6 +114,9 @@ static Plugin basicfuncs_plugins[] =
   TEMPLATE_FUNCTION_PLUGIN(tf_num_min, "min"),
   TEMPLATE_FUNCTION_PLUGIN(tf_num_max, "max"),
   TEMPLATE_FUNCTION_PLUGIN(tf_num_average, "average"),
+  TEMPLATE_FUNCTION_PLUGIN(tf_num_round, "round"),
+  TEMPLATE_FUNCTION_PLUGIN(tf_num_ceil, "ceil"),
+  TEMPLATE_FUNCTION_PLUGIN(tf_num_floor, "floor"),
 
   /* ip-funcs */
   TEMPLATE_FUNCTION_PLUGIN(tf_ipv4_to_int, "ipv4-to-int"),

@@ -21,9 +21,10 @@
  *
  */
 
+#include "libtest/cr_template.h"
+#include "libtest/grab-logging.h"
 #include <criterion/criterion.h>
 
-#include "libtest/cr_template.h"
 #include "apphook.h"
 #include "plugin.h"
 #include "cfg.h"
@@ -118,6 +119,8 @@ Test(basicfuncs, test_cond_funcs)
   assert_template_format_with_context("$(if '\"$FACILITY_NUM\" >= \"19\" and \"kicsi\" eq \"nagy\"' alma korte)",
                                       "korte");
   assert_template_format_with_context("$(if '\"$FACILITY_NUM\" >= \"19\" or \"kicsi\" eq \"nagy\"' alma korte)", "alma");
+
+  assert_template_format_with_context("$(if program(\"slog-ng\" type(pcre)) alma korte)", "alma");
 
   assert_template_format_with_context("$(grep 'facility(local3)' $PID)@0", "23323");
   assert_template_format_with_context("$(grep 'facility(local3)' $PID)@1", "23323");
@@ -218,6 +221,27 @@ Test(basicfuncs, test_numeric_funcs)
   assert_template_format("$(% 10000000000 5000000001)", "4999999999");
   assert_template_format("$(* 5000000000 2)", "10000000000");
   assert_template_format("$(- 10000000000 5000000000)", "5000000000");
+
+  assert_template_format("$(+ 1.5 .25)", "1.75000000000000000000");
+  assert_template_format("$(- -1.5 .25)", "-1.75000000000000000000");
+  assert_template_format("$(/ 3 2)", "1");
+  assert_template_format("$(/ 3.0 2)", "1.50000000000000000000");
+  assert_template_format("$(/ 3 2.0)", "1.50000000000000000000");
+  assert_template_format("$(* 1.5 2.0)", "3.00000000000000000000");
+  assert_template_format("$(% 3.14 0.7)", "0.34000000000000030198");
+
+  assert_template_format("$(+ 5e-1 0)", "0.50000000000000000000");
+
+  assert_template_format("$(round 2.0)", "2");
+  assert_template_format("$(round 2.123456 3)", "2.123");
+  assert_template_format("$(round 2.123456 4)", "2.1235");
+  assert_template_format("$(round 0.5)", "1");
+  assert_template_format("$(round 2 -1)", "NaN");
+  assert_template_format("$(round 2 21)", "NaN");
+  assert_template_format("$(round 2 0)", "2");
+  assert_template_format("$(round 2 20)", "2.00000000000000000000");
+  assert_template_format("$(floor 0.7)", "0");
+  assert_template_format("$(ceil 0.2)", "1");
 }
 
 Test(basicfuncs, test_fname_funcs)
@@ -243,11 +267,13 @@ _test_macros_with_context(const gchar *id, const gchar *numbers[], const MacroAn
 {
   GPtrArray *messages = create_log_messages_with_values(id, numbers);
 
+  start_grabbing_messages();
   for (const MacroAndResult *test_case = test_cases; test_case->macro; test_case++)
     assert_template_format_with_context_msgs(
       test_case->macro, test_case->result,
       (LogMessage **)messages->pdata, messages->len);
 
+  stop_grabbing_messages();
   free_log_message_array(messages);
 }
 
@@ -310,8 +336,16 @@ Test(basicfuncs, test_misc_funcs)
 
 Test(basicfuncs, test_tf_template)
 {
+  /* static binding */
   assert_template_format("foo $(template dummy) bar", "foo dummy template expanded bzorp bar");
   assert_template_failure("foo $(template unknown) bar", "Unknown template function or template \"unknown\"");
+
+  /* dynamic binding */
+  assert_template_format("foo $(template ${template_name}) bar", "foo dummy template expanded bzorp bar");
+  assert_template_format("foo $(template '${unknown:-unknown}' fallback) bar", "foo fallback bar");
+  assert_template_format("foo $(template '${unknown:-unknown}' fallback more args $HOST) bar",
+                         "foo fallback more args bzorp bar");
+  assert_template_format("foo $(template '${unknown:-unknown}') bar", "foo  bar");
 }
 
 Test(basicfuncs, test_list_funcs)
@@ -397,6 +431,14 @@ Test(basicfuncs, test_list_funcs)
   assert_template_format("$(list-slice :-6 foo,bar,xxx,baz,bad)", "");
 
   assert_template_format("$(list-count foo,bar,xxx, baz bad)", "5");
+
+  assert_template_format("$(explode ' ' foo bar xxx baz bad)", "foo,bar,xxx,baz,bad");
+  assert_template_format("$(explode ' ' 'foo bar xxx baz bad')", "foo,bar,xxx,baz,bad");
+  assert_template_format("$(explode ';' foo;bar;xxx;baz;bad)", "foo,bar,xxx,baz,bad");
+  assert_template_format("$(explode ';' foo;bar xxx;baz;bad)", "foo,bar,xxx,baz,bad");
+
+  assert_template_format("$(implode ' ' foo,bar,xxx,baz,bad)", "foo bar xxx baz bad");
+  assert_template_format("$(implode ' ' $(list-slice :3 foo,bar,xxx,baz,bad))", "foo bar xxx");
 }
 
 Test(basicfuncs, test_context_funcs)

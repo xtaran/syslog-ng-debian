@@ -51,7 +51,7 @@ You have to set the path of the class file or the name of the jar file (with ful
 
 Example configuration for this (if you compiled the java file above, and the class file is in the /tmp directory):
 ```
-@version: 3.19
+@version: 3.25
 
 options {
   threaded(yes);
@@ -80,7 +80,7 @@ log{
 ```
 Example configuration using jar files in the class_path (the path inside the jar file has to been set using '.'):
 ```
-@version: 3.19
+@version: 3.25
 
 options {
   threaded(yes);
@@ -94,22 +94,20 @@ source s_network {
         tcp(port(5555));
 };
 
-destination d_local {
-  java(
-    class_path("/usr/lib/syslog-ng/3.6/elasticsearch.jar:/usr/share/elasticsearch/lib/elasticsearch-1.4.0.jar:/usr/share/elasticsearch/lib/lucene-core-4.10.2.jar")
-    class_name("org.syslog_ng.destinations.ElasticSearch")
-    template("$(format-json --scope rfc5424 --exclude DATE --key ISODATE)")
-    option("cluster" "cl1")
-    option("index" "syslog")
-    option("type" "test")
-    option("server" "192.168.1.104")
-    option("port" "9300")
+destination d_elastic {
+  elasticsearch2(
+    client-lib-dir("/usr/share/elasticsearch/lib/")
+    index("syslog-${YEAR}.${MONTH}.${DAY}")
+    type("syslog")
+    time-zone("UTC")
+    client-mode("http")
+    cluster-url("http://node01:9200 http://node02:9200")
   );
 };
 
 log {
   source(s_network);
-  destination(d_local);
+  destination(d_elastic);
   flags(flow-control);
 };
 
