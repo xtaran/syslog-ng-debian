@@ -4,6 +4,7 @@ syslog-ng (3.25.1-1) UNRELEASED; urgency=medium
   * Merge in syslog-ng-mod-journal (closes: #924264).
   * Remove syslog-ng-mod-geoip module.
   * Python3ify syslog-ng-mod-python (closes: #938618).
+  * Add upstream persist-tool manpage.
 
  -- Laszlo Boszormenyi (GCS) <gcs@debian.org>  Sat, 21 Dec 2019 08:42:10 +0000
 
