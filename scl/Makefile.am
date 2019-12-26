@@ -2,6 +2,8 @@ SCL_SUBDIRS	= \
 	apache		\
 	cim		\
 	cisco		\
+	collectd \
+	checkpoint	\
 	default-network-drivers	\
 	elasticsearch	\
 	ewmm		\
@@ -9,12 +11,14 @@ SCL_SUBDIRS	= \
 	graylog2	\
 	hdfs		\
 	iptables	\
+	junos		\
 	kafka		\
 	linux-audit	\
 	loadbalancer	\
 	loggly		\
 	logmatic	\
 	mbox		\
+	netskope	\
 	nodejs		\
 	osquery	\
 	pacct		\
@@ -25,6 +29,7 @@ SCL_SUBDIRS	= \
 	sudo		\
 	syslogconf	\
 	system		\
+	websense	\
 	telegram	\
 	windowseventlog
 
@@ -50,6 +55,8 @@ scl-uninstall-local:
 		rm -f $(DESTDIR)/$(sysconfdir)/$${cfg}; \
 	done
 	rm -rf $(DESTDIR)/$(scldir)
+
+scl-install: scl-install-data-local
 
 INSTALL_EXEC_HOOKS	+= scl-install-data-local
 UNINSTALL_HOOKS	+= scl-uninstall-local

@@ -25,7 +25,7 @@
 #include "testutils.h"
 #include "mainloop.h"
 #include "modules/afmongodb/afmongodb-parser.h"
-#include "logthrdestdrv.h"
+#include "logthrdest/logthrdestdrv.h"
 
 static int _tests_failed = 0;
 static GlobalConfig *test_cfg;
@@ -292,6 +292,8 @@ _test_legacy_error(void)
 static void
 _setup(void)
 {
+  main_loop_thread_resource_init();
+  stats_cluster_init();
   msg_init(FALSE);
   g_thread_init(NULL);
 
@@ -323,6 +325,8 @@ _teardown(void)
 
   log_msg_registry_deinit();
   msg_deinit();
+  stats_cluster_deinit();
+  main_loop_thread_resource_deinit();
 }
 
 int

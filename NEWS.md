@@ -1,64 +1,64 @@
-3.19.1
+3.25.1
 ======
+
+## Highlights
+
+ * `http-destination`: Users now can specify the action for any HTTP result code.
+   Use with `response-action(response_code => action)` in your http block.
+   Available actions are: `success`, `retry`, `drop` and `disconnect`. (#3007)
+ * `syslog-ng-cfg-db`: Added a new script, which can provide the options of
+   sources and destinations queried by the user. This tool can make the configuration
+   of syslog-ng a lot easier. Use with `./syslog-ng-cfg-db.py` from the
+   `contrib/config_database` dir.(#2997)
+ * `redis-destination`: Improved the performance by 2 orders of magnitude.
+   In our labor environment, now it operates at 25k EPS. (#2972)
 
 ## Features
 
- * HTTP load balancer (#2347)
- * Slack destination (#2451)
- * Add Cisco Catalyst formatted triplets support to cisco-parser() (#2394)
- * Add RFC5424 syslog support to the system() source (FreeBSD 12.0 support) (#2430)
- * Add network `interface()` option to network sources (#2389)
- * Add so-reuseport() to network drivers (#2379)
- * Enable supporting HTTP redirects (#2136)
+ * `create-dirs()`: Added to `pipe()` source/destination, and standardize the behavior.
+   (#3018, #2635)
+ * `default-network-drivers`: Added `max-connections()` option, to change the limit
+    from 10. (#2961)
+ * `checkpoint`: Added support for timezone value at the end of timestamps. (#3033)
+ * `filter/rewrite`: Added `disable-jit` flag to disable JIT PCRE compilation. (#2992, #2986)
+ * `syslog-ng-ctl`: Added `export-config-graph` option to visualize config graph. (#2990)
+ * `build/travis`: Added ARM64 arch support. (#2967) 
+ * `build/dbld`: Readded CentOS 6 support. (#2860, #2971, #3028)
+ * `python`: Added Python 3.8 support. (#3017)
 
 ## Bugfixes
 
- * Fix frequent disconnects of syslog() with TLS (#2432)
- * Fix possible refcount leak during reload/shutdown (#2434)
- * Fix message storm on trace level (#2425)
- * Fix use after free in file destinations (time-reap) (#2418)
- * Fixing a few memleaks in the Java destination (#2417)
- * Fix telegram dst default ca dir (#2416)
- * Fix prefix handling in $(list-concat) and $(strip) (#2405)
- * Fixing an eventfd leak with ivykis<=0.38 (threaded destinations) (#2404)
- * Process flush result after worker thread exits (threaded destinations) (#2402)
- * hdfs: do not try to write unopened file (#2391)
- * Fix leaks in redis() destination (#2383)
- * Block location tracking fixes (#2378)
- * Fix $(basename) and $(dirname) in the presence of a prefix (#2371)
- * Fixing a false positive corruption detection in non-reliable diskq (#2356)
- * Check if /proc/kmsg can be opened in system-source (#2408)
- * Fix include guard in systemd-journal (#2445)
- * Remove hexadecimal and octal number parsing from templates (#2401)
+ * `tls`: Fixed an infinite loop which occured, when a `TLS` connection broke. (#3026, #3009)
+ * `log-block`: Fixed an issue, where inline `network` destinations disjointed
+   the rest of the config. (#2989, #2820)
+ * `kafka/network-load-balancer`: Fixed a crash when an argument was set to empty. (#3002)
+ * `python-source`: Fixed a memory corruption during reload. (#3014)
+ * `python-destination`: Actually use return value of `open` method. (#2998, #2513)
+ * `python-fetcher`: Fixed `FETCH_NO_DATA` and `FETCH_TRY_AGAIN` constants. (#3012)
+ * `python`: Fixed python `Exception` reporting when no `Exception` happened. (#2995)
+ * `telegram`: Fixed the syntax error of the `use-system-cert-store()` option. (#2977)
+ * `config`: Throw error to single dots, which were ignored before. (#3000)
+ * `file-destination`: Delay ACKs until messages are written to disk. This fixes message
+   drop on I/O error and message lost in the LogProtoFileWriter in case of a crash, by
+   retrying to send the message. (#2985)
+ * `http-destination`: Handle global template options values. (#3020)
+ * `timeutils`: Fixed month and day name parsing, when only the first 2 characters
+    matched. (#3035)
+ * `logmsg`: Added default `PRI` value (`LOG_USER | LOG_NOTICE`) to log messages
+   created without initial parsing. (#2974)
+ * `packaging`: Added ordering dependencies `network.target` and `network-online.target`
+   to the service files. (#2994, #2667)
+ * `amqp`: Support older (0.7.1) version (#2999)
+ * `loggen`: Set plugin path in installation time. (#3019)
+ * `timeutils/patterndb`: Fixed some undefined behaviours. (#2969)
+ * `stomp`: Fixed a buffer over-read on connection. (#2988)
+ * `pseudofile`: Fixed a crash, when `template()` option is not set. (#2988)
+ * `wildcard-source`: Fixed a crash, when `max-files()` was set to 0. (#2988)
 
 ## Other changes
 
- * Do not load certs from default CURL ca-dir by default (http() destination) (#2410)
- * Disable SSL compression by default (#2372)
- * Flush lines cleanup (#2386, #2392)
- * Refine json-parser() log messages to be less alarming (#2437)
- * Move some messages to trace (#2358)
- * Make include-path more discoverable (#2426)
- * Adding build flag -Wmissing-format-attribute and -Wsuggest-attribute=noreturn (#2423)
- * Rewrite filter unit tests based on criterion (#2422)
- * PytestFramework in Travis (#2415)
- * syslog-ng-mod-java debian pkg should depend on headless jre (#2388)
- * Add contextual data error reporting improvements & csv-scanner refactor (#2373)
- * Afsocket remove unused functions/bitfields (#2363)
- * Afsocket minor cleanup/refactor (#2355)
- * Riemann worker (#2313)
- * Afsql threaded dest driver (#2097)
- * dbld: do not mount .gitconfig if missing (#2419)
- * dbld: Add missing docbook-xsl packages (#2398)
- * dbld: update criterion to 2.3.3 (#2396)
- * dbld: Remove "proposed" Ubuntu repository from enable_dbgsyms() (#2382)
- * dbld: Add new target "list-builder-images" (#2381)
- * dbld: Support Ubuntu Bionic and update existing images (#2318)
- * dbld: release target should use the default image (#2464)
-
-## Notes to the developers
-
- * PytestFramework: Add initial test framework (#1940)
+ * `syslog-ng-debun`: Various maintenance updates and small fixes. (#2993)
+ * `scl`: Avoid `@requires` loading the plugins themselves. (#2887)
 
 ## Credits
 
@@ -71,6 +71,7 @@ of syslog-ng, contribute.
 
 We would like to thank the following people for their contribution:
 
-Abder Benbachir, Andras Mitzki, Antal Nemes, Attila Szakacs, Balazs Scheidler,
-Gabor Nagy, Gergely Tonté, JP Vossen, Juhasz Viktor, Laszlo Budai,
-Laszlo Szemere, László Várady, Norbert Takacs, Peter Kokai, Zoltan Pallagi.
+Andras Mitzki, Antal Nemes, Attila Szakacs, Balazs Scheidler, Clément Besnier,
+Gabor Nagy, jadhavsumit98, Janos Szigetvari, Laszlo Budai, Laszlo Szemere,
+László Várady, MikeLim, Nikita Uvarov, Norbert Takacs, pabloli, Péter Kókai,
+Zoltan Pallagi.

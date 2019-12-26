@@ -75,6 +75,7 @@ static CfgLexerKeyword main_keywords[] =
   { "scope",              KW_SCOPE },
   { "rekey",              KW_REKEY },
   { "shift",              KW_SHIFT },
+  { "shift_levels",       KW_SHIFT_LEVELS },
   { "add_prefix",         KW_ADD_PREFIX },
   { "replace",            KW_REPLACE_PREFIX, KWS_OBSOLETE, "replace_prefix" },
   { "replace_prefix",     KW_REPLACE_PREFIX },
@@ -98,7 +99,7 @@ static CfgLexerKeyword main_keywords[] =
   { "sync",               KW_FLUSH_LINES, KWS_OBSOLETE, "flush_lines" },
   { "long_hostnames",     KW_CHAIN_HOSTNAMES, KWS_OBSOLETE, "chain_hostnames" },
   { "chain_hostnames",    KW_CHAIN_HOSTNAMES },
-  { "normalize_hostnames",KW_NORMALIZE_HOSTNAMES },
+  { "normalize_hostnames", KW_NORMALIZE_HOSTNAMES },
   { "keep_hostname",      KW_KEEP_HOSTNAME },
   { "check_hostname",     KW_CHECK_HOSTNAME },
   { "bad_hostname",       KW_BAD_HOSTNAME },
@@ -131,6 +132,7 @@ static CfgLexerKeyword main_keywords[] =
   { "log_fetch_limit",    KW_LOG_FETCH_LIMIT },
   { "log_iw_size",        KW_LOG_IW_SIZE },
   { "log_msg_size",       KW_LOG_MSG_SIZE },
+  { "trim_large_messages", KW_TRIM_LARGE_MESSAGES },
   { "log_prefix",         KW_LOG_PREFIX, KWS_OBSOLETE, "program_override" },
   { "program_override",   KW_PROGRAM_OVERRIDE },
   { "host_override",      KW_HOST_OVERRIDE },
@@ -163,6 +165,7 @@ static CfgLexerKeyword main_keywords[] =
   { "batch_timeout",      KW_BATCH_TIMEOUT },
 
   { "read_old_records",   KW_READ_OLD_RECORDS},
+  { "fetch_no_data_delay", KW_FETCH_NO_DATA_DELAY},
   /* filter items */
   { "type",               KW_TYPE },
   { "tags",               KW_TAGS },
@@ -172,6 +175,10 @@ static CfgLexerKeyword main_keywords[] =
   { "on",                 KW_YES },
   { "no",                 KW_NO },
   { "off",                KW_NO },
+  /* rewrite rules */
+  { "condition",          KW_CONDITION },
+  { "value",              KW_VALUE },
+
   { NULL, 0 }
 };
 
@@ -323,14 +330,22 @@ report_syntax_error(CfgLexer *lexer, YYLTYPE *yylloc, const char *what, const ch
     {
       if (from == level)
         {
-          fprintf(stderr, "Error parsing %s, %s in %s:\n",
+          fprintf(stderr, "Error parsing %s, %s in %s:%d:%d-%d:%d:\n",
                   what,
                   msg,
-                  yylloc->level->name);
+                  from->lloc.level->name,
+                  from->lloc.first_line,
+                  from->lloc.first_column,
+                  from->lloc.last_line,
+                  from->lloc.last_column);
         }
       else
         {
-          fprintf(stderr, "Included from %s:\n", from->name);
+          fprintf(stderr, "Included from %s:%d:%d-%d:%d:\n", from->name,
+                  from->lloc.first_line,
+                  from->lloc.first_column,
+                  from->lloc.last_line,
+                  from->lloc.last_column);
         }
       if (from->include_type == CFGI_FILE)
         {

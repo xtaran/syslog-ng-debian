@@ -25,6 +25,7 @@
 #include "python-logmsg.h"
 #include "python-helpers.h"
 #include "logthrsource/logthrsourcedrv.h"
+#include "thread-utils.h"
 #include "str-utils.h"
 #include "string-list.h"
 
@@ -37,6 +38,7 @@ struct _PythonSourceDriver
   gchar *class;
   GList *loaders;
   GHashTable *options;
+  ThreadId thread_id;
 
   void (*post_message)(PythonSourceDriver *self, LogMessage *msg);
 
@@ -410,12 +412,6 @@ _py_sd_init(PythonSourceDriver *self)
   if (!_py_init_bindings(self))
     goto error;
 
-  if (self->py.suspend_method && self->py.wakeup_method)
-    {
-      self->post_message = _post_message_non_blocking;
-      log_threaded_source_set_wakeup_func(&self->super, python_sd_wakeup);
-    }
-
   if (!_py_init_object(self))
     goto error;
 
@@ -434,6 +430,20 @@ static PyObject *
 py_log_source_post(PyObject *s, PyObject *args, PyObject *kwrds)
 {
   PyLogSource *self = (PyLogSource *) s;
+
+  if (self->driver->thread_id != get_thread_id())
+    {
+      /*
+         Message posting must happen in a syslog-ng thread that was
+         initialized by main_loop_call_thread_init(), which is not
+         exposed to python. Hence posting from a python thread can
+         crash syslog-ng.
+      */
+
+      PyErr_Format(PyExc_RuntimeError, "post_message must be called from main thread");
+      return NULL;
+    }
+
   PythonSourceDriver *sd = self->driver;
 
   PyLogMessage *pymsg;
@@ -467,6 +477,7 @@ python_sd_run(LogThreadedSourceDriver *s)
 {
   PythonSourceDriver *self = (PythonSourceDriver *) s;
 
+  self->thread_id = get_thread_id();
   PyGILState_STATE gstate = PyGILState_Ensure();
   _py_invoke_run(self);
   PyGILState_Release(gstate);
@@ -501,7 +512,20 @@ python_sd_init(LogPipe *s)
               evt_tag_str("driver", self->super.super.super.id),
               evt_tag_str("class", self->class));
 
-  return log_threaded_source_driver_init_method(s);
+  gboolean retval = log_threaded_source_driver_init_method(s);
+  if (!retval)
+    return FALSE;
+
+  log_threaded_source_driver_set_worker_request_exit_func(&self->super, python_sd_request_exit);
+  log_threaded_source_driver_set_worker_run_func(&self->super, python_sd_run);
+
+  if (self->py.suspend_method && self->py.wakeup_method)
+    {
+      self->post_message = _post_message_non_blocking;
+      log_threaded_source_set_wakeup_func(&self->super, python_sd_wakeup);
+    }
+
+  return TRUE;
 }
 
 static gboolean
@@ -544,10 +568,7 @@ python_sd_new(GlobalConfig *cfg)
 
   self->super.format_stats_instance = python_sd_format_stats_instance;
   self->super.worker_options.super.stats_level = STATS_LEVEL0;
-  self->super.worker_options.super.stats_source = SCS_PYTHON;
-
-  log_threaded_source_driver_set_worker_request_exit_func(&self->super, python_sd_request_exit);
-  log_threaded_source_driver_set_worker_run_func(&self->super, python_sd_run);
+  self->super.worker_options.super.stats_source = stats_register_type("python");
 
   self->options = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_free);
   self->post_message = _post_message_blocking;
@@ -567,7 +588,7 @@ static PyTypeObject py_log_source_type =
   PyVarObject_HEAD_INIT(&PyType_Type, 0)
   .tp_name = "LogSource",
   .tp_basicsize = sizeof(PyLogSource),
-  .tp_dealloc = (destructor) PyObject_Del,
+  .tp_dealloc = py_slng_generic_dealloc,
   .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,
   .tp_doc = "The LogSource class is a base class for custom Python sources.",
   .tp_new = PyType_GenericNew,
@@ -579,5 +600,5 @@ void
 py_log_source_init(void)
 {
   PyType_Ready(&py_log_source_type);
-  PyModule_AddObject(PyImport_AddModule("syslogng"), "LogSource", (PyObject *) &py_log_source_type);
+  PyModule_AddObject(PyImport_AddModule("_syslogng"), "LogSource", (PyObject *) &py_log_source_type);
 }

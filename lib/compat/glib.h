@@ -30,8 +30,13 @@
 
 #include <glib.h>
 
-#if !SYSLOG_NG_HAVE_G_LIST_COPY_DEEP
+#ifndef SYSLOG_NG_HAVE_G_LIST_COPY_DEEP
 GList *g_list_copy_deep (GList *list, GCopyFunc func, gpointer user_data);
+#endif
+
+#ifndef SYSLOG_NG_HAVE_G_CANONICALIZE_FILENAME
+gchar *g_canonicalize_filename (const gchar *filename,
+                                const gchar *relative_to);
 #endif
 
 #ifndef g_atomic_pointer_add
@@ -45,40 +50,53 @@ GList *g_list_copy_deep (GList *list, GCopyFunc func, gpointer user_data);
 #define g_atomic_pointer_add(atomic, val) \
   (G_GNUC_EXTENSION ({                                                       \
     G_STATIC_ASSERT (sizeof *(atomic) == sizeof (gpointer));                 \
-    (void) (0 ? (gpointer) *(atomic) : 0);                                   \
-    (void) (0 ? (val) ^ (val) : 0);                                          \
+    (void) (0 ? (gpointer) *(atomic) : NULL);                                \
+    (void) (0 ? (val) ^ (val) : 1);                                          \
     (gssize) __sync_fetch_and_add ((atomic), (val));                         \
   }))
 #define g_atomic_pointer_or(atomic, val) \
   (G_GNUC_EXTENSION ({                                                       \
     G_STATIC_ASSERT (sizeof *(atomic) == sizeof (gpointer));                 \
-    (void) (0 ? (gpointer) *(atomic) : 0);                                   \
-    (void) (0 ? (val) ^ (val) : 0);                                          \
+    (void) (0 ? (gpointer) *(atomic) : NULL);                                \
+    (void) (0 ? (val) ^ (val) : 1);                                          \
     (gsize) __sync_fetch_and_or ((atomic), (val));                           \
   }))
 #define g_atomic_pointer_xor(atomic, val) \
   (G_GNUC_EXTENSION ({                                                       \
     G_STATIC_ASSERT (sizeof *(atomic) == sizeof (gpointer));                 \
-    (void) (0 ? (gpointer) *(atomic) : 0);                                   \
-    (void) (0 ? (val) ^ (val) : 0);                                          \
+    (void) (0 ? (gpointer) *(atomic) : NULL);                                \
+    (void) (0 ? (val) ^ (val) : 1);                                          \
     (gsize) __sync_fetch_and_xor ((atomic), (val));                          \
   }))
 #define g_atomic_pointer_and(atomic, val) \
   (G_GNUC_EXTENSION ({                                                       \
     G_STATIC_ASSERT (sizeof *(atomic) == sizeof (gpointer));                 \
-    (void) (0 ? (gpointer) *(atomic) : 0);                                   \
-    (void) (0 ? (val) ^ (val) : 0);                                          \
+    (void) (0 ? (gpointer) *(atomic) : NULL);                                \
+    (void) (0 ? (val) ^ (val) : 1);                                          \
     (gsize) __sync_fetch_and_and ((atomic), (val));                          \
   }))
 
 #endif
 
-#if !SYSLOG_NG_HAVE_G_QUEUE_FREE_FULL
+#ifndef SYSLOG_NG_HAVE_G_QUEUE_FREE_FULL
 void g_queue_free_full(GQueue *queue, GDestroyNotify free_func);
 #endif
 
-#if !SYSLOG_NG_HAVE_G_LIST_FREE_FULL
+#ifndef SYSLOG_NG_HAVE_G_LIST_FREE_FULL
 void g_list_free_full (GList *list, GDestroyNotify free_func);
+#endif
+
+#ifndef SYSLOG_NG_HAVE_G_PTR_ARRAY_FIND_WITH_EQUAL_FUNC
+gboolean g_ptr_array_find_with_equal_func (GPtrArray *haystack,
+                                           gconstpointer needle,
+                                           GEqualFunc equal_func,
+                                           guint *index_);
+#endif
+
+#ifndef SYSLOG_NG_HAVE_G_HASH_TABLE_CONTAINS
+gboolean
+g_hash_table_contains (GHashTable    *hash_table,
+                       gconstpointer  key);
 #endif
 
 #endif

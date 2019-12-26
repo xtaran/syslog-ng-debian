@@ -11,12 +11,7 @@ set(AFSQL_SOURCES
 find_package(LibDBI)
 find_package(OpenSSL)
 
-if(LIBDBI_FOUND)
-    option(ENABLE_SQL "Enable SQL plugin" ON)
-else()
-    option(ENABLE_SQL "Enable SQL plugin" OFF)
-endif()
-
+module_switch(ENABLE_SQL "Enable SQL plugin" LIBDBI_FOUND)
 if (ENABLE_SQL)
     generate_y_from_ym(modules/afsql/afsql-grammar)
 
@@ -26,7 +21,7 @@ if (ENABLE_SQL)
         COMPILE_FLAGS ${BISON_FLAGS})
 
     add_library(afsql MODULE ${AFSQL_SOURCES})
-    target_link_libraries (afsql PUBLIC ${LIBDBI_LIBRARIES} PUBLIC ${OPENSSL_LIBRARIES})
+    target_link_libraries (afsql PUBLIC ${LIBDBI_LIBRARIES} OpenSSL::SSL)
     target_include_directories (afsql SYSTEM PRIVATE ${LIBDBI_INCLUDE_DIRS})
     target_include_directories (afsql PRIVATE ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
     target_link_libraries(afsql PRIVATE syslog-ng)

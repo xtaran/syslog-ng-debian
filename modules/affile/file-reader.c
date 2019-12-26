@@ -147,7 +147,7 @@ _setup_logreader(LogPipe *s, PollEvents *poll_events, LogProtoServer *proto, gbo
   FileReader *self = (FileReader *) s;
 
   self->reader = log_reader_new(log_pipe_get_config(s));
-  log_reader_reopen(self->reader, proto, poll_events);
+  log_reader_open(self->reader, proto, poll_events);
   log_reader_set_options(self->reader,
                          s,
                          &self->options->reader_options,
@@ -321,6 +321,7 @@ file_reader_remove_persist_state(FileReader *self)
 void
 file_reader_stop_follow_file(FileReader *self)
 {
+  log_reader_disable_bookmark_saving(self->reader);
   log_reader_close_proto(self->reader);
 }
 
@@ -368,11 +369,11 @@ file_reader_options_defaults(FileReaderOptions *options)
   options->restore_state = FALSE;
 }
 
-void
+gboolean
 file_reader_options_init(FileReaderOptions *options, GlobalConfig *cfg, const gchar *group)
 {
   log_reader_options_init(&options->reader_options, cfg, group);
-  log_proto_file_reader_options_init(file_reader_options_get_log_proto_options(options));
+  return log_proto_file_reader_options_init(file_reader_options_get_log_proto_options(options));
 }
 
 void

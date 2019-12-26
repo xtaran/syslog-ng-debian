@@ -1,11 +1,6 @@
 find_package(Curl)
 
-if (Curl_FOUND)
-  option(ENABLE_CURL "Enable http destination" ON)
-else ()
-  option(ENABLE_CURL "Enable http destination" OFF)
-endif()
-
+module_switch(ENABLE_CURL "Enable http destination" Curl_FOUND)
 if (NOT ENABLE_CURL)
   return ()
 endif ()
@@ -24,6 +19,8 @@ set(HTTP_DESTINATION_SOURCES
     http-parser.c
     http-parser.h
     http-plugin.c
+    response-handler.h
+    response-handler.c
     ${CMAKE_CURRENT_BINARY_DIR}/http-grammar.c
     ${CMAKE_CURRENT_BINARY_DIR}/http-grammar.h
 )

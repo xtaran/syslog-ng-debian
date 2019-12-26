@@ -159,6 +159,8 @@ _ulong_to_fetch_result(unsigned long ulong, ThreadedFetchResult *result)
     case THREADED_FETCH_ERROR:
     case THREADED_FETCH_NOT_CONNECTED:
     case THREADED_FETCH_SUCCESS:
+    case THREADED_FETCH_TRY_AGAIN:
+    case THREADED_FETCH_NO_DATA:
       *result = (ThreadedFetchResult) ulong;
       return TRUE;
 
@@ -534,7 +536,7 @@ python_fetcher_new(GlobalConfig *cfg)
 
   self->super.super.format_stats_instance = python_fetcher_format_stats_instance;
   self->super.super.worker_options.super.stats_level = STATS_LEVEL0;
-  self->super.super.worker_options.super.stats_source = SCS_PYTHON;
+  self->super.super.worker_options.super.stats_source = stats_register_type("python");
 
   self->super.fetch = python_fetcher_fetch;
 
@@ -549,7 +551,7 @@ static PyTypeObject py_log_fetcher_type =
   PyVarObject_HEAD_INIT(&PyType_Type, 0)
   .tp_name = "LogFetcher",
   .tp_basicsize = sizeof(PyLogFetcher),
-  .tp_dealloc = (destructor) PyObject_Del,
+  .tp_dealloc = py_slng_generic_dealloc,
   .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,
   .tp_doc = "The LogFetcher class is a base class for custom Python fetchers.",
   .tp_new = PyType_GenericNew,
@@ -566,7 +568,11 @@ py_log_fetcher_init(void)
                        PyLong_FromLong(THREADED_FETCH_NOT_CONNECTED));
   PyDict_SetItemString(py_log_fetcher_type.tp_dict, "FETCH_SUCCESS",
                        PyLong_FromLong(THREADED_FETCH_SUCCESS));
+  PyDict_SetItemString(py_log_fetcher_type.tp_dict, "FETCH_TRY_AGAIN",
+                       PyLong_FromLong(THREADED_FETCH_TRY_AGAIN));
+  PyDict_SetItemString(py_log_fetcher_type.tp_dict, "FETCH_NO_DATA",
+                       PyLong_FromLong(THREADED_FETCH_NO_DATA));
 
   PyType_Ready(&py_log_fetcher_type);
-  PyModule_AddObject(PyImport_AddModule("syslogng"), "LogFetcher", (PyObject *) &py_log_fetcher_type);
+  PyModule_AddObject(PyImport_AddModule("_syslogng"), "LogFetcher", (PyObject *) &py_log_fetcher_type);
 }
