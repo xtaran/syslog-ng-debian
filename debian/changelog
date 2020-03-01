@@ -1,6 +1,14 @@
-syslog-ng (3.25.1-2) UNRELEASED; urgency=medium
+syslog-ng (3.25.1-2) unstable; urgency=medium
 
   * Update upstream bison update (closes: #949847).
+
+  [ Balazs Scheidler <bazsi77@gmail.com> ]
+  * Remove unneeded/empty Makefile.am file.
+  * Remove obsoleted sections from README.source .
+  * Update github URL in copyright.
+  * Change github url in the watch file.
+  * Add wants/after lines into syslog-ng.systemd unit file.
+  * Remove libgeoip-dev as build dependency.
 
  -- Laszlo Boszormenyi (GCS) <gcs@debian.org>  Sun, 01 Mar 2020 11:38:57 +0000
 
