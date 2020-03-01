@@ -1,3 +1,30 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 1f8f16c13..ca895993a 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -63,6 +63,7 @@ set (LOGGEN_PLUGIN_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib/syslog-ng/loggen")
+ 
+ IF(CMAKE_BUILD_TYPE MATCHES Debug OR CMAKE_BUILD_TYPE MATCHES RelWithDebInfo)
+   set(SYSLOG_NG_ENABLE_DEBUG 1)
++  add_definitions(-DYYDEBUG=1)
+ ELSE()
+   set(SYSLOG_NG_ENABLE_DEBUG 0)
+ ENDIF()
+diff --git a/Makefile.am b/Makefile.am
+index 86c090638..22faf5aaa 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -86,6 +86,10 @@ AM_CFLAGS += \
+ 	-Wundef
+ endif
+ 
++if ENABLE_DEBUG
++AM_CFLAGS += -DYYDEBUG=1
++endif
++
+ TEST_CFLAGS		= -I$(top_srcdir)/libtest -DTOP_SRCDIR=\"$(abs_top_srcdir)\" $(AM_CFLAGS) $(CRITERION_CFLAGS)
+ 
+ TEST_LDADD		= $(LIBTEST_LIBS) $(CRITERION_LIBS) \
 diff --git a/Mk/lex-rules.am b/Mk/lex-rules.am
 index b8dac5978..5916afb63 100644
 --- a/Mk/lex-rules.am
@@ -13,10 +40,10 @@ index b8dac5978..5916afb63 100644
 -	$(AM_V_YACC)$(am__skipyacc) $(SHELL) $(YLWRAP) $< y.tab.c $@ y.tab.h $*.h y.output $*.output -- $(YACCCOMPILE) 2>&1 | ($(EGREP) -v "(warning: ([0-9]+ )?(nonterminal|rule)s? useless in grammar)|(^updating|unchanged)" || true)
 +	$(AM_V_YACC)$(am__skipyacc) $(SHELL) $(YLWRAP) $< y.tab.c $@ y.tab.h $*.h y.output $*.output -- $(YACCCOMPILE)
 diff --git a/configure.ac b/configure.ac
-index 057e03191..6e02f28ed 100644
+index ee7ded2e9..18f3cf06f 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -425,10 +425,10 @@ if echo "$YACC" | grep -q bison; then
+@@ -425,19 +425,22 @@ if echo "$YACC" | grep -q bison; then
  	bison_version=`$YACC --version | head -n 1 | sed 's/@<:@^0-9.@:>@*//'`
  	bison_version_major=`echo $bison_version | cut -d. -f1`
  	bison_version_minor=`echo $bison_version | cut -d. -f2`
@@ -25,24 +52,26 @@ index 057e03191..6e02f28ed 100644
 -	fi
 -	if test "$bison_version_major" -gt 2; then
 +	bison_version_patch=`echo $bison_version | cut -d. -f3`
-+	if [[ "$bison_version_major" -gt 3 ]] ||
-+	   [[ "$bison_version_major" -eq 3 ]] && [[ "$bison_version_minor" -gt 4 ]] ||
-+	   [[ "$bison_version_major" -eq 3 ]] && [[ "$bison_version_minor" -eq 4 ]] && [[ "$bison_version_patch" -ge 2 ]]; then
++	if ([[ "$bison_version_major" -gt 3 ]]) ||
++	   ([[ "$bison_version_major" -eq 3 ]] && [[ "$bison_version_minor" -gt 4 ]]) ||
++	   ([[ "$bison_version_major" -eq 3 ]] && [[ "$bison_version_minor" -eq 4 ]] && [[ "$bison_version_patch" -ge 2 ]]); then
  		yacc_ok=1
++	else
++		AC_MSG_WARN([bison is found, but your bison version $bison_version is not recent enough, at least 3.4.2 is required])
  	fi
  fi
-@@ -436,8 +436,9 @@ fi
+ 
  if test $yacc_ok = 0; then
  	if test -f $srcdir/lib/cfg-grammar.c || test -f lib/cfg-grammar.c; then
  		AC_MSG_WARN([No proper bison found, you'll not be able to change lib/cfg-grammar.y])
 +		YACC="echo Required bison not found && false"
  	else
 -		AC_MSG_ERROR([syslog-ng requires bison 2.4 or later (traditional yacc is not enough). Your source tree seems to be from git, which doesn't have lib/cfg-grammar.c. Please install bison or use a distribution tarball.])
-+		AC_MSG_ERROR([syslog-ng requires bison 3.4 or later (traditional yacc is not enough). Your source tree seems to be from git, which doesn't have lib/cfg-grammar.c. Please install bison or use a distribution tarball.])
++		AC_MSG_ERROR([syslog-ng requires bison 3.4.2 or later. Your source tree seems to be from git, which doesn't have the bison generated files (like cfg-grammar.c). Please install/upgrade bison or use a distribution tarball.])
  	fi
  fi
  
-@@ -453,6 +454,7 @@ fi
+@@ -453,6 +456,7 @@ fi
  if test $lex_ok = 0 ; then
  	if test -f $srcdir/lib/cfg-lex.c || test -f lib/cfg-lex.c; then
  		AC_MSG_WARN([No flex found, you'll not be able to change lib/cfg-lex.l])
@@ -50,6 +79,39 @@ index 057e03191..6e02f28ed 100644
  	else
  		AC_MSG_ERROR([syslog-ng requires flex in order to generate its config lexer. Your source tree seems to be from git, which doesn't have lib/cfg-lex.c. Please install flex or use a distribution tarball.])
  	fi
+@@ -1895,6 +1895,7 @@ AM_CONDITIONAL(ENABLE_NATIVE, [test "$en
+ AM_CONDITIONAL(ENABLE_EXTRA_WARNINGS, [test "$enable_extra_warnings" = "yes"])
+ AM_CONDITIONAL(ENABLE_LEGACY_MONGODB_OPTIONS, [test x"$enable_legacy_mongodb_options" != x"no"])
+ AM_CONDITIONAL(ENABLE_TESTING, [test "$enable_tests" != "no"])
++AM_CONDITIONAL(ENABLE_DEBUG, [test "$enable_debug" != "no"])
+ AM_CONDITIONAL([HAVE_INOTIFY], [test x$ac_cv_func_inotify_init = xyes])
+ AM_CONDITIONAL([HAVE_GETRANDOM], [test x$ac_cv_func_getrandom = xyes])
+ AM_CONDITIONAL([HAVE_FMEMOPEN], [test x$ac_cv_func_fmemopen = xyes])
+diff --git a/dbld/images/devshell.dockerfile b/dbld/images/devshell.dockerfile
+index cd64bb8d2..dd3d6dae7 100644
+--- a/dbld/images/devshell.dockerfile
++++ b/dbld/images/devshell.dockerfile
+@@ -5,3 +5,5 @@ RUN /helpers/dependencies.sh enable_dbgsyms
+ RUN /helpers/dependencies.sh install_perf
+ 
+ RUN /helpers/dependencies.sh install_apt_packages
++
++RUN /helpers/dependencies.sh install_bison_from_sid
+diff --git a/dbld/images/helpers/dependencies.sh b/dbld/images/helpers/dependencies.sh
+index 9cce59451..a14712807 100755
+--- a/dbld/images/helpers/dependencies.sh
++++ b/dbld/images/helpers/dependencies.sh
+@@ -130,6 +130,10 @@ function install_perf {
+     apt-cache search linux-tools | grep 'linux-tools-.*-generic' | cut -d" " -f1 | tail -n1 | cut -d"-" -f1-4 | xargs apt-get install --no-install-recommends -y
+ }
+ 
++function install_bison_from_sid {
++    download_target "http://ftp.hu.debian.org/debian/pool/main/b/bison/bison_3.4.2+dfsg-1_amd64.deb" /tmp/bison.deb
++    dpkg -i /tmp/bison.deb
++}
+ 
+ # DO NOT REMOVE!
+ "$@"
 diff --git a/dev-utils/plugin_skeleton_creator/plugin_template_grammar.ym b/dev-utils/plugin_skeleton_creator/plugin_template_grammar.ym
 index 4721bbf0e..dfe2932b0 100644
 --- a/dev-utils/plugin_skeleton_creator/plugin_template_grammar.ym
@@ -124,7 +186,7 @@ index 39289dd80..4f0dd5028 100644
  
  #endif
 diff --git a/lib/cfg-grammar.y b/lib/cfg-grammar.y
-index a7368234a..8108339df 100644
+index d1c8eac97..017fb0e32 100644
 --- a/lib/cfg-grammar.y
 +++ b/lib/cfg-grammar.y
 @@ -30,7 +30,7 @@
@@ -801,7 +863,7 @@ diff --git a/lib/cfg.h b/lib/cfg.h
 index 99e243f74..60e00837c 100644
 --- a/lib/cfg.h
 +++ b/lib/cfg.h
-@@ -129,7 +129,7 @@ gboolean cfg_is_module_available(GlobalC
+@@ -129,7 +129,7 @@ gboolean cfg_is_module_available(GlobalConfig *self, const gchar *module_name);
  void cfg_discover_candidate_modules(GlobalConfig *self);
  
  Plugin *cfg_find_plugin(GlobalConfig *cfg, gint plugin_type, const gchar *plugin_name);
@@ -880,8 +942,53 @@ index 2b3cc29f8..dc5d46a29 100644
 +CFG_PARSER_DECLARE_LEXER_BINDING(parser_expr_, PARSER_EXPR_, LogExprNode **)
  
  #endif
+diff --git a/lib/plugin.c b/lib/plugin.c
+index 4239b3a1d..44c15e445 100644
+--- a/lib/plugin.c
++++ b/lib/plugin.c
+@@ -81,6 +81,13 @@ plugin_construct(Plugin *self)
+   return NULL;
+ }
+ 
++static void
++plugin_free(Plugin *plugin)
++{
++  if (plugin->free_fn)
++    plugin->free_fn(plugin);
++}
++
+ static gboolean
+ _is_log_pipe(Plugin *self)
+ {
+@@ -303,6 +310,7 @@ plugin_register(PluginContext *context, Plugin *p, gint number)
+           msg_debug("Attempted to register the same plugin multiple times, dropping the old one",
+                     evt_tag_str("context", cfg_lexer_lookup_context_name_by_type(p[i].type)),
+                     evt_tag_str("name", p[i].name));
++          plugin_free(existing_plugin);
+           context->plugins = g_list_remove(context->plugins, existing_plugin);
+         }
+       context->plugins = g_list_prepend(context->plugins, &p[i]);
+@@ -517,17 +525,11 @@ plugin_discover_candidate_modules(PluginContext *context)
+   g_strfreev(mod_paths);
+ }
+ 
+-static void
+-_free_plugin(Plugin *plugin, gpointer user_data)
+-{
+-  if (plugin->free_fn)
+-    plugin->free_fn(plugin);
+-}
+ 
+ static void
+ _free_plugins(PluginContext *context)
+ {
+-  g_list_foreach(context->plugins, (GFunc) _free_plugin, NULL);
++  g_list_foreach(context->plugins, (GFunc) plugin_free, NULL);
+   g_list_free(context->plugins);
+   context->plugins = NULL;
+ }
 diff --git a/lib/pragma-grammar.ym b/lib/pragma-grammar.ym
-index e05d275a8..68bb3b7f3 100644
+index 127b0a038..b32ae0b59 100644
 --- a/lib/pragma-grammar.ym
 +++ b/lib/pragma-grammar.ym
 @@ -35,7 +35,7 @@
@@ -916,7 +1023,7 @@ index 1444b7d90..ea6296485 100644
  
  #endif
 diff --git a/lib/rewrite/rewrite-expr-grammar.ym b/lib/rewrite/rewrite-expr-grammar.ym
-index 2b8041b32..a421cd025 100644
+index 39a20177f..bf3aff56b 100644
 --- a/lib/rewrite/rewrite-expr-grammar.ym
 +++ b/lib/rewrite/rewrite-expr-grammar.ym
 @@ -46,7 +46,7 @@
@@ -951,7 +1058,7 @@ index 98abe6d53..4d7627a33 100644
  
  #endif
 diff --git a/lib/tests/test_lexer.c b/lib/tests/test_lexer.c
-index ca32a5813..1e4ead4d4 100644
+index ccfa53df8..9d420dd43 100644
 --- a/lib/tests/test_lexer.c
 +++ b/lib/tests/test_lexer.c
 @@ -47,13 +47,13 @@ _next_token(void)
@@ -1105,7 +1212,7 @@ index 352d77073..9da4976db 100644
  
  #endif
 diff --git a/modules/affile/affile-grammar.ym b/modules/affile/affile-grammar.ym
-index a42f68d4d..b4682d0f2 100644
+index 84221b0f0..8ed557081 100644
 --- a/modules/affile/affile-grammar.ym
 +++ b/modules/affile/affile-grammar.ym
 @@ -70,7 +70,7 @@ affile_grammar_set_wildcard_file_source_driver(WildcardSourceDriver *sd)
@@ -1118,7 +1225,7 @@ index a42f68d4d..b4682d0f2 100644
  /* this parameter is needed in order to instruct bison to use a complete
   * argument list for yylex/yyerror */
 diff --git a/modules/affile/affile-parser.c b/modules/affile/affile-parser.c
-index effb83592..e44dfc20f 100644
+index 31fe1c808..32a05670f 100644
 --- a/modules/affile/affile-parser.c
 +++ b/modules/affile/affile-parser.c
 @@ -67,4 +67,4 @@ CfgParser affile_parser =
@@ -1140,7 +1247,7 @@ index d9f56e968..a6152c266 100644
  
  #endif
 diff --git a/modules/afmongodb/afmongodb-grammar.ym b/modules/afmongodb/afmongodb-grammar.ym
-index 3bae11ee1..d0b28e8c7 100644
+index 3c757c6c0..93e82ad66 100644
 --- a/modules/afmongodb/afmongodb-grammar.ym
 +++ b/modules/afmongodb/afmongodb-grammar.ym
 @@ -35,7 +35,7 @@
@@ -1153,7 +1260,7 @@ index 3bae11ee1..d0b28e8c7 100644
  %parse-param {CfgLexer *lexer}
  %parse-param {LogDriver **instance}
 diff --git a/modules/afmongodb/afmongodb-parser.c b/modules/afmongodb/afmongodb-parser.c
-index 1d47dc6f5..faf9cce05 100644
+index 616342bb1..4bbbfa767 100644
 --- a/modules/afmongodb/afmongodb-parser.c
 +++ b/modules/afmongodb/afmongodb-parser.c
 @@ -63,4 +63,4 @@ CfgParser afmongodb_parser =
@@ -1163,7 +1270,7 @@ index 1d47dc6f5..faf9cce05 100644
 -CFG_PARSER_IMPLEMENT_LEXER_BINDING(afmongodb_, LogDriver **)
 +CFG_PARSER_IMPLEMENT_LEXER_BINDING(afmongodb_, AFMONGODB_, LogDriver **)
 diff --git a/modules/afmongodb/afmongodb-parser.h b/modules/afmongodb/afmongodb-parser.h
-index 2460e2bd1..59ffe1a9d 100644
+index 11b8c9864..8818a0f84 100644
 --- a/modules/afmongodb/afmongodb-parser.h
 +++ b/modules/afmongodb/afmongodb-parser.h
 @@ -34,6 +34,6 @@
@@ -1681,7 +1788,7 @@ index 2dc62e540..5adedc697 100644
  #endif
  
 diff --git a/modules/geoip2/geoip-parser-grammar.ym b/modules/geoip2/geoip-parser-grammar.ym
-index f356cf66a..3d5ed9100 100644
+index 08bd37314..b976613c7 100644
 --- a/modules/geoip2/geoip-parser-grammar.ym
 +++ b/modules/geoip2/geoip-parser-grammar.ym
 @@ -35,7 +35,7 @@
@@ -1751,7 +1858,7 @@ index 8cf85781b..052c4c121 100644
  
  #endif
 diff --git a/modules/http/http-grammar.ym b/modules/http/http-grammar.ym
-index 15c9bae19..8b4b557be 100644
+index 4942dff14..1ca98a2ef 100644
 --- a/modules/http/http-grammar.ym
 +++ b/modules/http/http-grammar.ym
 @@ -41,7 +41,7 @@ HttpResponseHandler last_response_handler;
@@ -2206,7 +2313,7 @@ index b65b045aa..5e61f986e 100644
  
  #endif
 diff --git a/modules/snmp-dest/snmpdest-grammar.ym b/modules/snmp-dest/snmpdest-grammar.ym
-index d0fe0c0f4..7ba1cae6b 100644
+index 4f0cc19c7..85847d11b 100644
 --- a/modules/snmp-dest/snmpdest-grammar.ym
 +++ b/modules/snmp-dest/snmpdest-grammar.ym
 @@ -41,7 +41,7 @@
