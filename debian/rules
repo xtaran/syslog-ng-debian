@@ -103,6 +103,7 @@ override_dh_auto_configure:
 		--enable-python \
 		--with-python=3 \
 		--enable-snmp-dest \
+		--enable-http \
 		\
 		--with-mongoc=system \
 		--with-ivykis=system \

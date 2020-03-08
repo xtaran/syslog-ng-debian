@@ -6,6 +6,7 @@ syslog-ng (3.26.1-1) UNRELEASED; urgency=medium
 
   [ Balazs Scheidler <bazsi77@gmail.com> ]
   * Add support for the snmp() destination (syslog-ng-mod-snmp package).
+  * Move the http() destination into a separate package (syslog-ng-mod-http).
 
  -- Laszlo Boszormenyi (GCS) <gcs@debian.org>  Sun, 08 Mar 2020 14:18:20 +0000
 
