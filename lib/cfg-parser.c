@@ -121,8 +121,9 @@ static CfgLexerKeyword main_keywords[] =
   { "time_sleep",         KW_TIME_SLEEP, KWS_OBSOLETE, "time_sleep() has been deprecated" },
   { "file_template",      KW_FILE_TEMPLATE },
   { "proto_template",     KW_PROTO_TEMPLATE },
-  { "default_level",      KW_DEFAULT_LEVEL },
-  { "default_priority",   KW_DEFAULT_LEVEL },
+  { "default_level",      KW_DEFAULT_SEVERITY },
+  { "default_priority",   KW_DEFAULT_SEVERITY },
+  { "default_severity",   KW_DEFAULT_SEVERITY },
   { "default_facility",   KW_DEFAULT_FACILITY },
   { "threaded",           KW_THREADED },
   { "use_rcptid",         KW_USE_RCPTID, KWS_OBSOLETE, "This has been deprecated, try use_uniqid() instead" },
@@ -359,8 +360,8 @@ report_syntax_error(CfgLexer *lexer, YYLTYPE *yylloc, const char *what, const ch
     }
 
   if (in_main_grammar)
-    fprintf(stderr, "\nsyslog-ng documentation: https://www.balabit.com/support/documentation?product=%s\n"
-            "contact: %s\n", PRODUCT_NAME, PRODUCT_CONTACT);
+    fprintf(stderr, "\nsyslog-ng documentation: %s\n"
+            "contact: %s\n", PRODUCT_DOCUMENTATION, PRODUCT_CONTACT);
 
 }
 

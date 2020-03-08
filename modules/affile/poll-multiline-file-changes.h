@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2010-2016 Balabit
+ * Copyright (c) 2019 One Identity
+ * Copyright (c) 2019 László Várady
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 as published
@@ -20,21 +21,13 @@
  *
  */
 
-#ifndef AFMONGODB_LEGACY_GRAMMAR_H_
-#define AFMONGODB_LEGACY_GRAMMAR_H_
+#ifndef POLL_MULTILINE_FILE_CHANGES_H
+#define POLL_MULTILINE_FILE_CHANGES_H
 
-#include "syslog-ng.h"
-#include "driver.h"
+#include "poll-file-changes.h"
+#include "file-reader.h"
 
-gboolean afmongodb_dd_validate_socket_combination(LogDriver *d);
-gboolean afmongodb_dd_validate_network_combination(LogDriver *d);
-void afmongodb_dd_set_servers(LogDriver *d, GList *servers);
-void afmongodb_dd_set_host(LogDriver *d, const gchar *host);
-void afmongodb_dd_set_port(LogDriver *d, gint port);
-void afmongodb_dd_set_database(LogDriver *d, const gchar *database);
-void afmongodb_dd_set_user(LogDriver *d, const gchar *user);
-void afmongodb_dd_set_password(LogDriver *d, const gchar *password);
-void afmongodb_dd_set_safe_mode(LogDriver *d, gboolean state);
-void afmongodb_dd_set_path(LogDriver *d, const gchar *path);
+PollEvents *poll_multiline_file_changes_new(gint fd, const gchar *follow_filename, gint follow_freq,
+                                            gint multi_line_timeout, FileReader *reader);
 
 #endif

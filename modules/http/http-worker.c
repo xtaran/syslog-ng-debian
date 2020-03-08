@@ -26,7 +26,20 @@
 
 #include "syslog-names.h"
 #include "scratch-buffers.h"
+#include "http-signals.h"
 
+#define HTTP_HEADER_FORMAT_ERROR http_header_format_error_quark()
+
+static GQuark http_header_format_error_quark(void)
+{
+  return g_quark_from_static_string("http_header_format_error_quark");
+}
+
+enum HttpHeaderFormatError
+{
+  HTTP_HEADER_FORMAT_SLOT_CRITICAL_ERROR,
+  HTTP_HEADER_FORMAT_SLOT_NON_CRITICAL_ERROR
+};
 
 /* HTTPDestinationWorker */
 
@@ -107,10 +120,10 @@ _setup_static_options_in_curl(HTTPDestinationWorker *self)
   if (owner->user_agent)
     curl_easy_setopt(self->curl, CURLOPT_USERAGENT, owner->user_agent);
 
-  if (owner->ca_dir || !owner->use_system_cert_store)
+  if (owner->ca_dir)
     curl_easy_setopt(self->curl, CURLOPT_CAPATH, owner->ca_dir);
 
-  if (owner->ca_file || !owner->use_system_cert_store)
+  if (owner->ca_file)
     curl_easy_setopt(self->curl, CURLOPT_CAINFO, owner->ca_file);
 
   if (owner->cert_file)
@@ -144,22 +157,22 @@ _setup_static_options_in_curl(HTTPDestinationWorker *self)
 }
 
 
-static struct curl_slist *
-_add_header(struct curl_slist *curl_headers, const gchar *header, const gchar *value)
+static void
+_add_header(List *list, const gchar *header, const gchar *value)
 {
   GString *buffer = scratch_buffers_alloc();
 
   g_string_append(buffer, header);
   g_string_append(buffer, ": ");
   g_string_append(buffer, value);
-  return curl_slist_append(curl_headers, buffer->str);
+
+  list_append(list, buffer->str);
 }
 
-static struct curl_slist *
-_append_auth_header(struct curl_slist *list, HTTPDestinationDriver *owner)
+static void
+_append_auth_header(List *list, HTTPDestinationDriver *owner)
 {
   const gchar *auth_header_str = http_auth_header_get_as_string(owner->auth_header);
-
   if (!auth_header_str)
     {
       if (!http_dd_auth_header_renew(&owner->super.super.super))
@@ -167,14 +180,14 @@ _append_auth_header(struct curl_slist *list, HTTPDestinationDriver *owner)
           msg_warning("WARNING: failed to renew auth header",
                       evt_tag_str("driver", owner->super.super.super.id),
                       log_pipe_location_tag(&owner->super.super.super.super));
-          return list;
+          return;
         }
       auth_header_str = http_auth_header_get_as_string(owner->auth_header);
     }
 
   if (auth_header_str)
     {
-      list = curl_slist_append(list, auth_header_str);
+      list_append(list, auth_header_str);
     }
   else
     {
@@ -182,48 +195,98 @@ _append_auth_header(struct curl_slist *list, HTTPDestinationDriver *owner)
                   evt_tag_str("driver", owner->super.super.super.id),
                   log_pipe_location_tag(&owner->super.super.super.super));
     }
-
-  return list;
 }
 
-static struct curl_slist *
-_format_request_headers(HTTPDestinationWorker *self, LogMessage *msg)
+static void
+_set_error_from_slot_result(const gchar *signal,
+                            HttpHeaderRequestSlotResultType result,
+                            GError **error)
+{
+  switch (result)
+    {
+    case HTTP_HEADER_REQUEST_SLOT_SUCCESS:
+      g_assert(*error == NULL);
+      break;
+    case HTTP_HEADER_REQUEST_SLOT_CRITICAL_ERROR:
+      g_set_error(error, HTTP_HEADER_FORMAT_ERROR,
+                  HTTP_HEADER_FORMAT_SLOT_CRITICAL_ERROR,
+                  "Critical error during slot execution, signal:%s",
+                  signal_http_header_request);
+      break;
+    case HTTP_HEADER_REQUEST_SLOT_PLUGIN_ERROR:
+    default:
+      g_set_error(error, HTTP_HEADER_FORMAT_ERROR,
+                  HTTP_HEADER_FORMAT_SLOT_NON_CRITICAL_ERROR,
+                  "Non-critical error during slot execution, signal:%s",
+                  signal_http_header_request);
+      break;
+    }
+}
+
+static void
+_collect_rest_headers(HTTPDestinationWorker *self, GError **error)
+{
+  HttpHeaderRequestSignalData signal_data =
+  {
+    .result = HTTP_HEADER_REQUEST_SLOT_SUCCESS,
+    .request_headers = self->request_headers,
+    .request_body = self->request_body
+  };
+
+  HTTPDestinationDriver *owner = (HTTPDestinationDriver *) self->super.owner;
+
+  EMIT(owner->super.super.super.super.signal_slot_connector, signal_http_header_request, &signal_data);
+
+  _set_error_from_slot_result(signal_http_header_request, signal_data.result, error);
+}
+
+static void
+_add_msg_specific_headers(HTTPDestinationWorker *self, LogMessage *msg)
+{
+  /* NOTE: I have my doubts that these headers make sense at all.  None of
+   * the HTTP collectors I know of, extract this information from the
+   * headers and it makes batching several messages into the same request a
+   * bit more complicated than it needs to be.  I didn't want to break
+   * backward compatibility when batching was introduced, however I think
+   * this should eventually be removed */
+
+  _add_header(self->request_headers,
+              "X-Syslog-Host",
+              log_msg_get_value(msg, LM_V_HOST, NULL));
+  _add_header(self->request_headers,
+              "X-Syslog-Program",
+              log_msg_get_value(msg, LM_V_PROGRAM, NULL));
+  _add_header(self->request_headers,
+              "X-Syslog-Facility",
+              syslog_name_lookup_facility_by_value(msg->pri & LOG_FACMASK));
+  _add_header(self->request_headers,
+              "X-Syslog-Level",
+              syslog_name_lookup_severity_by_value(msg->pri & LOG_PRIMASK));
+}
+
+static void
+_add_common_headers(HTTPDestinationWorker *self)
 {
   HTTPDestinationDriver *owner = (HTTPDestinationDriver *) self->super.owner;
-  struct curl_slist *headers = NULL;
-  GList *l;
 
-  headers = _add_header(headers, "Expect", "");
-  if (msg)
-    {
-      /* NOTE: I have my doubts that these headers make sense at all.  None of
-       * the HTTP collectors I know of, extract this information from the
-       * headers and it makes batching several messages into the same request a
-       * bit more complicated than it needs to be.  I didn't want to break
-       * backward compatibility when batching was introduced, however I think
-       * this should eventually be removed */
+  _add_header(self->request_headers, "Expect", "");
+  for (GList *l = owner->headers; l; l = l->next)
+    list_append(self->request_headers, l->data);
+}
 
-      headers = _add_header(headers,
-                            "X-Syslog-Host",
-                            log_msg_get_value(msg, LM_V_HOST, NULL));
-      headers = _add_header(headers,
-                            "X-Syslog-Program",
-                            log_msg_get_value(msg, LM_V_PROGRAM, NULL));
-      headers = _add_header(headers,
-                            "X-Syslog-Facility",
-                            syslog_name_lookup_name_by_value(msg->pri & LOG_FACMASK, sl_facilities));
-      headers = _add_header(headers,
-                            "X-Syslog-Level",
-                            syslog_name_lookup_name_by_value(msg->pri & LOG_PRIMASK, sl_levels));
-    }
+static gboolean
+_try_format_request_headers(HTTPDestinationWorker *self, GError **error)
+{
+  HTTPDestinationDriver *owner = (HTTPDestinationDriver *) self->super.owner;
 
-  for (l = owner->headers; l; l = l->next)
-    headers = curl_slist_append(headers, l->data);
+  _add_common_headers(self);
 
   if (owner->auth_header)
-    headers = _append_auth_header(headers, owner);
+    _append_auth_header(self->request_headers, owner);
 
-  return headers;
+  _collect_rest_headers(self, error);
+
+  return (*error == NULL);
 }
 
 static void
@@ -361,6 +424,12 @@ default_map_http_status_to_worker_status(HTTPDestinationWorker *self, const gcha
 }
 
 static void
+_reinit_request_headers(HTTPDestinationWorker *self)
+{
+  list_remove_all(self->request_headers);
+}
+
+static void
 _reinit_request_body(HTTPDestinationWorker *self)
 {
   HTTPDestinationDriver *owner = (HTTPDestinationDriver *) self->super.owner;
@@ -464,7 +533,7 @@ _curl_perform_request(HTTPDestinationWorker *self, HTTPLoadBalancerTarget *targe
             evt_tag_str("url", target->url));
 
   curl_easy_setopt(self->curl, CURLOPT_URL, target->url);
-  curl_easy_setopt(self->curl, CURLOPT_HTTPHEADER, self->request_headers);
+  curl_easy_setopt(self->curl, CURLOPT_HTTPHEADER, http_curl_header_list_as_slist(self->request_headers));
   curl_easy_setopt(self->curl, CURLOPT_POSTFIELDS, self->request_body->str);
 
   CURLcode ret = curl_easy_perform(self->curl);
@@ -555,6 +624,41 @@ _flush_on_target(HTTPDestinationWorker *self, HTTPLoadBalancerTarget *target)
   return _map_http_status_code(self, target->url, http_code);
 }
 
+static gboolean
+_format_request_headers_error_is_critical(GError *error)
+{
+  return (error->code == HTTP_HEADER_FORMAT_SLOT_CRITICAL_ERROR);
+}
+
+static void
+_format_request_headers_report_error(GError *error)
+{
+  if (error->code == HTTP_HEADER_FORMAT_SLOT_CRITICAL_ERROR)
+    {
+      msg_error("Failed to format HTTP request headers.",
+                evt_tag_str("reason", error->message),
+                evt_tag_printf("action", "request disconnect"));
+    }
+  else
+    {
+      msg_warning("Failed to format HTTP request headers",
+                  evt_tag_str("reason", error->message),
+                  evt_tag_printf("action", "trying to send the request"));
+    }
+}
+
+static gboolean
+_format_request_headers_catch_error(GError **error)
+{
+  g_assert((*error)->domain == HTTP_HEADER_FORMAT_ERROR);
+
+  _format_request_headers_report_error(*error);
+  gboolean unhandled = _format_request_headers_error_is_critical(*error);
+  g_clear_error(error);
+
+  return !unhandled;
+}
+
 /* we flush the accumulated data if
  *   1) we reach batch_size,
  *   2) the message queue becomes empty
@@ -567,6 +671,7 @@ _flush(LogThreadedDestWorker *s, LogThreadedFlushMode mode)
   HTTPLoadBalancerTarget *target, *alt_target = NULL;
   LogThreadedResult retval = LTR_NOT_CONNECTED;
   gint retry_attempts = owner->load_balancer->num_targets;
+  GError *error = NULL;
 
   if (self->super.batch_size == 0)
     return LTR_SUCCESS;
@@ -575,6 +680,12 @@ _flush(LogThreadedDestWorker *s, LogThreadedFlushMode mode)
     return LTR_RETRY;
 
   _finish_request_body(self);
+
+  if (!_try_format_request_headers(self, &error))
+    {
+      if (!_format_request_headers_catch_error(&error))
+        return LTR_NOT_CONNECTED;
+    }
 
   target = http_load_balancer_choose_target(owner->load_balancer, &self->lbc);
 
@@ -608,9 +719,10 @@ _flush(LogThreadedDestWorker *s, LogThreadedFlushMode mode)
 
       target = alt_target;
     }
+
+  _reinit_request_headers(self);
   _reinit_request_body(self);
-  curl_slist_free_all(self->request_headers);
-  self->request_headers = NULL;
+
   return retval;
 }
 
@@ -628,9 +740,6 @@ _insert_batched(LogThreadedDestWorker *s, LogMessage *msg)
 {
   HTTPDestinationWorker *self = (HTTPDestinationWorker *) s;
 
-  if (self->request_headers == NULL)
-    self->request_headers = _format_request_headers(self, NULL);
-
   _add_message_to_batch(self, msg);
 
   if (_should_initiate_flush(self))
@@ -645,8 +754,9 @@ _insert_single(LogThreadedDestWorker *s, LogMessage *msg)
 {
   HTTPDestinationWorker *self = (HTTPDestinationWorker *) s;
 
-  self->request_headers = _format_request_headers(self, msg);
   _add_message_to_batch(self, msg);
+  _add_msg_specific_headers(self, msg);
+
   return log_threaded_dest_worker_flush(&self->super, LTF_FLUSH_NORMAL);
 }
 
@@ -657,6 +767,7 @@ _thread_init(LogThreadedDestWorker *s)
   HTTPDestinationDriver *owner = (HTTPDestinationDriver *) self->super.owner;
 
   self->request_body = g_string_sized_new(32768);
+  self->request_headers = http_curl_header_list_new();
   if (!(self->curl = curl_easy_init()))
     {
       msg_error("curl: cannot initialize libcurl",
@@ -666,6 +777,7 @@ _thread_init(LogThreadedDestWorker *s)
       return FALSE;
     }
   _setup_static_options_in_curl(self);
+  _reinit_request_headers(self);
   _reinit_request_body(self);
   return log_threaded_dest_worker_init_method(s);
 }
@@ -676,6 +788,7 @@ _thread_deinit(LogThreadedDestWorker *s)
   HTTPDestinationWorker *self = (HTTPDestinationWorker *) s;
 
   g_string_free(self->request_body, TRUE);
+  list_free(self->request_headers);
   curl_easy_cleanup(self->curl);
   log_threaded_dest_worker_deinit_method(s);
 }

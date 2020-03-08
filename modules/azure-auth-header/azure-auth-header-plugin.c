@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Balabit
+ * Copyright (c) 2020 One Identity
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 as published
@@ -20,18 +20,34 @@
  *
  */
 
-#ifndef HOST_LIST_H_
-#define HOST_LIST_H_
+#include "cfg-parser.h"
+#include "plugin.h"
+#include "plugin-types.h"
 
-#include "syslog-ng.h"
-#include <glib.h>
+extern CfgParser azure_auth_header_parser;
 
-typedef GList HostList;
+static Plugin azure_auth_header_plugins[] =
+{
+  {
+    .type = LL_CONTEXT_INNER_DEST,
+    .name = "azure-auth-header",
+    .parser = &azure_auth_header_parser,
+  },
+};
 
-typedef gboolean (*HostListProcessor)(gpointer user_data, const char *host, gint port);
+gboolean
+azure_auth_header_module_init(PluginContext *context, CfgArgs *args)
+{
+  plugin_register(context, azure_auth_header_plugins, G_N_ELEMENTS(azure_auth_header_plugins));
+  return TRUE;
+}
 
-gboolean host_list_append(HostList **list, const char *host, gint port);
-gboolean host_list_iterate(const HostList *host_list, HostListProcessor processor, gpointer user_data);
-void host_list_free(HostList *host_list);
-
-#endif
+const ModuleInfo module_info =
+{
+  .canonical_name = "azure_auth_header",
+  .version = SYSLOG_NG_VERSION,
+  .description = "HTTP authentication header support for Azure APIs",
+  .core_revision = SYSLOG_NG_SOURCE_REVISION,
+  .plugins = azure_auth_header_plugins,
+  .plugins_len = G_N_ELEMENTS(azure_auth_header_plugins),
+};

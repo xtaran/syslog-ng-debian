@@ -34,12 +34,14 @@
 #include "python-fetcher.h"
 #include "python-global-code-loader.h"
 #include "python-debugger.h"
+#include "python-http-header.h"
 
 #include "plugin.h"
 #include "plugin-types.h"
 #include "reloc.h"
 
 #include <stdlib.h>
+#include <string.h>
 
 extern CfgParser python_parser;
 extern CfgParser python_parser_parser;
@@ -49,6 +51,11 @@ static Plugin python_plugins[] =
   {
     .type = LL_CONTEXT_DESTINATION,
     .name = "python",
+    .parser = &python_parser,
+  },
+  {
+    .type = LL_CONTEXT_INNER_DEST,
+    .name = "python_http_header",
     .parser = &python_parser,
   },
   {
@@ -96,6 +103,7 @@ _py_init_interpreter(void)
     {
       python_debugger_append_inittab();
 
+      py_setup_python_home();
       _set_python_path();
       Py_Initialize();
       py_init_argv();
@@ -127,8 +135,8 @@ const ModuleInfo module_info =
 {
   .canonical_name = "python",
   .version = SYSLOG_NG_VERSION,
-  .description = "The python ("PYTHON_MODULE_VERSION") module provides Python scripted destination support for syslog-ng.",
-  .core_revision = VERSION_CURRENT_VER_ONLY,
+  .description = "The python ("PYTHON_MODULE_VERSION") module provides Python scripting support for syslog-ng.",
+  .core_revision = SYSLOG_NG_SOURCE_REVISION,
   .plugins = python_plugins,
   .plugins_len = G_N_ELEMENTS(python_plugins),
 };

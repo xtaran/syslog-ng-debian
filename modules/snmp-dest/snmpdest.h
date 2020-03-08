@@ -29,14 +29,17 @@
 
 #include "driver.h"
 #include "mainloop-worker.h"
+#include "logthrdest/logthrdestdrv.h"
+
+#define ENGINE_ID_MAX_LENGTH 32
+#define ENGINE_ID_MIN_LENGTH 5
 
 extern const gchar *s_v2c,
-       *s_v3,
-       *s_err_engine_id;
+       *s_v3;
 
 typedef struct
 {
-  LogDestDriver super;
+  LogThreadedDestDriver super;
 
   gchar *version;
   gchar *host;
@@ -57,16 +60,6 @@ typedef struct
   gchar *enc_password;
   gchar *transport;
 
-  StatsCounterItem *dropped_messages;
-  StatsCounterItem *queued_messages;
-  StatsCounterItem *processed_messages;
-
-  GMutex *queue_mutex;
-  GCond *writer_thread_wakeup_cond;
-
-  gboolean writer_thread_terminate;
-  gboolean writer_thread_suspended;
-
   netsnmp_session session,
                   *ss;
   gboolean session_initialized;
@@ -74,10 +67,6 @@ typedef struct
   LogTemplate *message;
   LogTemplateOptions template_options;
   WorkerOptions worker_options;
-
-  StatsClusterKey sc_key_queued;
-  StatsClusterKey sc_key_dropped;
-  StatsClusterKey sc_key_processed;
 
 } SNMPDestDriver;
 
@@ -91,7 +80,7 @@ gboolean snmpdest_dd_set_snmp_obj(LogDriver *d, GlobalConfig *cfg, const gchar *
 void snmpdest_dd_set_trap_obj(LogDriver *d, GlobalConfig *cfg, const gchar *objectid, const gchar *type,
                               const gchar *value);
 void snmpdest_dd_set_community(LogDriver *d, const gchar *community);
-void snmpdest_dd_set_engine_id(LogDriver *d, const gchar *eid);
+gboolean snmpdest_dd_set_engine_id(LogDriver *d, const gchar *eid);
 void snmpdest_dd_set_auth_username(LogDriver *d, const gchar *auth_username);
 void snmpdest_dd_set_auth_algorithm(LogDriver *d, const gchar *auth_algo);
 void snmpdest_dd_set_auth_password(LogDriver *d, const gchar *auth_pwd);

@@ -91,7 +91,7 @@
  * should reference the syslog-ng version number through these macros, in order
  * to make it relatively simple to explain PE/OSE version numbers to users. */
 
-#define PRODUCT_NAME "syslog-ng-ose"
+#define PRODUCT_DOCUMENTATION "https://www.syslog-ng.com/technical-documents/list/syslog-ng-open-source-edition"
 #define PRODUCT_CONTACT "https://lists.balabit.hu/mailman/listinfo/syslog-ng"
 
 #define VERSION_3_0 "syslog-ng 3.0"
@@ -120,6 +120,10 @@
 #define VERSION_3_23 "syslog-ng 3.23"
 #define VERSION_3_24 "syslog-ng 3.24"
 #define VERSION_3_25 "syslog-ng 3.25"
+#define VERSION_3_26 "syslog-ng 3.26"
+
+/* VERSION_VALUE_* references versions as integers to be compared against stuff like cfg->user_version */
+/* VERSION_STR_* references versions as strings to be shown to the user */
 
 #define VERSION_VALUE_3_0  0x0300
 #define VERSION_VALUE_3_1  0x0301
@@ -147,12 +151,19 @@
 #define VERSION_VALUE_3_23 0x0317
 #define VERSION_VALUE_3_24 0x0318
 #define VERSION_VALUE_3_25 0x0319
-
+#define VERSION_VALUE_3_26 0x031a
 
 /* config version code, in the same format as GlobalConfig->version */
-#define VERSION_VALUE   0x0319
-#define VERSION_CURRENT VERSION_3_25
-#define VERSION_CURRENT_VER_ONLY "3.25"
+#define VERSION_VALUE_CURRENT   VERSION_VALUE_3_26
+#define VERSION_STR_CURRENT     "3.26"
+#define VERSION_PRODUCT_CURRENT VERSION_3_26
+
+/* this value points to the last syslog-ng version where we changed the
+ * meaning of any setting in the configuration file.  Basically, it is the
+ * highest value passed to any cfg_is_config_version_older() call.
+ */
+#define VERSION_VALUE_LAST_SEMANTIC_CHANGE  VERSION_VALUE_3_22
+#define VERSION_STR_LAST_SEMANTIC_CHANGE    "3.22"
 
 #define version_convert_from_user(v)  (v)
 

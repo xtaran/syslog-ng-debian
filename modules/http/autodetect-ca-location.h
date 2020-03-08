@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2010-2016 Balabit
+ * Copyright (c) 2020 One Identity
+ * Copyright (c) 2020 Antal Nemes
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 as published
@@ -20,14 +21,12 @@
  *
  */
 
-#ifndef AFMONGODB_LEGACY_URI_H_
-#define AFMONGODB_LEGACY_URI_H_
+#ifndef AUTODETECT_CA_LOCATION_INCLUDED_H
+#define AUTODETECT_CA_LOCATION_INCLUDED_H
 
 #include "syslog-ng.h"
-#include "afmongodb-private.h"
 
-void afmongodb_dd_init_legacy(MongoDBDestDriver *self);
-void afmongodb_dd_free_legacy(MongoDBDestDriver *self);
-gboolean afmongodb_dd_create_uri_from_legacy(MongoDBDestDriver *self);
+const gchar *auto_detect_ca_file(void);
+const gchar *auto_detect_ca_dir(void);
 
 #endif
