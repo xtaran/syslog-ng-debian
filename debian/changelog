@@ -1,3 +1,9 @@
+syslog-ng (3.26.1-1) UNRELEASED; urgency=medium
+
+  * New upstream release.
+
+ -- Laszlo Boszormenyi (GCS) <gcs@debian.org>  Sun, 08 Mar 2020 14:18:20 +0000
+
 syslog-ng (3.25.1-3) unstable; urgency=medium
 
   * Remove outdated pep8 build dependency.
