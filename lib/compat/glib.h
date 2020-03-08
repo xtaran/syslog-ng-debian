@@ -99,4 +99,14 @@ g_hash_table_contains (GHashTable    *hash_table,
                        gconstpointer  key);
 #endif
 
+#if !GLIB_CHECK_VERSION(2, 54, 0)
+#define g_base64_encode g_base64_encode_fixed
+gchar *g_base64_encode_fixed(const guchar *data, gsize len);
+#endif
+
+#if !GLIB_CHECK_VERSION(2, 40, 0)
+#define g_hash_table_insert slng_g_hash_table_insert
+gboolean slng_g_hash_table_insert (GHashTable *hash_table, gpointer key, gpointer value);
+#endif
+
 #endif

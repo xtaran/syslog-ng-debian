@@ -249,11 +249,6 @@ AC_ARG_ENABLE(mongodb,
 	      [  --enable-mongodb        Enable mongodb destination (default: auto)]
               ,,enable_mongodb="auto")
 
-AC_ARG_ENABLE(legacy-mongodb-options,
-              [  --enable-legacy-mongodb-options=[yes/no]
-                                         Support libmongo-client non-URI MongoDB options. (default: yes)]
-              ,,enable_legacy_mongodb_options="yes")
-
 AC_ARG_WITH(jsonc,
               [  --with-jsonc=[system/internal/auto/no]
                                          Link against the system supplied or the built-in jsonc library or explicitly disable it. (default:auto)]
@@ -322,7 +317,7 @@ AC_ARG_WITH(systemd-journal,
               ,,with_systemd_journal="auto")
 
 AC_ARG_ENABLE(python,
-              [  --disable-python       Disable python destination]
+              [  --disable-python       Disable Python module]
               ,,enable_python="auto")
 
 AC_ARG_ENABLE(kafka,
@@ -332,6 +327,14 @@ AC_ARG_ENABLE(kafka,
 AC_ARG_WITH(python,
               [  --with-python=VERSION    Build with a specific version of python]
               ,,with_python="auto")
+
+AC_ARG_WITH(python3-home,
+              [  --with-python3-home=path Use path as a hard-coded Python home directory that can not be overwritten by the PYTHONHOME environment variable],
+              python3_home_dir=$with_python3_home)
+
+AC_ARG_WITH(python2-home,
+              [  --with-python2-home=path Use path as a hard-coded Python home directory that can not be overwritten by the PYTHONHOME environment variable],
+              python2_home_dir=$with_python2_home)
 
 AC_ARG_WITH(nosetests,
               [  --with-nosetests=ABSOLUTE_PATH    Specify nosetests location])
@@ -766,7 +769,7 @@ dnl Checks for libraries
 AC_CHECK_LIB(door, door_create, BASE_LIBS="$BASE_LIBS -ldoor")
 AC_CHECK_LIB(socket, socket, BASE_LIBS="$BASE_LIBS -lsocket")
 AC_CHECK_LIB(rt, nanosleep, BASE_LIBS="$BASE_LIBS -lrt")
-AC_CHECK_LIB(nsl, gethostbyname, BASE_LIBS="$BASE_LIBS -lnsl")
+AC_CHECK_FUNC(gethostbyname, [], AC_CHECK_LIB(nsl, gethostbyname, BASE_LIBS="$BASE_LIBS -lnsl"))
 AC_CHECK_LIB(regex, regexec, REGEX_LIBS="-lregex")
 AC_CHECK_LIB(resolv, res_init, RESOLV_LIBS="-lresolv")
 
@@ -1033,6 +1036,7 @@ AC_CHECK_DECLS([EVP_MD_CTX_reset], [], [], [[#include <openssl/evp.h>]])
 AC_CHECK_DECLS([ASN1_STRING_get0_data], [], [], [[#include <openssl/asn1.h>]])
 AC_CHECK_DECLS([DH_set0_pqg], [], [], [[#include <openssl/dh.h>]])
 AC_CHECK_DECLS([BN_get_rfc3526_prime_2048], [], [], [[#include <openssl/bn.h>]])
+AC_CHECK_DECLS([SSL_CTX_set_num_tickets],[], [], [[#include <openssl/ssl.h>]])
 
 CPPFLAGS="$CPPFLAGS_SAVE"
 
@@ -1233,13 +1237,6 @@ dnl ***************************************************************************
 dnl mongo-c-driver headers/libraries
 dnl ***************************************************************************
 
-if test x"$enable_legacy_mongodb_options" = x"no"; then
-	enable_legacy_mongodb_options_bit=0
-else
-	enable_legacy_mongodb_options_bit=1
-fi
-AC_DEFINE_UNQUOTED(ENABLE_LEGACY_MONGODB_OPTIONS, [$enable_legacy_mongodb_options_bit], [Support libmongo-client non-URI MongoDB options])
-
 PKG_CHECK_MODULES(LIBMONGO, libmongoc-1.0 >= $LMC_MIN_VERSION, with_mongoc="yes", with_mongoc="no")
 
 if test "x$with_mongoc" = "xno" && test "x$enable_mongodb" = "xyes"; then
@@ -1306,6 +1303,15 @@ if test "x$enable_http" != "xno" && test "x$with_libcurl" != "xno"; then
 		AC_MSG_ERROR(libcurl not found)
 	fi
 	enable_http=$libcurl
+
+        if test "$enable_http" = "yes"; then
+           old_CFLAGS=$CFLAGS
+           CFLAGS=$LIBCURL_CFLAGS
+           AC_CHECK_DECLS([CURL_SSLVERSION_TLSv1_0, CURL_SSLVERSION_TLSv1_1, CURL_SSLVERSION_TLSv1_2, CURL_SSLVERSION_TLSv1_3],
+                          [], [],
+                          [[#include <curl/curl.h>]])
+           CFLAGS=$old_CFLAGS
+        fi
 fi
 
 dnl ***************************************************************************
@@ -1835,6 +1841,8 @@ if test -n "$env_ld_library_path"; then
 fi
 AC_DEFINE_UNQUOTED(PATH_MODULEDIR, "$moduledir", [module installation directory])
 AC_DEFINE_UNQUOTED(PYTHON_MODULE_DIR, "$python_moduledir", [Python module installation directory])
+AC_DEFINE_UNQUOTED(PYTHON3_HOME_DIR, "$python3_home_dir", [Hard-coded Python 3 home directory])
+AC_DEFINE_UNQUOTED(PYTHON2_HOME_DIR, "$python2_home_dir", [Hard-coded Python 2 home directory])
 AC_DEFINE_UNQUOTED(PATH_LOGGENPLUGINDIR, "$loggenplugindir", [loggenplugin installation directory])
 AC_DEFINE_UNQUOTED(MODULE_PATH, "$module_path", [module search path])
 AC_DEFINE_UNQUOTED(JAVA_MODULE_PATH, "$java_module_path", [java module search path])
@@ -1889,7 +1897,6 @@ AM_CONDITIONAL(ENABLE_SNMP_DEST, [test "$enable_snmp_dest" = "yes"])
 AM_CONDITIONAL(ENABLE_MANPAGES, [test "$enable_manpages" != "no"])
 AM_CONDITIONAL(ENABLE_NATIVE, [test "$enable_native" != "no"])
 AM_CONDITIONAL(ENABLE_EXTRA_WARNINGS, [test "$enable_extra_warnings" = "yes"])
-AM_CONDITIONAL(ENABLE_LEGACY_MONGODB_OPTIONS, [test x"$enable_legacy_mongodb_options" != x"no"])
 AM_CONDITIONAL(ENABLE_TESTING, [test "$enable_tests" != "no"])
 AM_CONDITIONAL([HAVE_INOTIFY], [test x$ac_cv_func_inotify_init = xyes])
 AM_CONDITIONAL([HAVE_GETRANDOM], [test x$ac_cv_func_getrandom = xyes])
@@ -2000,7 +2007,6 @@ echo "  Linux capability support    : ${has_linux_caps:=no}"
 echo "  Env wrapper support         : ${enable_env_wrapper:=no}"
 echo "  systemd support             : ${enable_systemd:=no} (unit dir: ${systemdsystemunitdir:=none})"
 echo "  systemd-journal support     : ${with_systemd_journal:=no}"
-echo "  libmongo-client options     : ${enable_legacy_mongodb_options}"
 echo " Modules:"
 echo "  Module search path          : ${module_path}"
 echo "  Sun STREAMS support (module): ${enable_sun_streams:=no}"

@@ -27,11 +27,12 @@ from sys import argv
 
 def get_grammar_files():
     root_dir = Path(__file__).resolve().parents[3]
+    exclude = ['rewrite-expr-grammar.ym', 'native-grammar.ym']
     files = []
     files.extend(list((root_dir / 'modules').rglob('*.ym')))
     files.extend(list((root_dir / 'lib').rglob('*.ym')))
     files.append(root_dir / 'lib' / 'cfg-grammar.y')
-    return files
+    return list(filter(lambda f: f.name not in exclude, files))
 
 
 def merge_grammars(output_filepath):
@@ -40,7 +41,7 @@ def merge_grammars(output_filepath):
     blocks = r'%%' + '\n'
 
     for filepath in files[1:]:
-        with filepath.open() as f:
+        with filepath.open(encoding='UTF-8') as f:
             in_block = False
             for line in f:
                 if line.startswith('%token') or line.startswith(r'%left') or line.startswith('%type'):

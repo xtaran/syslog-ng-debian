@@ -411,6 +411,12 @@ _print_and_clear_tls_session_error(TLSContext *self)
 }
 
 static void
+tls_context_setup_session_tickets(TLSContext *self)
+{
+  openssl_ctx_setup_session_tickets(self->ssl_ctx);
+}
+
+static void
 tls_context_setup_verify_mode(TLSContext *self)
 {
   gint verify_mode = 0;
@@ -456,6 +462,10 @@ tls_context_setup_ssl_options(TLSContext *self)
         ssl_options |= SSL_OP_NO_TLSv1_1;
       if(self->ssl_options & TSO_NOTLSv12)
         ssl_options |= SSL_OP_NO_TLSv1_2;
+#endif
+#ifdef SSL_OP_NO_TLSv1_3
+      if(self->ssl_options & TSO_NOTLSv13)
+        ssl_options |= SSL_OP_NO_TLSv1_3;
 #endif
 #ifdef SSL_OP_CIPHER_SERVER_PREFERENCE
       if (self->mode == TM_SERVER)
@@ -729,6 +739,9 @@ tls_context_setup_context(TLSContext *self)
 
   X509_VERIFY_PARAM_set_flags(SSL_CTX_get0_param(self->ssl_ctx), verify_flags);
 
+  if (self->mode == TM_SERVER)
+    tls_context_setup_session_tickets(self);
+
   tls_context_setup_verify_mode(self);
   tls_context_setup_ssl_options(self);
   if (!tls_context_setup_ecdh(self))
@@ -931,6 +944,10 @@ tls_context_set_ssl_options_by_name(TLSContext *self, GList *options)
         self->ssl_options |= TSO_NOTLSv11;
       else if (strcasecmp(l->data, "no-tlsv12") == 0 || strcasecmp(l->data, "no_tlsv12") == 0)
         self->ssl_options |= TSO_NOTLSv12;
+#endif
+#ifdef SSL_OP_NO_TLSv1_3
+      else if (strcasecmp(l->data, "no-tlsv13") == 0 || strcasecmp(l->data, "no_tlsv13") == 0)
+        self->ssl_options |= TSO_NOTLSv13;
 #endif
       else
         return FALSE;

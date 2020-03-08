@@ -54,8 +54,7 @@ AM_CPPFLAGS		= -I$(top_srcdir)/lib -I$(top_srcdir)/modules -I$(top_builddir)/lib
 
 # Important warnings
 AM_CFLAGS = \
-	-Wshadow \
-	-fcommon
+	-Wshadow
 
 # Acceptable warnings
 AM_CFLAGS += \
@@ -215,7 +214,7 @@ include tests/Makefile.am
 include doc/Makefile.am
 include contrib/Makefile.am
 include scl/Makefile.am
-include packaging/debian/Makefile.am
+include packaging/Makefile.am
 include dbld/Makefile.am
 include cmake/Makefile.am
 include dev-utils/plugin_skeleton_creator/Makefile.am

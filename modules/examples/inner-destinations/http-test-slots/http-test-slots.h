@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2010-2016 Balabit
+ * Copyright (c) 2020 One Identity
+ * Copyright (c) 2020 Laszlo Budai <laszlo.budai@outlook.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 as published
@@ -20,12 +21,15 @@
  *
  */
 
-#ifndef AFMONGODB_LEGACY_PRIVATE_H_
-#define AFMONGODB_LEGACY_PRIVATE_H_
+#ifndef HTTP_TEST_SLOTS_H_INCLUDED
+#define HTTP_TEST_SLOTS_H_INCLUDED
 
-#include "syslog-ng.h"
-#include "afmongodb-private.h"
+#include "driver.h"
 
-#define MONGO_CONN_LOCAL -1
+typedef struct _HttpTestSlotsPlugin HttpTestSlotsPlugin;
+
+HttpTestSlotsPlugin *http_test_slots_plugin_new(void);
+
+void http_test_slots_plugin_set_header(HttpTestSlotsPlugin *self, const gchar *header);
 
 #endif

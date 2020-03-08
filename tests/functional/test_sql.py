@@ -26,7 +26,7 @@ from messagegen import *
 from messagecheck import *
 from control import flush_files, stop_syslogng
 
-config = """@version: 3.25
+config = """@version: %(syslog_ng_version)s
 
 options { ts_format(iso); chain_hostnames(no); keep_hostname(yes); threaded(yes); };
 
@@ -51,7 +51,7 @@ log { source(s_tcp); destination(d_sql); };
 def check_env():
 
     if not has_module('afsql'):
-        print 'afsql module is not available, skipping SQL test'
+        print('afsql module is not available, skipping SQL test')
         return False
     paths=('/opt/syslog-ng/bin', '/usr/bin', '/usr/local/bin')
     found=False
@@ -77,7 +77,7 @@ def check_env():
         print_user('No sqlite3 backend for libdbi. Skipping SQL test.\nSearched: %s\n' % ':'.join(paths))
         return False
 
-    print 'sqlite3 found, proceeding to SQL tests'
+    print('sqlite3 found, proceeding to SQL tests')
     return True
 
 

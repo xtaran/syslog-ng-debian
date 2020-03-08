@@ -289,7 +289,7 @@ extern struct _LogRewrite *last_rewrite;
 %token KW_TEMPLATE_FUNCTION           10272
 
 %token KW_DEFAULT_FACILITY            10300
-%token KW_DEFAULT_LEVEL               10301
+%token KW_DEFAULT_SEVERITY            10301
 
 %token KW_PORT                        10323
 /* misc options */
@@ -298,7 +298,7 @@ extern struct _LogRewrite *last_rewrite;
 
 /* filter items*/
 %token KW_FACILITY                    10350
-%token KW_LEVEL                       10351
+%token KW_SEVERITY                    10351
 %token KW_HOST                        10352
 %token KW_MATCH                       10353
 %token KW_MESSAGE                     10354
@@ -466,7 +466,7 @@ LogRewrite *last_rewrite;
 %type   <ptr> string_list
 %type   <ptr> string_list_build
 %type   <num> facility_string
-%type   <num> level_string
+%type   <num> severity_string
 
 %type   <num> positive_integer
 %type   <num> positive_integer64
@@ -1135,11 +1135,11 @@ semicolons
         | ';' semicolons
         ;
 
-level_string
+severity_string
         : string
 	  {
 	    /* return the numeric value of the "level" */
-	    int n = syslog_name_lookup_level_by_name($1);
+	    int n = syslog_name_lookup_severity_by_name($1);
 	    CHECK_ERROR((n != -1), @1, "Unknown priority level\"%s\"", $1);
 	    free($1);
             $$ = n;
@@ -1174,8 +1174,7 @@ driver_option
         : KW_PERSIST_NAME '(' string ')' { log_pipe_set_persist_name(&last_driver->super, $3); free($3); }
         ;
 
-/* All source drivers should incorporate this rule, implies driver_option */
-source_driver_option
+inner_source
         : LL_IDENTIFIER
           {
             Plugin *p;
@@ -1198,16 +1197,16 @@ source_driver_option
                 CHECK_ERROR(TRUE, @1, "Error while registering the plugin %s in this destination", $1);
               }
           }
+        ;
+
+/* All source drivers should incorporate this rule, implies driver_option */
+source_driver_option
+        : inner_source
         | driver_option
         ;
 
-/* implies driver_option */
-dest_driver_option
-        /* NOTE: plugins need to set "last_driver" in order to incorporate this rule in their grammar */
-
-	: KW_LOG_FIFO_SIZE '(' positive_integer ')'	{ ((LogDestDriver *) last_driver)->log_fifo_size = $3; }
-	| KW_THROTTLE '(' nonnegative_integer ')'         { ((LogDestDriver *) last_driver)->throttle = $3; }
-        | LL_IDENTIFIER
+inner_dest
+        : LL_IDENTIFIER
           {
             Plugin *p;
             gint context = LL_CONTEXT_INNER_DEST;
@@ -1229,6 +1228,15 @@ dest_driver_option
                 CHECK_ERROR(TRUE, @1, "Error while registering the plugin %s in this destination", $1);
               }
           }
+        ;
+
+/* implies driver_option */
+dest_driver_option
+        /* NOTE: plugins need to set "last_driver" in order to incorporate this rule in their grammar */
+
+	: KW_LOG_FIFO_SIZE '(' positive_integer ')'	{ ((LogDestDriver *) last_driver)->log_fifo_size = $3; }
+	| KW_THROTTLE '(' nonnegative_integer ')'         { ((LogDestDriver *) last_driver)->throttle = $3; }
+        | inner_dest
         | driver_option
         ;
 
@@ -1321,17 +1329,17 @@ host_resolve_option
 
 msg_format_option
 	: KW_TIME_ZONE '(' string ')'		{ last_msg_format_options->recv_time_zone = g_strdup($3); free($3); }
-	| KW_DEFAULT_LEVEL '(' level_string ')'
+	| KW_DEFAULT_SEVERITY '(' severity_string ')'
 	  {
 	    if (last_msg_format_options->default_pri == 0xFFFF)
 	      last_msg_format_options->default_pri = LOG_USER;
-	    last_msg_format_options->default_pri = (last_msg_format_options->default_pri & ~7) | $3;
+	    last_msg_format_options->default_pri = (last_msg_format_options->default_pri & ~LOG_PRIMASK) | $3;
           }
 	| KW_DEFAULT_FACILITY '(' facility_string ')'
 	  {
 	    if (last_msg_format_options->default_pri == 0xFFFF)
 	      last_msg_format_options->default_pri = LOG_NOTICE;
-	    last_msg_format_options->default_pri = (last_msg_format_options->default_pri & 7) | $3;
+	    last_msg_format_options->default_pri = (last_msg_format_options->default_pri & LOG_PRIMASK) | $3;
           }
         ;
 

@@ -57,13 +57,14 @@ autogen\.sh$
 sub-configure\.sh$
 configure\.ac$
 Makefile\.am$
-lib/(compat|str-repr|timeutils|control|debugger|filter|logproto|parser|rewrite|stats|template|tests|transport|logmsg|value-pairs|secret-storage|logthrdest|logthrsource|http-auth|ack-tracker|[^/]*$)
+lib/(compat|str-repr|timeutils|control|debugger|filter|logproto|parser|rewrite|stats|template|tests|transport|logmsg|value-pairs|secret-storage|logthrdest|logthrsource|http-auth|ack-tracker|signal-slot-connector|[^/]*$)
 lib/scanner/(csv-scanner|list-scanner|kv-scanner|xml-scanner|[^/]*$)
 libtest
 syslog-ng(-ctl)?
 modules/java-modules/common
 modules/java/(native|proxies|src)
 modules/native
+modules/http/http-signals.h
 tests/loggen
 persist-tool
  GPLv2+_SSL,non-balabit
@@ -75,6 +76,7 @@ modules/add-contextual-data/tests/test_glob_selector\.c$
 modules/affile/tests/test_file_writer\.c$
  GPLv2+_SSL
 contib/config_option_database
+news/create-newsfile.py
 dev-utils/plugin_skeleton_creator/create_plugin.sh
 tests/functional
 tests/unit
@@ -86,10 +88,12 @@ tests/copyright/check.sh
 tests/python_functional
 modules/java/(tools|[^/]*$)
 modules/java-modules/(dummy|elastic-v2|hdfs|http|kafka|[^/]*$)
-modules/(afamqp|affile|afmongodb|afprog|afsmtp|afsocket|afsql|afstomp|afstreams|afuser|basicfuncs|cef|confgen|cryptofuncs|csvparser|timestamp|diskq|dbparser|geoip2|graphite|json|kvformat|linux-kmsg-format|pacctformat|pseudofile|python|redis|riemann|syslogformat|systemd-journal|getent|system-source|stardate|snmptrapd-parser|xml|openbsd|examples|kafka|snmp-dest|[^/]*$)
+modules/(afamqp|affile|afmongodb|afprog|afsmtp|afsocket|afsql|afstomp|afstreams|afuser|azure-auth-header|basicfuncs|cef|confgen|cryptofuncs|csvparser|timestamp|diskq|dbparser|geoip2|graphite|json|kvformat|linux-kmsg-format|pacctformat|pseudofile|python|redis|riemann|syslogformat|systemd-journal|getent|system-source|stardate|snmptrapd-parser|xml|openbsd|examples|kafka|snmp-dest|[^/]*$)
 modules/(add-contextual-data|tagsparser|map-value-pairs|hook-commands|appmodel|[^/]*$)
 modules/http/(http-loadbalancer|http-worker)\.[ch]$
 modules/http/response-handler\.[ch]$
+modules/http/http-curl-header-list\.[ch]$
+modules/http/autodetect-ca-location\.[ch]$
 scl
 scripts
 modules/http/tests

@@ -23,6 +23,7 @@
 
 #include "libtest/cr_template.h"
 #include "libtest/grab-logging.h"
+#include "libtest/testutils.h"
 #include <criterion/criterion.h>
 
 #include "apphook.h"
@@ -68,6 +69,42 @@ free_log_message_array(GPtrArray *messages)
 {
   g_ptr_array_foreach(messages, _log_msg_free, NULL);
   g_ptr_array_free(messages, TRUE);
+}
+
+const gchar *
+resolve_sockaddr_to_hostname(gsize *result_len, GSockAddr *saddr, const HostResolveOptions *host_resolve_options)
+{
+  static const gchar *test_hostname = "resolved-TEST-host";
+  static const gchar *test_hostname_normalized = "resolved-test-host";
+  static const gchar *test_hostname_fqdn = "resolved-TEST-host.syslog.ng";
+  static const gchar *test_hostname_fqdn_normalized = "resolved-test-host.syslog.ng";
+  static const gchar *test_ip = "123.123.123.123";
+
+  const gchar *hostname;
+  if (host_resolve_options->use_dns)
+    {
+      if (host_resolve_options->use_fqdn)
+        {
+          if (host_resolve_options->normalize_hostnames)
+            hostname = test_hostname_fqdn_normalized;
+          else
+            hostname = test_hostname_fqdn;
+        }
+      else
+        {
+          if (host_resolve_options->normalize_hostnames)
+            hostname = test_hostname_normalized;
+          else
+            hostname = test_hostname;
+        }
+    }
+  else
+    {
+      hostname = test_ip;
+    }
+
+  *result_len = strlen(hostname);
+  return hostname;
 }
 
 void
@@ -135,6 +172,25 @@ Test(basicfuncs, test_cond_funcs)
 Test(basicfuncs, test_str_funcs)
 {
   assert_template_format("$(ipv4-to-int $SOURCEIP)", "168496141");
+
+  assert_template_format("$(dns-resolve-ip --use-dns=no --dns-cache=no 123.123.123.123)", "123.123.123.123");
+  assert_template_format("$(dns-resolve-ip --use-dns=yes --dns-cache=yes 123.123.123.123)", "resolved-TEST-host");
+  assert_template_format("$(dns-resolve-ip --use-dns=yes --dns-cache=yes "
+                         "--normalize-hostnames=yes 123.123.123.123)", "resolved-test-host");
+  assert_template_format("$(dns-resolve-ip --use-dns=yes --dns-cache=yes "
+                         "--use-fqdn=yes 123.123.123.123)", "resolved-TEST-host.syslog.ng");
+  assert_template_format("$(dns-resolve-ip --use-dns=yes --dns-cache=yes "
+                         "--use-fqdn=yes --normalize-hostnames=yes 123.123.123.123)", "resolved-test-host.syslog.ng");
+  assert_template_format("$(dns-resolve-ip \"123.123.123.123\")", "resolved-TEST-host");
+  assert_template_format("$(dns-resolve-ip '123.123.123.123')", "resolved-TEST-host");
+  assert_template_format("$(dns-resolve-ip !!!invalid-ip-address!!!)", "");
+#if SYSLOG_NG_ENABLE_IPV6
+  assert_template_format("$(dns-resolve-ip 1996::04:30)", "resolved-TEST-host");
+#endif
+  start_grabbing_messages();
+  assert_template_format("$(dns-resolve-ip --use-dns=no --dns-cache=yes 123.123.123.123)", "123.123.123.123");
+  assert_grabbed_messages_contain("WARNING: With use-dns(no), dns-cache() will be forced to 'no' too!", NULL);
+  stop_grabbing_messages();
 
   assert_template_format("$(length $HOST $PID)", "5 5");
   assert_template_format("$(length $HOST)", "5");
@@ -439,6 +495,43 @@ Test(basicfuncs, test_list_funcs)
 
   assert_template_format("$(implode ' ' foo,bar,xxx,baz,bad)", "foo bar xxx baz bad");
   assert_template_format("$(implode ' ' $(list-slice :3 foo,bar,xxx,baz,bad))", "foo bar xxx");
+
+  assert_template_format("$(list-search almafa '')", "");
+  assert_template_format("$(list-search 'foo,' '\"foo,\",\"bar\",\"baz\",\"bar\"')", "0");
+  assert_template_format("$(list-search --start-index 0 --mode literal bar '\"foo,\",\"bar\",\"baz\",\"bar\"')", "1");
+  assert_template_format("$(list-search --start-index 2 bar '\"foo,\",\"bar\",\"baz\",\"bar\"')", "3");
+  assert_template_format("$(list-search --mode literal --start-index 1 baz '\"foo,\",\"bar\",\"baz\",\"bar\"')", "2");
+  assert_template_format("$(list-search --start-index 5 baz '\"foo,\",\"bar\",\"baz\",\"bar\"' '\"foo,\",\"bar\",\"baz\",\"bar\"')",
+                         "6");
+  assert_template_format("$(list-search almafa --mode literal '\"foo,\",\"bar\",\"baz\",\"bar\"')", "");
+
+  assert_template_format("$(list-search --mode prefix --start-index 0 almafa '')", "");
+  assert_template_format("$(list-search --start-index 0 --mode prefix fo '\"foo,\",\"bar\",\"baz\"')", "0");
+  assert_template_format("$(list-search --mode prefix ba '\"foo,\",\"bar\",\"baz\"')", "1");
+  assert_template_format("$(list-search --mode prefix --start-index 1 ba '\"foo,\",\"bar\",\"baz\"')", "1");
+  assert_template_format("$(list-search --start-index 2 --mode prefix ba '\"foo,\",\"bar\",\"baz\"')", "2");
+  assert_template_format("$(list-search --mode prefix --start-index 0 almafa '\"foo,\",\"bar\",\"baz\"')", "");
+
+  assert_template_format("$(list-search --mode substring almafa '')", "");
+  assert_template_format("$(list-search --start-index 0 --mode substring oo '\"foo,\",\"bar\",\"baz\"')", "0");
+  assert_template_format("$(list-search --mode substring --start-index 2 a '\"foo,\",\"bar\",\"baz\"')", "2");
+  assert_template_format("$(list-search --mode substring ar '\"foo,\",\"bar\",\"baz\"')", "1");
+  assert_template_format("$(list-search --start-index 1 --mode substring ar '\"foo,\",\"bar\",\"baz\"')", "1");
+  assert_template_format("$(list-search --mode substring almafa '\"foo,\",\"bar\",\"baz\"')", "");
+
+  assert_template_format("$(list-search --mode glob al*fa '')", "");
+  assert_template_format("$(list-search --start-index 0 --mode glob f*, '\"foo,\",\"bar\",\"baz\"')", "0");
+  assert_template_format("$(list-search --mode glob --start-index 1 *az '\"foo,\",\"bar\",\"baz\"')", "2");
+  assert_template_format("$(list-search --mode glob ar '\"foo,\",\"bar\",\"baz\"')", "");
+  assert_template_format("$(list-search --mode glob ba* '\"foo,\",\"bar\",\"baz\"')", "1");
+  assert_template_format("$(list-search --mode glob al*fa '\"foo,\",\"bar\",\"baz\"')", "");
+
+  assert_template_format("$(list-search --mode pcre al.*fa '')", "");
+  assert_template_format("$(list-search --mode pcre --start-index 0 f.*, '\"foo,\",\"bar\",\"baz\"')", "0");
+  assert_template_format("$(list-search --start-index 1 --mode pcre .az '\"foo,\",\"bar\",\"baz\"')", "2");
+  assert_template_format("$(list-search --mode pcre ^bar$ '\"foo,\",\"bar\",\"baz\"')", "1");
+  assert_template_format("$(list-search --mode pcre ba. '\"foo,\",\"bar\",\"baz\"')", "1");
+  assert_template_format("$(list-search --mode pcre a...fa '\"foo,\",\"bar\",\"baz\"')", "");
 }
 
 Test(basicfuncs, test_context_funcs)

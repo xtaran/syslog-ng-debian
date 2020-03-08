@@ -23,6 +23,7 @@ set(BISON_FLAGS "-Wno-other -Werror=conflicts-sr -Werror=conflicts-rr")
 include(CheckIncludeFiles)
 include(ExternalProject)
 include(external_or_find_package)
+include(add_module)
 include(add_tests)
 include(module_switch)
 
@@ -331,8 +332,7 @@ endif()
 add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND} -j $$(nproc) --output-on-failure)
 
 set(IMPORTANT_WARNINGS
-  -Wshadow
-  -fcommon)
+  -Wshadow)
 
 set(ACCEPTABLE_WARNINGS
   -Wno-stack-protector
