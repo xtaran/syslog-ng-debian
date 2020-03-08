@@ -9,6 +9,8 @@ syslog-ng (3.26.1-1) UNRELEASED; urgency=medium
   * Move the http() destination into a separate package (syslog-ng-mod-http).
   * Move BSD process accounting (pacct) support into the core package.
   * Move tags-parser() to the core package.
+  * Add support for librdkafka based kafka destination (in mod-rdkafka
+    package).
 
  -- Laszlo Boszormenyi (GCS) <gcs@debian.org>  Sun, 08 Mar 2020 14:18:20 +0000
 

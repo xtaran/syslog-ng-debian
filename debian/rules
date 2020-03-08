@@ -104,6 +104,7 @@ override_dh_auto_configure:
 		--with-python=3 \
 		--enable-snmp-dest \
 		--enable-http \
+		--enable-kafka \
 		\
 		--with-mongoc=system \
 		--with-ivykis=system \
