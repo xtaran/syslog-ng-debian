@@ -102,6 +102,7 @@ override_dh_auto_configure:
 		$(PACCT_CONFIGURE_OPTS) \
 		--enable-python \
 		--with-python=3 \
+		--enable-snmp-dest \
 		\
 		--with-mongoc=system \
 		--with-ivykis=system \
