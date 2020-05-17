@@ -35,6 +35,7 @@ typedef struct _LogProtoClient LogProtoClient;
 typedef struct _LogProtoClientOptions
 {
   gboolean drop_input;
+  gint timeout;
 } LogProtoClientOptions;
 
 typedef union _LogProtoClientOptionsStorage
@@ -54,6 +55,8 @@ typedef struct
 } LogProtoClientFlowControlFuncs;
 
 void log_proto_client_options_set_drop_input(LogProtoClientOptions *options, gboolean drop_input);
+void log_proto_client_options_set_timeout(LogProtoClientOptions *options, gint timeout);
+gint log_proto_client_options_get_timeout(LogProtoClientOptions *options);
 
 void log_proto_client_options_defaults(LogProtoClientOptions *options);
 void log_proto_client_options_init(LogProtoClientOptions *options, GlobalConfig *cfg);
@@ -96,6 +99,12 @@ log_proto_client_msg_rewind(LogProtoClient *self)
 {
   if (self->flow_control_funcs.rewind_callback)
     self->flow_control_funcs.rewind_callback(self->flow_control_funcs.user_data);
+}
+
+static inline void
+log_proto_client_set_options(LogProtoClient *self, const LogProtoClientOptions *options)
+{
+  self->options = options;
 }
 
 static inline gboolean

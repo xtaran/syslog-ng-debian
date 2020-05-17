@@ -65,9 +65,22 @@ log_proto_client_options_set_drop_input(LogProtoClientOptions *options, gboolean
 }
 
 void
+log_proto_client_options_set_timeout(LogProtoClientOptions *options, gint timeout)
+{
+  options->timeout = timeout;
+}
+
+gint
+log_proto_client_options_get_timeout(LogProtoClientOptions *options)
+{
+  return options->timeout;
+}
+
+void
 log_proto_client_options_defaults(LogProtoClientOptions *options)
 {
   options->drop_input = FALSE;
+  options->timeout = 0;
 }
 
 void
