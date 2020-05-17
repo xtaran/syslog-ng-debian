@@ -1,6 +1,7 @@
-syslog-ng (3.26.1-1) UNRELEASED; urgency=medium
+syslog-ng (3.27.1-1) UNRELEASED; urgency=medium
 
-  * New upstream release.
+  * New upstream release:
+    - builds with Bison 3.6.1 (closes: #960481).
   * Remove merged in patches.
   * Update configuration version.
 
@@ -13,7 +14,7 @@ syslog-ng (3.26.1-1) UNRELEASED; urgency=medium
     package).
   * Use upstream scl.conf .
 
- -- Laszlo Boszormenyi (GCS) <gcs@debian.org>  Sun, 08 Mar 2020 14:18:20 +0000
+ -- Laszlo Boszormenyi (GCS) <gcs@debian.org>  Sun, 17 May 2020 14:41:30 +0200
 
 syslog-ng (3.25.1-3) unstable; urgency=medium
 
