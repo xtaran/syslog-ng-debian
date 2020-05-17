@@ -2,6 +2,7 @@ syslog-ng (3.27.1-1) UNRELEASED; urgency=medium
 
   * New upstream release:
     - builds with Bison 3.6.1 (closes: #960481).
+  * Merge snmptrapd-parser mod to snmp mod.
   * Remove merged in patches.
   * Update configuration version.
 
