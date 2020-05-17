@@ -1,4 +1,4 @@
-syslog-ng (3.27.1-1) UNRELEASED; urgency=medium
+syslog-ng (3.27.1-1) unstable; urgency=medium
 
   * New upstream release:
     - builds with Bison 3.6.1 (closes: #960481).

@@ -102,7 +102,6 @@ override_dh_auto_configure:
 		$(PACCT_CONFIGURE_OPTS) \
 		--enable-python \
 		--with-python=3 \
-		--enable-snmp-dest \
 		--enable-http \
 		--enable-kafka \
 		\
@@ -221,4 +220,4 @@ build-indep: ;
 
 # And for the rest, there is debhelper!
 %:
-	dh $@ --with autoreconf,systemd,python3
+	dh $@ --with autoreconf,python3
