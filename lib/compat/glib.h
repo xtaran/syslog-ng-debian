@@ -109,4 +109,22 @@ gchar *g_base64_encode_fixed(const guchar *data, gsize len);
 gboolean slng_g_hash_table_insert (GHashTable *hash_table, gpointer key, gpointer value);
 #endif
 
+#if !GLIB_CHECK_VERSION(2, 64, 0)
+#define g_utf8_get_char_validated g_utf8_get_char_validated_fixed
+gunichar g_utf8_get_char_validated_fixed (const gchar *p, gssize max_len);
+#endif
+
+#if !GLIB_CHECK_VERSION(2, 32, 0)
+GThread *g_thread_new(const gchar *name, GThreadFunc func, gpointer data);
+#endif
+
+#if !GLIB_CHECK_VERSION(2, 32, 0)
+gboolean g_cond_wait_until (GCond *cond, GMutex *mutex, gint64 end_time);
+#endif
+
+#if !GLIB_CHECK_VERSION(2, 30, 0)
+gchar *g_mkdtemp_full (gchar *tmpl, gint mode);
+gchar *g_mkdtemp (gchar *tmpl);
+#endif
+
 #endif

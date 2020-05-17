@@ -311,7 +311,45 @@ gboolean
 slng_g_hash_table_insert(GHashTable *hash_table, gpointer key, gpointer value)
 {
   gboolean exists = g_hash_table_contains(hash_table, key);
+#undef g_hash_table_insert
   g_hash_table_insert(hash_table, key, value);
-  return exists;
+  return !exists;
 }
+#endif
+
+
+#if !GLIB_CHECK_VERSION(2, 64, 0)
+gunichar
+g_utf8_get_char_validated_fixed(const gchar *p, gssize max_len)
+{
+  // https://github.com/GNOME/glib/commit/1963821a57584b4674c20895e8a5adccd2d9effd
+
+#undef g_utf8_get_char_validated
+  if (*p == '\0' && max_len > 0)
+    return (gunichar)-2;
+
+  return g_utf8_get_char_validated(p, max_len);
+}
+#endif
+
+#if !GLIB_CHECK_VERSION(2, 32, 0)
+GThread *
+g_thread_new(const gchar *name, GThreadFunc func, gpointer data)
+{
+  return g_thread_create(func, data, TRUE, NULL);
+}
+#endif
+
+#if !GLIB_CHECK_VERSION(2, 32, 0)
+gboolean
+g_cond_wait_until (GCond *cond, GMutex *mutex, gint64 end_time)
+{
+  glong diff_in_sec = (end_time - g_get_monotonic_time())/G_TIME_SPAN_SECOND;
+  GTimeVal tv = {.tv_sec = g_get_monotonic_time() + diff_in_sec, .tv_usec = 0};
+  return g_cond_timed_wait(cond, mutex, &tv);
+}
+#endif
+
+#if !GLIB_CHECK_VERSION(2, 30, 0)
+#include "glib-g_mkdtemp.c"
 #endif

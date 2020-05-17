@@ -6,7 +6,7 @@ jobs:
   build-and-check:
     runs-on: macOS-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - name: build-and-check
         run: |
           set -e
@@ -24,7 +24,6 @@ jobs:
             --disable-systemd \
             --disable-pacct \
             --disable-smtp \
-            --disable-geoip \
             --enable-all-modules
 
           make --keep-going -j $(sysctl -n hw.physicalcpu) || \
