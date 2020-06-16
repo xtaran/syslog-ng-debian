@@ -12,4 +12,4 @@ scl/elasticsearch/elastic-http.conf usr/share/syslog-ng/include/scl/elasticsearc
 scl/junos/plugin.conf usr/share/syslog-ng/include/scl/junos/
 scl/netskope/plugin.conf usr/share/syslog-ng/include/scl/netskope/
 scl/websense/plugin.conf usr/share/syslog-ng/include/scl/websense/
-usr/share/syslog-ng/include/scl/sumologic/sumologic.conf
+scl/sumologic/sumologic.conf usr/share/syslog-ng/include/scl/sumologic/

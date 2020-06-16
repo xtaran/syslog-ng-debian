@@ -140,7 +140,8 @@ override_dh_auto_install:
 		debian/tmp/usr/share/syslog-ng/include/scl/elasticsearch/ \
 		debian/tmp/usr/share/syslog-ng/include/scl/junos/ \
 		debian/tmp/usr/share/syslog-ng/include/scl/netskope/ \
-		debian/tmp/usr/share/syslog-ng/include/scl/websense/
+		debian/tmp/usr/share/syslog-ng/include/scl/websense/ \
+		debian/tmp/usr/share/syslog-ng/include/scl/sumologic/
 
 # To get better test results, and actually see failing tests, we need
 # to pass VERBOSE=1 to make when running the tests. Do that here.
