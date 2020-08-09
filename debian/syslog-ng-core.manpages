@@ -4,7 +4,7 @@ debian/tmp/usr/share/man/man1/dqtool.1
 debian/tmp/usr/share/man/man1/syslog-ng-debun.1
 debian/tmp/usr/share/man/man1/pdbtool.1
 debian/tmp/usr/share/man/man1/persist-tool.1
-debian/tmp/usr/share/man/man1/slogimport.1
+debian/tmp/usr/share/man/man1/slogencrypt.1
 debian/tmp/usr/share/man/man1/slogkey.1
 debian/tmp/usr/share/man/man1/slogverify.1
 debian/tmp/usr/share/man/man1/syslog-ng-ctl.1
