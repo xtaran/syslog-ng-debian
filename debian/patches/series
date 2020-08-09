@@ -1,2 +1,0 @@
-fixes_hang_on_boot_due_to_lack_of_entropy.patch
-add_missing_free_statements.patch
