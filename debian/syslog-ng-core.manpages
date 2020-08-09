@@ -9,4 +9,5 @@ debian/tmp/usr/share/man/man1/slogkey.1
 debian/tmp/usr/share/man/man1/slogverify.1
 debian/tmp/usr/share/man/man1/syslog-ng-ctl.1
 debian/tmp/usr/share/man/man5/syslog-ng.conf.5
+debian/tmp/usr/share/man/man7/secure-logging.7
 debian/tmp/usr/share/man/man8/syslog-ng.8
