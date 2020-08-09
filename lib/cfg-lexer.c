@@ -396,6 +396,7 @@ cfg_lexer_include_file_simple(CfgLexer *self, const gchar *filename)
           msg_error("Error opening directory for reading",
                     evt_tag_str("filename", filename),
                     evt_tag_str("error", error->message));
+          g_error_free(error);
           goto drop_level;
         }
       while ((entry = g_dir_read_name(dir)))
@@ -1188,7 +1189,6 @@ static const gchar *lexer_contexts[] =
   [LL_CONTEXT_CLIENT_PROTO] = "client-proto",
   [LL_CONTEXT_SERVER_PROTO] = "server-proto",
   [LL_CONTEXT_OPTIONS] = "options",
-  [LL_CONTEXT_HTTP_AUTH_HEADER] = "http-auth-header",
 };
 
 gint
