@@ -20,17 +20,14 @@
 # COPYING for details.
 #
 #############################################################################
-import os
-
-import pytest
-
 from src.helpers.secure_logging.conftest import *  # noqa:F403, F401
 
-example_message = "example-message"
+seqnum = "$(iterate $(+ 1 $_) 0)"
+message_base = "example-message"
+example_message = "{}: {}".format(message_base, seqnum)
 num_of_messages = 3
 
 
-@pytest.mark.skipif("cmake_build" in os.environ, reason="only autotools is supported for now")
 def test_secure_logging(config, syslog_ng, slog):
     output_file_name = "output.log"
     generator_source = config.create_example_msg_generator_source(num=num_of_messages, template=config.stringify(example_message), freq="0")
@@ -41,7 +38,8 @@ def test_secure_logging(config, syslog_ng, slog):
     syslog_ng.start(config)
 
     logs = file_destination.read_logs(num_of_messages)
-    assert not any(map(lambda x: example_message in x, logs))
+    # test for no clear text
+    assert not any(map(lambda x: message_base in x, logs))
 
     decrypted = slog.decrypt(output_file_name)
-    assert all(map(lambda x: example_message in x, decrypted))
+    assert decrypted == ["{}: {}: {}".format(str(i).zfill(16), message_base, i) for i in range(num_of_messages)]

@@ -85,6 +85,11 @@ function install_gradle {
     ldconfig
 }
 
+function install_pip2 {
+    download_target "https://bootstrap.pypa.io/get-pip.py" get-pip.py
+    python2 get-pip.py
+}
+
 function download_target() {
     target=$1
     output=$2
@@ -164,6 +169,16 @@ function install_rpm_build_deps {
 function install_yum_packages {
     $YUM_INSTALL findutils
     filter_packages_by_platform $DBLD_DIR/packages.manifest | xargs $YUM_INSTALL
+}
+
+function install_pip2_packages {
+    python2 -m pip install --upgrade pip
+    filter_packages_by_platform $DBLD_DIR/pip_packages.manifest | xargs python2 -m pip install --ignore-installed -U
+}
+
+function install_pip3_packages {
+    python3 -m pip install --upgrade pip
+    filter_packages_by_platform $DBLD_DIR/pip_packages.manifest | xargs python3 -m pip install --ignore-installed -U
 }
 
 function install_pip_packages {
