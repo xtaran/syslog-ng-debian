@@ -1,3 +1,12 @@
+syslog-ng (3.28.1-2) unstable; urgency=medium
+
+  * [def6b75] Remove overlay configuration from gbp.conf.
+    The git tree used to contain only the debianization related files.  As that
+    is not the case any more, the overlay option is not needed/can cause
+    problems.
+
+ -- SZALAY Attila <sasa@debian.org>  Sun, 13 Sep 2020 11:23:18 +0200
+
 syslog-ng (3.28.1-1) unstable; urgency=medium
 
   [ SZALAY Attila ]
