@@ -34,7 +34,9 @@ Build-Depends: debhelper (>= 10~),
                libcurl4-openssl-dev,
                libsnappy-dev,
                libsnmp-dev [linux-any hurd-i386],
-               librdkafka-dev (>= 1.0.0)
+               librdkafka-dev (>= 1.0.0),
+               libcriterion-dev [amd64],
+               pylint (>= 2.4.0) | pylint3,
 Build-Conflicts: autoconf2.13
 Standards-Version: 4.5.0
 Homepage: https://www.syslog-ng.com/
