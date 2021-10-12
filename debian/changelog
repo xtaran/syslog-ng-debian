@@ -1,3 +1,12 @@
+syslog-ng (3.28.1-2+deb11u1~abe1) bullseye; urgency=medium
+
+  * Non-maintainer upload.
+  * Backport fix for https://github.com/syslog-ng/syslog-ng/issues/3506
+    (spams syslog when enabling remote target) to Debian 11 Bullseye by
+    cherry-picking upstream commit 1040f919. (Closes: #996246)
+
+ -- Axel Beckert <abe@debian.org>  Tue, 12 Oct 2021 16:18:01 +0200
+
 syslog-ng (3.28.1-2) unstable; urgency=medium
 
   * [def6b75] Remove overlay configuration from gbp.conf.
